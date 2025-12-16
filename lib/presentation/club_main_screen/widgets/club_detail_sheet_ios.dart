@@ -138,7 +138,6 @@ class ClubDetailSheetIOS extends StatelessWidget {
 
   Widget _buildFollowButton() {
     // TODO: Implement actual follow state management
-    const bool isFollowing = false; // TODO: Get from controller
 
     return Material(
       color: fbWhite,

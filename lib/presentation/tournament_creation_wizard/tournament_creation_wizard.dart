@@ -548,7 +548,7 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
         try {
           ProductionLogger.info('📤 Pre-uploading tournament cover image...', tag: 'tournament_creation_wizard');
           final tempPath = 'temp_covers/${DateTime.now().millisecondsSinceEpoch}_${_tournamentData['coverImageFileName']}';
-          final uploadPath = await _supabase.storage
+          await _supabase.storage
               .from('tournament-covers')
               .uploadBinary(
                 tempPath,

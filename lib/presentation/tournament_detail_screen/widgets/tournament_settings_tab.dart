@@ -55,7 +55,7 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
 
       // Debug: Check both methods
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      final simpleParticipants = await _tournamentService
+      await _tournamentService
           .getTournamentParticipants(widget.tournamentId);
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
@@ -104,7 +104,6 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
 
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       for (int i = 0; i < response.length; i++) {
-        final record = response[i];
         ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {

@@ -86,10 +86,6 @@ class _ClubDetailSectionState extends State<ClubDetailSection>
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      // Check authentication status
-      final user = Supabase.instance.client.auth.currentUser;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
       final members = await _clubService.getClubMembers(widget.club.id);
       if (mounted) {
         setState(() {
@@ -246,7 +242,7 @@ class _ClubDetailSectionState extends State<ClubDetailSection>
           _isLoadingTournaments = false;
         });
         ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        for (var t in tournaments) {
+        for (final _ in tournaments) {
           ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }

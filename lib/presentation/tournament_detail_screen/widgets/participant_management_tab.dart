@@ -39,9 +39,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
           .getTournamentParticipantsWithPaymentStatus(widget.tournamentId);
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       for (int i = 0; i < participants.length; i++) {
-        final user = participants[i]['user'];
         // Note: Display name priority is now handled by UserDisplayNameText component
-        final displayName = user?['display_name'] ?? user?['full_name'] ?? 'Unknown';
         ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       setState(() {

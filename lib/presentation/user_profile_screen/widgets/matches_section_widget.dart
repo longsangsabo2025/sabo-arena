@@ -45,7 +45,7 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Log chi tiết các matches
-      for (var match in matches) {
+      for (final _ in matches) {
         ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 

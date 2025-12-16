@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
 
 /// 🔥 Development Error Handler - Tối ưu tốc độ làm việc 10X
@@ -93,32 +95,37 @@ class DevErrorHandler {
     final severity = isCrit ? 'CRITICAL' : 'WARNING';
 
     // Log with context
-    print('\n$icon [$severity] $context');
-    print('Error: $errorMessage');
+    developer.log(
+      '\n$icon [$severity] $context\nError: $errorMessage',
+      name: 'DevErrorHandler',
+    );
 
     // Suggest fix if possible
     _suggestFix(errorMessage);
 
-    // Only print stack for critical errors
+    // Only log stack for critical errors
     if (isCrit && stack != null) {
       final stackLines = stack.toString().split('\n').take(5).join('\n');
-      print('Stack (first 5 lines):\n$stackLines');
+      developer.log('Stack (first 5 lines):\n$stackLines', name: 'DevErrorHandler');
     }
-    print('─' * 60);
+    developer.log('─' * 60, name: 'DevErrorHandler');
   }
 
   /// Auto-suggest fixes
   void _suggestFix(String error) {
     if (error.contains('setState() or markNeedsBuild() called during build')) {
-      print('💡 FIX: Wrap setState in SchedulerBinding.addPostFrameCallback()');
+      developer.log(
+        '💡 FIX: Wrap setState in SchedulerBinding.addPostFrameCallback()',
+        name: 'DevErrorHandler',
+      );
     } else if (error.contains('Duplicate GlobalKey')) {
-      print('💡 FIX: Remove GlobalKey or ensure unique keys');
+      developer.log('💡 FIX: Remove GlobalKey or ensure unique keys', name: 'DevErrorHandler');
     } else if (error.contains('There should be exactly one item')) {
-      print('💡 FIX: Check DropdownButton items for duplicate values');
+      developer.log('💡 FIX: Check DropdownButton items for duplicate values', name: 'DevErrorHandler');
     } else if (error.contains('isn\'t defined')) {
-      print('💡 FIX: Check imports or add missing property/method');
+      developer.log('💡 FIX: Check imports or add missing property/method', name: 'DevErrorHandler');
     } else if (error.contains('Unexpected null value')) {
-      print('💡 FIX: Add null check or provide default value');
+      developer.log('💡 FIX: Add null check or provide default value', name: 'DevErrorHandler');
     }
   }
 
@@ -127,10 +134,10 @@ class DevErrorHandler {
     if (!kDebugMode) return;
 
     if (duration.inMilliseconds > 1000) {
-      print('⏱️ SLOW OPERATION: $operation took ${duration.inMilliseconds}ms');
+      developer.log('⏱️ SLOW OPERATION: $operation took ${duration.inMilliseconds}ms', name: 'Performance');
     } else if (duration.inMilliseconds > 100) {
       // Only log if > 100ms
-      print('⏱️ $operation: ${duration.inMilliseconds}ms');
+      developer.log('⏱️ $operation: ${duration.inMilliseconds}ms', name: 'Performance');
     }
   }
 
@@ -139,9 +146,9 @@ class DevErrorHandler {
     if (!kDebugMode) return;
 
     if (detail != null) {
-      print('✅ $context: $detail');
+      developer.log('✅ $context: $detail', name: 'DevErrorHandler');
     } else {
-      print('✅ $context');
+      developer.log('✅ $context', name: 'DevErrorHandler');
     }
   }
 

@@ -46,7 +46,6 @@ class TournamentCardWidget extends StatelessWidget {
     final currentPlayers = int.tryParse(registrationParts[0]) ?? 0;
     final maxPlayers = int.tryParse(registrationParts[1]) ?? 64;
     final registrationProgress = maxPlayers > 0 ? currentPlayers / maxPlayers : 0.0;
-    final slotsLeft = maxPlayers - currentPlayers;
     
     // Calculate days until deadline
     int? daysUntilDeadline;

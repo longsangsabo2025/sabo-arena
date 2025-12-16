@@ -114,7 +114,6 @@ class _TournamentListScreenState extends State<TournamentListScreen>
 
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       for (int i = 0; i < tournaments.take(3).length; i++) {
-        final t = tournaments[i];
         ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 

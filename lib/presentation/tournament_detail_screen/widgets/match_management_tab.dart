@@ -99,7 +99,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
     
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
     if (filteredMatches.isNotEmpty) {
-      final firstMatch = filteredMatches.first;
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 

@@ -262,7 +262,6 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
     return prizes.asMap().entries.map((entry) {
       final prize = entry.value;
       final isLast = entry.key == prizes.length - 1;
-      final positionNum = prize['positionNum'] as int;
       final prizeData = prize['prizeData'] as Map<String, dynamic>;
       final bgGradient = prize['bgGradient'] as List<Color>;
       final color = prize['color'] as Color;

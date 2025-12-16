@@ -115,7 +115,6 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       for (var i = 0; i < challenges.length && i < 3; i++) {
-        final ch = challenges[i];
         ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 

@@ -285,11 +285,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
 
     // Tournament data
     final totalTournaments = tournamentStats['total_tournaments'] ?? 0;
-    final completedTournaments = tournamentStats['completed'] ?? 0;
     final ongoingTournaments = tournamentStats['ongoing'] ?? 0;
     final upcomingTournaments = tournamentStats['upcoming'] ?? 0;
-    final avgParticipants = tournamentStats['avg_participants'] ?? 0;
-    final totalPrizePool = tournamentStats['total_prize_pool'] ?? 0;
     final registrations = tournamentStats['registrations'] ?? 0;
 
     // Member data
@@ -448,7 +445,6 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
 
   Widget _buildRevenueCards() {
     final revenueStats = _analyticsData?['revenue_stats'] ?? {};
-    final totalRevenue = revenueStats['total_revenue'] ?? 0;
     final revenue30d = revenueStats['revenue_30d'] ?? 0;
     final revenueToday = revenueStats['revenue_today'] ?? 0;
 

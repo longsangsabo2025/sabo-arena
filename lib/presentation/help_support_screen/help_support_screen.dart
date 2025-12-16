@@ -213,7 +213,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen>
           ),
         ),
         ...faqs.asMap().entries.map((entry) {
-          final index = entry.key;
           final faq = entry.value;
           final globalIndex = faqs.indexOf(faq);
           final isExpanded = _expandedFaqIndices.contains(globalIndex);

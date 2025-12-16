@@ -118,7 +118,6 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
     final memberStats = _analytics!['member_stats'] as Map<String, dynamic>;
     final tournamentStats =
         _analytics!['tournament_stats'] as Map<String, dynamic>;
-    final revenueStats = _analytics!['revenue_stats'] as Map<String, dynamic>;
 
     return Row(
       children: [
