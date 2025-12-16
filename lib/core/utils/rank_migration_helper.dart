@@ -144,7 +144,7 @@ class RankMigrationHelper {
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-    for (String code in RankingConstants.RANK_ORDER) {
+    for (final _ in RankingConstants.RANK_ORDER) {
       // Unused variables removed
       // String newName = SaboRankSystem.getRankDisplayName(code);
       // String? oldName = oldNameToRankCode.entries...

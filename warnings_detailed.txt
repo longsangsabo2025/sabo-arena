@@ -1,0 +1,240 @@
+
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:55:7 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:56:7 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:255:7 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:256:7 - deprecated_member_use
+warning - The value of the local variable 'code' isn't used - lib\core\utils\rank_migration_helper.dart:147:17 - unused_local_variable
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:280:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:281:15 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:291:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:292:15 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:302:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:303:15 - deprecated_member_use
+warning - The declaration '_startMatch' isn't referenced - lib\presentation\club\club_match_management_screen.dart:87:16 - unused_element
+warning - The declaration '_completeMatch' isn't referenced - lib\presentation\club\club_match_management_screen.dart:161:16 - unused_element
+warning - The declaration '_toggleLiveStream' isn't referenced - lib\presentation\club\club_match_management_screen.dart:226:16 - unused_element
+warning - The value of the local variable 'revenueStats' isn't used - lib\presentation\club_dashboard_screen\club_analytics_screen.dart:121:11 - unused_local_variable
+warning - 'scale' is deprecated and shouldn't be used. Use scaleByVector3, scaleByVector4, or scaleByDouble instead - lib\presentation\club_dashboard_screen\widgets\quick_action_card_simple.dart:40:40 - deprecated_member_use
+warning - The declaration '_handleBottomNavTap' isn't referenced - lib\presentation\club_main_screen\club_main_screen.dart:126:8 - unused_element
+warning - The value of the local variable 'user' isn't used - lib\presentation\club_main_screen\widgets\club_detail_section.dart:90:13 - unused_local_variable
+warning - The value of the local variable 't' isn't used - lib\presentation\club_main_screen\widgets\club_detail_section.dart:249:18 - unused_local_variable
+warning - The declaration '_buildJoinLeaveButton' isn't referenced - lib\presentation\club_main_screen\widgets\club_detail_section.dart:624:10 - unused_element
+warning - The value of the local variable 'isFollowing' isn't used - lib\presentation\club_main_screen\widgets\club_detail_sheet_ios.dart:141:16 - unused_local_variable
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_management\widgets\grant_permission_dialog.dart:150:13 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_management\widgets\grant_permission_dialog.dart:151:13 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_notification_screen\club_notification_screen_simple.dart:154:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_notification_screen\club_notification_screen_simple.dart:155:15 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:297:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:298:21 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:310:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:311:21 - deprecated_member_use
+warning - The value of the local variable 'completedTournaments' isn't used - lib\presentation\club_reports_screen\club_reports_screen.dart:288:11 - unused_local_variable
+warning - The value of the local variable 'avgParticipants' isn't used - lib\presentation\club_reports_screen\club_reports_screen.dart:291:11 - unused_local_variable
+warning - The value of the local variable 'totalPrizePool' isn't used - lib\presentation\club_reports_screen\club_reports_screen.dart:292:11 - unused_local_variable
+warning - The value of the local variable 'totalRevenue' isn't used - lib\presentation\club_reports_screen\club_reports_screen.dart:451:11 - unused_local_variable
+warning - 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:584:16 - deprecated_member_use
+warning - 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:585:16 - deprecated_member_use
+warning - 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:586:16 - deprecated_member_use
+warning - 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:590:21 - deprecated_member_use
+warning - 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:591:21 - deprecated_member_use
+warning - 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:592:21 - deprecated_member_use
+warning - The declaration '_handleNavigation' isn't referenced - lib\presentation\find_opponents_screen\find_opponents_screen.dart:34:8 - unused_element
+warning - The value of the field '_currentSubTab' isn't used - lib\presentation\find_opponents_screen\widgets\competitive_challenges_tab.dart:36:7 - unused_field
+warning - The value of the local variable 'ch' isn't used - lib\presentation\find_opponents_screen\widgets\competitive_challenges_tab.dart:118:15 - unused_local_variable
+warning - The declaration '_buildRankingFilter' isn't referenced - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:851:10 - unused_element
+warning - The value of the field '_isLoadingSpaBalance' isn't used - lib\presentation\find_opponents_screen\widgets\create_spa_challenge_modal.dart:57:8 - unused_field
+warning - The value of the field '_currentSubTab' isn't used - lib\presentation\find_opponents_screen\widgets\my_challenges_tab.dart:37:7 - unused_field
+warning - The value of the field '_currentSubTab' isn't used - lib\presentation\find_opponents_screen\widgets\social_invites_tab.dart:38:7 - unused_field
+warning - The value of the field '_searchQuery' isn't used - lib\presentation\find_opponents_screen\widgets\user_search_dialog.dart:31:10 - unused_field
+warning - The value of the local variable 'index' isn't used - lib\presentation\help_support_screen\help_support_screen.dart:216:17 - unused_local_variable
+warning - The value of the field '_findOpponentsKey' isn't used - lib\presentation\home_feed_screen\home_feed_screen.dart:64:19 - unused_field
+warning - The value of the field '_isPlayer' isn't used - lib\presentation\home_feed_screen\home_feed_screen.dart:77:8 - unused_field
+warning - The declaration '_handleNavigation' isn't referenced - lib\presentation\home_feed_screen\home_feed_screen.dart:868:8 - unused_element
+warning - 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\presentation\home_feed_screen\widgets\create_post_modal_widget.dart:1703:9 - deprecated_member_use
+warning - The value of the field '_fullPhoneNumber' isn't used - lib\presentation\login_screen\login_screen_ios.dart:28:10 - unused_field
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\member_detail_screen\widgets\member_settings_tab.dart:657:13 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\member_detail_screen\widgets\member_settings_tab.dart:658:13 - deprecated_member_use
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\presentation\member_profile_edit_screen\member_profile_edit_screen.dart:128:12 - deprecated_member_use
+warning - The value of the local variable 'colorScheme' isn't used - lib\presentation\membership\membership_plans_screen.dart:24:11 - unused_local_variable
+warning - The constructor being called isn't a const constructor - lib\presentation\my_reservations_screen\my_reservations_screen.dart:130:33 - const_with_non_const
+warning - The declaration '_buildNotificationText_OLD' isn't referenced - lib\presentation\notification_list_screen.dart:353:10 - unused_element
+warning - The value of the field '_isLoading' isn't used - lib\presentation\promotion_screen\user_promotion_screen.dart:26:8 - unused_field
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:994:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:995:21 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1059:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1060:21 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1073:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1074:21 - deprecated_member_use
+warning - The left operand can't be null, so the right operand is never executed - lib\presentation\rank_statistics_screen\rank_statistics_screen.dart:272:63 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\presentation\rank_statistics_screen\rank_statistics_screen.dart:279:52 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\presentation\rank_statistics_screen\rank_statistics_screen.dart:281:59 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\presentation\rank_statistics_screen\rank_statistics_screen.dart:324:48 - dead_null_aware_expression
+warning - The value of the field '_fullPhoneNumber' isn't used - lib\presentation\register_screen\register_screen_ios.dart:29:10 - unused_field
+warning - The value of the field '_allReservations' isn't used - lib\presentation\reservation_management_screen\reservation_management_screen.dart:27:26 - unused_field
+warning - The declaration '_getStatusText' isn't referenced - lib\presentation\reservation_management_screen\reservation_management_screen.dart:430:10 - unused_element
+warning - 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion - lib\presentation\settings\post_background_settings_screen_enhanced.dart:107:65 - deprecated_member_use
+warning - The value of the local variable 'slotsLeft' isn't used - lib\presentation\shared\widgets\tournament_card_widget.dart:49:11 - unused_local_variable
+warning - The declaration '_buildBonusChip' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:671:10 - unused_element
+warning - The declaration '_buildStatItem' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:690:10 - unused_element
+warning - The declaration '_buildDivider' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:727:10 - unused_element
+warning - The declaration '_buildActionButton' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:736:10 - unused_element
+warning - The declaration '_buildTournamentIcon' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:774:10 - unused_element
+warning - The declaration '_buildInfoItem' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:858:10 - unused_element
+warning - The declaration '_buildMangBadge' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:882:10 - unused_element
+warning - The declaration '_buildLiveButton' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:906:10 - unused_element
+warning - The declaration '_buildResultButton' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:933:10 - unused_element
+warning - The declaration '_buildDetailButton' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:972:10 - unused_element
+warning - The declaration '_buildShareButton' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:1011:10 - unused_element
+warning - The declaration '_buildPrizeItem' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:1030:10 - unused_element
+warning - The declaration '_buildPrizeItemWithTitle' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:1054:10 - unused_element
+warning - The declaration '_getFirstPlacePrize' isn't referenced - lib\presentation\shared\widgets\tournament_card_widget.dart:1089:10 - unused_element
+warning - The value of the field '_voucherService' isn't used - lib\presentation\spa_management\spa_reward_screen.dart:30:38 - unused_field
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\presentation\spa_management\spa_reward_screen.dart:191:29 - deprecated_member_use
+warning - The value of the local variable 'uploadPath' isn't used - lib\presentation\tournament_creation_wizard\tournament_creation_wizard.dart:551:17 - unused_local_variable
+warning - The value of the field '_fileName' isn't used - lib\presentation\tournament_creation_wizard\widgets\tournament_cover_upload_widget.dart:27:11 - unused_field
+warning - The declaration '_getMatchesByTypeInGroup' isn't referenced - lib\presentation\tournament_detail_screen\widgets\demo_bracket\formats\sabo_de64_bracket.dart:79:30 - unused_element
+warning - The declaration '_buildBracketSection' isn't referenced - lib\presentation\tournament_detail_screen\widgets\demo_bracket\formats\sabo_de64_bracket.dart:569:10 - unused_element
+warning - The declaration '_buildModernFormatSelector' isn't referenced - lib\presentation\tournament_detail_screen\widgets\demo_bracket_tab.dart:341:10 - unused_element
+warning - The declaration '_buildModernPlayerCountSelector' isn't referenced - lib\presentation\tournament_detail_screen\widgets\demo_bracket_tab.dart:403:10 - unused_element
+warning - 'dart:html' is deprecated and shouldn't be used. Use package:web and dart:js_interop instead - lib\presentation\tournament_detail_screen\widgets\full_tournament_iframe_view_web.dart:6:1 - deprecated_member_use
+warning - Unused import: 'package:sabo_arena/services/universal_match_progression_service.dart' - lib\presentation\tournament_detail_screen\widgets\match_management_tab.dart:7:8 - unused_import
+warning - The value of the local variable 'firstMatch' isn't used - lib\presentation\tournament_detail_screen\widgets\match_management_tab.dart:103:13 - unused_local_variable
+warning - Duplicate import - lib\presentation\tournament_detail_screen\widgets\match_result_entry_widget.dart:9:8 - duplicate_import
+warning - The value of the local variable 'displayName' isn't used - lib\presentation\tournament_detail_screen\widgets\participant_management_tab.dart:44:15 - unused_local_variable
+warning - The value of the field '_loadingVouchers' isn't used - lib\presentation\tournament_detail_screen\widgets\prize_pool_widget.dart:17:8 - unused_field
+warning - The declaration '_getVoucherForPosition' isn't referenced - lib\presentation\tournament_detail_screen\widgets\prize_pool_widget.dart:67:25 - unused_element
+warning - The value of the local variable 'positionNum' isn't used - lib\presentation\tournament_detail_screen\widgets\prize_pool_widget.dart:265:13 - unused_local_variable
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\tournament_detail_screen\widgets\quick_match_input_widget.dart:235:25 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\tournament_detail_screen\widgets\quick_match_input_widget.dart:236:25 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\tournament_detail_screen\widgets\quick_match_input_widget.dart:294:25 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\tournament_detail_screen\widgets\quick_match_input_widget.dart:295:25 - deprecated_member_use
+warning - The declaration '_getEliminationTypeColor' isn't referenced - lib\presentation\tournament_detail_screen\widgets\tournament_header_widget.dart:294:9 - unused_element
+warning - The value of the local variable 'simpleParticipants' isn't used - lib\presentation\tournament_detail_screen\widgets\tournament_settings_tab.dart:58:13 - unused_local_variable
+warning - The value of the local variable 'record' isn't used - lib\presentation\tournament_detail_screen\widgets\tournament_settings_tab.dart:107:15 - unused_local_variable
+warning - The value of the local variable 't' isn't used - lib\presentation\tournament_list_screen\tournament_list_screen.dart:117:15 - unused_local_variable
+warning - The declaration '_handleNavigation' isn't referenced - lib\presentation\tournament_list_screen\tournament_list_screen.dart:159:8 - unused_element
+warning - The declaration '_showNoPermissionDialog' isn't referenced - lib\presentation\tournament_list_screen\tournament_list_screen.dart:978:8 - unused_element
+warning - The declaration '_buildHeader' isn't referenced - lib\presentation\tournament_management_center\widgets\bracket_management_tab.dart:172:10 - unused_element
+warning - The left operand can't be null, so the right operand is never executed - lib\presentation\tournament_management_center\widgets\bracket_management_tab.dart:464:20 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\presentation\tournament_management_center\widgets\bracket_management_tab.dart:465:20 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\presentation\tournament_management_center\widgets\bracket_management_tab.dart:508:52 - dead_null_aware_expression
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\presentation\tournament_management_center\widgets\bracket_management_tab.dart:754:12 - deprecated_member_use
+warning - The value of the field '_paymentMethods' isn't used - lib\presentation\tournament_registration_screen\tournament_registration_screen.dart:49:23 - unused_field
+warning - The declaration 'show' isn't referenced - lib\presentation\tournament_registration_screen\widgets\payment_loading_overlay.dart:138:15 - unused_element
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\presentation\tournament_registration_screen\widgets\payment_loading_overlay.dart:147:29 - deprecated_member_use
+warning - The declaration 'hide' isn't referenced - lib\presentation\tournament_registration_screen\widgets\payment_loading_overlay.dart:155:15 - unused_element
+warning - The declaration '_showScoreInputDialog' isn't referenced - lib\presentation\user_profile_screen\match_history_screen.dart:121:16 - unused_element
+warning - The declaration '_setupRealtimeListener' isn't referenced - lib\presentation\user_profile_screen\user_profile_screen.dart:106:8 - unused_element
+warning - The declaration '_reloadFollowCounts' isn't referenced - lib\presentation\user_profile_screen\user_profile_screen.dart:108:16 - unused_element
+warning - The declaration '_loadProfileData' isn't referenced - lib\presentation\user_profile_screen\user_profile_screen.dart:109:16 - unused_element
+warning - The declaration '_loadClubManagementAccess' isn't referenced - lib\presentation\user_profile_screen\user_profile_screen.dart:110:16 - unused_element
+warning - The declaration '_showNotificationsModal' isn't referenced - lib\presentation\user_profile_screen\user_profile_screen.dart:2399:8 - unused_element
+warning - The value of the local variable 'match' isn't used - lib\presentation\user_profile_screen\widgets\matches_section_widget.dart:48:16 - unused_local_variable
+warning - The declaration '_buildProfileInfoRow' isn't referenced - lib\presentation\user_profile_screen\widgets\modern_profile_header_widget.dart:550:10 - unused_element
+warning - The declaration '_buildCoverWithOverlay' isn't referenced - lib\presentation\user_profile_screen\widgets\modern_profile_header_widget.dart:680:10 - unused_element
+warning - The declaration '_buildRankBadge' isn't referenced - lib\presentation\user_profile_screen\widgets\modern_profile_header_widget.dart:810:10 - unused_element
+warning - The declaration '_buildMetricCardsRow' isn't referenced - lib\presentation\user_profile_screen\widgets\modern_profile_header_widget.dart:863:10 - unused_element
+warning - The declaration '_buildAvatarSection' isn't referenced - lib\presentation\user_profile_screen\widgets\profile_header_widget.dart:195:10 - unused_element
+warning - The declaration '_buildRankBadge' isn't referenced - lib\presentation\user_profile_screen\widgets\profile_header_widget.dart:769:10 - unused_element
+warning - The declaration '_buildEloSection' isn't referenced - lib\presentation\user_profile_screen\widgets\profile_header_widget.dart:937:10 - unused_element
+warning - The declaration '_buildSpaAndPrizeSection' isn't referenced - lib\presentation\user_profile_screen\widgets\profile_header_widget.dart:1046:10 - unused_element
+warning - The value of the local variable 'avatarUrl' isn't used - lib\presentation\user_profile_screen\widgets\qr_code_widget.dart:94:11 - unused_local_variable
+warning - 'foregroundColor' is deprecated and shouldn't be used. use colors in eyeStyle and dataModuleStyle instead - lib\presentation\user_profile_screen\widgets\qr_code_widget.dart:259:31 - deprecated_member_use
+warning - The declaration '_buildSettingsItem' isn't referenced - lib\presentation\user_profile_screen\widgets\settings_menu_widget.dart:258:10 - unused_element
+warning - The declaration '_showLogoutDialog' isn't referenced - lib\presentation\user_profile_screen\widgets\settings_menu_widget.dart:323:8 - unused_element
+warning - The declaration '_buildPlayerViewItem' isn't referenced - lib\presentation\user_profile_screen\widgets\settings_menu_widget.dart:375:10 - unused_element
+warning - The value of the local variable 'contentPreview' isn't used - lib\presentation\user_profile_screen\widgets\user_posts_grid_widget.dart:76:17 - unused_local_variable
+warning - The value of the local variable 'textCount' isn't used - lib\presentation\user_profile_screen\widgets\user_posts_grid_widget.dart:91:11 - unused_local_variable
+warning - The value of the local variable 'imageCount' isn't used - lib\presentation\user_profile_screen\widgets\user_posts_grid_widget.dart:91:26 - unused_local_variable
+warning - The value of the local variable 'videoCount' isn't used - lib\presentation\user_profile_screen\widgets\user_posts_grid_widget.dart:91:42 - unused_local_variable
+warning - The value of the local variable 'mixedCount' isn't used - lib\presentation\user_profile_screen\widgets\user_posts_grid_widget.dart:91:58 - unused_local_variable
+warning - The value of the field '_supabase' isn't used - lib\presentation\user_voucher_screen\voucher_table_payment_screen.dart:25:9 - unused_field
+warning - 'foregroundColor' is deprecated and shouldn't be used. use colors in eyeStyle and dataModuleStyle instead - lib\presentation\widgets\user_qr_code_widget.dart:142:21 - deprecated_member_use
+warning - The value of the field '_memoryCacheHits' isn't used - lib\services\app_cache_service.dart:52:7 - unused_field
+warning - The value of the field '_diskCacheHits' isn't used - lib\services\app_cache_service.dart:53:7 - unused_field
+warning - The value of the local variable 'hitRate' isn't used - lib\services\app_cache_service.dart:242:11 - unused_local_variable
+warning - The declaration '_runWelcomeNotificationHook' isn't referenced - lib\services\auth_service.dart:1133:8 - unused_element
+warning - The declaration '_runCreateReferralCodeHook' isn't referenced - lib\services\auth_service.dart:1157:8 - unused_element
+warning - The declaration '_runProcessReferralCodeHook' isn't referenced - lib\services\auth_service.dart:1177:8 - unused_element
+warning - The value of the field '_tag' isn't used - lib\services\bracket\formats\double_elimination_format.dart:19:23 - unused_field
+warning - The value of the field '_tag' isn't used - lib\services\bracket\formats\sabo_de16_format.dart:40:23 - unused_field
+warning - The value of the local variable 'firstMatch' isn't used - lib\services\bracket_visualization_service.dart:205:13 - unused_local_variable
+warning - The declaration '_buildCompactBracketHeader' isn't referenced - lib\services\bracket_visualization_service.dart:245:10 - unused_element
+warning - The declaration '_buildBracketSection' isn't referenced - lib\services\bracket_visualization_service.dart:412:10 - unused_element
+warning - The value of the local variable 'c' isn't used - lib\services\challenge_list_service.dart:149:17 - unused_local_variable
+warning - The value of the local variable 'costBreakdown' isn't used - lib\services\cost_monitoring_service.dart:240:13 - unused_local_variable
+warning - The value of the local variable 'usage' isn't used - lib\services\cost_monitoring_service.dart:248:13 - unused_local_variable
+warning - The declaration '_formatDuration' isn't referenced - lib\services\dashboard_cache_service.dart:170:10 - unused_element
+warning - The value of the local variable 'overall' isn't used - lib\services\database_monitoring_service.dart:201:13 - unused_local_variable
+warning - The value of the local variable 'entry' isn't used - lib\services\database_monitoring_service.dart:210:20 - unused_local_variable
+warning - The value of the local variable 'bonusAmount' isn't used - lib\services\first_match_bonus_service.dart:97:15 - unused_local_variable
+warning - The value of the local variable 'compressionRatio' isn't used - lib\services\image_optimization_service.dart:78:13 - unused_local_variable
+warning - 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\services\location_service.dart:51:7 - deprecated_member_use
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\notification_service.dart:102:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\notification_service.dart:134:13 - unused_local_variable
+warning - The value of the local variable 'successCount' isn't used - lib\services\notification_service.dart:453:11 - unused_local_variable
+warning - The value of the local variable 'matchesSchema' isn't used - lib\services\opponent_tab_backend_service.dart:141:13 - unused_local_variable
+warning - The value of the local variable 'usersSchema' isn't used - lib\services\opponent_tab_backend_service.dart:148:13 - unused_local_variable
+warning - The value of the local variable 'challengesExists' isn't used - lib\services\opponent_tab_backend_service.dart:155:13 - unused_local_variable
+warning - The value of the local variable 'nearbyPlayers' isn't used - lib\services\opponent_tab_backend_service.dart:204:13 - unused_local_variable
+warning - The value of the local variable 'nearbyPlayers' isn't used - lib\services\opponent_tab_backend_service.dart:212:13 - unused_local_variable
+warning - The value of the local variable 'userChallenges' isn't used - lib\services\opponent_tab_backend_service.dart:223:11 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\payment_gateway_service.dart:89:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\payment_gateway_service.dart:129:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\payment_gateway_service.dart:201:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\payment_gateway_service.dart:227:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\payment_gateway_service.dart:292:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\payment_gateway_service.dart:334:13 - unused_local_variable
+warning - The value of the local variable 'userId' isn't used - lib\services\payment_method_service.dart:371:13 - unused_local_variable
+warning - The value of the local variable 'entry' isn't used - lib\services\performance_monitor.dart:204:18 - unused_local_variable
+warning - The declaration '_handleMatchUpdateLegacy' isn't referenced - lib\services\realtime_tournament_service.dart:176:8 - unused_element
+warning - The declaration '_handleParticipantUpdateLegacy' isn't referenced - lib\services\realtime_tournament_service.dart:231:8 - unused_element
+warning - The value of the local variable 'deleted' isn't used - lib\services\rich_share_service.dart:197:11 - unused_local_variable
+warning - The value of the local variable 'challengedUserResponse' isn't used - lib\services\simple_challenge_service.dart:64:29 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\storage_service.dart:85:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\storage_service.dart:182:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\storage_service.dart:210:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\storage_service.dart:244:13 - unused_local_variable
+warning - The value of the local variable 's' isn't used - lib\services\tournament\ranking_service.dart:415:13 - unused_local_variable
+warning - The value of the local variable 'successCount' isn't used - lib\services\tournament\reward_execution_service.dart:36:11 - unused_local_variable
+warning - The value of the local variable 'participantName' isn't used - lib\services\tournament\reward_execution_service.dart:42:17 - unused_local_variable
+warning - The value of the local variable 'oldBalance' isn't used - lib\services\tournament\reward_execution_service.dart:138:15 - unused_local_variable
+warning - The value of the local variable 'newBalance' isn't used - lib\services\tournament\reward_execution_service.dart:139:15 - unused_local_variable
+warning - The value of the local variable 'issuedCount' isn't used - lib\services\tournament\voucher_issuance_service.dart:44:9 - unused_local_variable
+warning - The value of the local variable 'userName' isn't used - lib\services\tournament\voucher_issuance_service.dart:55:13 - unused_local_variable
+warning - The value of the local variable 'voucherCode' isn't used - lib\services\tournament\voucher_issuance_service.dart:67:17 - unused_local_variable
+warning - The value of the field '_tournamentService' isn't used - lib\services\tournament_completion_service.dart:25:27 - unused_field
+warning - The declaration '_processEloUpdates' isn't referenced - lib\services\tournament_completion_service.dart:619:38 - unused_element
+warning - The declaration '_distributePrizes' isn't referenced - lib\services\tournament_completion_service.dart:673:38 - unused_element
+warning - The value of the local variable 'data' isn't used - lib\services\tournament_completion_service.dart:754:15 - unused_local_variable
+warning - The declaration '_updateTournamentStatus' isn't referenced - lib\services\tournament_completion_service.dart:820:16 - unused_element
+warning - The declaration '_sendCompletionNotifications' isn't referenced - lib\services\tournament_completion_service.dart:905:16 - unused_element
+warning - The declaration '_sendCongratulatoryChatMessages' isn't referenced - lib\services\tournament_completion_service.dart:989:16 - unused_element
+warning - The declaration '_createSocialPosts' isn't referenced - lib\services\tournament_completion_service.dart:1159:16 - unused_element
+warning - The declaration '_updateTournamentStatistics' isn't referenced - lib\services\tournament_completion_service.dart:1214:16 - unused_element
+warning - The declaration '_generateCompletionReport' isn't referenced - lib\services\tournament_completion_service.dart:1263:32 - unused_element
+warning - The value of the local variable 'username' isn't used - lib\services\tournament_completion_service.dart:1444:15 - unused_local_variable
+warning - The value of the local variable 'data' isn't used - lib\services\tournament_completion_service.dart:1515:19 - unused_local_variable
+warning - The value of the local variable 'tournament' isn't used - lib\services\tournament_completion_service.dart:1728:13 - unused_local_variable
+warning - The value of the local variable 'winnerName' isn't used - lib\services\tournament_completion_service.dart:1731:15 - unused_local_variable
+warning - The value of the local variable 'notificationsSent' isn't used - lib\services\tournament_completion_service.dart:1824:11 - unused_local_variable
+warning - The declaration '_writeClient' isn't referenced - lib\services\tournament_service.dart:29:22 - unused_element
+warning - The operand can't be 'null', so the condition is always 'true' - lib\services\tournament_service.dart:957:29 - unnecessary_null_comparison
+warning - The declaration '_generateLoserBracket' isn't referenced - lib\services\tournament_service.dart:1659:24 - unused_element
+warning - The value of the local variable 'winnerBracketRounds' isn't used - lib\services\tournament_service.dart:1945:11 - unused_local_variable
+warning - The declaration '_processGenericMatchResult' isn't referenced - lib\services\unified_bracket_service.dart:264:32 - unused_element
+warning - The value of the local variable 'bracketFormat' isn't used - lib\services\universal_match_progression_service.dart:55:15 - unused_local_variable
+warning - The declaration '_executeImmediateAdvancement' isn't referenced - lib\services\universal_match_progression_service.dart:132:32 - unused_element
+warning - The value of the local variable 'currentWinStreak' isn't used - lib\services\user_stats_update_service.dart:60:13 - unused_local_variable
+warning - The operand can't be 'null', so the condition is always 'true' - lib\services\voucher_reward_service.dart:229:23 - unnecessary_null_comparison
+warning - The value of the local variable 'allPassed' isn't used - lib\utils\admin_navigation_validator.dart:35:13 - unused_local_variable
+warning - The value of the local variable 'authService' isn't used - lib\utils\admin_navigation_validator.dart:58:13 - unused_local_variable
+warning - The value of the local variable 'migratedCount' isn't used - lib\utils\like_count_debugger.dart:101:11 - unused_local_variable
+warning - The value of the local variable 'fixedCount' isn't used - lib\utils\like_count_debugger.dart:158:11 - unused_local_variable
+warning - The value of the local variable 'totalPosts' isn't used - lib\utils\like_count_debugger.dart:159:11 - unused_local_variable
+warning - The value of the local variable 'userLiked' isn't used - lib\utils\quick_like_debug.dart:30:12 - unused_local_variable
+warning - The value of the local variable 'isDisabled' isn't used - lib\widgets\common\app_button.dart:90:11 - unused_local_variable
+warning - The value of the local variable 'effectiveOnPressed' isn't used - lib\widgets\common\app_button.dart:91:11 - unused_local_variable
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\widgets\persistent_tab_scaffold.dart:205:12 - deprecated_member_use
+warning - This default clause is covered by the previous cases - lib\widgets\user\user_avatar_widget.dart:337:7 - unreachable_switch_default
+
