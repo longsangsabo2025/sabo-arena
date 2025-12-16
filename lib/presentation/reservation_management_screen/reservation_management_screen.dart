@@ -28,6 +28,7 @@ class _ReservationManagementScreenState
   List<TableReservation> _confirmedReservations = [];
   List<TableReservation> _completedReservations = [];
   List<TableReservation> _cancelledReservations = [];
+  List<dynamic> _allReservations = [];
 
   bool _isLoading = true;
   String? _errorMessage;

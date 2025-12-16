@@ -28,6 +28,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
   List<Map<String, dynamic>> _challenges = [];
   bool _isLoading = true;
   String? _errorMessage;
+  int _currentSubTab = 0;
   bool _showTooltip = false;
   Timer? _tooltipTimer;
   

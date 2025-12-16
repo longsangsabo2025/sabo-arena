@@ -21,6 +21,7 @@ class RegisterScreenIOS extends StatefulWidget {
 
 class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
   final _formKey = GlobalKey<FormState>();
+  String _fullPhoneNumber = '';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();

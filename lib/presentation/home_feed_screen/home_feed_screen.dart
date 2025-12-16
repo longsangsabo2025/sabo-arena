@@ -42,6 +42,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     with TickerProviderStateMixin {
   int _selectedTabIndex = 0;
   bool _isLoading = true;
+  bool _isPlayer = true;
   final ScrollController _scrollController = ScrollController();
   late AnimationController _fabAnimationController;
   late Animation<double> _fabAnimation;

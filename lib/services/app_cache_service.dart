@@ -38,6 +38,9 @@ class AppCacheService {
   static AppCacheService get instance => _instance ??= AppCacheService._();
   AppCacheService._();
 
+  int _memoryCacheHits = 0;
+  int _diskCacheHits = 0;
+
   // Layer 1: Memory Cache (fast access)
   final Map<String, _CacheEntry> _memoryCache = {};
   

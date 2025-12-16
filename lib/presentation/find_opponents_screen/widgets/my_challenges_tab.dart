@@ -27,6 +27,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
     with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   final SupabaseClient _supabase = Supabase.instance.client;
   final _challengeManagementService = ChallengeManagementService();
+  int _currentSubTab = 0;
 
   List<Map<String, dynamic>> _allChallenges = [];
   bool _isLoading = true;

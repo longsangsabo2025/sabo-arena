@@ -383,7 +383,7 @@ class _TournamentOverviewTabState extends State<TournamentOverviewTab> {
           ),
         ],
       ),
-    )
+    );
   }
 
   Widget _buildUpcomingMatches() {

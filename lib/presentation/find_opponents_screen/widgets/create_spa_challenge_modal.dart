@@ -33,6 +33,7 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
   final SimpleChallengeService _challengeService =
       SimpleChallengeService.instance;
   final UserService _userService = UserService.instance;
+  bool _isLoadingSpaBalance = false;
 
   // SPA Betting Configuration - matches challenge_rules_service.dart
   static const Map<int, int> _spaBettingConfig = {

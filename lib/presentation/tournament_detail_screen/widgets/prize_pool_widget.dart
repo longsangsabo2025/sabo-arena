@@ -14,6 +14,7 @@ class PrizePoolWidget extends StatefulWidget {
 class _PrizePoolWidgetState extends State<PrizePoolWidget> {
   final _prizeVoucherService = TournamentPrizeVoucherService();
   List<Map<String, dynamic>> _prizeVouchers = [];
+  bool _loadingVouchers = false;
 
   @override
   void initState() {

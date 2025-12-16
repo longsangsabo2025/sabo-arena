@@ -43,6 +43,7 @@ class _TournamentRegistrationScreenState
   final _paymentService = PaymentMethodService.instance;
   final _gatewayService = PaymentGatewayService.instance;
   final _noteController = TextEditingController();
+  List<PaymentMethod> _paymentMethods = [];
   final _referenceController = TextEditingController();
 
   PaymentMethod? _selectedPaymentMethod;

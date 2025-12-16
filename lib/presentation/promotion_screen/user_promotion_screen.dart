@@ -20,6 +20,7 @@ class _UserPromotionScreenState extends State<UserPromotionScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _supabase = Supabase.instance.client;
+  bool _isLoading = false;
 
   int _myVoucherCount = 0;
   int _availablePromotionCount = 0;

@@ -28,6 +28,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
   final OpponentTabBackendService _opponentService =
       OpponentTabBackendService();
   List<Map<String, dynamic>> _invites = [];
+  int _currentSubTab = 0;
   Map<String, dynamic>? _currentUser;
   List<Map<String, dynamic>> _opponents = [];
   bool _isLoading = true;

@@ -22,6 +22,7 @@ class UserSearchDialog extends StatefulWidget {
 class _UserSearchDialogState extends State<UserSearchDialog> {
   final UserService _userService = UserService.instance;
   final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   List<UserProfile> _searchResults = [];
   List<UserProfile> _suggestedUsers = [];

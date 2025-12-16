@@ -22,6 +22,7 @@ class LoginScreenIOS extends StatefulWidget {
 
 class _LoginScreenIOSState extends State<LoginScreenIOS> {
   final _formKey = GlobalKey<FormState>();
+  String _fullPhoneNumber = '';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
