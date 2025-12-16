@@ -41,10 +41,47 @@ yarn-error.log*
 .pub-cache/
 .pub/
 /build/
+build/
+**/build/
+
+# Android
+**/android/app/build/
+**/android/.gradle/
+**/android/captures/
+**/android/local.properties
+**/android/key.properties
+
+# iOS
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Web
+**/web/flutter_service_worker.js
+**/web/manifest.json
+**/web/version.json
+
+# Windows
+**/windows/flutter/ephemeral/
+
+# Linux  
+**/linux/flutter/ephemeral/
+
+# macOS
+**/macos/Flutter/ephemeral/
+**/macos/Flutter/Flutter-Generated.xcconfig
+**/macos/Flutter/GeneratedPluginRegistrant.swift
 
 # IDE
 .idea/
-.vscode/
+.vscode/settings.json
+.vscode/launch.json
 *.swp
 *.swo
 *~
@@ -52,3 +89,6 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+*.iml
+.metadata
+*.log
