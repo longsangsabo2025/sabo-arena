@@ -547,55 +547,6 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildMetricCard({
-    required IconData icon,
-    required Color iconColor,
-    required String label,
-    required String value,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Icon
-          Icon(icon, color: iconColor, size: 24),
-          const SizedBox(height: 4),
-          // Label
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textTertiary,
-            ),
-          ),
-          const SizedBox(height: 2),
-          // Value
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // Navigate to appropriate history screen based on stat label
   void _navigateToHistoryScreen(BuildContext context, String label) {
     final userId = widget.userData['id'] as String?;
