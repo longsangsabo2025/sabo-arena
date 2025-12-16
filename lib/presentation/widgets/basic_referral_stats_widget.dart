@@ -58,7 +58,7 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: AppColors.primary.withValues(alpha: 0.2),
@@ -66,7 +66,7 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -153,7 +153,7 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
               label: const Text('Thử lại'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],

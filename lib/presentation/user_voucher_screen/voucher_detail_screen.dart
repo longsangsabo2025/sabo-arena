@@ -84,12 +84,12 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                   width: 60.sp,
                   height: 60.sp,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12.sp),
                   ),
                   child: Icon(
                     _getVoucherIcon(),
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     size: 32.sp,
                   ),
                 ),
@@ -105,14 +105,14 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                         widget.voucher.title, style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                       SizedBox(height: 4.sp),
                       Text(
                         widget.voucher.clubName, style: TextStyle(
                           fontSize: 14.sp,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
                         ),
                       ),
                     ],
@@ -130,7 +130,7 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.sp),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8.sp),
               ),
               child: Text(
@@ -138,7 +138,7 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                 style: TextStyle(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),

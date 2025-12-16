@@ -34,12 +34,12 @@ class VoucherCardWidget extends StatelessWidget {
                     width: 48.sp,
                     height: 48.sp,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8.sp),
                     ),
                     child: Icon(
                       _getIconByType(),
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       size: 24.sp,
                     ),
                   ),
@@ -56,7 +56,7 @@ class VoucherCardWidget extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -65,7 +65,7 @@ class VoucherCardWidget extends StatelessWidget {
                           voucher.clubName,
                           style: TextStyle(
                             fontSize: 12.sp,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
                           ),
                         ),
                       ],
@@ -84,7 +84,7 @@ class VoucherCardWidget extends StatelessWidget {
                 voucher.description,
                 style: TextStyle(
                   fontSize: 12.sp,
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -103,7 +103,7 @@ class VoucherCardWidget extends StatelessWidget {
                       vertical: 4.sp,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4.sp),
                     ),
                     child: Text(
@@ -111,7 +111,7 @@ class VoucherCardWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ),
@@ -121,7 +121,7 @@ class VoucherCardWidget extends StatelessWidget {
                     _getExpiryText(),
                     style: TextStyle(
                       fontSize: 10.sp,
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -137,10 +137,10 @@ class VoucherCardWidget extends StatelessWidget {
                     vertical: 6.sp,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4.sp),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.3),
+                      color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
                       style: BorderStyle.solid,
                       width: 1,
                     ),
@@ -153,14 +153,14 @@ class VoucherCardWidget extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontFamily: 'monospace',
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Icon(
                         Icons.copy,
                         size: 16.sp,
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
                       ),
                     ],
                   ),
@@ -255,7 +255,7 @@ class VoucherCardWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6.sp, vertical: 2.sp),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(4.sp),
       ),
       child: Text(

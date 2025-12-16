@@ -154,7 +154,7 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -276,7 +276,7 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
         label: Text(_isGenerating ? 'Đang tạo mã...' : 'Tạo Mã Giới Thiệu'),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
@@ -360,7 +360,7 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
                 label: const Text('Chia sẻ'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

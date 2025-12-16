@@ -230,7 +230,7 @@ class _BasicReferralDashboardState extends State<BasicReferralDashboard> {
             child: Text(
               step,
               style: AppTypography.headingXSmall.copyWith(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),

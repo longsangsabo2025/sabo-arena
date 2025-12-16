@@ -107,7 +107,7 @@ class _BasicReferralCodeInputState extends State<BasicReferralCodeInput> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _isValid == true
@@ -201,7 +201,7 @@ class _BasicReferralCodeInputState extends State<BasicReferralCodeInput> {
                 onPressed: _isValidating ? null : _validateAndApplyCode,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -214,17 +214,17 @@ class _BasicReferralCodeInputState extends State<BasicReferralCodeInput> {
                     ? SizedBox(
                         width: 16,
                         height: 16,
-                        child: const CircularProgressIndicator(
+                        child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
+                            Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                       )
                     : Text(
                         'Áp dụng',
                         style: AppTypography.labelLarge.copyWith(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
