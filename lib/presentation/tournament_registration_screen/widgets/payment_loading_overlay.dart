@@ -133,30 +133,6 @@ class _PaymentLoadingOverlayState extends State<PaymentLoadingOverlay>
       ),
     );
   }
-
-  /// Show loading overlay
-  static void show(
-    BuildContext context, {
-    String message = 'Đang xử lý...',
-    String? submessage,
-  }) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black.withValues(alpha: 0.7),
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: PaymentLoadingOverlay(message: message, submessage: submessage),
-      ),
-    );
-  }
-
-  /// Hide loading overlay
-  static void hide(BuildContext context) {
-    if (Navigator.canPop(context)) {
-      Navigator.of(context).pop();
-    }
-  }
 }
 
 /// Shimmer Loading Widget

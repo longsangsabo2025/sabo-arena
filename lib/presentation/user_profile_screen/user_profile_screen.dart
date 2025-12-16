@@ -103,10 +103,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
   
   // Legacy methods stubbed out or redirected to controller
-  void _setupRealtimeListener() {} // Handled by controller
   Future<void> _loadUserProfile() async => await _controller.loadUserProfile();
-  Future<void> _reloadFollowCounts(String userId) async {} // Handled by controller
-  Future<void> _loadProfileData(String userId) async {} // Handled by controller
   Future<void> _loadClubManagementAccess() async => await _controller.loadClubManagementAccess();
   Future<void> _loadUnreadMessageCount() async => await _controller.loadUnreadMessageCount();
   Future<void> _loadUnreadNotificationCount() async => await _controller.loadUnreadNotificationCount();

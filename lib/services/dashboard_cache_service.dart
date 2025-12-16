@@ -165,17 +165,6 @@ class DashboardCacheService {
     _cache.clear();
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
-
-  /// Format duration for logging
-  String _formatDuration(Duration duration) {
-    if (duration.inHours > 0) {
-      return '${duration.inHours}h';
-    } else if (duration.inMinutes > 0) {
-      return '${duration.inMinutes}m';
-    } else {
-      return '${duration.inSeconds}s';
-    }
-  }
 }
 
 // ============================================================================
