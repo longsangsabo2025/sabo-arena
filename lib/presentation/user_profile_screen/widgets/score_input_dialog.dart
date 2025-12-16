@@ -186,12 +186,12 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00695C).withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit_note,
-                      color: Color(0xFF00695C),
+                      color: Theme.of(context).colorScheme.primary,
                       size: 24,
                     ),
                   ),
@@ -205,7 +205,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF212121),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         SizedBox(height: 4),
@@ -213,7 +213,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                           'Cập nhật kết quả trận đấu',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF757575),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -222,7 +222,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
-                    color: const Color(0xFF757575),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ],
               ),
@@ -248,7 +248,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF00695C),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
@@ -269,17 +269,17 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                      color: Colors.green.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
                     children: [
                       const Icon(
                         Icons.emoji_events,
-                        color: Color(0xFF4CAF50),
+                        color: Colors.green,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -288,7 +288,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF4CAF50),
+                          color: Colors.green,
                         ),
                       ),
                     ],
@@ -298,17 +298,17 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF9800).withValues(alpha: 0.1),
+                    color: Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: const Color(0xFFFF9800).withValues(alpha: 0.3),
+                      color: Colors.orange.withValues(alpha: 0.3),
                     ),
                   ),
                   child: const Row(
                     children: [
                       Icon(
                         Icons.handshake,
-                        color: Color(0xFFFF9800),
+                        color: Colors.orange,
                         size: 20,
                       ),
                       SizedBox(width: 8),
@@ -317,7 +317,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFFF9800),
+                          color: Colors.orange,
                         ),
                       ),
                     ],
@@ -336,16 +336,16 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        side: const BorderSide(
-                          color: Color(0xFFE0E0E0),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.outline,
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Hủy',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF757575),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                     ),
@@ -357,8 +357,8 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                       onPressed: _isLoading ? null : _submitScore,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: const Color(0xFF00695C),
-                        foregroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -400,10 +400,10 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF212121),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
@@ -431,10 +431,10 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(2),
                 ],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF00695C),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
@@ -443,16 +443,16 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF00695C),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
                       width: 2,
                     ),
                   ),

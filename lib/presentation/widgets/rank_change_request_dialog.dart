@@ -78,9 +78,9 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: Theme.of(context).colorScheme.outline),
               ),
               child: Row(
                 children: [
@@ -94,7 +94,7 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
                           'Hạng hiện tại',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                         Text(
@@ -214,7 +214,7 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
                         'Đính kèm hình ảnh hoặc video chứng minh trình độ của bạn',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey.shade600,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -321,20 +321,20 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
                     onPressed: _isSubmitting ? null : _submitRequest,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade600,
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: _isSubmitting
-                        ? const SizedBox(
+                        ? SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+                                Theme.of(context).colorScheme.onPrimary,
                               ),
                             ),
                           )
@@ -431,10 +431,10 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
   void _showSuccessSnackBar() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.white),
-            SizedBox(width: 12),
+            Icon(Icons.check_circle, color: Theme.of(context).colorScheme.onPrimary),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Yêu cầu thay đổi hạng đã được gửi thành công! Câu lạc bộ sẽ xem xét trong thời gian sớm nhất.',
@@ -454,7 +454,7 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error, color: Colors.white),
+            Icon(Icons.error, color: Theme.of(context).colorScheme.onError),
             const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
