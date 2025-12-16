@@ -21,6 +21,15 @@ class AppColors {
   static const Color grey = Color(0xFF9E9E9E);
   static const Color lightGrey = Color(0xFFE0E0E0);
 
+  // Success color shades
+  static const Color success200 = Color(0xFFA5D6A7); // Light green
+  static const Color success800 = Color(0xFF2E7D32); // Forest green
+  static const Color success900 = Color(0xFF1B5E20); // Dark forest green
+
+  // Warning color shades
+  static const Color warning200 = Color(0xFFFFCC80); // Light orange
+  static const Color warning900 = Color(0xFFE65100); // Dark orange
+
   // Primary color alias
   static const Color primary = primaryColor;
 }

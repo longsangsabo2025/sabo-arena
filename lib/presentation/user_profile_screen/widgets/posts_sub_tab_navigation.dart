@@ -28,18 +28,21 @@ class PostsSubTabNavigation extends StatelessWidget {
       child: Row(
         children: [
           _buildTabItem(
+            context,
             index: 0,
-            icon: Icons.grid_on,
+            icon: Icons.article_outlined,
             label: 'Bài viết',
             isSelected: currentIndex == 0,
           ),
           _buildTabItem(
+            context,
             index: 1,
-            icon: Icons.photo_library_outlined,
+            icon: Icons.image_outlined,
             label: 'Hình ảnh',
             isSelected: currentIndex == 1,
           ),
           _buildTabItem(
+            context,
             index: 2,
             icon: Icons.play_circle_outline,
             label: 'Highlight',
@@ -50,7 +53,8 @@ class PostsSubTabNavigation extends StatelessWidget {
     );
   }
 
-  Widget _buildTabItem({
+  Widget _buildTabItem(
+    BuildContext context, {
     required int index,
     required IconData icon,
     required String label,

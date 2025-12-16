@@ -28,14 +28,14 @@ class ProfileHeaderWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppTheme.lightTheme.colorScheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.lightTheme.colorScheme.shadow.withValues(
+            color: Theme.of(context).colorScheme.shadow.withValues(
               alpha: 0.1,
             ),
             blurRadius: 8,
@@ -101,14 +101,14 @@ class ProfileHeaderWidget extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppTheme.lightTheme.colorScheme.surface.withValues(
+                  color: Theme.of(context).colorScheme.surface.withValues(
                     alpha: 0.9,
                   ),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: CustomIconWidget(
                   iconName: 'camera_alt',
-                  color: AppTheme.lightTheme.colorScheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
               ),
@@ -129,12 +129,12 @@ class ProfileHeaderWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16), // Rounded square
                     border: Border.all(
-                      color: AppTheme.lightTheme.colorScheme.surface,
+                      color: Theme.of(context).colorScheme.surface,
                       width: 4,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.lightTheme.colorScheme.shadow
+                        color: Theme.of(context).colorScheme.shadow
                             .withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: Offset(0, 4),
@@ -162,18 +162,18 @@ class ProfileHeaderWidget extends StatelessWidget {
                         child: Container(
                           padding: EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: AppTheme.lightTheme.colorScheme.primary,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(
                               8,
                             ), // Rounded square for button too
                             border: Border.all(
-                              color: AppTheme.lightTheme.colorScheme.surface,
+                              color: Theme.of(context).colorScheme.surface,
                               width: 2,
                             ),
                           ),
                           child: CustomIconWidget(
                             iconName: 'camera_alt',
-                            color: AppTheme.lightTheme.colorScheme.onPrimary,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             size: 14,
                           ),
                         ),
@@ -201,12 +201,12 @@ class ProfileHeaderWidget extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: AppTheme.lightTheme.colorScheme.surface,
+            color: Theme.of(context).colorScheme.surface,
             width: 4,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.lightTheme.colorScheme.shadow.withValues(
+              color: Theme.of(context).colorScheme.shadow.withValues(
                 alpha: 0.2,
               ),
               blurRadius: 8,
@@ -232,16 +232,16 @@ class ProfileHeaderWidget extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: AppTheme.lightTheme.colorScheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppTheme.lightTheme.colorScheme.surface,
+                    color: Theme.of(context).colorScheme.surface,
                     width: 2,
                   ),
                 ),
                 child: CustomIconWidget(
                   iconName: 'camera_alt',
-                  color: AppTheme.lightTheme.colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 12,
                 ),
               ),
@@ -258,7 +258,7 @@ class ProfileHeaderWidget extends StatelessWidget {
       icon: 'edit',
       label: 'Sửa',
       onTap: onEditProfile,
-      backgroundColor: AppTheme.lightTheme.colorScheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
 
@@ -289,14 +289,14 @@ class ProfileHeaderWidget extends StatelessWidget {
           children: [
             CustomIconWidget(
               iconName: icon,
-              color: AppTheme.lightTheme.colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimary,
               size: 16,
             ),
             SizedBox(width: 1.w),
             Text(
               label,
-              style: AppTheme.lightTheme.textTheme.labelSmall?.copyWith(
-                color: AppTheme.lightTheme.colorScheme.onPrimary,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -797,17 +797,17 @@ class ProfileHeaderWidget extends StatelessWidget {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
         decoration: BoxDecoration(
-          color: AppTheme.lightTheme.colorScheme.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppTheme.lightTheme.colorScheme.primary.withValues(
+            color: Theme.of(context).colorScheme.primary.withValues(
               alpha: 0.7,
             ),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.lightTheme.colorScheme.primary.withValues(
+              color: Theme.of(context).colorScheme.primary.withValues(
                 alpha: 0.1,
               ),
               blurRadius: 8,
@@ -823,8 +823,8 @@ class ProfileHeaderWidget extends StatelessWidget {
               children: [
                 Text(
                   'RANK',
-                  style: AppTheme.lightTheme.textTheme.labelSmall?.copyWith(
-                    color: AppTheme.lightTheme.colorScheme.primary,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 1.2,
                   ),
@@ -835,7 +835,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                   child: Icon(
                     Icons.info_outline,
                     size: 12,
-                    color: AppTheme.lightTheme.colorScheme.primary.withValues(
+                    color: Theme.of(context).colorScheme.primary.withValues(
                       alpha: 0.7,
                     ),
                   ),
@@ -845,8 +845,8 @@ class ProfileHeaderWidget extends StatelessWidget {
             SizedBox(height: 0.5.h),
             Text(
               '?',
-              style: AppTheme.lightTheme.textTheme.headlineMedium?.copyWith(
-                color: AppTheme.lightTheme.colorScheme.primary,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -875,7 +875,7 @@ class ProfileHeaderWidget extends StatelessWidget {
             children: [
               Text(
                 'RANK',
-                style: AppTheme.lightTheme.textTheme.labelSmall?.copyWith(
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: rankColor,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.2,
@@ -895,7 +895,7 @@ class ProfileHeaderWidget extends StatelessWidget {
           SizedBox(height: 0.5.h),
           Text(
             rank, // Hiển thị rank code (K, I+, etc.)
-            style: AppTheme.lightTheme.textTheme.headlineMedium?.copyWith(
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               color: rankColor,
               fontWeight: FontWeight.bold,
             ),
@@ -905,7 +905,7 @@ class ProfileHeaderWidget extends StatelessWidget {
             SaboRankSystem.getRankDisplayName(
               rank,
             ), // Mô tả rank (Người mới, Thợ 3, etc.)
-            style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: rankColor.withValues(alpha: 0.8),
               fontWeight: FontWeight.w500,
             ),
@@ -947,10 +947,10 @@ class ProfileHeaderWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
-        color: AppTheme.lightTheme.colorScheme.primary.withValues(alpha: 0.05),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.lightTheme.colorScheme.primary.withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -964,8 +964,8 @@ class ProfileHeaderWidget extends StatelessWidget {
                 children: [
                   Text(
                     'ELO Rating',
-                    style: AppTheme.lightTheme.textTheme.titleMedium?.copyWith(
-                      color: AppTheme.lightTheme.colorScheme.primary,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -975,7 +975,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                     child: Icon(
                       Icons.info_outline,
                       size: 16,
-                      color: AppTheme.lightTheme.colorScheme.primary.withValues(
+                      color: Theme.of(context).colorScheme.primary.withValues(
                         alpha: 0.7,
                       ),
                     ),
@@ -984,8 +984,8 @@ class ProfileHeaderWidget extends StatelessWidget {
               ),
               Text(
                 SaboRankSystem.formatElo(currentElo),
-                style: AppTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                  color: AppTheme.lightTheme.colorScheme.primary,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -997,8 +997,8 @@ class ProfileHeaderWidget extends StatelessWidget {
           // Skill description
           Text(
             skillDescription,
-            style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
-              color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontStyle: FontStyle.italic,
             ),
             maxLines: 2,
@@ -1011,7 +1011,7 @@ class ProfileHeaderWidget extends StatelessWidget {
           Container(
             height: 8,
             decoration: BoxDecoration(
-              color: AppTheme.lightTheme.colorScheme.outline.withValues(
+              color: Theme.of(context).colorScheme.outline.withValues(
                 alpha: 0.2,
               ),
               borderRadius: BorderRadius.circular(4),
@@ -1021,7 +1021,7 @@ class ProfileHeaderWidget extends StatelessWidget {
               widthFactor: progress,
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppTheme.lightTheme.colorScheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -1034,8 +1034,8 @@ class ProfileHeaderWidget extends StatelessWidget {
             nextRankInfo['pointsNeeded'] > 0
                 ? 'Next rank ${nextRankInfo['nextRank']}: ${nextRankInfo['pointsNeeded']} points to go'
                 : 'Đã đạt rank cao nhất!',
-            style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
-              color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -1050,12 +1050,12 @@ class ProfileHeaderWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
-        color: AppTheme.lightTheme.colorScheme.primaryContainer.withValues(
+        color: Theme.of(context).colorScheme.primaryContainer.withValues(
           alpha: 0.1,
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.lightTheme.colorScheme.primary.withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -1105,8 +1105,8 @@ class ProfileHeaderWidget extends StatelessWidget {
           children: [
             Text(
               label,
-              style: AppTheme.lightTheme.textTheme.labelSmall?.copyWith(
-                color: AppTheme.lightTheme.colorScheme.onSurface.withValues(
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(
                   alpha: 0.7,
                 ),
                 fontWeight: FontWeight.w500,
@@ -1119,7 +1119,7 @@ class ProfileHeaderWidget extends StatelessWidget {
               child: Icon(
                 Icons.info_outline,
                 size: 12,
-                color: AppTheme.lightTheme.colorScheme.onSurface.withValues(
+                color: Theme.of(context).colorScheme.onSurface.withValues(
                   alpha: 0.5,
                 ),
               ),
@@ -1129,8 +1129,8 @@ class ProfileHeaderWidget extends StatelessWidget {
         SizedBox(height: 0.2.h),
         Text(
           value,
-          style: AppTheme.lightTheme.textTheme.titleMedium?.copyWith(
-            color: AppTheme.lightTheme.colorScheme.onSurface,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
@@ -1206,7 +1206,7 @@ class ProfileHeaderWidget extends StatelessWidget {
           children: [
             Icon(
               Icons.trending_up,
-              color: AppTheme.lightTheme.colorScheme.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
             SizedBox(width: 2.w),
             Text('ELO Rating System'),

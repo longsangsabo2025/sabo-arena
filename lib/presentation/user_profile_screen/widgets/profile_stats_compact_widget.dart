@@ -74,16 +74,18 @@ class ProfileStatsCompactWidget extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      icon: 'emoji_events',
+                      context,
+                      icon: Icons.emoji_events,
                       iconColor: const Color(0xFF45BD62), // Green
                       label: 'Thắng',
                       value: wins.toString(),
-                      subtitle: '60.0% tỷ lệ',
+                      subtitle: 'trận',
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       icon: 'trending_down',
                       iconColor: const Color(0xFFF3425F), // Red
                       label: 'Thua',
@@ -101,6 +103,7 @@ class ProfileStatsCompactWidget extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       icon: 'emoji_events',
                       iconColor: const Color(0xFFF7B928), // Yellow
                       label: 'Giải đấu',
@@ -111,6 +114,7 @@ class ProfileStatsCompactWidget extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       icon: 'bar_chart',
                       iconColor: const Color(0xFF9B51E0), // Purple
                       label: 'Xếp hạng',
@@ -128,6 +132,7 @@ class ProfileStatsCompactWidget extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       icon: 'trending_up',
                       iconColor: const Color(0xFF0866FF), // Blue
                       label: 'ELO Rating',
@@ -138,6 +143,7 @@ class ProfileStatsCompactWidget extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       icon: 'local_fire_department',
                       iconColor: const Color(0xFFF7B928), // Yellow/Orange
                       label: 'Win Streak',
@@ -154,7 +160,8 @@ class ProfileStatsCompactWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard({
+  Widget _buildStatCard(
+    BuildContext context, {
     required String icon,
     required Color iconColor,
     required String label,
