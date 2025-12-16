@@ -51,7 +51,11 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
             gradient: LinearGradient(
               begin: Alignment(-1.0, 0.0),
               end: Alignment(1.0, 0.0),
-              colors: [Colors.grey[300]!, Colors.grey[100]!, Colors.grey[300]!],
+              colors: [
+                Theme.of(context).colorScheme.surfaceContainerHigh,
+                Theme.of(context).colorScheme.surfaceContainer,
+                Theme.of(context).colorScheme.surfaceContainerHigh,
+              ],
               stops: [
                 _animation.value - 0.3,
                 _animation.value,
@@ -138,7 +142,7 @@ class StatCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 SizedBox(height: 1.w),
@@ -150,7 +154,7 @@ class StatCard extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -201,7 +205,7 @@ class StatCard extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: 10.sp,
-                      color: Colors.grey[500],
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                       height: 1.2,
                     ),
                     maxLines: 2,
@@ -304,24 +308,24 @@ class EmptyStateWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20.w, color: iconColor ?? Colors.grey[400]),
+            Icon(icon, size: 20.w, color: iconColor ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
             SizedBox(height: 4.w),
             Text(
               title,
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
-            if (subtitle != null) ...[
+            if (subtitle != null) ..[
               SizedBox(height: 2.w),
               Text(
                 subtitle!,
                 style: TextStyle(
                   fontSize: 14.sp,
-                  color: Colors.grey[500],
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   height: 1.4,
                 ),
                 textAlign: TextAlign.center,
@@ -367,7 +371,7 @@ class ErrorStateWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -376,7 +380,7 @@ class ErrorStateWidget extends StatelessWidget {
               message,
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.grey[500],
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
@@ -474,7 +478,7 @@ class ProgressIndicatorWithLabel extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             Text(
@@ -490,7 +494,7 @@ class ProgressIndicatorWithLabel extends StatelessWidget {
         SizedBox(height: 2.w),
         LinearProgressIndicator(
           value: value,
-          backgroundColor: Colors.grey[200],
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
           valueColor: AlwaysStoppedAnimation<Color>(
             color ?? Theme.of(context).primaryColor,
           ),
