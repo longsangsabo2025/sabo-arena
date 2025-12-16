@@ -20,6 +20,8 @@ class TournamentMatchPostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final postTrigger = post['post_trigger'] as String?;
     final isPinned = post['is_pinned'] as bool? ?? false;
     final isAutoPosted = post['auto_posted'] as bool? ?? false;
@@ -30,7 +32,7 @@ class TournamentMatchPostWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: isPinned
-            ? const BorderSide(color: Color(0xFF00897B), width: 2)
+            ? BorderSide(color: colorScheme.primary, width: 2)
             : BorderSide.none,
       ),
       child: InkWell(
@@ -58,15 +60,15 @@ class TournamentMatchPostWidget extends StatelessWidget {
                   children: [
                     Icon(
                       _getHeaderIcon(postTrigger),
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _getHeaderTitle(postTrigger),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -79,18 +81,18 @@ class TournamentMatchPostWidget extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: colorScheme.onPrimary.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.push_pin, size: 12, color: Colors.white),
-                            SizedBox(width: 4),
+                            Icon(Icons.push_pin, size: 12, color: colorScheme.onPrimary),
+                            const SizedBox(width: 4),
                             Text(
                               'Ghim',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: colorScheme.onPrimary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -196,16 +198,17 @@ class TournamentMatchPostWidget extends StatelessWidget {
   }
 
   List<Color> _getHeaderGradient(String? trigger) {
+    final colorScheme = Theme.of(context).colorScheme;
     switch (trigger) {
       case 'live':
-        return [Colors.red[700]!, Colors.red[500]!];
+        return [colorScheme.error, colorScheme.errorContainer];
       case 'result':
-        return [Colors.green[700]!, Colors.green[500]!];
+        return [const Color(0xFF2E7D32), const Color(0xFF4CAF50)];
       case 'reminder':
-        return [Colors.orange[700]!, Colors.orange[500]!];
+        return [const Color(0xFFE65100), const Color(0xFFFF9800)];
       case 'announcement':
       default:
-        return [const Color(0xFF00695C), const Color(0xFF00897B)];
+        return [colorScheme.primary, colorScheme.primaryContainer];
     }
   }
 
@@ -292,7 +295,7 @@ class _ActionButton extends StatelessWidget {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),

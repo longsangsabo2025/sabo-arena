@@ -53,14 +53,17 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -90,7 +93,7 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -105,7 +108,7 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
                 const SizedBox(height: 4),
                 Text(
                   'Quét mã này để kết nối hoặc mời bạn bè',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -119,7 +122,7 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
                   width: widget.size,
                   height: widget.size,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Center(child: CircularProgressIndicator()),
@@ -127,16 +130,16 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
               : Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(color: colorScheme.outline),
                   ),
                   child: QrImageView(
                     data: _qrData!,
                     version: QrVersions.auto,
                     size: widget.size,
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
+                    backgroundColor: colorScheme.surface,
+                    foregroundColor: colorScheme.onSurface,
                   ),
                 ),
 

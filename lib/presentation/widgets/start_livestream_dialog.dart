@@ -74,14 +74,14 @@ class _StartLivestreamDialogState extends State<StartLivestreamDialog> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00695C), Color(0xFF00897B)],
+                    gradient: LinearGradient(
+                      colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.primaryContainer],
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.live_tv,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     size: 28,
                   ),
                 ),
@@ -221,8 +221,8 @@ class _StartLivestreamDialogState extends State<StartLivestreamDialog> {
                   icon: const Icon(Icons.play_arrow),
                   label: const Text('Bắt đầu Live'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    foregroundColor: Theme.of(context).colorScheme.onError,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 12,
