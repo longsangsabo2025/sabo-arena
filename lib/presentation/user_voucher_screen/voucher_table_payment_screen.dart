@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../services/tournament_prize_voucher_service.dart';
-import '../../services/supabase_service.dart';
 import '../../theme/app_theme.dart';
 
 /// Screen cho user thanh toán tiền bàn bằng voucher
@@ -22,7 +21,6 @@ class VoucherTablePaymentScreen extends StatefulWidget {
 
 class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
   final _service = TournamentPrizeVoucherService();
-  final _supabase = SupabaseService.instance.client;
 
   List<Map<String, dynamic>> _availableVouchers = [];
   List<Map<String, dynamic>> _paymentHistory = [];

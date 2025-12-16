@@ -33,7 +33,6 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
   
   // Sub-tab controller
   late TabController _subTabController;
-  int _currentSubTab = 0; // 0: Ready, 1: Complete
 
   @override
   void initState() {

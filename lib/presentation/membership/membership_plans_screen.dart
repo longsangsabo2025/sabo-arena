@@ -20,8 +20,6 @@ class _MembershipPlansScreenState extends State<MembershipPlansScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FA), // iOS Facebook background
       appBar: AppBar(

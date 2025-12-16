@@ -26,7 +26,6 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
   final _confirmPasswordController = TextEditingController();
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  String _fullPhoneNumber = ''; // Lưu số điện thoại đầy đủ với mã quốc gia
 
   bool _isEmailTab = true;
   bool _isPasswordVisible = false;

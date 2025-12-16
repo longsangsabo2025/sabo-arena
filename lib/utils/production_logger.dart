@@ -77,6 +77,7 @@ class ProductionLogger {
       name: logTag,
       level: 700, // DEBUG level
     );
+    // ignore: avoid_print
     print('🐛 [$logTag] $message');
   }
 

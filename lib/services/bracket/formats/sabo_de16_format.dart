@@ -37,7 +37,6 @@ import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 /// - 4-Player Finals: 2 WB + 2 LB champions
 /// - NO Bracket Reset: Finals is single elimination
 class HardcodedSaboDE16Service {
-  static const String _tag = 'HardcodedSaboDE16';
   final SupabaseClient _supabase = Supabase.instance.client;
 
   /// Tạo SABO DE16 bracket với hardcoded advancement mapping

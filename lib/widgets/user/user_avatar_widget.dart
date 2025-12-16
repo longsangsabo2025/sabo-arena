@@ -334,7 +334,6 @@ class UserAvatarWithBadge extends StatelessWidget {
       case BadgePosition.bottomLeft:
         return Positioned(bottom: -offset, left: -offset, child: badge);
       case BadgePosition.bottomRight:
-      default:
         return Positioned(bottom: -offset, right: -offset, child: badge);
     }
   }

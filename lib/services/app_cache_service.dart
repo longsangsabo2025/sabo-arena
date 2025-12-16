@@ -49,8 +49,6 @@ class AppCacheService {
   // 📊 PHASE 3: Performance Monitoring
   int _cacheHits = 0;
   int _cacheMisses = 0;
-  int _memoryCacheHits = 0;
-  int _diskCacheHits = 0;
 
   /// Initialize disk cache
   Future<void> initialize() async {

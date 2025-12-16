@@ -34,7 +34,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
   
   // Sub-tab controller
   late TabController _subTabController;
-  int _currentSubTab = 0; // 0: Ready, 1: Complete
 
   @override
   bool get wantKeepAlive => true;

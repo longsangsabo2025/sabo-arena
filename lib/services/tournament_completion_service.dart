@@ -22,7 +22,6 @@ class TournamentCompletionService {
   TournamentCompletionService._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  final TournamentService _tournamentService = TournamentService.instance;
   final TournamentEloService _eloService = TournamentEloService.instance;
   final SocialService _socialService = SocialService.instance;
   final NotificationService _notificationService = NotificationService.instance;

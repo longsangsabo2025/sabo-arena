@@ -16,7 +16,6 @@ import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 /// - LB: 2101-2601 (priority 2)
 /// - GF: 3101-3102 (priority 3, M31 conditional)
 class HardcodedDoubleEliminationService {
-  static const String _tag = 'HardcodedDE16';
   final SupabaseClient _supabase = Supabase.instance.client;
 
   /// Tạo bracket với hardcoded advancement mapping

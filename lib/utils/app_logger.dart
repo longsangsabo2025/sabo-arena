@@ -13,30 +13,43 @@ class AppLogger {
   /// Log debug info (only if enabled)
   static void debug(String context, String message) {
     if (!kDebugMode || !_enableDebugLogs) return;
-    print('🔍 $context: $message');
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('🔍 $context: $message');
+    }
   }
 
   /// Log critical error (always)
   static void error(String context, dynamic error, [StackTrace? stack]) {
     if (!kDebugMode) return;
 
-    print('\n🔴 ERROR [$context]');
-    print('   $error');
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('\n🔴 ERROR [$context]');
+      // ignore: avoid_print
+      print('   $error');
 
-    if (stack != null) {
-      final lines = stack.toString().split('\n').take(3).join('\n   ');
-      print('   Stack:\n   $lines');
+      if (stack != null) {
+        final lines = stack.toString().split('\n').take(3).join('\n   ');
+        // ignore: avoid_print
+        print('   Stack:\n   $lines');
+      }
+      // ignore: avoid_print
+      print('');
     }
-    print('');
   }
 
   /// Log success (minimal)
   static void success(String context, [String? detail]) {
     if (!kDebugMode || !_enableDebugLogs) return;
-    if (detail != null) {
-      print('✅ $context: $detail');
-    } else {
-      print('✅ $context');
+    if (kDebugMode) {
+      if (detail != null) {
+        // ignore: avoid_print
+        print('✅ $context: $detail');
+      } else {
+        // ignore: avoid_print
+        print('✅ $context');
+      }
     }
   }
 
@@ -45,10 +58,14 @@ class AppLogger {
     if (!kDebugMode) return;
 
     final ms = duration.inMilliseconds;
-    if (ms > 1000) {
-      print('🐌 SLOW: $operation (${ms}ms)');
-    } else if (ms > 100 && _enableDebugLogs) {
-      print('⏱️ $operation: ${ms}ms');
+    if (kDebugMode) {
+      if (ms > 1000) {
+        // ignore: avoid_print
+        print('🐌 SLOW: $operation (${ms}ms)');
+      } else if (ms > 100 && _enableDebugLogs) {
+        // ignore: avoid_print
+        print('⏱️ $operation: ${ms}ms');
+      }
     }
   }
 }

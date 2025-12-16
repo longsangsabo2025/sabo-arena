@@ -24,7 +24,6 @@ class _ReservationManagementScreenState
   final _reservationService = TableReservationService.instance;
   late TabController _tabController;
 
-  List<TableReservation> _allReservations = [];
   List<TableReservation> _pendingReservations = [];
   List<TableReservation> _confirmedReservations = [];
   List<TableReservation> _completedReservations = [];

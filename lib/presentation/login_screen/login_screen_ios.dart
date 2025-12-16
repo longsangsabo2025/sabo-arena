@@ -25,7 +25,6 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
-  String _fullPhoneNumber = ''; // Lưu số điện thoại đầy đủ với mã quốc gia
 
   bool _isEmailTab = true;
   bool _isPasswordVisible = false;

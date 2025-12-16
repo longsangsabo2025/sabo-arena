@@ -61,7 +61,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   // 🎯 Coach Marks Keys
   final GlobalKey _homeFeedKey = GlobalKey();
   final GlobalKey _createPostKey = GlobalKey();
-  final GlobalKey _findOpponentsKey = GlobalKey();
   final GlobalKey _tournamentsKey = GlobalKey();
   final GlobalKey _clubsKey = GlobalKey();
   final GlobalKey _profileKey = GlobalKey();
@@ -72,9 +71,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   // Club owner status
   bool _isClubOwner = false;
   bool _hasClub = false;
-
-  // Player status
-  bool _isPlayer = false;
 
   // 🎯 Phase 3: CLB Registration Reminder
   bool _showClubReminderBanner = false;

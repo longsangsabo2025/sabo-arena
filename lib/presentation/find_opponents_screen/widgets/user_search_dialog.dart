@@ -28,7 +28,6 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   bool _isSearching = false;
   bool _hasSearched = false;
   bool _isLoadingSuggestions = false;
-  String _searchQuery = '';
 
   @override
   void initState() {

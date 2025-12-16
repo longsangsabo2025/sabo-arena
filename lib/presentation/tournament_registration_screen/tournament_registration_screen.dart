@@ -46,7 +46,6 @@ class _TournamentRegistrationScreenState
   final _referenceController = TextEditingController();
 
   PaymentMethod? _selectedPaymentMethod;
-  List<PaymentMethod> _paymentMethods = [];
   XFile? _proofImage;
   bool _isLoading = true;
   bool _isSubmitting = false;

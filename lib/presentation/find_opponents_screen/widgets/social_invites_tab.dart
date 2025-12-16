@@ -35,7 +35,6 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
   
   // Sub-tab controller
   late TabController _subTabController;
-  int _currentSubTab = 0; // 0: Ready, 1: Complete
 
   @override
   void initState() {

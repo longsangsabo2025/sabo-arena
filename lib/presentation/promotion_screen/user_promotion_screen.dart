@@ -23,7 +23,6 @@ class _UserPromotionScreenState extends State<UserPromotionScreen>
 
   int _myVoucherCount = 0;
   int _availablePromotionCount = 0;
-  bool _isLoading = true;
 
   @override
   void initState() {

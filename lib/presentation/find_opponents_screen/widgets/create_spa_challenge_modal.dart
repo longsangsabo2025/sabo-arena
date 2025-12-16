@@ -54,7 +54,6 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
 
   // NEW: SPA Balance tracking
   int _currentUserSpaBalance = 0;
-  bool _isLoadingSpaBalance = false;
 
   // NEW: Handicap calculation
   ChallengeHandicapResult? _currentHandicap;

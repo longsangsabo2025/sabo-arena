@@ -4,7 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../services/club_spa_service.dart';
 import '../../../services/user_service.dart';
 
-import '../../services/club_voucher_management_service.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
 /// Screen for users to view their SPA balance and redeem rewards
@@ -27,7 +26,6 @@ class _SpaRewardScreenState extends State<SpaRewardScreen>
   late TabController _tabController;
   final ClubSpaService _spaService = ClubSpaService();
   final UserService _userService = UserService.instance;
-  final ClubVoucherManagementService _voucherService = ClubVoucherManagementService();
 
   Map<String, dynamic>? _userSpaBalance;
   List<Map<String, dynamic>> _availableRewards = [];

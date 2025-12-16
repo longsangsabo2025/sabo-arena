@@ -24,7 +24,6 @@ class _TournamentCoverUploadWidgetState
     extends State<TournamentCoverUploadWidget> {
   final ImagePicker _picker = ImagePicker();
   Uint8List? _imageBytes;
-  String? _fileName;
 
   @override
   Widget build(BuildContext context) {
