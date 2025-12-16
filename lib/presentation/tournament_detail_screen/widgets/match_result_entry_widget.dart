@@ -6,7 +6,6 @@ import 'package:sizer/sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/app_export.dart';
 import '../../../services/universal_match_progression_service.dart';
-import 'package:sabo_arena/services/universal_match_progression_service.dart';
 import 'package:sabo_arena/services/unified_bracket_service.dart';
 import '../../../services/club_permission_service.dart';
 import '../../../services/first_match_bonus_service.dart';

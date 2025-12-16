@@ -4,7 +4,6 @@ import 'package:sabo_arena/core/app_export.dart';
 import 'package:sabo_arena/theme/app_theme.dart';
 import 'package:sabo_arena/services/tournament_service.dart';
 import 'package:sabo_arena/services/cached_tournament_service.dart';
-import 'package:sabo_arena/services/universal_match_progression_service.dart';
 import 'package:sabo_arena/services/unified_bracket_service.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
 // REMOVED: tournament_progression_service - not needed anymore
