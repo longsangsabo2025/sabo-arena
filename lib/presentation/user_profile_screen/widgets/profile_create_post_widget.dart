@@ -17,15 +17,15 @@ class ProfileCreatePostWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white, // Facebook: pure white
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: Color(0xFFE4E6EB), // Facebook: divider
+            color: Theme.of(context).colorScheme.outlineVariant,
             width: 0.5,
           ),
           bottom: BorderSide(
-            color: Color(0xFFE4E6EB), // Facebook: divider
+            color: Theme.of(context).colorScheme.outlineVariant,
             width: 0.5,
           ),
         ),
@@ -55,16 +55,14 @@ class ProfileCreatePostWidget extends StatelessWidget {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(
-                        0xFFF0F2F5,
-                      ), // Facebook: background gray
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
+                    child: Text(
                       'What\'s on your mind?',
                       style: TextStyle(
                         fontSize: 15,
-                        color: Color(0xFF65676B), // Facebook: gray600
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -76,7 +74,7 @@ class ProfileCreatePostWidget extends StatelessWidget {
 
           const SizedBox(height: 12), // Facebook: 12px spacing
           // Divider
-          const Divider(color: Color(0xFFE4E6EB), height: 1, thickness: 0.5),
+          Divider(color: Theme.of(context).colorScheme.outlineVariant, height: 1, thickness: 0.5),
 
           const SizedBox(height: 12),
 

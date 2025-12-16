@@ -110,8 +110,8 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
             progressColors: ProgressBarColors(
               playedColor: widget.accentColor ?? AppColors.primary,
               handleColor: widget.accentColor ?? AppColors.primary,
-              backgroundColor: Colors.grey.withValues(alpha: 0.3),
-              bufferedColor: Colors.grey.withValues(alpha: 0.5),
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              bufferedColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             ),
             topActions: [
               const SizedBox(width: 8),
@@ -198,8 +198,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
                   _controller.value.volume > 0
                       ? Icons.volume_up
                       : Icons.volume_off,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 onPressed: () {
                   setState(() {
@@ -281,15 +280,15 @@ class VideoThumbnailWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.3),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.play_arrow,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       size: 32,
                     ),
                   ),

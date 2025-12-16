@@ -15,7 +15,7 @@ class ProfileTabNavigationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
@@ -67,7 +67,7 @@ class ProfileTabNavigationWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? Colors.black : const Color(0xFF9E9E9E),
+                    color: isActive ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
                 if (showRedDot && isActive) ...[
@@ -88,7 +88,7 @@ class ProfileTabNavigationWidget extends StatelessWidget {
           Container(
             height: 2,
             width: _getUnderlineWidth(label, showRedDot && isActive),
-            color: isActive ? Colors.black : Colors.transparent,
+            color: isActive ? Theme.of(context).colorScheme.onSurface : Colors.transparent,
           ),
         ],
       ),
