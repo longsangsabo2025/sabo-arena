@@ -432,7 +432,7 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
             itemCount: presetColors.length,
             itemBuilder: (context, index) {
               Color color = presetColors[index];
-              bool isSelected = color.value == primaryColor.value;
+              bool isSelected = color.toARGB32() == primaryColor.toARGB32();
 
               return GestureDetector(
                 onTap: () => _selectPresetColor(color),
@@ -532,7 +532,7 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                 itemCount: presetColors.length,
                 itemBuilder: (context, index) {
                   Color color = presetColors[index];
-                  bool isSelected = color.value == currentColor.value;
+                  bool isSelected = color.toARGB32() == currentColor.toARGB32();
 
                   return GestureDetector(
                     onTap: () {

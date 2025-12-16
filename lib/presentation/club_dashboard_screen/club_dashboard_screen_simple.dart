@@ -1351,11 +1351,11 @@ class _ClubDashboardScreenSimpleState extends State<ClubDashboardScreenSimple> {
 
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      // Debug membership first
-      final membershipDebug = await _permissionService.debugMembership(
-        widget.clubId,
-        currentUser.id,
-      );
+      // Debug membership first (commented out - not currently used)
+      // final membershipDebug = await _permissionService.debugMembership(
+      //   widget.clubId,
+      //   currentUser.id,
+      // );
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Force refresh user role to get latest data from database

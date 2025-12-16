@@ -145,13 +145,9 @@ class RankMigrationHelper {
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     for (String code in RankingConstants.RANK_ORDER) {
-      String newName = SaboRankSystem.getRankDisplayName(code);
-      String? oldName = oldNameToRankCode.entries
-          .firstWhere(
-            (entry) => entry.value == code,
-            orElse: () => const MapEntry('', ''),
-          )
-          .key;
+      // Unused variables removed
+      // String newName = SaboRankSystem.getRankDisplayName(code);
+      // String? oldName = oldNameToRankCode.entries...
 
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }

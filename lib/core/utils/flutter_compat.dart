@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // Extension để thay thế withValues bằng withOpacity
 extension ColorExtension on Color {
   Color withAlpha(double alpha) {
-    return withOpacity(alpha);
+    return withValues(alpha: alpha);
   }
 }
 

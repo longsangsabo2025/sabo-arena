@@ -162,7 +162,7 @@ class _ActivityTimelineState extends State<ActivityTimeline>
       children: [
         Text(
           "Hoạt động gần đây",
-          style: CustomTextStyles.titleLarge.copyWith(
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -177,7 +177,7 @@ class _ActivityTimelineState extends State<ActivityTimeline>
               children: [
                 Text(
                   "Xem tất cả",
-                  style: CustomTextStyles.bodyMedium.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: appTheme.blue600,
                     fontWeight: FontWeight.w600,
                   ),

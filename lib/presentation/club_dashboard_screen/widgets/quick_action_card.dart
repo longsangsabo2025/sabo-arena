@@ -370,7 +370,7 @@ class QuickActionsGrid extends StatelessWidget {
       children: [
         Text(
           "Thao tác nhanh",
-          style: styles.CustomTextStyles.titleLarge.copyWith(
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),

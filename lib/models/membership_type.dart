@@ -81,7 +81,7 @@ class MembershipType {
   /// Convert to JSON for Supabase
   Map<String, dynamic> toJson() {
     // Convert color to hex string
-    final colorHex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+    final colorHex = '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 
     return {
       'id': id,
@@ -105,7 +105,7 @@ class MembershipType {
 
   /// Convert to JSON for INSERT (without id, timestamps)
   Map<String, dynamic> toInsertJson() {
-    final colorHex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+    final colorHex = '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 
     return {
       'club_id': clubId,

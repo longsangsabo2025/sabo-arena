@@ -153,10 +153,9 @@ class ClubDetailSheetIOS extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: const BoxDecoration(shape: BoxShape.circle),
-          child: Icon(
-            isFollowing ? Icons.check_circle : Icons.add_circle_outline,
+          child: const Icon(
+            Icons.add_circle_outline,
             size: 24,
-            color: isFollowing ? fbGreen : fbBlue,
           ),
         ),
       ),
