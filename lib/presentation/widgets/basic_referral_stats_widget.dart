@@ -140,11 +140,11 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, color: Colors.grey, size: 40),
+            Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), size: 40),
             const SizedBox(height: 8),
             Text(
               'Không thể tải thống kê',
-              style: AppTypography.bodyMedium.copyWith(color: Colors.grey),
+              style: AppTypography.bodyMedium.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(

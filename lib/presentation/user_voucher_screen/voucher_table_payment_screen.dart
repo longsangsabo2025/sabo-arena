@@ -133,7 +133,7 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
             const SizedBox(height: 10),
             const Text(
               'Voucher sẽ được đánh dấu đã sử dụng sau khi xác nhận.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
             ),
           ],
         ),
@@ -302,7 +302,7 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                             : Icons.radio_button_unchecked,
                         color: isSelected
                             ? AppTheme.primaryLight
-                            : Colors.grey,
+                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                       SizedBox(width: 3.w),
                       Expanded(
@@ -520,11 +520,11 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history, size: 20.w, color: Colors.grey),
-            SizedBox(height: 2.h),
+            Icon(Icons.history, size: 20.w, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+            SizedBox(height: 4.w),
             Text(
-              'Chưa có lịch sử thanh toán',
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+              'Chưa có lịch sử giao dịch',
+              style: TextStyle(fontSize: 14.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
             ),
           ],
         ),
@@ -566,7 +566,7 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                 ),
                 Text(
                   'Voucher: ${voucher?['voucher_code'] ?? 'N/A'}',
-                  style: TextStyle(fontSize: 10.sp, color: Colors.grey),
+                  style: TextStyle(fontSize: 10.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
               ],
             ),
