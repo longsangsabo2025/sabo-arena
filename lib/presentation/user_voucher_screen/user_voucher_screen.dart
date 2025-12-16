@@ -124,7 +124,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
 
           // Tab Bar
           Container(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             child: TabBar(
               controller: _tabController,
               labelColor: AppTheme.primaryLight,
@@ -162,7 +162,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
 
     return Container(
       padding: EdgeInsets.all(16.sp),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Row(
         children: [
           Expanded(
@@ -347,7 +347,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
         // Filter & Sort Bar
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 12.sp),
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           child: Row(
             children: [
               // Filter Dropdown
@@ -415,7 +415,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.search_off, size: 64.sp, color: Colors.grey),
+                      Icon(Icons.search_off, size: 64.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
                       SizedBox(height: 16.sp),
                       Text(
                         'Không tìm thấy voucher',
@@ -549,8 +549,8 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
       isScrollControlled: true,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         padding: EdgeInsets.all(20.sp),
@@ -575,7 +575,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                       ? Icons.emoji_events
                       : Icons.emoji_events_outlined,
                   size: 32.sp,
-                  color: achievement.isCompleted ? Colors.amber : Colors.grey,
+                  color: achievement.isCompleted ? Colors.amber : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 ),
                 SizedBox(width: 12.sp),
                 Expanded(

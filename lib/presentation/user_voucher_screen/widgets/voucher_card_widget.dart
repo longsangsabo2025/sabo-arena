@@ -178,7 +178,7 @@ class VoucherCardWidget extends StatelessWidget {
       case VoucherStatus.active:
         if (voucher.isExpired) {
           return LinearGradient(
-            colors: [Colors.grey[600]!, Colors.grey[400]!],
+            colors: [Colors.grey.shade600, Colors.grey.shade400],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           );
@@ -196,7 +196,7 @@ class VoucherCardWidget extends StatelessWidget {
         );
       case VoucherStatus.expired:
         return LinearGradient(
-          colors: [Colors.grey[600]!, Colors.grey[400]!],
+          colors: [Colors.grey.shade600, Colors.grey.shade400],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         );
@@ -244,7 +244,7 @@ class VoucherCardWidget extends StatelessWidget {
         break;
       case VoucherStatus.expired:
         text = 'Hết hạn';
-        color = Colors.grey;
+        color = Colors.grey.shade600;
         break;
       case VoucherStatus.cancelled:
         text = 'Đã hủy';

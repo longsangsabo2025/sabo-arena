@@ -149,7 +149,7 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
             Text(
               widget.voucher.description, style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
                 height: 1.4,
               ),
             ),
@@ -161,10 +161,10 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                 width: double.infinity,
                 padding: EdgeInsets.all(12.sp),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8.sp),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
                     style: BorderStyle.solid,
                   ),
                 ),
@@ -177,7 +177,7 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                         Text(
                           'Mã voucher', overflow: TextOverflow.ellipsis, style: TextStyle(
                             fontSize: 12.sp,
-                            color: Colors.white.withValues(alpha: 0.7),
+                            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
                           ),
                         ),
                         Text(
@@ -185,14 +185,14 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                             fontSize: 18.sp,
                             fontFamily: 'monospace',
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                       ],
                     ),
                     IconButton(
                       onPressed: _copyVoucherCode,
-                      icon: Icon(Icons.copy, color: Colors.white, size: 20.sp),
+                      icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.onPrimary, size: 20.sp),
                     ),
                   ],
                 ),
