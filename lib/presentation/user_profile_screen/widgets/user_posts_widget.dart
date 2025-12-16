@@ -358,20 +358,20 @@ class _UserPostsWidgetState extends State<UserPostsWidget> {
           child: Center(
             child: Column(
               children: [
-                Icon(Icons.article_outlined, size: 64, color: Colors.grey[400]),
+                Icon(Icons.article_outlined, size: 64, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
                 const SizedBox(height: 16),
                 Text(
                   'Chưa có bài đăng nào',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey[700],
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Các bài đăng của bạn sẽ hiển thị ở đây',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                   textAlign: TextAlign.center,
                 ),
               ],

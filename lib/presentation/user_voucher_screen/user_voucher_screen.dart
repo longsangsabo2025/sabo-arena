@@ -355,7 +355,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.sp),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8.sp),
                   ),
                   child: DropdownButton<String>(
@@ -383,7 +383,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.sp),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8.sp),
                   ),
                   child: DropdownButton<String>(
@@ -562,7 +562,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                 width: 40.sp,
                 height: 4.sp,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: Theme.of(context).colorScheme.outline,
                   borderRadius: BorderRadius.circular(2.sp),
                 ),
               ),
@@ -606,7 +606,7 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
             SizedBox(height: 8.sp),
             LinearProgressIndicator(
               value: achievement.progressPercentage,
-              backgroundColor: Colors.grey[200],
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
               valueColor: AlwaysStoppedAnimation<Color>(
                 achievement.isCompleted ? Colors.green : AppTheme.primaryLight,
               ),

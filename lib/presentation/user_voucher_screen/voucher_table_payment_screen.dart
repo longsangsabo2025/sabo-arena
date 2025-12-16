@@ -254,13 +254,13 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
             Container(
               padding: EdgeInsets.all(4.w),
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
                 child: Text(
                   'Bạn chưa có voucher thanh toán bàn',
-                  style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 12.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                 ),
               ),
             )
@@ -286,13 +286,13 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                     border: Border.all(
                       color: isSelected
                           ? AppTheme.primaryLight
-                          : Colors.grey[300]!,
+                          : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                       width: isSelected ? 2 : 1,
                     ),
                     borderRadius: BorderRadius.circular(10),
                     color: isSelected
                         ? AppTheme.primaryLight.withValues(alpha: 0.1)
-                        : Colors.white,
+                        : Theme.of(context).colorScheme.surface,
                   ),
                   child: Row(
                     children: [
@@ -326,7 +326,7 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                               'Mã: ${voucher['voucher_code']}',
                               style: TextStyle(
                                 fontSize: 10.sp,
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
                             ),
                           ],

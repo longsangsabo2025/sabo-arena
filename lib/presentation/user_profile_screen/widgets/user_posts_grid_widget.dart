@@ -292,7 +292,7 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
               Color(0xFF00897B),
             ],
           ),
-          border: Border.all(color: Colors.grey[300]!, width: 0.5),
+          border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: 0.5),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Column(
@@ -340,8 +340,8 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
       onTap: () => _openPostDetail(post, index),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey[300]!, width: 0.5),
+          color: Theme.of(context).colorScheme.surface,
+          border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,7 +351,7 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
               flex: 3, // 3 phần cho ảnh/video
               child: Container(
                 width: double.infinity,
-                color: Colors.grey[100],
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: post.videoUrl != null
                     ? VideoThumbnailWidget(
                         videoId: post.videoUrl!,
@@ -368,21 +368,21 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                         imageUrl: post.imageUrl!,
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
-                          color: Colors.grey[200],
+                          color: Theme.of(context).colorScheme.surfaceContainerHigh,
                           child: Center(
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.grey[400]!,
+                                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                               ),
                             ),
                           ),
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: Colors.grey[200],
+                          color: Theme.of(context).colorScheme.surfaceContainerHigh,
                           child: Icon(
                             Icons.broken_image,
-                            color: Colors.grey[400],
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                             size: 32,
                           ),
                         ),
@@ -436,13 +436,13 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                         Icon(
                           Icons.favorite_border,
                           size: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                         const SizedBox(width: 2),
                         Text(
                           _formatCount(post.likeCount),
                           style: TextStyle(
-                            color: Colors.grey[700],
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                           ),
