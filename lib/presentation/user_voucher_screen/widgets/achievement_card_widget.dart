@@ -35,10 +35,10 @@ class AchievementCardWidget extends StatelessWidget {
                     height: 48.sp,
                     decoration: BoxDecoration(
                       color: achievement.isCompleted
-                          ? const Color(0xFFFFD700).withValues(
+                          ? Colors.amber.withValues(
                               alpha: 0.2,
-                            ) // Gold color
-                          : Colors.grey.withValues(alpha: 0.1),
+                            )
+                          : Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8.sp),
                     ),
                     child: Icon(
@@ -46,8 +46,8 @@ class AchievementCardWidget extends StatelessWidget {
                           ? Icons.emoji_events
                           : Icons.emoji_events_outlined,
                       color: achievement.isCompleted
-                          ? const Color(0xFFFFD700) // Gold color
-                          : Colors.grey,
+                          ? Colors.amber
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                       size: 24.sp,
                     ),
                   ),

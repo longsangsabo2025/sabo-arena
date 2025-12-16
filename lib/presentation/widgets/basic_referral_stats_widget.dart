@@ -213,12 +213,12 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
           decoration: BoxDecoration(
             color: isActive
                 ? Colors.green.withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.1),
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isActive
                   ? Colors.green.withValues(alpha: 0.3)
-                  : Colors.grey.withValues(alpha: 0.3),
+                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -227,7 +227,7 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
             children: [
               Icon(
                 isActive ? Icons.check_circle : Icons.pause_circle,
-                color: isActive ? Colors.green : Colors.grey,
+                color: isActive ? Colors.green : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -236,7 +236,7 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
                 style: AppTypography.bodyMedium.copyWith(
                   color: isActive
                       ? Colors.green.shade700
-                      : Colors.grey.shade700,
+                      : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontWeight: FontWeight.w500,
                 ),
               ),

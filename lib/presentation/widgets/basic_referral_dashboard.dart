@@ -70,7 +70,7 @@ class _BasicReferralDashboardState extends State<BasicReferralDashboard> {
                 Text(
                   'Giới thiệu bạn bè và nhận thưởng SPA',
                   style: AppTypography.bodyMedium.copyWith(
-                    color: Colors.grey.shade600,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -260,7 +260,7 @@ class _BasicReferralDashboardState extends State<BasicReferralDashboard> {
               Text(
                 description,
                 style: AppTypography.bodySmall.copyWith(
-                  color: Colors.grey.shade600,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -317,7 +317,7 @@ class MiniReferralWidget extends StatelessWidget {
                   Text(
                     'Nhận +100 SPA mỗi lần giới thiệu',
                     style: AppTypography.bodySmall.copyWith(
-                      color: Colors.grey.shade600,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
