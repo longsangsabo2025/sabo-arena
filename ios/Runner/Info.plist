@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Sabo Arena</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>sabo_arena</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	
+	<key>NSCameraUsageDescription</key>
+	<string>Sabo Arena cần quyền truy cập camera để bạn có thể chụp ảnh và quay video cho các hoạt động thể thao, chia sẻ khoảnh khắc thi đấu và cập nhật hình đại diện.</string>
+	
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Sabo Arena cần quyền truy cập thư viện ảnh để bạn có thể chọn và tải lên hình ảnh cho hồ sơ cá nhân, sự kiện thể thao và chia sẻ kết quả thi đấu.</string>
+	
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Sabo Arena cần quyền lưu ảnh vào thư viện để bạn có thể lưu lại các khoảnh khắc đáng nhớ từ các trận đấu và sự kiện.</string>
+	
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Sabo Arena cần quyền truy cập microphone để ghi âm video và voice chat.</string>
+	
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sabo Arena cần quyền truy cập vị trí để tìm sân thể thao gần bạn, hiển thị bản đồ các địa điểm thi đấu và kết nối với người chơi xung quanh.</string>
+	
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Sabo Arena cần quyền truy cập vị trí liên tục để theo dõi hoạt động thể thao của bạn, ghi lại lộ trình chạy bộ/đạp xe và cập nhật vị trí trong các sự kiện thể thao.</string>
+	
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Sabo Arena cần quyền truy cập vị trí để theo dõi hoạt động thể thao và cập nhật vị trí của bạn.</string>
+	
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>supabase.co</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<false/>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.2</string>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			<key>mogjjvscxjwvhtpkrlqr.supabase.co</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<false/>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.2</string>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
+	
+	<!-- URL Schemes Configuration -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<!-- SABO Arena Deep Link Scheme -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.saboarena.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>saboarena</string>
+				<string>com.saboarena.app</string>
+			</array>
+		</dict>
+		<!-- Facebook URL Scheme -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb4352116018356819</string>
+			</array>
+		</dict>
+		<!-- Google Sign-In URL Scheme -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.930620766039-8e22rfd8mdj2dp1tu4n7fbl88selpbur</string>
+			</array>
+		</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>4352116018356819</string>
+	<key>FacebookDisplayName</key>
+	<string>Sabo Arena</string>
+	<key>FacebookClientToken</key>
+	<string>c75c57e0b7c0c830e8a1e4cd5b4a73bd</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+		<!-- Additional Facebook schemes for iOS -->
+		<string>facebook</string>
+		<string>fbapi20130214</string>
+		<string>fbapi20130410</string>
+		<string>fbapi20130702</string>
+		<string>fbapi20131010</string>
+		<string>fbapi20131219</string>
+		<string>fbapi20140410</string>
+		<string>fbapi20140116</string>
+		<string>fbapi20150313</string>
+		<string>fbapi20150629</string>
+		<string>fbapi20160328</string>
+		<!-- Google Sign-In Query Schemes -->
+		<string>googlechrome</string>
+		<string>googlechromes</string>
+	</array>
+</dict>
+</plist>

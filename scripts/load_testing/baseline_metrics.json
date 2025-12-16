@@ -1,0 +1,132 @@
+{
+  "baseline_metrics": {
+    "timestamp": "2025-01-01T00:00:00Z",
+    "test_environment": "staging",
+    "test_scenarios": {
+      "1k_users": {
+        "duration_minutes": 5,
+        "total_requests": 0,
+        "successful_requests": 0,
+        "failed_requests": 0,
+        "error_rate_percent": 0.0,
+        "response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0,
+          "min": 0,
+          "max": 0
+        },
+        "throughput_rps": 0,
+        "database_query_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        },
+        "api_response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        }
+      },
+      "10k_users": {
+        "duration_minutes": 5,
+        "total_requests": 0,
+        "successful_requests": 0,
+        "failed_requests": 0,
+        "error_rate_percent": 0.0,
+        "response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0,
+          "min": 0,
+          "max": 0
+        },
+        "throughput_rps": 0,
+        "database_query_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        },
+        "api_response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        }
+      },
+      "50k_users": {
+        "duration_minutes": 5,
+        "total_requests": 0,
+        "successful_requests": 0,
+        "failed_requests": 0,
+        "error_rate_percent": 0.0,
+        "response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0,
+          "min": 0,
+          "max": 0
+        },
+        "throughput_rps": 0,
+        "database_query_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        },
+        "api_response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        }
+      },
+      "100k_users": {
+        "duration_minutes": 5,
+        "total_requests": 0,
+        "successful_requests": 0,
+        "failed_requests": 0,
+        "error_rate_percent": 0.0,
+        "response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0,
+          "min": 0,
+          "max": 0
+        },
+        "throughput_rps": 0,
+        "database_query_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        },
+        "api_response_times_ms": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "average": 0
+        }
+      }
+    },
+    "endpoints_tested": [
+      "GET /rest/v1/tournaments",
+      "GET /rest/v1/profiles",
+      "POST /rest/v1/tournaments",
+      "GET /rest/v1/clubs",
+      "GET /rest/v1/profiles (leaderboard)"
+    ],
+    "bottlenecks_identified": [],
+    "slow_queries": [],
+    "slow_apis": [],
+    "notes": "Baseline metrics before optimization. Update after running load tests."
+  }
+}
+

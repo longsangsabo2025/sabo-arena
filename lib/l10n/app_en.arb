@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "appTitle": "SABO Arena",
+  "welcome": "Welcome",
+  "login": "Login",
+  "logout": "Logout",
+  "profile": "Profile",
+  "settings": "Settings",
+  "fullName": "Full Name",
+  "displayName": "Display Name",
+  "email": "Email",
+  "phone": "Phone",
+  "bio": "Bio",
+  "location": "Location",
+  "save": "Save",
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "delete": "Delete"
+}

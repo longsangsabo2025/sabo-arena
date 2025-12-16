@@ -1,0 +1,235 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'notification_service.dart';
+import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+
+/// Simple Challenge Service for basic challenge functionality
+/// This version doesn't depend on advanced challenge rules
+class SimpleChallengeService {
+  static SimpleChallengeService? _instance;
+  static SimpleChallengeService get instance =>
+      _instance ??= SimpleChallengeService._();
+  SimpleChallengeService._();
+
+  final SupabaseClient _supabase = Supabase.instance.client;
+
+  /// Send a simple challenge without advanced validation
+  Future<Map<String, dynamic>?> sendChallenge({
+    required String challengedUserId,
+    required String challengeType, // 'giao_luu' or 'thach_dau'
+    required String gameType, // '8-ball', '9-ball', '10-ball'
+    required DateTime scheduledTime,
+    required String location,
+    String? clubId, // Club ID where challenge takes place
+    int handicap = 0,
+    int spaPoints = 0,
+    String? message,
+    String? rankMin, // Hạng tối thiểu (null = không giới hạn)
+    String? rankMax, // Hạng tối đa (null = không giới hạn)
+  }) async {
+    try {
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+
+      final currentUser = _supabase.auth.currentUser;
+
+      if (currentUser == null) {
+        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        throw Exception('User not authenticated');
+      }
+
+      final userId = currentUser.id;
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+
+      // Get current user details
+      final userResponse = await _supabase
+          .from('users')
+          .select('display_name, elo_rating')
+          .eq('id', userId)
+          .single();
+
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+
+      // Get challenged user details (skip for open challenge)
+      Map<String, dynamic>? challengedUserResponse;
+      bool isOpenChallenge = challengedUserId.isEmpty;
+
+      if (!isOpenChallenge) {
+        challengedUserResponse = await _supabase
+            .from('users')
+            .select('display_name, elo_rating')
+            .eq('id', challengedUserId)
+            .single();
+        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      } else {
+        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      }
+
+      // Create challenge record using existing table schema
+      // Map our data to the existing challenges table structure
+      
+      // ✅ NEW LOGIC: For targeted challenges, store target user in match_conditions
+      // Do NOT set challenged_id yet - only set when user accepts
+      final matchConditions = {
+        'game_type': gameType,
+        'location': location,
+        'scheduled_time': scheduledTime.toIso8601String(),
+        'handicap': handicap,
+        if (rankMin != null) 'rank_min': rankMin,
+        if (rankMax != null) 'rank_max': rankMax,
+        // ✅ Store target user ID for targeted challenges
+        if (!isOpenChallenge) 'target_user_id': challengedUserId,
+      };
+      
+      Map<String, dynamic> challengeData = {
+        'challenger_id': userId,
+        'challenged_id': null, // ✅ ALWAYS null initially - set when user accepts
+        'challenge_type': challengeType,
+        'message': message ?? '',
+        'stakes_type': spaPoints > 0 ? 'spa_points' : 'none',
+        'stakes_amount': spaPoints,
+        'match_conditions': matchConditions,
+        'status': 'pending',
+        'handicap_challenger': 0.0,
+        'handicap_challenged': handicap.toDouble(),
+        'rank_difference': 0,
+        if (clubId != null) 'club_id': clubId,
+        // expires_at will be set automatically by database default
+      };
+
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+
+      final challengeResponse = await _supabase
+          .from('challenges')
+          .insert(challengeData)
+          .select()
+          .single();
+
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+
+      // Send notification (skip for open challenge)
+      if (!isOpenChallenge) {
+        try {
+          await _sendChallengeNotification(
+            challengeId: challengeResponse['id'],
+            challengerName: userResponse['display_name'] ?? 'Người chơi',
+            challengedUserId: challengedUserId,
+            challengeType: challengeType,
+            gameType: gameType,
+            scheduledTime: scheduledTime,
+            location: location,
+            spaPoints: spaPoints,
+          );
+          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        } catch (notificationError) {
+          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // Don't fail the whole challenge if notification fails
+        }
+      } else {
+        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      }
+
+      return challengeResponse;
+    } catch (error) {
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      throw Exception('Không thể gửi thách đấu: $error');
+    }
+  }
+
+  /// Send notification to challenged user
+  Future<void> _sendChallengeNotification({
+    required String challengeId,
+    required String challengerName,
+    required String challengedUserId,
+    required String challengeType,
+    required String gameType,
+    required DateTime scheduledTime,
+    required String location,
+    required int spaPoints,
+  }) async {
+    try {
+      final challengeTypeVi = challengeType == 'thach_dau'
+          ? 'thách đấu'
+          : 'giao lưu';
+      final spaInfo = spaPoints > 0 ? ' ($spaPoints SPA)' : '';
+
+      final message =
+          '''
+🎱 Lời mời $challengeTypeVi!
+
+👤 Từ: $challengerName
+🎮 Game: $gameType$spaInfo
+📅 Thời gian: ${_formatDateTime(scheduledTime)}
+📍 Địa điểm: $location
+
+Hãy vào ứng dụng để phản hồi!
+      ''';
+
+      await NotificationService.instance.sendNotification(
+        userId: challengedUserId,
+        title: '🎱 Lời mời $challengeTypeVi!',
+        message: message,
+        type: 'challenge',
+        data: {'challenge_id': challengeId},
+      );
+    } catch (error) {
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Don't throw - notification failure shouldn't fail the challenge
+    }
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    final weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    final weekday = weekdays[dateTime.weekday % 7];
+    return '$weekday, ${dateTime.day}/${dateTime.month} lúc ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  /// Get SPA betting options (simplified)
+  List<Map<String, dynamic>> getSpaBettingOptions() {
+    return [
+      {'amount': 100, 'raceTo': 8, 'description': 'Thách đấu sơ cấp'},
+      {'amount': 200, 'raceTo': 12, 'description': 'Thách đấu cơ bản'},
+      {'amount': 300, 'raceTo': 14, 'description': 'Thách đấu trung bình'},
+      {'amount': 400, 'raceTo': 16, 'description': 'Thách đấu trung cấp'},
+      {'amount': 500, 'raceTo': 18, 'description': 'Thách đấu trung cao'},
+      {'amount': 600, 'raceTo': 22, 'description': 'Thách đấu cao cấp'},
+    ];
+  }
+
+  /// Simple validation (always returns true for now)
+  Future<bool> canPlayersChallenge(
+    String challengerId,
+    String challengedId,
+  ) async {
+    try {
+      // Basic check - make sure both users exist
+      await _supabase
+          .from('users')
+          .select('id')
+          .eq('id', challengerId)
+          .single();
+
+      await _supabase
+          .from('users')
+          .select('id')
+          .eq('id', challengedId)
+          .single();
+
+      return true; // Both users exist
+    } catch (error) {
+      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      return false;
+    }
+  }
+}
+

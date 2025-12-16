@@ -1,0 +1,19 @@
+{
+  "@@locale": "vi",
+  "appTitle": "SABO Arena",
+  "welcome": "Chào mừng",
+  "login": "Đăng nhập",
+  "logout": "Đăng xuất",
+  "profile": "Hồ sơ",
+  "settings": "Cài đặt",
+  "fullName": "Họ và tên thật",
+  "displayName": "Tên hiển thị",
+  "email": "Email",
+  "phone": "Số điện thoại",
+  "bio": "Giới thiệu bản thân",
+  "location": "Địa điểm",
+  "save": "Lưu",
+  "cancel": "Hủy",
+  "edit": "Chỉnh sửa",
+  "delete": "Xóa"
+}

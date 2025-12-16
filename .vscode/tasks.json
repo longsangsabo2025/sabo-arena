@@ -1,0 +1,61 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Flutter App",
+			"type": "shell",
+			"command": "flutter run",
+			"isBackground": true,
+			"group": "run"
+		},
+		{
+			"label": "Run Flutter App",
+			"type": "shell",
+			"command": "flutter run",
+			"isBackground": true,
+			"group": "run"
+		},
+		{
+			"label": "Run Flutter App with Supabase",
+			"type": "shell",
+			"command": "flutter run --dart-define=SUPABASE_URL=https://mogjjvscxjwvhtpkrlqr.supabase.co --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ",
+			"isBackground": true,
+			"group": "run"
+		},
+		{
+			"label": "Run Flutter App with Supabase",
+			"type": "shell",
+			"command": "flutter run --dart-define=SUPABASE_URL=https://mogjjvscxjwvhtpkrlqr.supabase.co --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ",
+			"isBackground": true,
+			"group": "run"
+		},
+		{
+			"label": "Run Flutter App on Chrome",
+			"type": "shell",
+			"command": "flutter run -d chrome --dart-define=SUPABASE_URL=https://mogjjvscxjwvhtpkrlqr.supabase.co --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ",
+			"isBackground": true,
+			"group": "run"
+		},
+		{
+			"label": "Run Flutter App on Pixel 7",
+			"type": "shell",
+			"command": "flutter run -d Pixel_7 --dart-define=SUPABASE_URL=https://mogjjvscxjwvhtpkrlqr.supabase.co --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ",
+			"isBackground": true,
+			"group": "run"
+		},
+		{
+			"label": "Run Flutter App on Android Emulator",
+			"type": "shell",
+			"command": "flutter run -d emulator-5554 --dart-define=SUPABASE_URL=https://mogjjvscxjwvhtpkrlqr.supabase.co --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ",
+			"isBackground": true,
+			"group": "run"
+		},
+		{
+			"label": "Run App on Emulator",
+			"type": "shell",
+			"command": "flutter run -d emulator-5554 --dart-define=SUPABASE_URL=https://mogjjvscxjwvhtpkrlqr.supabase.co --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ",
+			"isBackground": true,
+			"group": "test"
+		}
+	]
+}

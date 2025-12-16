@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABO Arena - Nền tảng Billiards #1 Việt Nam</title>
+    <meta name="description" content="Tham gia cộng đồng Billiards lớn nhất Việt Nam. Thi đấu, xếp hạng ELO, và nhận thưởng!">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        
+        h1 {
+            color: #1a202c;
+            font-size: 32px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-ios {
+            background: #000;
+            color: white;
+        }
+        
+        .btn-android {
+            background: #3ddc84;
+            color: #1a202c;
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .feature-text h3 {
+            color: #1a202c;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .feature-text p {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .referral-info {
+            margin-top: 32px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .referral-info.active {
+            display: block;
+        }
+        
+        .referral-info h3 {
+            color: #2d3748;
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .referral-code {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 16px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #667eea;
+        }
+        
+        .bonus-badge {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .user-profile {
+            margin-bottom: 24px;
+            padding: 24px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 16px;
+            display: none;
+        }
+        
+        .user-profile.active {
+            display: block;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .user-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+        
+        .user-rank {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+        
+        .user-elo {
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎱</div>
+        <h1>SABO Arena</h1>
+        <p class="subtitle">Nền tảng Billiards #1 Việt Nam</p>
+        
+        <div id="userProfile" class="user-profile">
+            <div id="userAvatar" class="user-avatar">👤</div>
+            <div id="userName" class="user-name">Loading...</div>
+            <div id="userRank" class="user-rank">Đang tải...</div>
+            <div id="userElo" class="user-elo">ELO: ---</div>
+        </div>
+        
+        <div id="referralInfo" class="referral-info">
+            <h3>🎁 Bạn được mời tham gia!</h3>
+            <p style="color: #4a5568; margin-bottom: 8px;">Mã giới thiệu:</p>
+            <div class="referral-code" id="refCode">LOADING...</div>
+            <div class="bonus-badge">🎉 Nhận ngay 25 SPA khi đăng ký!</div>
+        </div>
+        
+        <div class="download-buttons">
+            <a href="#" class="btn btn-ios" id="iosBtn">
+                <span>🍎</span>
+                <span>App Store</span>
+            </a>
+            <a href="#" class="btn btn-android" id="androidBtn">
+                <span>📱</span>
+                <span>Google Play</span>
+            </a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-text">
+                    <h3>Thi đấu & Xếp hạng</h3>
+                    <p>Hệ thống ELO chuyên nghiệp, giải đấu hàng tuần</p>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <div class="feature-text">
+                    <h3>Thưởng SPA Points</h3>
+                    <p>Tích điểm, đổi quà và tham gia giải lớn</p>
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">👥</div>
+                <div class="feature-text">
+                    <h3>Cộng đồng sôi động</h3>
+                    <p>Kết nối với hàng nghìn tay cơ trên toàn quốc</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://mogjjvscxjwvhtpkrlqr.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ';
+        
+        // Fetch user data from Supabase
+        async function fetchUserData(userId) {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/users?id=eq.${userId}&select=id,display_name,rank,elo_rating,referral_code`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.length > 0 ? data[0] : null;
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                return null;
+            }
+        }
+        
+        // Display user profile
+        function displayUserProfile(user) {
+            if (!user) return;
+            
+            const profileEl = document.getElementById('userProfile');
+            const nameEl = document.getElementById('userName');
+            const rankEl = document.getElementById('userRank');
+            const eloEl = document.getElementById('userElo');
+            const avatarEl = document.getElementById('userAvatar');
+            
+            if (profileEl && nameEl && rankEl && eloEl) {
+                nameEl.textContent = user.display_name || 'SABO Player';
+                rankEl.textContent = `Rank: ${user.rank || 'Người mới'}`;
+                eloEl.textContent = `ELO: ${user.elo_rating || 1000}`;
+                avatarEl.textContent = (user.display_name || 'S').charAt(0).toUpperCase();
+                profileEl.classList.add('active');
+            }
+        }
+        
+        // Deep Link Handler
+        (async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            const pathParts = window.location.pathname.split('/');
+            const userCode = pathParts.includes('user') ? pathParts[pathParts.indexOf('user') + 1] : null;
+            
+            // Fetch and display user data if we have a user ID
+            if (userCode && userCode.length > 0) {
+                const userData = await fetchUserData(userCode);
+                if (userData) {
+                    displayUserProfile(userData);
+                    // Use user's referral code if not provided in URL
+                    if (!refCode && userData.referral_code) {
+                        const refInfo = document.getElementById('referralInfo');
+                        const refCodeEl = document.getElementById('refCode');
+                        if (refInfo && refCodeEl) {
+                            refInfo.classList.add('active');
+                            refCodeEl.textContent = userData.referral_code;
+                        }
+                    }
+                }
+            }
+            
+            // Store referral code in localStorage
+            if (refCode) {
+                localStorage.setItem('saboarena_referral_code', refCode);
+                localStorage.setItem('saboarena_referral_timestamp', Date.now().toString());
+                
+                // Show referral info
+                const refInfo = document.getElementById('referralInfo');
+                const refCodeEl = document.getElementById('refCode');
+                if (refInfo && refCodeEl) {
+                    refInfo.classList.add('active');
+                    refCodeEl.textContent = refCode;
+                }
+            }
+            
+            // Try to open app with deep link
+            const appScheme = 'saboarena://';
+            let deepLinkUrl = appScheme;
+            
+            if (userCode) {
+                deepLinkUrl += `user/${userCode}`;
+                if (refCode) {
+                    deepLinkUrl += `?ref=${refCode}`;
+                }
+            } else if (refCode) {
+                deepLinkUrl += `referral?code=${refCode}`;
+            }
+            
+            // Set up app store fallbacks
+            const appStoreUrl = 'https://apps.apple.com/app/sabo-arena/id123456789'; // Replace with real URL
+            const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.saboarena.app';
+            
+            document.getElementById('iosBtn').href = appStoreUrl;
+            document.getElementById('androidBtn').href = playStoreUrl;
+            
+            // Try to open the app (only if we have a deep link)
+            if (userCode || refCode) {
+                const now = Date.now();
+                window.location.href = deepLinkUrl;
+                
+                // If app doesn't open within 2 seconds, we assume it's not installed
+                setTimeout(function() {
+                    if (Date.now() - now < 2100) {
+                        console.log('App not detected, showing download options');
+                    }
+                }, 2000);
+            }
+            
+            // Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'landing_page_visit', {
+                    'has_referral': refCode ? 'yes' : 'no',
+                    'has_user_code': userCode ? 'yes' : 'no',
+                    'referral_code': refCode || 'none'
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

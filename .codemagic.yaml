@@ -1,0 +1,177 @@
+﻿workflows:
+  ios-app-store-v2:
+    name: iOS App Store Deployment V2
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: saboarena-asc
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.saboarena.app
+      flutter: stable
+      xcode: 16.0
+      cocoapods: default
+      groups:
+        - app_store_connect
+        - supabase
+      vars:
+        BUNDLE_ID: com.saboarena.app
+        SUPABASE_URL: https://mogjjvscxjwvhtpkrlqr.supabase.co
+        SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - ios/Pods
+        - $HOME/Library/Caches/CocoaPods
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Force Clear All Caches
+        script: |
+          echo "🧹 Force clearing all caches to ensure fresh build..."
+          flutter clean
+          rm -rf ios/Pods
+          rm -rf ios/Podfile.lock
+          rm -rf ~/.pub-cache
+          rm -rf $HOME/Library/Caches/CocoaPods
+          rm -rf build/
+          echo "✅ All caches cleared"
+          
+      - name: Clean previous builds
+        script: |
+          flutter clean
+          rm -rf ios/Pods
+          rm -rf ios/Podfile.lock
+      - name: Get dependencies
+        script: flutter pub get
+        
+      - name: Check Environment
+        script: |
+          echo "🔍 Environment Information:"
+          flutter --version
+          xcodebuild -version
+          which flutter
+          which xcodebuild
+          echo "Current directory: $(pwd)"
+          echo "Workspace contents:"
+          ls -la
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install --repo-update
+      - name: Configure iOS signing
+        script: |
+          # List available signing identities
+          security find-identity -v -p codesigning
+          
+          # List available provisioning profiles
+          ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/"
+          
+          # Create ExportOptions.plist
+          mkdir -p ios
+          cat > ios/ExportOptions.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>app-store</string>
+    <key>teamID</key>
+    <string>B465SC3K74</string>
+    <key>uploadBitcode</key>
+    <false/>
+    <key>uploadSymbols</key>
+    <true/>
+</dict>
+</plist>
+EOF
+          
+          # Set up code signing settings on Xcode project
+          xcode-project use-profiles
+          
+          echo "Code signing configured with provisioning profiles"
+          
+      - name: Build iOS App
+        script: |
+          echo "🚀 Starting Flutter IPA build..."
+          
+          # Check if ExportOptions.plist exists and is valid
+          if [ -f ios/ExportOptions.plist ]; then
+            echo "✅ ExportOptions.plist found:"
+            cat ios/ExportOptions.plist
+          else
+            echo "❌ ExportOptions.plist not found!"
+            exit 1
+          fi
+          
+          # Check Xcode project configuration after use-profiles
+          echo "🔍 Checking Xcode project configuration:"
+          grep -A 5 -B 5 "CODE_SIGN_STYLE" ios/Runner.xcodeproj/project.pbxproj || echo "No CODE_SIGN_STYLE found"
+          
+          # Try building IPA with verbose output and explicit path
+          echo "🔨 Building IPA..."
+          flutter build ipa --release \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+            --export-options-plist=$(pwd)/ios/ExportOptions.plist \
+            --verbose
+          
+          # Force check build result
+          BUILD_EXIT_CODE=$?
+          echo "Build exit code: $BUILD_EXIT_CODE"
+          
+          if [ $BUILD_EXIT_CODE -eq 0 ]; then
+            echo "✅ Flutter build ipa completed successfully"
+          else
+            echo "❌ Flutter build ipa failed with exit code: $BUILD_EXIT_CODE"
+            exit $BUILD_EXIT_CODE
+          fi
+      
+      - name: Verify IPA Creation
+        script: |
+          echo "📁 Checking build outputs:"
+          ls -la build/ios/
+          
+          if [ -d "build/ios/ipa" ]; then
+            echo "✅ IPA directory exists:"
+            ls -la build/ios/ipa/
+            if ls build/ios/ipa/*.ipa 1> /dev/null 2>&1; then
+              echo "✅ IPA file found!"
+              ls -la build/ios/ipa/*.ipa
+              
+              # Get IPA file size and info
+              IPA_FILE=$(ls build/ios/ipa/*.ipa)
+              echo "📦 IPA Details:"
+              echo "File: $IPA_FILE"
+              echo "Size: $(du -h "$IPA_FILE" | cut -f1)"
+              echo "✅ IPA BUILD SUCCESS!"
+            else
+              echo "❌ No IPA file found in build/ios/ipa/"
+              echo "❌ IPA BUILD FAILED!"
+              exit 1
+            fi
+          else
+            echo "❌ IPA directory not created - flutter build ipa failed!"
+            echo "❌ IPA BUILD FAILED!"
+            exit 1
+          fi
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - longsangsabo@gmail.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: true
+        cancel_previous_submissions: true
+        release_type: MANUAL

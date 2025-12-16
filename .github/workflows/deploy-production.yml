@@ -1,0 +1,99 @@
+name: 🏪 Deploy to Google Play Store
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags (v1.0.0, v1.0.1, etc.)
+
+env:
+  FLUTTER_VERSION: '3.35.2'
+
+jobs:
+  # ========== PRODUCTION DEPLOYMENT ==========
+  deploy-play-store:
+    name: 🏭 Production Deployment
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 🔐 Setup Android Signing
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/keystore.jks
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties  
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        echo "storeFile=keystore.jks" >> android/key.properties
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🧪 Run Full Test Suite
+      run: flutter test
+      
+    - name: 🔍 Final Code Analysis
+      run: flutter analyze
+      
+    - name: 🏗️ Build App Bundle (AAB)
+      run: flutter build appbundle --release \
+        --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+        --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+        
+    - name: 📱 Determine Deployment Track
+      id: track
+      run: |
+        if [[ "${{ github.ref_name }}" =~ -alpha$ ]]; then
+          echo "track=alpha" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref_name }}" =~ -beta$ ]]; then  
+          echo "track=beta" >> $GITHUB_OUTPUT
+        else
+          echo "track=production" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: 🚀 Deploy to Google Play Store
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+        packageName: com.sabo_arena.app
+        releaseFiles: build/app/outputs/bundle/release/app-release.aab
+        track: ${{ steps.track.outputs.track }}
+        status: ${{ steps.track.outputs.track == 'production' && 'draft' || 'completed' }}
+        inAppUpdatePriority: 2
+        userFraction: 0.5
+        whatsNewDirectory: docs/release-notes/
+        
+    - name: 📢 Notify Success
+      if: success()
+      run: |
+        echo "🎉 Successfully deployed ${{ github.ref_name }} to ${{ steps.track.outputs.track }} track!"
+        echo "📱 Check Google Play Console for release status"
+        
+    - name: 🚨 Notify Failure  
+      if: failure()
+      run: |
+        echo "❌ Deployment failed for ${{ github.ref_name }}"
+        echo "🔍 Check GitHub Actions logs for details"
+        
+  # ========== SLACK NOTIFICATION ==========
+  notify:
+    name: 📢 Send Notifications
+    needs: deploy-play-store
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 📢 Slack Notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ needs.deploy-play-store.result }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

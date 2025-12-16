@@ -1,0 +1,36 @@
+# Build artifacts
+build/
+.dart_tool/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Platform-specific
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Runner.xcworkspace/xcuserdata/
+android/.gradle/
+android/app/build/
+android/gradle/
+linux/flutter/
+macos/Flutter/
+windows/flutter/
+
+# Archive folders (not needed for builds)
+archive/
+archive_*/
+backup_*/
+node_modules/
+
+# Documentation (not needed for builds)
+docs/
+store_*/
+
+# Test artifacts
+test_driver/
+.flutter-plugins-dependencies

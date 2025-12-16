@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SABO Arena</string>
+    
+    <!-- Facebook Configuration -->
+    <string name="facebook_app_id">4352116018356819</string>
+    <string name="facebook_client_token">4352116018356819|4e144d44eed91a8718546757011ad763</string>
+    
+    <!-- Package Name: com.sabo_arena.app (underscore not dot) -->
+</resources>

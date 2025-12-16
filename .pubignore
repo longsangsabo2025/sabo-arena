@@ -1,0 +1,14 @@
+# Files to ignore when publishing package
+build/
+.dart_tool/
+.packages
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+ios/
+android/
+web/
+linux/
+macos/
+windows/
+test/

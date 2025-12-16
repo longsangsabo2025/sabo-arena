@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "930620766039",
+    "project_id": "sabo-arena-aeb80",
+    "storage_bucket": "sabo-arena-aeb80.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930620766039:android:90af46739570eafde63012",
+        "android_client_info": {
+          "package_name": "com.sabo_arena.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "930620766039-e6h795gnp66o7ui36v186r2ajick28nd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sabo_arena.app",
+            "certificate_hash": "45500011de0a7ea3f72862c956a44c2fa4a43f01"
+          }
+        },
+        {
+          "client_id": "930620766039-dv2u7ajkpb3lugbp9djg8s5gtko7iupb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKPcho_NlBXxxmjwn58qjWq0pQCcbSt4Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "930620766039-dv2u7ajkpb3lugbp9djg8s5gtko7iupb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

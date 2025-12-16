@@ -1,0 +1,263 @@
+name: 🚀 Deploy Both Platforms - COMPLETE DEPLOYMENT
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+  workflow_dispatch:   # Manual trigger
+    inputs:
+      deploy_ios:
+        description: 'Deploy to iOS App Store'
+        required: true
+        default: true
+        type: boolean
+      deploy_android:
+        description: 'Deploy to Android Play Store'
+        required: true
+        default: true
+        type: boolean
+
+env:
+  FLUTTER_VERSION: '3.35.2'
+  JAVA_VERSION: '17'
+  XCODE_VERSION: '15.2'
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+jobs:
+  # ========== PREPARATION ==========
+  prepare:
+    name: 🔍 Prepare Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      deploy_ios: ${{ steps.check.outputs.deploy_ios }}
+      deploy_android: ${{ steps.check.outputs.deploy_android }}
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🔢 Get Version
+      id: version
+      run: |
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        else
+          VERSION="manual-$(date +%Y%m%d-%H%M%S)"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "📦 Version: $VERSION"
+        
+    - name: ✅ Check Deployment Targets
+      id: check
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          echo "deploy_ios=${{ inputs.deploy_ios }}" >> $GITHUB_OUTPUT
+          echo "deploy_android=${{ inputs.deploy_android }}" >> $GITHUB_OUTPUT
+        else
+          echo "deploy_ios=true" >> $GITHUB_OUTPUT
+          echo "deploy_android=true" >> $GITHUB_OUTPUT
+        fi
+
+  # ========== iOS DEPLOYMENT ==========
+  deploy-ios:
+    name: 🍎 Deploy iOS to App Store
+    needs: prepare
+    if: needs.prepare.outputs.deploy_ios == 'true'
+    runs-on: macos-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🔐 Setup iOS Certificates
+      run: |
+        mkdir -p ~/certificates
+        echo "${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}" | base64 -D > ~/certificates/distribution.p12
+        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 -D > ~/certificates/provisioning.mobileprovision
+        
+        security create-keychain -p "temp123" build.keychain || true
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "temp123" build.keychain
+        security import ~/certificates/distribution.p12 -k build.keychain -P "${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign -A
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "temp123" build.keychain
+        
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp ~/certificates/provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+        
+    - name: 🔑 Setup App Store Connect API
+      run: |
+        mkdir -p ~/private_keys
+        echo "${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}" | base64 -D > ~/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8
+        
+    - name: 📄 Create ExportOptions.plist
+      run: |
+        cat > ios/ExportOptions.plist << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>B465SC3K74</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+        </dict>
+        </plist>
+        EOF
+        
+    - name: 🏗️ Build iOS
+      run: |
+        flutter build ios --release --no-codesign \
+          --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" \
+          --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        
+    - name: ✍️ Archive & Export
+      run: |
+        cd ios
+        xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -destination generic/platform=iOS -archivePath Runner.xcarchive archive
+        xcodebuild -exportArchive -archivePath Runner.xcarchive -exportPath ../build/ios/ipa -exportOptionsPlist ExportOptions.plist
+        
+    - name: 🚀 Upload to TestFlight
+      run: |
+        xcrun altool --upload-app --type ios --file "build/ios/ipa/Runner.ipa" --apiKey ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }} --apiIssuer ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }} --verbose
+        
+    - name: 📦 Upload iOS Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-ipa-${{ needs.prepare.outputs.version }}
+        path: build/ios/ipa/Runner.ipa
+        
+    - name: 🧹 Cleanup iOS
+      if: always()
+      run: |
+        rm -rf ~/certificates ~/private_keys || true
+        security delete-keychain build.keychain 2>/dev/null || true
+
+  # ========== ANDROID DEPLOYMENT ==========
+  deploy-android:
+    name: 🤖 Deploy Android to Play Store  
+    needs: prepare
+    if: needs.prepare.outputs.deploy_android == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'zulu'
+        
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🔐 Setup Android Keystore
+      run: |
+        mkdir -p android/app
+        echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
+        
+        cat > android/key.properties << EOF
+        storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+        keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+        storeFile=keystore.jks
+        EOF
+        
+    - name: 🏗️ Build Android AAB
+      run: |
+        flutter build appbundle --release \
+          --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" \
+          --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        
+    - name: 🏗️ Build Android APK
+      run: |
+        flutter build apk --release \
+          --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" \
+          --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        
+    - name: 🚀 Deploy to Play Store
+      uses: r0adkll/upload-google-play@v1.1.3
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        packageName: com.sabo_arena.app
+        releaseFiles: build/app/outputs/bundle/release/app-release.aab
+        track: internal
+        status: completed
+        
+    - name: 📦 Upload Android Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-aab-${{ needs.prepare.outputs.version }}
+        path: build/app/outputs/bundle/release/app-release.aab
+        
+    - name: 📦 Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk-${{ needs.prepare.outputs.version }}
+        path: build/app/outputs/flutter-apk/app-release.apk
+        
+    - name: 🧹 Cleanup Android
+      if: always()
+      run: |
+        rm -f android/app/keystore.jks android/key.properties || true
+
+  # ========== FINAL NOTIFICATION ==========
+  notify-success:
+    name: 🎉 Deployment Complete
+    needs: [prepare, deploy-ios, deploy-android]
+    if: always() && !cancelled() && (needs.deploy-ios.result == 'success' || needs.deploy-android.result == 'success')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📱 Success Notification
+      run: |
+        echo "🎉 SABO ARENA DEPLOYMENT SUCCESSFUL! 🎉"
+        echo "📦 Version: ${{ needs.prepare.outputs.version }}"
+        echo ""
+        if [[ "${{ needs.deploy-ios.result }}" == "success" ]]; then
+          echo "✅ iOS: Successfully deployed to TestFlight"
+          echo "🔗 TestFlight: https://appstoreconnect.apple.com"
+        fi
+        if [[ "${{ needs.deploy-android.result }}" == "success" ]]; then
+          echo "✅ Android: Successfully deployed to Play Store Internal Testing"
+          echo "🔗 Play Console: https://play.google.com/console/"
+        fi
+        echo ""
+        echo "🎮 Ready for testing and release!"
+
+  notify-failure:
+    name: ❌ Deployment Failed
+    needs: [prepare, deploy-ios, deploy-android]
+    if: always() && !cancelled() && needs.deploy-ios.result == 'failure' && needs.deploy-android.result == 'failure'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📱 Failure Notification
+      run: |
+        echo "❌ SABO ARENA DEPLOYMENT FAILED!"
+        echo "📦 Version: ${{ needs.prepare.outputs.version }}"
+        echo "🔍 Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"

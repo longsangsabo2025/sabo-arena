@@ -1,0 +1,32 @@
+# 🔐 Android Release Keystore Configuration
+# This file contains sensitive information and MUST NOT be committed to Git
+# Copy this file to: android/key.properties
+
+# Path to your keystore file (relative to android/app/)
+storeFile=sabo-arena-release-key.keystore
+
+# Keystore password
+storePassword=YOUR_KEYSTORE_PASSWORD_HERE
+
+# Key alias
+keyAlias=sabo-arena
+
+# Key password
+keyPassword=YOUR_KEY_PASSWORD_HERE
+
+# 📝 INSTRUCTIONS:
+# 1. Copy this file to android/key.properties (remove .example)
+# 2. Replace YOUR_KEYSTORE_PASSWORD_HERE with actual password
+# 3. Replace YOUR_KEY_PASSWORD_HERE with actual password
+# 4. NEVER commit key.properties to Git (already in .gitignore)
+
+# 🔒 SECURITY NOTES:
+# - Use strong passwords (min 12 characters, mixed case, numbers, symbols)
+# - Store passwords in secure password manager
+# - For CI/CD, use GitHub Secrets or similar secure storage
+# - Rotate keystore passwords regularly (every 6-12 months)
+
+# 🚀 FOR PRODUCTION BUILDS:
+# flutter build apk --release
+# flutter build appbundle --release
+# (These commands will automatically use key.properties)

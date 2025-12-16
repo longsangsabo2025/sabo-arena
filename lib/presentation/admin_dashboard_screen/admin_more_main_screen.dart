@@ -1,0 +1,376 @@
+import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import './widgets/admin_scaffold_wrapper.dart';
+import './economy_dashboard_screen.dart';
+import './refund_management_screen.dart';
+import '../notification_settings_screen_enhanced.dart';
+import './admin_guide_library_screen.dart';
+import '../spa_management/admin_spa_management_screen.dart';
+import './admin_voucher_campaign_approval_screen.dart';
+import '../ai_image_generator/ai_image_generator_screen.dart';
+
+class AdminMoreMainScreen extends StatelessWidget {
+  const AdminMoreMainScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AdminScaffoldWrapper(
+      title: 'Thêm tùy chọn',
+      currentIndex: 4,
+      onBottomNavTap: (index) => _onNavTap(context, index),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    return Builder(
+      builder: (context) => SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Thêm tùy chọn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimaryLight,
+              ),
+            ),
+            SizedBox(height: 24),
+            _buildMoreSection(context, 'Quản lý hệ thống', [
+              _buildMoreItem(
+                'Quản lý thông báo',
+                'Dashboard thông báo toàn hệ thống',
+                Icons.notifications_active,
+                Colors.deepOrange,
+                () {
+                  Navigator.pushNamed(
+                    context,
+                    '/admin_notification_management',
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Cài đặt hệ thống',
+                'Cấu hình và thiết lập hệ thống',
+                Icons.settings,
+                AppTheme.primaryLight,
+                () {
+                  // Navigate to system settings
+                },
+              ),
+              _buildMoreItem(
+                'Backup & Restore',
+                'Sao lưu và khôi phục dữ liệu',
+                Icons.backup,
+                Colors.blue,
+                () {
+                  // Navigate to backup settings
+                },
+              ),
+              _buildMoreItem(
+                'Economy Monitor',
+                'Theo dõi sức khỏe kinh tế SPA',
+                Icons.account_balance,
+                Colors.green,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const EconomyDashboardScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Refund Management',
+                'Quản lý yêu cầu hoàn tiền',
+                Icons.money_off,
+                Colors.red,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const RefundManagementScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Club Analytics Admin',
+                'Xem analytics tất cả câu lạc bộ',
+                Icons.analytics,
+                Colors.purple,
+                () {
+                  // For now, show a placeholder. Later implement admin club selection
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Tính năng đang được phát triển - Chọn club để xem analytics',
+                      ),
+                    ),
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Quản lý SPA CLB',
+                'Cấp SPA cho các câu lạc bộ',
+                Icons.monetization_on,
+                Colors.amber,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AdminSpaManagementScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Phê Duyệt Voucher',
+                'Duyệt voucher campaigns từ CLB',
+                Icons.approval,
+                Colors.teal,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AdminVoucherCampaignApprovalScreen(),
+                    ),
+                  );
+                },
+              ),
+            ]),
+            SizedBox(height: 24),
+            _buildMoreSection(context, 'Nội dung & Thông báo', [
+              _buildMoreItem(
+                'AI Image Generator',
+                'Tạo poster, banner, avatar với AI',
+                Icons.auto_awesome,
+                Colors.deepPurple,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AiImageGeneratorScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Cài đặt thông báo',
+                'Tùy chỉnh preferences thông báo',
+                Icons.notifications_active,
+                Colors.orange,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const NotificationSettingsScreenEnhanced(),
+                    ),
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Nội dung trang chủ',
+                'Quản lý banner và nội dung hiển thị',
+                Icons.home,
+                Colors.purple,
+                () {
+                  // Navigate to content management
+                },
+              ),
+              _buildMoreItem(
+                'Báo cáo vi phạm',
+                'Xử lý báo cáo từ người dùng',
+                Icons.report,
+                Colors.red,
+                () {
+                  // Navigate to reports
+                },
+              ),
+            ]),
+            SizedBox(height: 24),
+            _buildMoreSection(context, 'Tài khoản & Bảo mật', [
+              _buildMoreItem(
+                'Quản lý Admin',
+                'Thêm/xóa quyền admin',
+                Icons.admin_panel_settings,
+                Colors.indigo,
+                () {
+                  // Navigate to admin management
+                },
+              ),
+              _buildMoreItem(
+                'Nhật ký truy cập',
+                'Xem lịch sử đăng nhập admin',
+                Icons.history,
+                Colors.grey,
+                () {
+                  // Navigate to access logs
+                },
+              ),
+              _buildMoreItem(
+                'Thay đổi mật khẩu',
+                'Đổi mật khẩu tài khoản admin',
+                Icons.lock,
+                Colors.brown,
+                () {
+                  // Navigate to change password
+                },
+              ),
+            ]),
+            SizedBox(height: 24),
+            _buildMoreSection(context, 'Trợ giúp & Hỗ trợ', [
+              _buildMoreItem(
+                'Hướng dẫn Admin',
+                'Thư viện hướng dẫn sử dụng đầy đủ',
+                Icons.menu_book,
+                Colors.blue,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AdminGuideLibraryScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildMoreItem(
+                'Hướng dẫn sử dụng',
+                'Xem tài liệu hướng dẫn chi tiết',
+                Icons.help,
+                Colors.teal,
+                () {
+                  // Navigate to help
+                },
+              ),
+              _buildMoreItem(
+                'Liên hệ hỗ trợ',
+                'Gửi yêu cầu hỗ trợ kỹ thuật',
+                Icons.support_agent,
+                Colors.cyan,
+                () {
+                  // Navigate to support
+                },
+              ),
+              _buildMoreItem(
+                'Thông tin phiên bản',
+                'Xem thông tin về ứng dụng',
+                Icons.info,
+                Colors.amber,
+                () {
+                  // Show app info
+                },
+              ),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoreSection(
+    BuildContext context,
+    String title,
+    List<Widget> items,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title, style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimaryLight,
+          ),
+        ),
+        SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceLight,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.dividerLight),
+          ),
+          child: Column(children: items),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMoreItem(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title, style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimaryLight,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    subtitle, style: TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.textSecondaryLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: AppTheme.textSecondaryLight,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onNavTap(BuildContext context, int index) {
+    if (index != 4) {
+      _navigateToTab(context, index);
+    }
+  }
+
+  void _navigateToTab(BuildContext context, int index) {
+    final routes = [
+      '/admin_dashboard', // Dashboard
+      '/admin_club_approval', // Duyệt CLB
+      '/admin_tournament', // Tournament
+      '/admin_user_management', // Users
+      '/admin_more', // Khác - current
+    ];
+
+    if (index >= 0 && index < routes.length) {
+      Navigator.pushReplacementNamed(context, routes[index]);
+    }
+  }
+}

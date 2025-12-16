@@ -1,0 +1,54 @@
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Test coverage
+/coverage/
+*.lcov
+
+# Environment - CRITICAL: Never commit credentials!
+.env
+.env.local
+env.json
+*.env.json
+
+# Secrets and sensitive documentation
+_CORE_DOCS/
+docs/
+certificates/
+*.pem
+*.p12
+*.keystore
+google-services.json
+GoogleService-Info.plist
+*.key
+
+# Large build files
+android/app/mapping.txt
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

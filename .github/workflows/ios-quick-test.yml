@@ -1,0 +1,52 @@
+name: 🧪 iOS Quick Test - IMMEDIATE
+
+on:
+  push:
+    branches: [ main ]  # This will trigger immediately
+
+env:
+  FLUTTER_VERSION: '3.24.3'  # Stable version
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+jobs:
+  # ========== QUICK TEST ONLY ==========
+  quick-test:
+    name: 🧪 Quick Dependencies Test
+    runs-on: macos-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+        
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 🔧 Flutter Doctor
+      run: |
+        flutter doctor -v
+        dart --version
+        
+    - name: 📦 Test Dependencies
+      run: |
+        echo "🔍 Testing dependency resolution..."
+        flutter clean
+        flutter pub get --verbose
+        echo "✅ Dependencies resolved successfully!"
+        
+    - name: 🏗️ Test Build (No Codesign)
+      run: |
+        echo "🧪 Testing iOS build..."
+        flutter build ios --release --no-codesign --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        echo "✅ Build test completed!"
+        
+    - name: 📊 Report Results
+      run: |
+        echo "🎉 QUICK TEST RESULTS:"
+        echo "✅ Flutter ${{ env.FLUTTER_VERSION }} works"
+        echo "✅ Dependencies resolved"
+        echo "✅ iOS build (no-codesign) successful"
+        echo "🚀 Ready for full workflow with certificates!"

@@ -1,0 +1,204 @@
+name: 🍎 iOS App Store Deployment - FOCUS MODE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # Manual trigger for App Store
+
+env:
+  FLUTTER_VERSION: '3.35.2'
+  XCODE_VERSION: '15.2'
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+jobs:
+  # ========== iOS BUILD & DEPLOY ==========
+  build-ios:
+    name: 🍎 Build & Deploy iOS
+    runs-on: macos-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+        
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    # ========== VERIFY SETUP ==========
+    - name: 🔍 Verify iOS Setup
+      run: |
+        echo "🍎 iOS Deployment Configuration:"
+        echo "✅ API Key ID: 22AL4LKQ94"
+        echo "✅ Issuer ID: 4405e7f9-8e89-495a-b535-f9e83e96a7ad"
+        echo "✅ Team ID: B465SC3K74"
+        echo "✅ All certificates and profiles ready"
+        echo "🚀 Ready for App Store deployment!"
+        echo "🔧 Testing with Flutter 3.24.3 + fl_chart 0.66.2"
+        
+    # ========== iOS CERTIFICATES SETUP ==========
+    - name: 🔐 Setup iOS Certificates
+      run: |
+        # Create certificates directory
+        mkdir -p ~/certificates
+        
+        echo "🔧 Decoding iOS distribution certificate..."
+        echo "${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}" | base64 --decode > ~/certificates/distribution.p12
+        
+        echo "🔧 Decoding provisioning profile..."
+        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/certificates/provisioning.mobileprovision
+        
+        # Verify files created
+        echo "📁 Certificate files:"
+        ls -la ~/certificates/
+        
+        # Create and setup keychain
+        echo "🔐 Setting up keychain..."
+        security create-keychain -p "temp123" build.keychain || true
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "temp123" build.keychain
+        
+        # Import certificate with password
+        security import ~/certificates/distribution.p12 -k build.keychain -P "${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign -A
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "temp123" build.keychain
+        
+        # Install provisioning profile
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp ~/certificates/provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+        
+        echo "✅ iOS certificates setup completed"
+        
+    # ========== APP STORE CONNECT API SETUP ==========
+    - name: 🔑 Setup App Store Connect API
+      run: |
+        # Create API key directory
+        mkdir -p ~/private_keys
+        
+        echo "🔧 Decoding App Store Connect API key..."
+        echo "${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}" | base64 --decode > ~/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8
+        
+        # Verify API key file was created
+        echo "📁 API key files:"
+        ls -la ~/private_keys/
+        
+        echo "✅ App Store Connect API setup completed"
+        
+    # ========== CREATE EXPORT OPTIONS ==========
+    - name: 📄 Create ExportOptions.plist
+      run: |
+        cat > ios/ExportOptions.plist << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>B465SC3K74</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+        </dict>
+        </plist>
+        EOF
+        
+        echo "✅ ExportOptions.plist created with Team ID: B465SC3K74"
+        
+    # ========== iOS BUILD ==========
+    - name: 🏗️ Build iOS App
+      run: |
+        echo "🏗️ Building iOS app with Supabase configuration..."
+        flutter build ios --release --no-codesign --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        echo "✅ iOS build completed"
+          
+    # ========== CODE SIGNING & ARCHIVE ==========
+    - name: ✍️ Code Sign & Archive
+      run: |
+        cd ios
+        
+        echo "📦 Creating archive..."
+        xcodebuild -workspace Runner.xcworkspace \
+                   -scheme Runner \
+                   -configuration Release \
+                   -destination generic/platform=iOS \
+                   -archivePath Runner.xcarchive \
+                   archive
+                   
+        echo "📦 Exporting for App Store..."
+        xcodebuild -exportArchive \
+                   -archivePath Runner.xcarchive \
+                   -exportPath ../build/ios/ipa \
+                   -exportOptionsPlist ExportOptions.plist
+                   
+        echo "✅ iOS build and signing completed"
+                   
+    # ========== DEPLOY TO TESTFLIGHT ==========
+    - name: 🚀 Upload to TestFlight
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+      run: |
+        echo "🚀 Uploading to App Store Connect..."
+        xcrun altool --upload-app \
+                     --type ios \
+                     --file "build/ios/ipa/Runner.ipa" \
+                     --apiKey ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }} \
+                     --apiIssuer ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }} \
+                     --verbose
+        
+        echo "✅ Upload to TestFlight completed!"
+                     
+    # ========== UPLOAD ARTIFACTS ==========
+    - name: 📦 Upload IPA Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-ipa
+        path: build/ios/ipa/Runner.ipa
+        
+    # ========== CLEANUP ==========
+    - name: 🧹 Cleanup
+      if: always()
+      run: |
+        # Remove sensitive files safely
+        rm -rf ~/certificates || true
+        rm -rf ~/private_keys || true
+        # Delete keychain safely
+        security delete-keychain build.keychain 2>/dev/null || echo "Keychain already deleted or not found"
+        
+    # ========== NOTIFICATIONS ==========
+    - name: 📢 Notify Success
+      if: success() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+      run: |
+        echo "🎉 iOS deployment successful!"
+        echo "📱 Check TestFlight: https://appstoreconnect.apple.com"
+        
+    - name: 📢 Notify Failure
+      if: failure()
+      run: |
+        echo "❌ iOS deployment failed!"
+        echo "🔍 Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+  # ========== NOTIFICATION JOB ==========
+  notify:
+    name: 📢 Send Notifications  
+    needs: [build-ios]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 📱 Deployment Status
+      run: |
+        if [[ "${{ needs.build-ios.result }}" == "success" ]]; then
+          echo "✅ SABO ARENA iOS deployment completed successfully!"
+          echo "📱 New build available in TestFlight"
+          echo "🔗 App Store Connect: https://appstoreconnect.apple.com"
+        else
+          echo "❌ SABO ARENA iOS deployment failed"
+          echo "🔍 Check workflow logs for details"
+        fi

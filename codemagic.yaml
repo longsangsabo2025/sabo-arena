@@ -1,0 +1,303 @@
+# =============================================================================
+# CODEMAGIC YAML CONFIGURATION - FORCE USE THIS INSTEAD OF WORKFLOW EDITOR
+# =============================================================================
+# This file MUST override any workflow editor configuration!
+# If Codemagic still uses default workflow, switch to YAML mode in UI settings
+# =============================================================================
+
+workflows:
+  ios-app-store-yaml:
+    name: iOS App Store YAML Mode
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: saboarena-asc
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.saboarena.app
+      flutter: stable
+      xcode: 16.0
+      cocoapods: default
+      groups:
+        # - app_store_connect  # Group doesn't exist, using integration only
+        - supabase  # Now using group from Codemagic UI
+      vars:
+        BUNDLE_ID: com.saboarena.app
+        # Supabase vars are now loaded from 'supabase' group in Codemagic UI
+        # Variables: SUPABASE_URL, SUPABASE_ANON_KEY
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - ios/Pods
+        - $HOME/Library/Caches/CocoaPods
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Force Clear All Caches
+        script: |
+          echo "🧹 Force clearing all caches to ensure fresh build..."
+          flutter clean
+          rm -rf ios/Pods
+          rm -rf ios/Podfile.lock
+          rm -rf ~/.pub-cache
+          rm -rf $HOME/Library/Caches/CocoaPods
+          rm -rf build/
+          echo "✅ All caches cleared"
+          
+      - name: Clean previous builds
+        script: |
+          flutter clean
+          rm -rf ios/Pods
+          rm -rf ios/Podfile.lock
+          
+      - name: Get dependencies
+        script: flutter pub get
+        
+      - name: Auto-increment build number
+        script: |
+          echo "🔢 Auto-incrementing build number to avoid duplicates..."
+          CURRENT_VERSION=$(grep "^version:" pubspec.yaml | cut -d' ' -f2)
+          echo "Current version: $CURRENT_VERSION"
+          VERSION_NAME=$(echo $CURRENT_VERSION | cut -d'+' -f1)
+          BUILD_NUMBER=$(echo $CURRENT_VERSION | cut -d'+' -f2)
+          NEW_BUILD_NUMBER=$((BUILD_NUMBER + 1))
+          NEW_VERSION="${VERSION_NAME}+${NEW_BUILD_NUMBER}"
+          echo "📱 Updating version to: $NEW_VERSION"
+          sed -i.bak "s/^version: .*/version: $NEW_VERSION/" pubspec.yaml
+          echo "✅ Version updated successfully"
+          grep "^version:" pubspec.yaml
+        
+      - name: Fix iOS SSL and Environment Variables
+        script: |
+          echo "🔧 Setting up iOS environment and SSL fixes..."
+          
+          # Verify environment variables are loaded from supabase group
+          echo "SUPABASE_URL is: ${SUPABASE_URL:-'NOT SET'}"
+          echo "SUPABASE_ANON_KEY is: ${SUPABASE_ANON_KEY:-'NOT SET'}" 
+          
+          # Check if all required Supabase variables are available
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "❌ ERROR: Missing Supabase environment variables!"
+            echo "Please ensure the 'supabase' group is properly configured in Codemagic UI"
+            echo "Required variables: SUPABASE_URL, SUPABASE_ANON_KEY"
+            exit 1
+          fi
+          
+          # Final verification
+          echo "✅ Final check - SUPABASE_URL: ${SUPABASE_URL:0:30}..."
+          echo "✅ Final check - SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:0:30}..."
+          
+          # iOS SSL Certificate fix
+          echo "🔐 Updating iOS SSL certificates..."
+          # Update certificate bundle for iOS
+          /System/Library/Frameworks/Security.framework/Versions/A/Resources/certtool d &>/dev/null || true
+          
+          # Ensure proper iOS network security configuration
+          echo "📱 Configuring iOS network security..."
+          
+        
+      - name: Check Environment
+        script: |
+          echo "🔍 Environment Information:"
+          flutter --version
+          xcodebuild -version
+          which flutter
+          which xcodebuild
+          echo "Current directory: $(pwd)"
+          echo "Workspace contents:"
+          ls -la
+          
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install --repo-update
+          
+      - name: Configure iOS signing
+        script: |
+          # Set up code signing with xcode-project - this handles everything
+          echo "🔧 Applying Codemagic provisioning profiles to Xcode project..."
+          xcode-project use-profiles
+          
+          # List what we got
+          echo "🔐 Available signing identities:"
+          security find-identity -v -p codesigning
+          
+          echo "📄 Available provisioning profiles:"
+          ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/"
+          
+          # DO NOT create ExportOptions.plist manually
+          # Let flutter build ipa create it automatically from xcode-project settings
+          echo "✅ Code signing configured - will use Codemagic automatic settings"
+          
+      - name: Build iOS App
+        script: |
+          echo "🚀 Starting iOS build process..."
+          
+          # Check code signing setup in Xcode project
+          echo "🔍 Checking code signing settings in Xcode project..."
+          xcodebuild -showBuildSettings -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release | grep -E "CODE_SIGN|PROVISIONING_PROFILE|DEVELOPMENT_TEAM"
+          
+          # Step 1: Build archive only (not IPA)
+          echo "📦 Building iOS archive..."
+          echo "🔧 Using Supabase URL: ${SUPABASE_URL:0:50}..."
+          
+          flutter build ios --release \
+            --dart-define="SUPABASE_URL=$SUPABASE_URL" \
+            --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" \
+            --dart-define="SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" \
+            --no-codesign || {
+            echo "❌ Flutter build ios failed!"
+            echo "📋 Build failure details:"
+            ls -la build/ 2>/dev/null || echo "No build directory found"
+            exit 1
+          }
+          
+          # Step 2: Create archive with xcodebuild
+          echo "📦 Creating Xcode archive..."
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=B465SC3K74 || {
+            echo "❌ Archive creation failed!"
+            exit 1
+          }
+          
+          echo "✅ Archive created successfully!"
+          ls -la build/ios/archive/
+          
+          # Step 3: Export IPA from archive
+          echo "📤 Exporting IPA from archive..."
+          
+          # Get provisioning profile UUID
+          echo "🔍 Finding provisioning profile UUID..."
+          PROFILE_UUID=""
+          for profile in "$HOME/Library/MobileDevice/Provisioning Profiles"/*.mobileprovision; do
+            if [ -f "$profile" ]; then
+              # Check if this profile is for com.saboarena.app
+              APP_ID=$(security cms -D -i "$profile" 2>/dev/null | plutil -extract Entitlements.application-identifier raw - 2>/dev/null)
+              if [[ "$APP_ID" == *"com.saboarena.app"* ]]; then
+                PROFILE_UUID=$(security cms -D -i "$profile" 2>/dev/null | plutil -extract UUID raw - 2>/dev/null)
+                PROFILE_NAME=$(security cms -D -i "$profile" 2>/dev/null | plutil -extract Name raw - 2>/dev/null)
+                echo "✅ Found matching profile:"
+                echo "   Name: $PROFILE_NAME"
+                echo "   UUID: $PROFILE_UUID"
+                echo "   App ID: $APP_ID"
+                break
+              fi
+            fi
+          done
+          
+          if [ -z "$PROFILE_UUID" ]; then
+            echo "❌ No provisioning profile found for com.saboarena.app"
+            exit 1
+          fi
+          
+          # Create ExportOptions.plist with provisioning profile
+          cat > /tmp/ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>B465SC3K74</string>
+              <key>uploadBitcode</key>
+              <false/>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.saboarena.app</key>
+                  <string>$PROFILE_UUID</string>
+              </dict>
+          </dict>
+          </plist>
+          EOF
+          
+          echo "📄 ExportOptions.plist:"
+          cat /tmp/ExportOptions.plist
+          
+          # Export with xcodebuild
+          xcodebuild -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist /tmp/ExportOptions.plist || {
+            echo "❌ Export failed!"
+            echo ""
+            echo "📋 Debugging information:"
+            echo "Available provisioning profiles:"
+            for profile in "$HOME/Library/MobileDevice/Provisioning Profiles"/*.mobileprovision; do
+              if [ -f "$profile" ]; then
+                echo "---"
+                echo "File: $(basename "$profile")"
+                security cms -D -i "$profile" 2>/dev/null | plutil -p - | grep -E "Name|UUID|application-identifier" || true
+              fi
+            done
+            exit 1
+          }
+          
+          echo "✅ IPA export completed!"
+          ls -la build/ios/ipa/
+      
+      - name: Verify IPA Creation
+        script: |
+          echo "📁 Checking build outputs:"
+          ls -la build/ios/
+          
+          if [ -d "build/ios/ipa" ]; then
+            echo "✅ IPA directory exists:"
+            ls -la build/ios/ipa/
+            if ls build/ios/ipa/*.ipa 1> /dev/null 2>&1; then
+              echo "✅ IPA file found!"
+              ls -la build/ios/ipa/*.ipa
+              
+              # Get IPA file size and info
+              IPA_FILE=$(ls build/ios/ipa/*.ipa)
+              IPA_SIZE=$(stat -f%z "$IPA_FILE" 2>/dev/null || stat -c%s "$IPA_FILE" 2>/dev/null || echo "unknown")
+              echo "📊 IPA file size: $IPA_SIZE bytes"
+              
+              # Validate IPA file is not corrupted
+              if [ "$IPA_SIZE" -lt 1000000 ]; then
+                echo "❌ WARNING: IPA file size seems too small ($IPA_SIZE bytes)"
+              else
+                echo "✅ IPA file size looks good: $IPA_SIZE bytes"
+              fi
+              echo "📦 IPA Details:"
+              echo "File: $IPA_FILE"
+              echo "Size: $(du -h "$IPA_FILE" | cut -f1)"
+              echo "✅ IPA BUILD SUCCESS!"
+            else
+              echo "❌ No IPA file found in build/ios/ipa/"
+              echo "❌ IPA BUILD FAILED!"
+              exit 1
+            fi
+          else
+            echo "❌ IPA directory not created - flutter build ipa failed!"
+            echo "❌ IPA BUILD FAILED!"
+            exit 1
+          fi
+          
+    artifacts:
+      - build/ios/ipa/*.ipa
+      
+    publishing:
+      email:
+        recipients:
+          - longsangsabo@gmail.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false  # Only TestFlight for now

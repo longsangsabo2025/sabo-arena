@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-10-14T14:14:19.937047",
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "tests": [
+    {
+      "test": "Conversation List Query",
+      "passed": true,
+      "details": "Query works but no conversations exist",
+      "timestamp": "2025-10-14T14:14:18.078714"
+    },
+    {
+      "test": "No Duplicate Rooms",
+      "passed": true,
+      "details": "0 unique user pairs",
+      "timestamp": "2025-10-14T14:14:18.823804"
+    },
+    {
+      "test": "Duplicate Prevention Logic",
+      "passed": true,
+      "details": "No existing room, would create new one correctly",
+      "timestamp": "2025-10-14T14:14:18.953934"
+    },
+    {
+      "test": "Unread Message Count",
+      "passed": true,
+      "details": "0 unread messages across 0 rooms",
+      "timestamp": "2025-10-14T14:14:19.597822"
+    },
+    {
+      "test": "RLS Policies",
+      "passed": true,
+      "details": "All tables accessible with proper RLS",
+      "timestamp": "2025-10-14T14:14:19.935758"
+    }
+  ]
+}

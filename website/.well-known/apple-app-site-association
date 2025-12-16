@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [{
+      "appID": "B465SC3K74.com.saboarena.app",
+      "paths": ["/user/*", "/auth/*", "/tournament/*", "/club/*"]
+    }]
+  },
+  "webcredentials": {
+    "apps": ["B465SC3K74.com.saboarena.app"]
+  }
+}

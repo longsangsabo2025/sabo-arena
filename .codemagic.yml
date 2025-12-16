@@ -1,0 +1,195 @@
+workflows:
+  # 🚀 DEFAULT WORKFLOW - REDIRECT TO APP STORE
+  default:
+    name: iOS App Store Deployment
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: saboarena-asc
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.saboarena.app
+        apple_team_id: B465SC3K74
+      flutter: "stable"
+      xcode: 16.0
+      cocoapods: default
+      groups:
+        - app_store_connect
+        - supabase
+      vars:
+        BUNDLE_ID: "com.saboarena.app"
+        SKIP_DEPENDENCIES: "false"
+        SUPABASE_URL: "https://mogjjvscxjwvhtpkrlqr.supabase.co"
+        SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ"
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - ios/Pods
+        - $HOME/Library/Caches/CocoaPods
+        - ios/Runner.xcworkspace/xcuserdata
+        - ios/Flutter/ephemeral
+    triggering:
+      events:
+        - push
+        - manual
+      branch_patterns:
+        - pattern: "main"
+          include: true
+    scripts:
+      - name: ⚡ Fast dependency check
+        script: |
+          flutter pub get
+      - name: 🍎 Smart CocoaPods install
+        script: |
+          cd ios
+          pod install --repo-update
+      - name: 🔢 Set iOS build number
+        script: |
+          BUILD_NUMBER=$(($(app-store-connect get-latest-testflight-build-number \
+            --bundle-id "$BUNDLE_ID" \
+            --auth integration | tr -d '\n' | tr -d '\r') + 1))
+          echo "Calculated BUILD_NUMBER=$BUILD_NUMBER"
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $CM_ENV_EXPORT_FILE
+      - name: 🏗️ Build IPA for App Store
+        script: |
+          flutter build ipa --release \
+            --build-number=$BUILD_NUMBER \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/ios/archive/*.xcarchive
+    publishing:
+      email:
+        recipients:
+          - longsangsabo@gmail.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - Internal Testers
+        submit_to_app_store: true
+        cancel_previous_submissions: true
+        release_type: MANUAL
+
+  # 🚀 ORIGINAL WORKFLOW - DEPLOY TO APP STORE
+  ios-appstore:
+    name: iOS App Store Deployment
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: saboarena-asc
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.saboarena.app
+        apple_team_id: B465SC3K74
+      flutter: "stable"
+      xcode: 16.0
+      cocoapods: default
+      groups:
+        - app_store_connect
+        - supabase
+      vars:
+        BUNDLE_ID: "com.saboarena.app"
+        
+        # 🚀 SPEED CONTROL - Set to skip dependency steps
+        SKIP_DEPENDENCIES: "false"  # Set to "true" to jump straight to build
+        
+        # 🔑 BACKUP: Manual App Store Connect API (if integration fails)
+        # APP_STORE_CONNECT_KEY_IDENTIFIER: "22AL4LKQ94"
+        # APP_STORE_CONNECT_ISSUER_ID: "4405e7f9-8e89-495a-b535-f9e83e96a7ad"
+        # APP_STORE_CONNECT_PRIVATE_KEY: "$APP_STORE_CONNECT_API_KEY_BASE64"
+        
+        # Supabase Environment Variables
+        SUPABASE_URL: "https://mogjjvscxjwvhtpkrlqr.supabase.co"
+        SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ"
+        
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - ios/Pods
+        - $HOME/Library/Caches/CocoaPods
+        - ios/Runner.xcworkspace/xcuserdata
+        - ios/Flutter/ephemeral
+      
+    triggering:
+      events:
+        - push
+        - manual
+      branch_patterns:
+        - pattern: "main"
+          include: true
+          
+    scripts:
+      - name: ⚡ Fast dependency check
+        script: |
+          if [ "$SKIP_DEPENDENCIES" = "true" ]; then
+            echo "🚀 SKIP_DEPENDENCIES=true - Jumping straight to build!"
+            echo "⚠️  Using cached dependencies only"
+            exit 0
+          fi
+          echo "🔍 Checking if dependencies need update..."
+          if [ -f "pubspec.lock" ] && [ -f "ios/Podfile.lock" ]; then
+            echo "✅ Dependencies already resolved, using cache"
+            flutter pub get --offline || flutter pub get
+          else
+            echo "📦 Getting fresh dependencies"
+            flutter pub get
+          fi
+          
+      - name: 🍎 Smart CocoaPods install
+        script: |
+          if [ "$SKIP_DEPENDENCIES" = "true" ]; then
+            echo "🚀 Skipping CocoaPods - Using cached Pods"
+            exit 0
+          fi
+          cd ios
+          if [ -f "Podfile.lock" ] && [ -d "Pods" ]; then
+            echo "✅ Pods already installed, checking for updates..."
+            pod install --deployment || pod install --repo-update
+          else
+            echo "📦 Fresh pod install"
+            pod install --repo-update
+          fi
+          
+      - name: 🔢 Set iOS build number
+        script: |
+          BUILD_NUMBER=$(($(app-store-connect get-latest-testflight-build-number \
+            --bundle-id "$BUNDLE_ID" \
+            --auth integration | tr -d '\n' | tr -d '\r') + 1))
+          echo "Calculated BUILD_NUMBER=$BUILD_NUMBER"
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $CM_ENV_EXPORT_FILE
+          
+      - name: 🏗️ Build IPA for App Store
+        script: |
+          flutter build ipa --release \
+            --build-number=$BUILD_NUMBER \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+            
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/ios/archive/*.xcarchive
+      - coverage/lcov.info
+      - flutter_drive.log
+      
+    publishing:
+      email:
+        recipients:
+          - longsangsabo@gmail.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - Internal Testers
+        submit_to_app_store: true
+        cancel_previous_submissions: true
+        release_type: MANUAL

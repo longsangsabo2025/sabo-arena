@@ -1,0 +1,224 @@
+name: 🚀 SaboArena CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags:
+      - 'v*'  # Trigger on version tags
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  FLUTTER_VERSION: '3.35.2'
+  # Supabase config for all builds
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+jobs:
+  # ========== CI PHASE ==========
+  test:
+    name: 🧪 Test & Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    # - name: 🔍 Analyze Code
+    #   run: flutter analyze
+      
+    # - name: 📐 Check Formatting
+    #   run: dart format --set-exit-if-changed .
+      
+    - name: 🧪 Run Unit Tests
+      run: flutter test --coverage
+      
+    - name: 📊 Upload Coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        
+  # ========== BUILD PHASE ==========
+  build-android:
+    name: 🤖 Build Android
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🏗️ Build APK (Debug)
+      run: flutter build apk --debug
+      
+    - name: 🏗️ Build APK (Release)
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+      run: flutter build apk --release \
+        --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" \
+        --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        
+    - name: 📦 Upload APK Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk/
+        
+  build-ios:
+    name: 🍎 Build iOS
+    needs: test
+    runs-on: macos-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🏗️ Build iOS (No Codesign)
+      run: flutter build ios --release --no-codesign \
+        --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" \
+        --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+        
+  # ========== DEPLOY PHASE ==========
+  deploy-internal:
+    name: 🚀 Deploy to Internal Testing
+    needs: [test, build-android]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 🔐 Setup Android Signing
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/keystore.jks
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        echo "storeFile=keystore.jks" >> android/key.properties
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🏗️ Build AAB for Play Store
+      run: flutter build appbundle --release \
+        --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+        --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+        
+    - name: 📱 Upload to Google Play Internal Testing
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+        packageName: com.sabo_arena.app
+        releaseFiles: build/app/outputs/bundle/release/app-release.aab
+        track: internal
+        status: completed
+        
+  # ========== DEPLOYMENT PHASE ==========
+  deploy-alpha:
+    name: 🧪 Deploy to Alpha Testing
+    needs: [test, build-android]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || contains(github.ref, 'alpha')
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🏗️ Build APK for Alpha
+      run: flutter build apk --release \
+        --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" \
+        --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        
+    - name: 🧪 Upload to Google Play Alpha
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        packageName: com.sabo_arena.app
+        releaseFiles: build/app/outputs/flutter-apk/app-release.apk
+        track: alpha
+        status: completed
+        
+  deploy-production:
+    name: 🏭 Deploy to Production
+    needs: [test, build-android]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 🔐 Setup Android Signing
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/keystore.jks
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        echo "storeFile=keystore.jks" >> android/key.properties
+        
+    - name: 📦 Get Dependencies
+      run: flutter pub get
+      
+    - name: 🏗️ Build AAB for Production
+      run: flutter build appbundle --release \
+        --dart-define=SUPABASE_URL="${{ env.SUPABASE_URL }}" \
+        --dart-define=SUPABASE_ANON_KEY="${{ env.SUPABASE_ANON_KEY }}"
+        
+    - name: 🏪 Upload to Google Play Production
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        packageName: com.sabo_arena.app
+        releaseFiles: build/app/outputs/bundle/release/app-release.aab
+        track: production
+        status: draft # Requires manual review

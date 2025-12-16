@@ -1,0 +1,141 @@
+name: sabo_arena
+description: A new Flutter project.
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  # Android Adaptive Icon Configuration
+  adaptive_icon_background: "#1E8A6F"  # Màu xanh lá của SABO Arena
+  adaptive_icon_foreground: "assets/images/logo.png"
+  adaptive_icon_foreground_inset: 20  # Padding 20% để icon không bị cắt
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+  windows:
+    generate: true
+    image_path: "assets/images/logo.png"
+  macos:
+    generate: true
+    image_path: "assets/images/logo.png"
+
+version: 1.2.4+39
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'  # More flexible for CI/CD environments
+
+dependencies:
+  flutter:       # CRITICAL: Required for every Flutter project - DO NOT REMOVE
+    sdk: flutter # CRITICAL: Required for every Flutter project - DO NOT REMOVE
+  flutter_localizations: # Support for internationalization
+    sdk: flutter
+  
+  # CRITICAL: Core UI and responsive design - DO NOT REMOVE OR MODIFY
+  sizer: ^3.1.3               # Updated for latest responsive design improvements
+  flutter_svg: ^2.0.9        # Required for SVG icon support
+  google_fonts: ^6.1.0       # Required for typography (replaces local fonts)
+  shared_preferences: ^2.2.2 # Required for local data storage
+  
+  # Feature dependencies - UPGRADED FOR MODERN STANDARDS
+  cached_network_image: ^3.4.1
+  connectivity_plus: ^6.1.0        # Upgraded
+  dio: ^5.7.0
+  fluttertoast: ^8.2.8            # Kept stable for now, v9 has known issues
+  fl_chart: ^0.69.0                # Upgraded
+  camera: ^0.11.0+2               # Upgraded
+  image_picker: ^1.1.2
+  file_picker: ^8.1.4             # Upgraded
+  shimmer: ^3.0.0                 # Facebook-style loading effect
+  crypto: ^3.0.5
+  permission_handler: ^11.4.0     # STABLE VERSION - iOS compatible
+  image: ^4.3.0  # For photo processing and watermarking
+  path_provider: ^2.1.5  # For file path access
+  flutter_slidable: ^3.1.2        # Upgraded
+  http: ^1.2.2
+  mobile_scanner: ^7.1.2          # Latest stable - iOS 13+ supported with Vision API
+  geolocator: ^13.0.2             # Upgraded to latest
+  supabase_flutter: ^2.10.3        # UPGRADED - Latest stable (Oct 2025) with iOS SSL fixes
+  share_plus: ^10.1.3             # Upgraded
+  upgrader: ^10.3.0               # Auto check app updates from App Store/Play Store
+  screenshot: ^3.0.0              # Widget to image for rich sharing
+  qr_flutter: ^4.1.0              # QR code generation for shareable cards
+  uuid: ^4.5.1                    # UUID generation
+  intl: ^0.20.2                   # Date/time formatting
+  url_launcher: ^6.3.1            # Launch external URLs and map apps
+  intl_phone_field: ^3.2.0        # International phone number input with country picker
+  table_calendar: ^3.1.2          # Calendar widget for date selection
+  flutter_datetime_picker_plus: ^2.2.0  # iOS-style scrollable time/date picker
+  
+  # Social Authentication
+  google_sign_in: ^6.2.1          # Google OAuth login
+  flutter_facebook_auth: ^7.1.1   # Facebook login
+  sign_in_with_apple: ^6.1.3      # Apple Sign In (iOS only)
+  
+  # Local Push Notifications (không cần Firebase với Supabase)
+  flutter_local_notifications: ^17.2.4 # iOS compatible version
+  timeago: ^3.7.1
+  sqflite: ^2.3.0  # Local database for message caching (WhatsApp/Messenger style)
+  firebase_core: ^3.6.0
+  firebase_messaging: ^15.1.3
+  json_annotation: ^4.9.0          # JSON serialization annotations
+  webview_flutter: ^4.9.0          # WebView for live streaming (Phase 6)
+  
+  # In-App Notification Overlays (NEW - Oct 2025)
+  overlay_support: ^2.1.0  # In-app notification overlays and toasts
+  flash: ^3.1.1            # Modern Material 3 notification bars
+  badges: ^3.1.2           # Notification badge with count
+  rxdart: ^0.27.7          # Stream management for real-time updates
+  
+  # YouTube Video Integration
+  youtube_player_flutter: ^9.0.3  # Custom video player with YouTube embed support
+  googleapis: ^13.2.0             # YouTube Data API v3 for video upload
+  googleapis_auth: ^1.6.0         # OAuth2 authentication for YouTube API
+  video_player: ^2.9.2            # Video validation and thumbnail generation
+  video_thumbnail: ^0.5.3         # Generate thumbnails from videos
+  flutter_image_compress: ^2.4.0
+  
+  # Deep Links
+  app_links: ^6.3.2  # Modern deep link handler for Universal Links & App Links
+  sentry_flutter: ^9.8.0
+  
+  equatable: any
+  path: any
+dev_dependencies:
+  flutter_test:    # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
+    sdk: flutter   # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
+  flutter_lints: ^3.0.2 # DOWNGRADE - v4 conflicts with older plugins
+  flutter_launcher_icons: ^0.14.4 # DOWNGRADE - v0.14+ iOS conflicts
+  flutter_native_splash: ^2.3.11 # DOWNGRADE - v2.4+ conflicts
+  test: ^1.24.0           # Unit testing framework
+  integration_test:        # E2E testing framework
+    sdk: flutter
+  build_runner: ^2.4.7    # Code generation tools
+  json_serializable: ^6.8.0        # JSON serialization code generation
+  mockito: ^5.5.0         # Mocking for unit tests
+
+flutter:
+  uses-material-design: true # CRITICAL: Required for Material icon font - DO NOT REMOVE
+  generate: true # Enable internationalization
+  assets:
+    - assets/
+    - assets/images/
+  # CRITICAL ASSET MANAGEMENT RULES:
+  # - DO NOT ADD NEW ASSET DIRECTORIES (assets/svg/, assets/icons/, etc.)
+
+# App Icon Configuration already defined above
+
+# Splash Screen Configuration
+flutter_native_splash:
+  color: "#00695C"
+  image: assets/images/logo.png
+  android_12:
+    image: assets/images/logo.png
+    color: "#00695C"
+  web: false
+  # - ONLY USE EXISTING AND ITEMS AVAILABLE IN THE DIRECTORIES LISTED ABOVE (assets/, assets/images/)
+  
+  # CRITICAL FONTS RULE: 
+  # - THIS PROJECT USES GOOGLE FONTS INSTEAD OF LOCAL FONTS
+  # - DO NOT ADD ANY LOCAL FONTS SECTION OR FONT FILES

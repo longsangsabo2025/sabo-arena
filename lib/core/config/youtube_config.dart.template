@@ -1,0 +1,84 @@
+/// YouTube Data API v3 Configuration
+/// 
+/// Setup Instructions:
+/// 1. Go to https://console.cloud.google.com/
+/// 2. Create a new project or select existing one
+/// 3. Enable "YouTube Data API v3"
+/// 4. Create OAuth 2.0 credentials (Desktop app)
+/// 5. Download JSON and copy client_id, client_secret
+/// 6. Copy this file to youtube_config.dart and add your credentials
+/// 
+/// Privacy Settings:
+/// - All videos uploaded as UNLISTED (not searchable on YouTube)
+/// - Random UUID titles to prevent identification
+/// - No tags, minimal description
+/// - User never knows video is on YouTube
+
+class YouTubeConfig {
+  // TODO: Replace with your actual credentials from Google Cloud Console
+  // IMPORTANT: Never commit real credentials to git!
+  // Copy this file to youtube_config.dart and add your credentials there
+  
+  /// OAuth 2.0 Client ID from Google Cloud Console
+  static const String clientId = String.fromEnvironment(
+    'YOUTUBE_CLIENT_ID',
+    defaultValue: 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com',
+  );
+  
+  /// OAuth 2.0 Client Secret from Google Cloud Console
+  static const String clientSecret = String.fromEnvironment(
+    'YOUTUBE_CLIENT_SECRET',
+    defaultValue: 'YOUR_CLIENT_SECRET_HERE',
+  );
+  
+  /// Redirect URI for OAuth flow (use localhost for mobile apps)
+  static const String redirectUri = 'http://localhost:8080';
+  
+  /// YouTube Data API v3 scopes
+  /// - youtube.upload: Upload and manage videos
+  /// - youtube.readonly: Read video data
+  static const List<String> scopes = [
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/youtube.readonly',
+  ];
+  
+  /// Default privacy status for uploaded videos
+  /// Options: 'public', 'unlisted', 'private'
+  /// We use 'unlisted' so videos are not searchable but accessible via link
+  static const String defaultPrivacyStatus = 'unlisted';
+  
+  /// App identifier for video metadata
+  static const String appIdentifier = 'SaboArena';
+  
+  /// Maximum video duration in seconds (15 seconds)
+  static const int maxVideoDurationSeconds = 15;
+  
+  /// Maximum video file size in MB (50 MB for smooth upload)
+  static const int maxVideoFileSizeMB = 50;
+  
+  /// Video category ID (22 = People & Blogs, least suspicious)
+  static const String defaultCategoryId = '22';
+  
+  /// Generate random title to hide video content
+  static String generateRandomTitle() {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    return '${appIdentifier}_${timestamp}';
+  }
+  
+  /// Check if YouTube API is configured
+  static bool get isConfigured {
+    return clientId != 'YOUR_CLIENT_ID_HERE.apps.googleusercontent.com' &&
+        clientSecret != 'YOUR_CLIENT_SECRET_HERE';
+  }
+  
+  /// YouTube video URL from video ID
+  static String getVideoUrl(String videoId) {
+    return 'https://www.youtube.com/watch?v=$videoId';
+  }
+  
+  /// YouTube thumbnail URL from video ID
+  /// Quality options: default, mqdefault, hqdefault, sddefault, maxresdefault
+  static String getThumbnailUrl(String videoId, {String quality = 'hqdefault'}) {
+    return 'https://img.youtube.com/vi/$videoId/$quality.jpg';
+  }
+}

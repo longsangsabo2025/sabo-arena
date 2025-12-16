@@ -1,0 +1,28 @@
+# Test Coverage Configuration for SABO Arena
+# 
+# Target: 80% coverage minimum (matching React projects)
+# 
+# Usage:
+# ```bash
+# flutter test --coverage
+# genhtml coverage/lcov.info -o coverage/html
+# open coverage/html/index.html
+# ```
+
+coverage:
+  # Minimum coverage thresholds
+  line: 80
+  function: 80
+  branch: 80
+  statement: 80
+  
+  # Exclude from coverage
+  exclude:
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
+    - '**/generated/**'
+    - '**/test/**'
+    - '**/integration_test/**'
+    - '**/lib/main.dart' # App entry point
+    - '**/lib/core/app_export.dart' # Generated exports
+
