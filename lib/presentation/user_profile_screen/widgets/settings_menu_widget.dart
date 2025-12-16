@@ -35,8 +35,8 @@ class SettingsMenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -48,7 +48,7 @@ class SettingsMenuWidget extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: const Color(0xFFCED0D4),
+              color: Theme.of(context).colorScheme.outline,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -59,21 +59,21 @@ class SettingsMenuWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Tùy chọn',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF050505),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: -0.4,
                   ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close,
                     size: 24,
-                    color: Color(0xFF65676B),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                   ),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -92,8 +92,8 @@ class SettingsMenuWidget extends StatelessWidget {
                   _buildMenuItem(
                     context,
                     icon: Icons.business_outlined,
-                    iconColor: const Color(0xFF0866FF),
-                    iconBackground: const Color(0xFF0866FF).withValues(alpha: 0.1),
+                    iconColor: Theme.of(context).colorScheme.primary,
+                    iconBackground: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     title: 'Quản lý CLB',
                     subtitle: 'Giao diện quản lý câu lạc bộ',
                     onTap: onClubManagement,
@@ -103,8 +103,8 @@ class SettingsMenuWidget extends StatelessWidget {
                   _buildMenuItem(
                     context,
                     icon: Icons.person_outline,
-                    iconColor: const Color(0xFF10B981),
-                    iconBackground: const Color(0xFF10B981).withValues(alpha: 0.1),
+                    iconColor: Colors.green,
+                    iconBackground: Colors.green.withValues(alpha: 0.1),
                     title: 'Chế độ người chơi',
                     subtitle: 'Chuyển về giao diện người chơi',
                     onTap: onSwitchToPlayerView,
@@ -113,8 +113,8 @@ class SettingsMenuWidget extends StatelessWidget {
                 _buildMenuItem(
                   context,
                   icon: Icons.share_outlined,
-                  iconColor: const Color(0xFF0866FF),
-                  iconBackground: const Color(0xFF0866FF).withValues(alpha: 0.1),
+                  iconColor: Theme.of(context).colorScheme.primary,
+                  iconBackground: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   title: 'Chia sẻ hồ sơ',
                   subtitle: 'Chia sẻ hồ sơ của bạn với bạn bè',
                   onTap: () {},
@@ -123,23 +123,23 @@ class SettingsMenuWidget extends StatelessWidget {
                 _buildMenuItem(
                   context,
                   icon: Icons.content_copy_outlined,
-                  iconColor: const Color(0xFF0866FF),
-                  iconBackground: const Color(0xFF0866FF).withValues(alpha: 0.1),
+                  iconColor: Theme.of(context).colorScheme.primary,
+                  iconBackground: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   title: 'Sao chép liên kết',
                   subtitle: 'Sao chép đường dẫn đến hồ sơ',
                   onTap: () {},
                 ),
 
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: Divider(height: 1, color: Color(0xFFE4E6EB)),
+                  child: Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
                 ),
 
                 _buildMenuItem(
                   context,
                   icon: Icons.person_outline,
-                  iconColor: const Color(0xFF65676B),
-                  iconBackground: const Color(0xFFF0F2F5),
+                  iconColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  iconBackground: Theme.of(context).colorScheme.surfaceContainerHighest,
                   title: 'Tài khoản',
                   subtitle: 'Thông tin cá nhân, bảo mật',
                   onTap: onAccountSettings,
@@ -148,8 +148,8 @@ class SettingsMenuWidget extends StatelessWidget {
                 _buildMenuItem(
                   context,
                   icon: Icons.notifications_outlined,
-                  iconColor: const Color(0xFF65676B),
-                  iconBackground: const Color(0xFFF0F2F5),
+                  iconColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  iconBackground: Theme.of(context).colorScheme.surfaceContainerHighest,
                   title: 'Thông báo',
                   subtitle: 'Cài đặt thông báo push',
                   onTap: onNotificationSettings,
@@ -158,23 +158,23 @@ class SettingsMenuWidget extends StatelessWidget {
                 _buildMenuItem(
                   context,
                   icon: Icons.language,
-                  iconColor: const Color(0xFF65676B),
-                  iconBackground: const Color(0xFFF0F2F5),
+                  iconColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  iconBackground: Theme.of(context).colorScheme.surfaceContainerHighest,
                   title: 'Ngôn ngữ',
                   subtitle: 'Tiếng Việt, English',
                   onTap: onLanguageSettings,
                 ),
 
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: Divider(height: 1, color: Color(0xFFE4E6EB)),
+                  child: Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
                 ),
 
                 _buildMenuItem(
                   context,
                   icon: Icons.help_outline,
-                  iconColor: const Color(0xFF65676B),
-                  iconBackground: const Color(0xFFF0F2F5),
+                  iconColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  iconBackground: Theme.of(context).colorScheme.surfaceContainerHighest,
                   title: 'Trợ giúp & Hỗ trợ',
                   subtitle: 'FAQ, liên hệ',
                   onTap: onHelpSupport,
@@ -226,10 +226,10 @@ class SettingsMenuWidget extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF050505),
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.3,
                         height: 1.3,
                       ),
@@ -237,10 +237,10 @@ class SettingsMenuWidget extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF65676B),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                         letterSpacing: -0.1,
                         height: 1.3,
                       ),
@@ -363,7 +363,7 @@ class SettingsMenuWidget extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              foregroundColor: Theme.of(context).colorScheme.onError,
             ),
             child: Text('Đăng xuất'),
           ),
