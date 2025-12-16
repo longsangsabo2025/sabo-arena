@@ -91,7 +91,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ClipRRect(
@@ -118,8 +118,8 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
               Expanded(
                 child: Text(
                   _controller.metadata.title,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -170,7 +170,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   /// Custom controls overlay (optional)
   Widget _buildCustomControls() {
     return Container(
-      color: Colors.black87,
+      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,7 +179,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
           IconButton(
             icon: Icon(
               _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             onPressed: () {
               setState(() {
@@ -198,6 +198,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
                   _controller.value.volume > 0
                       ? Icons.volume_up
                       : Icons.volume_off,
+                  color: Theme.of(context).colorScheme.onSurface,
                   color: Colors.white,
                 ),
                 onPressed: () {
@@ -246,7 +247,7 @@ class VideoThumbnailWidget extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           borderRadius: borderRadius ?? BorderRadius.circular(12),
-          color: Colors.black,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
         ),
         child: ClipRRect(
           borderRadius: borderRadius ?? BorderRadius.circular(12),
@@ -259,10 +260,10 @@ class VideoThumbnailWidget extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: Colors.grey[900],
-                    child: const Icon(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    child: Icon(
                       Icons.video_library,
-                      color: Colors.white54,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       size: 48,
                     ),
                   );
@@ -271,7 +272,7 @@ class VideoThumbnailWidget extends StatelessWidget {
 
               // Play button overlay
               Container(
-                color: Colors.black38,
+                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.4),
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -321,7 +322,7 @@ class VideoPlayerDialog extends StatelessWidget {
   }) {
     return showDialog(
       context: context,
-      barrierColor: Colors.black,
+      barrierColor: Theme.of(context).colorScheme.scrim,
       builder: (context) =>
           VideoPlayerDialog(videoId: videoId, autoPlay: autoPlay),
     );
@@ -351,10 +352,10 @@ class VideoPlayerDialog extends StatelessWidget {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black54,
+                  color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.close, color: Colors.white, size: 24),
+                child: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurface, size: 24),
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),

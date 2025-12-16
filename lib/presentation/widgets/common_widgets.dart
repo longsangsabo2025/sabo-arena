@@ -94,13 +94,14 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.white,
+        color: backgroundColor ?? colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -222,14 +223,15 @@ class StatCardLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -383,10 +385,10 @@ class ErrorStateWidget extends StatelessWidget {
               SizedBox(height: 6.w),
               ElevatedButton.icon(
                 onPressed: onRetry,
-                icon: Icon(Icons.refresh, color: Colors.white),
-                label: Text('Thử lại', style: TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis),
+                icon: Icon(Icons.refresh, color: Theme.of(context).colorScheme.onPrimary),
+                label: Text('Thử lại', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary), overflow: TextOverflow.ellipsis),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
