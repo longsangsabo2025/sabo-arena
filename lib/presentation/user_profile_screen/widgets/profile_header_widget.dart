@@ -192,66 +192,6 @@ class ProfileHeaderWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatarSection(BuildContext context) {
-    return GestureDetector(
-      onTap: onAvatarTap,
-      child: Container(
-        width: 20.w,
-        height: 20.w,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Theme.of(context).colorScheme.surface,
-            width: 4,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withValues(
-                alpha: 0.2,
-              ),
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            ClipOval(
-              child: _buildImageWidget(
-                imageUrl:
-                    userData["avatar"] as String? ??
-                    "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png",
-                width: 20.w,
-                height: 20.w,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.surface,
-                    width: 2,
-                  ),
-                ),
-                child: CustomIconWidget(
-                  iconName: 'camera_alt',
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  size: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildEditButton(BuildContext context) {
     return _buildActionButton(
       context: context,
@@ -766,26 +706,6 @@ class ProfileHeaderWidget extends StatelessWidget {
 
   // ============= OLD METHODS (Keep for reference or remove later) =============
 
-  Widget _buildRankBadge(BuildContext context) {
-    final userRank = userData["rank"] as String?;
-    final hasRank =
-        userRank != null && userRank.isNotEmpty && userRank != 'unranked';
-
-    // Bọc toàn bộ widget bằng GestureDetector để có thể nhấn vào
-    return GestureDetector(
-      onTap: () {
-        if (hasRank) {
-          // Người dùng đã có rank, có thể hiển thị thông tin chi tiết về rank
-          _showRankDetails(context);
-        } else {
-          // Người dùng chưa có rank, hiển thị modal đăng ký
-          _showRankInfoModal(context);
-        }
-      },
-      child: _buildRankContent(context, hasRank, userRank),
-    );
-  }
-
   // Tách riêng nội dung của rank badge để dễ quản lý
   Widget _buildRankContent(
     BuildContext context,
@@ -932,115 +852,6 @@ class ProfileHeaderWidget extends StatelessWidget {
   void _showRankDetails(BuildContext context) {
     // TODO: Implement rank details dialog/screen
     // Show detailed rank information, progression, requirements, etc.
-  }
-
-  Widget _buildEloSection(BuildContext context) {
-    // Lấy ELO từ elo_rating
-    final currentElo = userData["elo_rating"] as int? ?? 1200;
-    final nextRankInfo = SaboRankSystem.getNextRankInfo(currentElo);
-    final progress = SaboRankSystem.getRankProgress(currentElo);
-    final currentRank = RankingConstants.getRankFromElo(currentElo);
-    final skillDescription = SaboRankSystem.getRankSkillDescription(
-      currentRank,
-    );
-
-    return Container(
-      padding: EdgeInsets.all(4.w),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'ELO Rating',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(width: 1.w),
-                  GestureDetector(
-                    onTap: () => _showEloExplanationDialog(context),
-                    child: Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary.withValues(
-                        alpha: 0.7,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                SaboRankSystem.formatElo(currentElo),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 0.5.h),
-
-          // Skill description
-          Text(
-            skillDescription,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              fontStyle: FontStyle.italic,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-
-          SizedBox(height: 1.h),
-
-          // Progress Bar
-          Container(
-            height: 8,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outline.withValues(
-                alpha: 0.2,
-              ),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: progress,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-          ),
-
-          SizedBox(height: 0.5.h),
-
-          Text(
-            nextRankInfo['pointsNeeded'] > 0
-                ? 'Next rank ${nextRankInfo['nextRank']}: ${nextRankInfo['pointsNeeded']} points to go'
-                : 'Đã đạt rank cao nhất!',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildSpaAndPrizeSection(BuildContext context) {

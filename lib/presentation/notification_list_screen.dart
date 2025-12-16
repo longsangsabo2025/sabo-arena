@@ -350,40 +350,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     // TODO: Show bottom sheet with options (delete, turn off, etc.)
   }
 
-  Widget _buildNotificationText_OLD(Map<String, dynamic> notification) {
-    // OLD method - kept for reference, can be removed
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w400,
-          letterSpacing: -0.2,
-          color: Color(0xFF050505),
-          height: 1.3,
-        ),
-        children: [
-          TextSpan(
-            text: notification['name'],
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          if (notification['action'] != null)
-            TextSpan(text: ' ${notification['action']}'),
-          if (notification['extra'] != null)
-            TextSpan(
-              text: ' ${notification['extra']}',
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          if (notification['action2'] != null)
-            TextSpan(text: ' ${notification['action2']}'),
-          if (notification['target'] != null)
-            TextSpan(
-              text: ' ${notification['target']}',
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-        ],
-      ),
-    );
-  }
+
 
   // Helper methods for notification display
   IconData _getIconForType(String type) {
