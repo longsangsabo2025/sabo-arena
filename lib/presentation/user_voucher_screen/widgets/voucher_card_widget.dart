@@ -73,7 +73,7 @@ class VoucherCardWidget extends StatelessWidget {
                   ),
 
                   // Status Badge
-                  _buildStatusBadge(),
+                  _buildStatusBadge(context),
                 ],
               ),
 
@@ -224,7 +224,7 @@ class VoucherCardWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
     String text;
     Color color;
 

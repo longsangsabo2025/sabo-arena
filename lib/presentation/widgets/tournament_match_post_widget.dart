@@ -47,7 +47,7 @@ class TournamentMatchPostWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: _getHeaderGradient(postTrigger),
+                    colors: _getHeaderGradient(context, postTrigger),
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -197,7 +197,7 @@ class TournamentMatchPostWidget extends StatelessWidget {
     );
   }
 
-  List<Color> _getHeaderGradient(String? trigger) {
+  List<Color> _getHeaderGradient(BuildContext context, String? trigger) {
     final colorScheme = Theme.of(context).colorScheme;
     switch (trigger) {
       case 'live':

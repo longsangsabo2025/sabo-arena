@@ -75,7 +75,7 @@ class ProfileStatsCompactWidget extends StatelessWidget {
                   Expanded(
                     child: _buildStatCard(
                       context,
-                      icon: Icons.emoji_events,
+                      icon: 'emoji_events',
                       iconColor: const Color(0xFF45BD62), // Green
                       label: 'Thắng',
                       value: wins.toString(),

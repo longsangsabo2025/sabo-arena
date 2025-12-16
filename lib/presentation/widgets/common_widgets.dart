@@ -319,7 +319,7 @@ class EmptyStateWidget extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            if (subtitle != null) ..[
+            if (subtitle != null) ...[
               SizedBox(height: 2.w),
               Text(
                 subtitle!,

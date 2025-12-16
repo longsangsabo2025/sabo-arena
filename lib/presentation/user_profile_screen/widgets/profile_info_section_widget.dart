@@ -73,7 +73,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           // Info items
           if (userInfo['bio'] != null && (userInfo['bio'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'description',
               iconColor: const Color(0xFF65676B), // Gray
               text: userInfo['bio'] as String,
@@ -82,7 +82,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['location'] != null &&
               (userInfo['location'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'location_on',
               iconColor: const Color(0xFFF3425F), // Facebook red
               text: 'Sống tại ${userInfo['location']}',
@@ -90,7 +90,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['hometown'] != null &&
               (userInfo['hometown'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'home',
               iconColor: const Color(0xFF65676B), // Gray
               text: 'Đến từ ${userInfo['hometown']}',
@@ -98,7 +98,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['workplace'] != null &&
               (userInfo['workplace'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'work',
               iconColor: const Color(0xFF9B51E0), // Purple
               text: 'Làm việc tại ${userInfo['workplace']}',
@@ -106,7 +106,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['education'] != null &&
               (userInfo['education'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'school',
               iconColor: const Color(0xFF0866FF), // Blue
               text: 'Học tại ${userInfo['education']}',
@@ -114,7 +114,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['relationship'] != null &&
               (userInfo['relationship'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'favorite',
               iconColor: const Color(0xFFF3425F), // Red
               text: _getRelationshipText(userInfo['relationship'] as String),
@@ -122,7 +122,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['phone'] != null &&
               (userInfo['phone'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'phone',
               iconColor: const Color(0xFF45BD62), // Green
               text: userInfo['phone'] as String,
@@ -130,7 +130,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['email'] != null &&
               (userInfo['email'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'email',
               iconColor: const Color(0xFF0866FF), // Blue
               text: userInfo['email'] as String,
@@ -138,7 +138,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['website'] != null &&
               (userInfo['website'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'link',
               iconColor: const Color(0xFF0866FF), // Blue
               text: userInfo['website'] as String,
@@ -147,7 +147,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
 
           if (userInfo['birthday'] != null &&
               (userInfo['birthday'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'cake',
               iconColor: const Color(0xFFF7B928), // Yellow
               text: 'Sinh nhật ${userInfo['birthday']}',
@@ -156,7 +156,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
           // Gender
           if (userInfo['gender'] != null &&
               (userInfo['gender'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'person',
               iconColor: const Color(0xFF65676B), // Gray
               text: _getGenderText(userInfo['gender'] as String),
@@ -165,7 +165,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
           // Joined date
           if (userInfo['joinedDate'] != null &&
               (userInfo['joinedDate'] as String).isNotEmpty)
-            _buildInfoItem(
+            _buildInfoItem(context,
               icon: 'calendar_today',
               iconColor: const Color(0xFF65676B), // Gray
               text: 'Tham gia ${userInfo['joinedDate']}',
@@ -175,7 +175,8 @@ class ProfileInfoSectionWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoItem({
+  Widget _buildInfoItem(context,
+    BuildContext context, {
     required String icon,
     required Color iconColor,
     required String text,

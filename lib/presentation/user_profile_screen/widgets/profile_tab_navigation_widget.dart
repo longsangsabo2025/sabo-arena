@@ -20,14 +20,14 @@ class ProfileTabNavigationWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _buildTab(
+            child: _buildTab(context,
               label: 'Ready',
               value: 'ready',
               isActive: currentTab == 'ready',
             ),
           ),
           Expanded(
-            child: _buildTab(
+            child: _buildTab(context,
               label: 'Live',
               value: 'live',
               isActive: currentTab == 'live',
@@ -35,8 +35,7 @@ class ProfileTabNavigationWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: _buildTab(
-              label: 'Done',
+            child: _buildTab(              context,              label: 'Done',
               value: 'done',
               isActive: currentTab == 'done',
             ),
@@ -46,7 +45,8 @@ class ProfileTabNavigationWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTab({
+  Widget _buildTab(context,
+    BuildContext context, {
     required String label,
     required String value,
     required bool isActive,

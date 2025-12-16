@@ -39,13 +39,13 @@ class ProfileQuickActionsWidget extends StatelessWidget {
         ),
         itemBuilder: (context, index) {
           final action = actions[index];
-          return _buildActionCard(action);
+          return _buildActionCard(context, action);
         },
       ),
     );
   }
 
-  Widget _buildActionCard(QuickAction action) {
+  Widget _buildActionCard(BuildContext context, QuickAction action) {
     return InkWell(
       onTap: action.onTap,
       child: Container(
@@ -86,7 +86,7 @@ class ProfileQuickActionsWidget extends StatelessWidget {
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  if (action.subtitle != null) ..[
+                  if (action.subtitle != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       action.subtitle!,
