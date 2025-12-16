@@ -142,6 +142,9 @@ class AppColors {
   /// Success 100 - light success background
   static const Color success100 = Color(0xFFC8E6C9);
 
+  /// Success 200 - light green
+  static const Color success200 = Color(0xFFA5D6A7);
+
   /// Success 500 - main success color
   static const Color success500 = Color(0xFF4CAF50);
 
@@ -150,6 +153,12 @@ class AppColors {
 
   /// Success 700 - darker success
   static const Color success700 = Color(0xFF388E3C);
+
+  /// Success 800 - forest green
+  static const Color success800 = Color(0xFF2E7D32);
+
+  /// Success 900 - dark forest green
+  static const Color success900 = Color(0xFF1B5E20);
 
   /// Success - default success color (alias)
   static const Color success = success600;
@@ -161,6 +170,9 @@ class AppColors {
   /// Warning 100 - light warning background
   static const Color warning100 = Color(0xFFFFE0B2);
 
+  /// Warning 200 - light orange
+  static const Color warning200 = Color(0xFFFFCC80);
+
   /// Warning 500 - main warning color
   static const Color warning500 = Color(0xFFFF9800);
 
@@ -169,6 +181,9 @@ class AppColors {
 
   /// Warning 700 - darker warning
   static const Color warning700 = Color(0xFFF57C00);
+
+  /// Warning 900 - dark orange
+  static const Color warning900 = Color(0xFFE65100);
 
   /// Warning - default warning color (alias)
   static const Color warning = warning600;

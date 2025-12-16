@@ -196,7 +196,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -238,7 +238,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
               const SizedBox(height: 16),
 
               // VS Divider
-              const Row(
+              Row(
                 children: [
                   Expanded(child: Divider()),
                   Padding(

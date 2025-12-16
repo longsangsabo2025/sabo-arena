@@ -131,7 +131,7 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Voucher sẽ được đánh dấu đã sử dụng sau khi xác nhận.',
               style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
             ),

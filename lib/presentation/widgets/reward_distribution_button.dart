@@ -280,7 +280,7 @@ class _RewardDistributionButtonState extends State<RewardDistributionButton> {
             
             if (!_hasRewardsBeenDistributed) ...[
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '💡 Tip: Hãy kiểm tra kết quả trước khi gửi quà',
                 style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
               ),

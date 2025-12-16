@@ -284,7 +284,7 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
       onTap: _showCreatePostModal,
       child: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [

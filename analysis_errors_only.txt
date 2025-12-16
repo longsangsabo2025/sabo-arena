@@ -1,0 +1,31 @@
+
+  error - The getter 'success900' isn't defined for the type 'AppColors' - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:97:30 - undefined_getter
+  error - The getter 'success200' isn't defined for the type 'AppColors' - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:99:32 - undefined_getter
+  error - The getter 'success800' isn't defined for the type 'AppColors' - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:102:30 - undefined_getter
+  error - The getter 'warning200' isn't defined for the type 'AppColors' - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:113:30 - undefined_getter
+  error - The getter 'warning900' isn't defined for the type 'AppColors' - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:564:54 - undefined_getter
+  error - The getter 'success900' isn't defined for the type 'AppColors' - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:767:36 - undefined_getter
+  error - The getter 'success800' isn't defined for the type 'AppColors' - lib\presentation\find_opponents_screen\widgets\competitive_play_tab.dart:777:36 - undefined_getter
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:76:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:85:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:93:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:101:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:109:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:117:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:125:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:133:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:141:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:150:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:159:35 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildInfoItem', but 1 found - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:168:35 - not_enough_positional_arguments
+  error - The name 'context' is already defined - lib\presentation\user_profile_screen\widgets\profile_info_section_widget.dart:179:18 - duplicate_definition
+  error - 2 positional arguments expected by '_buildTab', but 1 found - lib\presentation\user_profile_screen\widgets\profile_tab_navigation_widget.dart:23:37 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildTab', but 1 found - lib\presentation\user_profile_screen\widgets\profile_tab_navigation_widget.dart:30:37 - not_enough_positional_arguments
+  error - 2 positional arguments expected by '_buildTab', but 1 found - lib\presentation\user_profile_screen\widgets\profile_tab_navigation_widget.dart:38:51 - not_enough_positional_arguments
+  error - The name 'context' is already defined - lib\presentation\user_profile_screen\widgets\profile_tab_navigation_widget.dart:49:18 - duplicate_definition
+  error - Methods can't be invoked in constant expressions - lib\presentation\user_profile_screen\widgets\score_input_dialog.dart:208:36 - const_eval_method_invocation
+  error - Methods can't be invoked in constant expressions - lib\presentation\user_profile_screen\widgets\score_input_dialog.dart:251:32 - const_eval_method_invocation
+  error - Methods can't be invoked in constant expressions - lib\presentation\user_profile_screen\widgets\user_posts_grid_widget.dart:291:15 - const_eval_method_invocation
+  error - Methods can't be invoked in constant expressions - lib\presentation\user_voucher_screen\voucher_table_payment_screen.dart:136:53 - const_eval_method_invocation
+  error - Methods can't be invoked in constant expressions - lib\presentation\widgets\reward_distribution_button.dart:285:55 - const_eval_method_invocation
+

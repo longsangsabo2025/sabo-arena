@@ -45,7 +45,7 @@ class ProfileTabNavigationWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(context,
+  Widget _buildTab(
     BuildContext context, {
     required String label,
     required String value,

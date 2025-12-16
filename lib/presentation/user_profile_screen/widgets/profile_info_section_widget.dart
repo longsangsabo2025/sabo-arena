@@ -175,7 +175,7 @@ class ProfileInfoSectionWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoItem(context,
+  Widget _buildInfoItem(
     BuildContext context, {
     required String icon,
     required Color iconColor,
