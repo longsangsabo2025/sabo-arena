@@ -288,8 +288,8 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF00695C),
-              Color(0xFF00897B),
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
             ],
           ),
           border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: 0.5),

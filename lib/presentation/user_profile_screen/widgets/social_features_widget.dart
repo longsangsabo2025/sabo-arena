@@ -21,23 +21,23 @@ class SocialFeaturesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF), // White background
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
-          top: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-          bottom: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
+          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         ),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Hoạt động xã hội',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF050505), // Facebook black
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
 
@@ -103,38 +103,38 @@ class SocialFeaturesWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: const BoxDecoration(
-          color: Color(0xFFF0F2F5), // Facebook light gray
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           border: Border(
-            top: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-            bottom: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-            left: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-            right: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
+            top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+            bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+            left: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+            right: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
           ),
         ),
         child: Column(
           children: [
             CustomIconWidget(
               iconName: icon,
-              color: const Color(0xFF0866FF), // Facebook blue
+              color: Theme.of(context).colorScheme.primary,
               size: 24,
             ),
             const SizedBox(height: 8),
             Text(
               count,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF050505), // Facebook black
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: Color(0xFF65676B), // Facebook gray
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -172,22 +172,22 @@ class SocialFeaturesWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Bạn bè gần đây',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF050505), // Facebook black
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             GestureDetector(
               onTap: onFriendsListTap,
-              child: const Text(
+              child: Text(
                 'Xem tất cả',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF0866FF), // Facebook blue
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -225,7 +225,7 @@ class SocialFeaturesWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFFE4E6EB), // Facebook divider
+                    color: Theme.of(context).colorScheme.outlineVariant,
                     width: 1,
                   ),
                 ),
@@ -250,10 +250,10 @@ class SocialFeaturesWidget extends StatelessWidget {
                     width: 16,
                     height: 16,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF45BD62), // Facebook green
+                      color: Colors.green,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFFFFFFFF),
+                        color: Theme.of(context).colorScheme.surface,
                         width: 2,
                       ),
                     ),
@@ -269,10 +269,10 @@ class SocialFeaturesWidget extends StatelessWidget {
             friend.displayName.isNotEmpty
                 ? friend.displayName
                 : friend.fullName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF050505), // Facebook black
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -297,22 +297,22 @@ class SocialFeaturesWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Thách đấu gần đây',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF050505), // Facebook black
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             GestureDetector(
               onTap: onRecentChallengesTap,
-              child: const Text(
+              child: Text(
                 'Xem tất cả',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF0866FF), // Facebook blue
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -344,13 +344,13 @@ class SocialFeaturesWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF0F2F5), // Facebook light gray
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         border: Border(
-          top: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-          bottom: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-          left: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-          right: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
+          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          left: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          right: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         ),
       ),
       child: Row(
@@ -384,10 +384,10 @@ class SocialFeaturesWidget extends StatelessWidget {
               children: [
                 Text(
                   'vs ${challenge["opponentName"] as String? ?? "Unknown"}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF050505), // Facebook black
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -395,10 +395,10 @@ class SocialFeaturesWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${challenge["gameType"] as String? ?? "8-Ball"} • ${challenge["date"] as String? ?? "Hôm nay"}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF65676B), // Facebook gray
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                   ),
                 ),
               ],
