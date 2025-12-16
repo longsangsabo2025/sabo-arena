@@ -142,21 +142,25 @@ class _ClubNotificationScreenSimpleState
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
-          ...[
-            'all_members',
-            'active_members',
-            'vip_members',
-            'new_members',
-          ].map(
-            (audience) => RadioListTile<String>(
-              title: Text(_getAudienceLabel(audience)),
-              value: audience,
-              groupValue: _targetAudience,
-              onChanged: (value) {
-                setState(() {
-                  _targetAudience = value!;
-                });
-              },
+          RadioGroup<String>(
+            value: _targetAudience,
+            onChanged: (value) {
+              setState(() {
+                _targetAudience = value!;
+              });
+            },
+            child: Column(
+              children: [
+                'all_members',
+                'active_members',
+                'vip_members',
+                'new_members',
+              ].map(
+                (audience) => RadioListTile<String>(
+                  title: Text(_getAudienceLabel(audience)),
+                  value: audience,
+                ),
+              ).toList(),
             ),
           ),
         ],

@@ -288,35 +288,34 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
         title: 'Mức giảm giá',
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: Text('Theo phần trăm (%)'),
-                    value: true,
-                    groupValue: _isPercentageDiscount,
-                    onChanged: (value) {
-                      setState(() {
-                        _isPercentageDiscount = value!;
-                        _discountAmountController.clear();
-                      });
-                    },
+            RadioGroup<bool>(
+              value: _isPercentageDiscount,
+              onChanged: (value) {
+                setState(() {
+                  _isPercentageDiscount = value!;
+                  if (value) {
+                    _discountAmountController.clear();
+                  } else {
+                    _discountPercentageController.clear();
+                  }
+                });
+              },
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RadioListTile<bool>(
+                      title: Text('Theo phần trăm (%)'),
+                      value: true,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: Text('Theo số tiền (đ)'),
-                    value: false,
-                    groupValue: _isPercentageDiscount,
-                    onChanged: (value) {
-                      setState(() {
-                        _isPercentageDiscount = value!;
-                        _discountPercentageController.clear();
-                      });
-                    },
+                  Expanded(
+                    child: RadioListTile<bool>(
+                      title: Text('Theo số tiền (đ)'),
+                      value: false,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             SizedBox(height: 16),
             if (_isPercentageDiscount) ...[
