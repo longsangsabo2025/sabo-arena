@@ -460,9 +460,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         final bracketData = {
           'tournament_id': widget.tournament.id,
           'matches': matches,
-          'format': widget.tournament.bracketFormat ?? 
-                   widget.tournament.tournamentType ?? 
-                   'sabo_de32', // Default for SABO tournaments
+          'format': widget.tournament.bracketFormat,
           'total_participants': widget.tournament.currentParticipants,
           'participantCount': widget.tournament.currentParticipants, // Add for compatibility
         };
@@ -505,7 +503,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
       
       final result = await productionService.createTournamentBracket(
         tournamentId: widget.tournament.id,
-        format: widget.tournament.bracketFormat ?? 'single_elimination',
+        format: widget.tournament.bracketFormat,
       );
 
       if (result?['success'] == true) {

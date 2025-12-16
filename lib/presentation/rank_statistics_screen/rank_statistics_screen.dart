@@ -269,16 +269,16 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${SaboRankSystem.formatElo(currentElo ?? 0)} ELO',
+                    '${SaboRankSystem.formatElo(currentElo)} ELO',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (nextRankElo > (currentElo ?? 0))
+                  if (nextRankElo > currentElo)
                     Text(
-                      'Cần ${nextRankElo - (currentElo ?? 0)} ELO',
+                      'Cần ${nextRankElo - currentElo} ELO',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 12.sp,
@@ -321,7 +321,7 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                 minHeight: 8,
               ),
               SizedBox(height: 1.h),
-              if (nextRankElo > (currentElo ?? 0))
+              if (nextRankElo > currentElo)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

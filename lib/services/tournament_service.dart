@@ -954,7 +954,6 @@ class TournamentService {
       // Then get user data in batch (optimized - no N+1 queries)
       final List<String> userIds = participants
           .map((p) => p['user_id'] as String)
-          .where((id) => id != null)
           .toSet()
           .toList();
 

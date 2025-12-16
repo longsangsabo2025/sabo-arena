@@ -367,9 +367,8 @@ class _TournamentOverviewTabState extends State<TournamentOverviewTab> {
 
   Widget _buildRecentActivities() {
     // Display recent activities from real data
-    return Container(
-      child: Column(
-        children: [
+    return Column(
+      children: [
           _buildActivityItem(
             'Người chơi mới đăng ký',
             '2 phút trước',

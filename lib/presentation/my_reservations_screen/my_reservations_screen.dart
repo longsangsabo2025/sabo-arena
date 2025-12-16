@@ -127,7 +127,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: DSSpinner.primary())
+          ? Center(child: DSSpinner.primary())
           : RefreshIndicator(
               onRefresh: _loadReservations,
               child: TabBarView(

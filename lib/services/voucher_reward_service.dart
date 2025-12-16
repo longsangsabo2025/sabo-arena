@@ -226,7 +226,7 @@ class VoucherRewardService {
           .select()
           .single();
 
-      return response != null;
+      return true;
     } catch (e) {
       throw Exception('Failed to use voucher: $e');
     }
