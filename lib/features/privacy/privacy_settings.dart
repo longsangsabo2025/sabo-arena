@@ -270,29 +270,43 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   void _showVisibilityOptions() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => RadioGroup<String>(
-        value: _settings.postsDefaultVisibility,
-        onChanged: (value) {
-          setState(() => _settings.postsDefaultVisibility = value!);
-          Navigator.pop(context);
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text('Công khai cho mọi người'),
-              leading: Radio<String>(value: 'public'),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            title: const Text('Công khai cho mọi người'),
+            leading: Radio<String>(
+              value: 'public',
+              groupValue: _settings.postsDefaultVisibility,
+              onChanged: (value) {
+                setState(() => _settings.postsDefaultVisibility = value!);
+                Navigator.pop(context);
+              },
             ),
-            ListTile(
-              title: Text('Chỉ người theo dõi'),
-              leading: Radio<String>(value: 'followers'),
+          ),
+          ListTile(
+            title: const Text('Chỉ người theo dõi'),
+            leading: Radio<String>(
+              value: 'followers',
+              groupValue: _settings.postsDefaultVisibility,
+              onChanged: (value) {
+                setState(() => _settings.postsDefaultVisibility = value!);
+                Navigator.pop(context);
+              },
             ),
-            ListTile(
-              title: Text('Chỉ mình tôi'),
-              leading: Radio<String>(value: 'private'),
+          ),
+          ListTile(
+            title: const Text('Chỉ mình tôi'),
+            leading: Radio<String>(
+              value: 'private',
+              groupValue: _settings.postsDefaultVisibility,
+              onChanged: (value) {
+                setState(() => _settings.postsDefaultVisibility = value!);
+                Navigator.pop(context);
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -123,56 +123,50 @@ class _GrantPermissionDialogState extends State<GrantPermissionDialog> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 12),
-        RadioGroup<ClubRole>(
-          value: _selectedRole,
-          onChanged: _isLoading
-              ? null
-              : (value) {
-                  setState(() {
-                    _selectedRole = value!;
-                    _useCustomPermissions = false;
-                    // Update permissions based on role
-                    _customPermissions = {
-                      'can_verify_rank': value.canVerifyRank,
-                      'can_input_score': value.canInputScore,
-                      'can_manage_tables': value.canManageTables,
-                      'can_view_reports': value.canViewReports,
-                      'can_manage_members': value.canManageMembers,
-                      'can_manage_permissions': value.canManagePermissions,
-                    };
-                  });
-                },
-          child: Column(
-            children: ClubRole.values
-                .where((role) => role != ClubRole.owner)
-                .map((role) {
-              return RadioListTile<ClubRole>(
-                title: Row(
-                  children: [
-                    Text(role.icon, style: const TextStyle(fontSize: 20)),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            role.displayName,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            role.description,
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
+        ...ClubRole.values.where((role) => role != ClubRole.owner).map((role) {
+          return RadioListTile<ClubRole>(
+            title: Row(
+              children: [
+                Text(role.icon, style: const TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        role.displayName,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    ),
-                  ],
+                      Text(
+                        role.description,
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ),
-                value: role,
-              );
-            }).toList(),
-          ),
-        ),
+              ],
+            ),
+            value: role,
+            groupValue: _selectedRole,
+            onChanged: _isLoading
+                ? null
+                : (value) {
+                    setState(() {
+                      _selectedRole = value!;
+                      _useCustomPermissions = false;
+                      // Update permissions based on role
+                      _customPermissions = {
+                        'can_verify_rank': role.canVerifyRank,
+                        'can_input_score': role.canInputScore,
+                        'can_manage_tables': role.canManageTables,
+                        'can_view_reports': role.canViewReports,
+                        'can_manage_members': role.canManageMembers,
+                        'can_manage_permissions': role.canManagePermissions,
+                      };
+                    });
+                  },
+          );
+        }),
       ],
     );
   }
