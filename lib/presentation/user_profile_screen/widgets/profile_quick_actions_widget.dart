@@ -19,11 +19,11 @@ class ProfileQuickActionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF), // White background
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
-          top: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-          bottom: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
+          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         ),
       ),
       child: ListView.separated(
@@ -31,10 +31,10 @@ class ProfileQuickActionsWidget extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         itemCount: actions.length,
-        separatorBuilder: (context, index) => const Divider(
+        separatorBuilder: (context, index) => Divider(
           height: 1,
           thickness: 0.5,
-          color: Color(0xFFE4E6EB),
+          color: Theme.of(context).colorScheme.outlineVariant,
           indent: 56, // After icon + spacing
         ),
         itemBuilder: (context, index) {
@@ -80,20 +80,20 @@ class ProfileQuickActionsWidget extends StatelessWidget {
                 children: [
                   Text(
                     action.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF050505), // Facebook black
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  if (action.subtitle != null) ...[
+                  if (action.subtitle != null) ..[
                     const SizedBox(height: 2),
                     Text(
                       action.subtitle!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF65676B), // Facebook gray
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -111,18 +111,18 @@ class ProfileQuickActionsWidget extends StatelessWidget {
                 ),
                 child: Text(
                   action.badge!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFFFFFFFF),
+                    color: Theme.of(context).colorScheme.onError,
                   ),
                 ),
               )
             else if (action.showChevron)
-              const Icon(
+              Icon(
                 Icons.chevron_right,
                 size: 20,
-                color: Color(0xFF65676B),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
           ],
         ),

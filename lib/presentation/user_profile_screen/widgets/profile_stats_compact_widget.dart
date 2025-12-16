@@ -27,10 +27,10 @@ class ProfileStatsCompactWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF), // White
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
-          top: BorderSide(color: const Color(0xFFE4E6EB), width: 0.5),
-          bottom: BorderSide(color: const Color(0xFFE4E6EB), width: 0.5),
+          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         ),
       ),
       child: Column(
@@ -40,24 +40,24 @@ class ProfileStatsCompactWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Thống kê',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF050505),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               GestureDetector(
                 onTap: () {
                   // TODO: Navigate to full stats screen
                 },
-                child: const Text(
+                child: Text(
                   'Xem tất cả',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0866FF),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -164,7 +164,7 @@ class ProfileStatsCompactWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F2F5), // Light gray background
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -192,10 +192,10 @@ class ProfileStatsCompactWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF65676B), // Gray
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -209,22 +209,22 @@ class ProfileStatsCompactWidget extends StatelessWidget {
           // Value
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF050505), // Black
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
 
           const SizedBox(height: 2),
-
+          
           // Subtitle
           Text(
             subtitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF65676B), // Gray
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

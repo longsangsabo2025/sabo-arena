@@ -23,11 +23,11 @@ class ProfileInfoSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF), // White background
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
-          top: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
-          bottom: BorderSide(color: Color(0xFFE4E6EB), width: 0.5),
+          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         ),
       ),
       padding: const EdgeInsets.all(16),
@@ -38,12 +38,12 @@ class ProfileInfoSectionWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Thông tin',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF050505), // Facebook black
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               if (onEditInfo != null)
@@ -57,12 +57,12 @@ class ProfileInfoSectionWidget extends StatelessWidget {
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: const Text(
+                  child: Text(
                     'Chỉnh sửa',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0866FF), // Facebook blue
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -201,8 +201,8 @@ class ProfileInfoSectionWidget extends StatelessWidget {
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
                 color: isLink
-                    ? const Color(0xFF0866FF) // Blue for links
-                    : const Color(0xFF050505), // Black for normal text
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurface,
                 decoration: isLink ? TextDecoration.underline : null,
               ),
               maxLines: isMultiLine ? null : 1,
