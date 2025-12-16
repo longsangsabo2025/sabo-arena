@@ -136,8 +136,8 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
                 colors: ProgressBarColors(
                   playedColor: widget.accentColor ?? AppColors.primary,
                   handleColor: widget.accentColor ?? AppColors.primary,
-                  backgroundColor: Colors.grey.withValues(alpha: 0.3),
-                  bufferedColor: Colors.grey.withValues(alpha: 0.5),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  bufferedColor: Theme.of(context).colorScheme.surfaceContainerHigh,
                 ),
               ),
               const SizedBox(width: 10),

@@ -497,15 +497,15 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: const Color(0xFF00695C).withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: const Color(0xFF00695C).withValues(alpha: 0.3),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
         ),
         child: Icon(
           icon,
-          color: const Color(0xFF00695C),
+          color: Theme.of(context).colorScheme.primary,
           size: 20,
         ),
       ),
