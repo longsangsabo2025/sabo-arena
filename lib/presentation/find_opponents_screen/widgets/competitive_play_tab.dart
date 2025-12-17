@@ -848,34 +848,6 @@ class _CompetitivePlayTabState extends State<CompetitivePlayTab> {
     );
   }
 
-  Widget _buildRankingFilter(String title, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                color: color,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Map<String, dynamic> _getChallengeInfo(UserProfile player) {
     // Use actual player data for accurate display
     return {

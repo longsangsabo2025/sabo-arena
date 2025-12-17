@@ -290,8 +290,4 @@ class TournamentHeaderWidget extends StatelessWidget {
       ),
     );
   }
-
-  Color _getEliminationTypeColor(String eliminationType) {
-    return const Color(0xFF0866FF); // iOS Facebook blue
-  }
 }

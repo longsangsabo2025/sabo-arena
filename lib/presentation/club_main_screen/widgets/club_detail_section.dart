@@ -617,40 +617,6 @@ class _ClubDetailSectionState extends State<ClubDetailSection>
     );
   }
 
-  Widget _buildJoinLeaveButton(ColorScheme colorScheme) {
-    return SizedBox(
-      height: 36,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _handleJoinLeave,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _isJoined ? colorScheme.error : colorScheme.primary,
-          foregroundColor: _isJoined
-              ? colorScheme.onError
-              : colorScheme.onPrimary,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-        ),
-        child: _isLoading
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    _isJoined ? colorScheme.onError : colorScheme.onPrimary,
-                  ),
-                ),
-              )
-            : Text(
-                _isJoined ? 'Rời khỏi' : 'Tham gia',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-      ),
-    );
-  }
-
   Future<void> _handleJoinLeave() async {
     if (_isJoined) {
       // Show confirmation dialog for leaving

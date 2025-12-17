@@ -427,18 +427,4 @@ class _ReservationManagementScreenState
     );
   }
 
-  String _getStatusText(String status) {
-    switch (status) {
-      case 'pending':
-        return 'Chờ duyệt';
-      case 'confirmed':
-        return 'Đã xác nhận';
-      case 'completed':
-        return 'Hoàn thành';
-      case 'cancelled':
-        return 'Đã hủy';
-      default:
-        return 'Không xác định';
-    }
-  }
 }

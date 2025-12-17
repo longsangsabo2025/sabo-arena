@@ -973,62 +973,6 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     );
   }
 
-  // Show dialog when user doesn't have permission
-  void _showNoPermissionDialog(BuildContext context, ClubRole? role) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        contentPadding: const EdgeInsets.all(24),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: AppColors.gray50,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: const Icon(
-                Icons.block_rounded,
-                size: 32,
-                color: AppColors.error,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Không có quyền', overflow: TextOverflow.ellipsis, style: TextStyle(
-                fontSize: context.scaleFont(18),
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Bạn không có quyền tạo giải đấu.\nVai trò hiện tại: ${_getRoleDisplayName(role)}',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: context.scaleFont(15),
-                fontWeight: FontWeight.w400,
-                color: AppColors.textSecondary,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: AppButton(
-                label: 'Đã hiểu',
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   // Get display name for role
   String _getRoleDisplayName(ClubRole? role) {
     if (role == null) return 'Không có';

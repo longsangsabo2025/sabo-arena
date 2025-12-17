@@ -63,17 +63,6 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
     return '$amount VND';
   }
 
-  // Get voucher info for a specific position
-  Map<String, dynamic>? _getVoucherForPosition(int position) {
-    try {
-      return _prizeVouchers.firstWhere(
-        (v) => v['position'] == position,
-      );
-    } catch (e) {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // ✅ NEW: Get prize distribution from tournament data
