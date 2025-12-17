@@ -72,10 +72,6 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
       // Debug: Print first few posts to see their image data
       if (allPosts.isNotEmpty) {
         for (int i = 0; i < (allPosts.length > 3 ? 3 : allPosts.length); i++) {
-          final post = allPosts[i];
-          final contentPreview = post.content.length > 50
-              ? post.content.substring(0, 50)
-              : post.content;
           ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       } else {
@@ -88,25 +84,7 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
       
       // Debug: Print filter breakdown
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      int textCount = 0, imageCount = 0, videoCount = 0, mixedCount = 0;
-      for (var post in allPosts) {
-        final hasImage = post.imageUrl != null && post.imageUrl!.isNotEmpty;
-        final hasVideo = post.videoUrl != null && post.videoUrl!.isNotEmpty;
-        
-        if (!hasImage && !hasVideo) {
-          textCount++;
-        } else if (hasImage && !hasVideo) {
-          imageCount++;
-        } else if (!hasImage && hasVideo) {
-          videoCount++;
-        } else {
-          mixedCount++;
-        }
-      }
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Count logic removed - variables were unused
       
       switch (widget.filterType ?? PostFilterType.textOnly) {
         case PostFilterType.textOnly:

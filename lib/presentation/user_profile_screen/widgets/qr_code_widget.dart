@@ -91,10 +91,6 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
   Widget build(BuildContext context) {
     // Debug: Print userData to check avatar field
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    final avatarUrl =
-        widget.userData["avatar_url"] as String? ??
-        widget.userData["avatarUrl"] as String? ??
-        widget.userData["avatar"] as String?;
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     return Container(
