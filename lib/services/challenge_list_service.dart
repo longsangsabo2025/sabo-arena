@@ -146,7 +146,7 @@ class ChallengeListService {
           i < (allChallenges.length > 3 ? 3 : allChallenges.length);
           i++
         ) {
-          final c = allChallenges[i];
+          // Variable c removed - was only used in debug log
           ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }

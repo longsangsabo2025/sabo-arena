@@ -202,7 +202,7 @@ class BracketVisualizationService {
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
     if (matchList.isNotEmpty) {
-      final firstMatch = matchList.first;
+      // firstMatch variable removed - was only used in debug log
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');

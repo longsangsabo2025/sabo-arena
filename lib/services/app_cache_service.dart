@@ -240,7 +240,7 @@ class AppCacheService {
   /// Print cache statistics for debugging and optimization
   void printCacheStats() {
     final totalRequests = _cacheHits + _cacheMisses;
-    final hitRate = totalRequests > 0 ? (_cacheHits / totalRequests * 100) : 0;
+    // hitRate calculation removed - was only used in debug log
     
     ProductionLogger.debug('Debug log', tag: 'AutoFix');
     ProductionLogger.debug('Debug log', tag: 'AutoFix');

@@ -198,7 +198,7 @@ class DatabaseMonitoringService {
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
-      final overall = getOverallStatistics();
+      // overall variable removed - only used in debug log
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');

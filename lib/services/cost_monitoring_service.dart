@@ -237,7 +237,7 @@ class CostMonitoringService {
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      final costBreakdown = breakdown['breakdown'] as Map<String, dynamic>;
+      // costBreakdown and usage variables removed - only used in debug logs
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
@@ -245,7 +245,6 @@ class CostMonitoringService {
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      final usage = getUsageStatistics();
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
       ProductionLogger.debug('Debug log', tag: 'AutoFix');
