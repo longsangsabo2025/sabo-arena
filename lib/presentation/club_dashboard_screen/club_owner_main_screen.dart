@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+// Temporarily removed: // Temporarily removed AppLocalizations import
 import 'package:sabo_arena/theme/app_theme.dart' as OldTheme;
-import './club_dashboard_screen_simple.dart';
+import './club_dashboard_screen.dart';
 import '../club_management/club_members_screen.dart';
 import '../club_promotion_hub/club_promotion_hub_screen.dart';
 import '../tournament_management_center/tournament_management_center_screen.dart';
 import '../club_settings_screen/club_settings_screen.dart';
-import '../club/club_match_management_screen.dart';
 import '../staff/staff_main_screen.dart';
 import '../../services/club_service.dart';
 
@@ -24,8 +24,6 @@ class _ClubOwnerMainScreenState extends State<ClubOwnerMainScreen> {
   String _clubName = '';
   bool _isLoading = true;
 
-  late final List<Widget> _screens;
-
   @override
   void initState() {
     super.initState();
@@ -35,52 +33,98 @@ class _ClubOwnerMainScreenState extends State<ClubOwnerMainScreen> {
   Future<void> _loadClubData() async {
     try {
       final club = await ClubService.instance.getClubById(widget.clubId);
-      setState(() {
-        _clubName = club.name;
-        _isLoading = false;
-        _screens = [
-          ClubDashboardScreenSimple(clubId: widget.clubId),
-          ClubMembersScreen(clubId: widget.clubId, clubName: _clubName),
-          ClubMatchManagementScreen(
-            clubId: widget.clubId,
-            clubName: _clubName,
-          ),
-          ClubPromotionHubScreen(
-            clubId: widget.clubId,
-            clubName: _clubName,
-          ),
-          TournamentManagementCenterScreen(clubId: widget.clubId),
-          StaffMainScreen(
-            clubId: widget.clubId,
-            clubName: _clubName,
-          ),
-          ClubSettingsScreen(clubId: widget.clubId),
-        ];
-      });
+      if (mounted) {
+        setState(() {
+          _clubName = club.name;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _clubName = 'CLB';
-        _isLoading = false;
-        _screens = [
-          ClubDashboardScreenSimple(clubId: widget.clubId),
-          ClubMembersScreen(clubId: widget.clubId, clubName: _clubName),
-          ClubMatchManagementScreen(
-            clubId: widget.clubId,
-            clubName: _clubName,
-          ),
-          ClubPromotionHubScreen(
-            clubId: widget.clubId,
-            clubName: _clubName,
-          ),
-          TournamentManagementCenterScreen(clubId: widget.clubId),
-          StaffMainScreen(
-            clubId: widget.clubId,
-            clubName: _clubName,
-          ),
-          ClubSettingsScreen(clubId: widget.clubId),
-        ];
-      });
+      if (mounted) {
+        setState(() {
+          _clubName = 'CLB';
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  List<Widget> _buildScreens() {
+    return [
+      ClubDashboardScreen(clubId: widget.clubId),
+      ClubMembersScreen(clubId: widget.clubId, clubName: _clubName),
+      ClubPromotionHubScreen(
+        clubId: widget.clubId,
+        clubName: _clubName,
+      ),
+      TournamentManagementCenterScreen(clubId: widget.clubId),
+      _buildMenuScreen(),
+    ];
+  }
+
+  Widget _buildMenuScreen() {
+    // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Menu',
+          style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.card_giftcard, color: Colors.blue),
+            title: Text('Khuyến mãi'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ClubPromotionHubScreen(
+                    clubId: widget.clubId,
+                    clubName: _clubName,
+                  ),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.verified_user, color: Colors.green),
+            title: Text('Nhân viên'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StaffMainScreen(
+                    clubId: widget.clubId,
+                    clubName: _clubName,
+                  ),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.settings, color: Colors.grey),
+            title: Text('Cài đặt'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ClubSettingsScreen(clubId: widget.clubId),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -91,8 +135,10 @@ class _ClubOwnerMainScreenState extends State<ClubOwnerMainScreen> {
       );
     }
 
+    // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
+
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(index: _currentIndex, children: _buildScreens()),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
@@ -105,32 +151,27 @@ class _ClubOwnerMainScreenState extends State<ClubOwnerMainScreen> {
             _currentIndex = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            icon: const Icon(Icons.dashboard),
+            label: 'Tổng quan',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: const Icon(Icons.people),
             label: 'Thành viên',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.sports_soccer),
-            label: 'Trận đấu',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.card_giftcard),
+            icon: const Icon(Icons.campaign),
             label: 'Khuyến mãi',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_events),
+            icon: const Icon(Icons.emoji_events),
             label: 'Giải đấu',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.verified_user),
-            label: 'Staff',
+            icon: const Icon(Icons.menu),
+            label: 'Menu',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Cài đặt'),
         ],
       ),
     );

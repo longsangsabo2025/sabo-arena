@@ -273,6 +273,7 @@ class ValidationFeedbackWidget extends StatelessWidget {
 class EnhancedFormField extends StatelessWidget {
   final String label;
   final String? value;
+  final TextEditingController? controller;
   final String? hintText;
   final String? helperText;
   final String? errorText;
@@ -291,6 +292,7 @@ class EnhancedFormField extends StatelessWidget {
     super.key,
     required this.label,
     this.value,
+    this.controller,
     this.hintText,
     this.helperText,
     this.errorText,
@@ -309,14 +311,15 @@ class EnhancedFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasError = errorText != null && errorText!.isNotEmpty;
-    final isEmpty = value == null || value!.isEmpty;
+    final isEmpty = (controller?.text ?? value) == null || (controller?.text ?? value)!.isEmpty;
     final showValidIcon = !isEmpty && isValid && !hasError;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
-          initialValue: readOnly ? null : value,
+          controller: controller,
+          initialValue: controller != null ? null : (readOnly ? null : value),
           readOnly: readOnly,
           onTap: onTap,
           keyboardType: keyboardType,

@@ -149,6 +149,8 @@ class _StaffVoucherVerificationScreenState extends State<StaffVoucherVerificatio
         widget.clubId,
       );
 
+      if (!mounted) return;
+
       if (result['success'] == true) {
         setState(() {
           _isUsed = true;

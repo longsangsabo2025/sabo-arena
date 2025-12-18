@@ -193,6 +193,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
+
+  /// No description provided for @members.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get members;
+
+  /// No description provided for @matches.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches'**
+  String get matches;
+
+  /// No description provided for @tournaments.
+  ///
+  /// In en, this message translates to:
+  /// **'Tournaments'**
+  String get tournaments;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @promotions.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions'**
+  String get promotions;
+
+  /// No description provided for @staff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get staff;
+
+  /// No description provided for @clubDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Club Dashboard'**
+  String get clubDashboard;
+
+  /// No description provided for @managementDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Management Dashboard'**
+  String get managementDashboard;
+
+  /// No description provided for @revenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get revenue;
+
+  /// No description provided for @activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Activities'**
+  String get activities;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @rankApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank Approval'**
+  String get rankApproval;
+
+  /// No description provided for @spaManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'SPA Management'**
+  String get spaManagement;
+
+  /// No description provided for @welcomeCampaign.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Campaign'**
+  String get welcomeCampaign;
+
+  /// No description provided for @reservationManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation Management'**
+  String get reservationManagement;
+
+  /// No description provided for @reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @recentActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activities'**
+  String get recentActivities;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @exportReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Report'**
+  String get exportReport;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @training.
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get training;
+
+  /// No description provided for @social.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get social;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @noActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities'**
+  String get noActivities;
+
+  /// No description provided for @noActivitiesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Club activities will appear here'**
+  String get noActivitiesDesc;
+
+  /// No description provided for @newMemberJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'New member joined'**
+  String get newMemberJoined;
+
+  /// No description provided for @joinedClub.
+  ///
+  /// In en, this message translates to:
+  /// **'joined the club'**
+  String get joinedClub;
+
+  /// No description provided for @takeCoverPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take cover photo'**
+  String get takeCoverPhoto;
+
+  /// No description provided for @chooseCoverFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose cover from gallery'**
+  String get chooseCoverFromGallery;
+
+  /// No description provided for @editClubInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit club info'**
+  String get editClubInfo;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change avatar'**
+  String get changeAvatar;
+
+  /// No description provided for @takeNewPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take new photo'**
+  String get takeNewPhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @updateCoverSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover photo updated successfully'**
+  String get updateCoverSuccess;
+
+  /// No description provided for @updateAvatarSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar updated successfully'**
+  String get updateAvatarSuccess;
+
+  /// No description provided for @errorLoadingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data'**
+  String get errorLoadingData;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @permissionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission check error'**
+  String get permissionError;
+
+  /// No description provided for @notClubMember.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not a member of this club'**
+  String get notClubMember;
+
+  /// No description provided for @memberNoTournamentRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular members cannot create tournaments'**
+  String get memberNoTournamentRight;
+
+  /// No description provided for @guestNoTournamentRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests cannot create tournaments'**
+  String get guestNoTournamentRight;
+
+  /// No description provided for @tournamentCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Tournament created successfully!'**
+  String get tournamentCreatedSuccess;
+
+  /// No description provided for @loginRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login to continue'**
+  String get loginRequired;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
 }
 
 class _AppLocalizationsDelegate

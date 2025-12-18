@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Payment Error Handler
 /// Provides user-friendly error messages and retry logic
@@ -219,8 +219,6 @@ class PaymentErrorHandler {
           rethrow;
         }
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         await Future.delayed(delay);
         delay = Duration(

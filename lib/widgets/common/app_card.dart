@@ -2,8 +2,11 @@
 ///
 /// Standardized card component with consistent styling
 /// Supports tap interactions, custom padding, and elevation levels
+/// iOS Support: Automatically applies iOS-style (16px radius, subtle shadow) on iOS devices
 
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../core/design_system.dart';
 
 class AppCard extends StatelessWidget {
@@ -32,12 +35,28 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = !kIsWeb && Platform.isIOS;
+    final defaultRadius = isIOS ? 16.0 : AppRadius.card; // iOS: 16px, Android: 12px
+    final cardRadius = borderRadius ?? defaultRadius;
+    
+    // iOS: subtle shadow, Android: Material elevation
+    final cardShadow = elevation ?? (isIOS 
+        ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05), // Subtle iOS shadow
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+              // No spread radius (iOS style)
+            ),
+          ]
+        : AppElevation.level2);
+    
     return Container(
       decoration: BoxDecoration(
         color: gradient == null ? (color ?? AppColors.surface) : null,
         gradient: gradient,
-        borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.card),
-        boxShadow: elevation ?? AppElevation.level2,
+        borderRadius: BorderRadius.circular(cardRadius),
+        boxShadow: cardShadow,
         border: border,
       ),
       child: Material(
@@ -45,7 +64,7 @@ class AppCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           onLongPress: onLongPress,
-          borderRadius: BorderRadius.circular(borderRadius ?? AppRadius.card),
+          borderRadius: BorderRadius.circular(cardRadius),
           child: Padding(
             padding: padding ?? EdgeInsets.all(AppSpacing.cardPadding),
             child: child,

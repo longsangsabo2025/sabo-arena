@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/app_export.dart';
+import '../../../models/tournament.dart';
 
 class TournamentHeaderWidget extends StatelessWidget {
-  final Map<String, dynamic> tournament;
+  final Tournament tournament;
   final VoidCallback? onShareTap;
   final ScrollController scrollController;
   final Function(String)? onMenuAction;
@@ -122,7 +123,7 @@ class TournamentHeaderWidget extends StatelessWidget {
           children: [
             // Cover Image
             CustomImageWidget(
-              imageUrl: tournament["coverImage"] as String,
+              imageUrl: tournament.coverImageUrl ?? "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3",
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
@@ -181,7 +182,7 @@ class TournamentHeaderWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          tournament["eliminationType"] as String,
+                          tournament.formatDisplayName,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -191,8 +192,8 @@ class TournamentHeaderWidget extends StatelessWidget {
                       ),
                       const Spacer(),
                       // Club info
-                      if (tournament["organizerClubLogo"] != null ||
-                          tournament["organizerClubName"] != null)
+                      if (tournament.clubLogo != null ||
+                          tournament.clubName != null)
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -205,12 +206,11 @@ class TournamentHeaderWidget extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (tournament["organizerClubLogo"] != null)
+                              if (tournament.clubLogo != null)
                                 ClipOval(
                                   child: CustomImageWidget(
                                     imageUrl:
-                                        tournament["organizerClubLogo"]
-                                            as String,
+                                        tournament.clubLogo!,
                                     width: 20,
                                     height: 20,
                                     fit: BoxFit.cover,
@@ -232,7 +232,7 @@ class TournamentHeaderWidget extends StatelessWidget {
                                 ),
                               const SizedBox(width: 6),
                               Text(
-                                tournament["organizerClubName"] as String? ??
+                                tournament.clubName ??
                                     "CLB",
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -248,7 +248,7 @@ class TournamentHeaderWidget extends StatelessWidget {
                   const SizedBox(height: 8),
                   // Tournament title
                   Text(
-                    tournament["title"] as String,
+                    tournament.title,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -270,7 +270,7 @@ class TournamentHeaderWidget extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          tournament["location"] as String,
+                          tournament.venueAddress ?? "Chưa cập nhật",
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 13,

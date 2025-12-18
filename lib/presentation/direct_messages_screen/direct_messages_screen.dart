@@ -264,6 +264,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
       final roomId = await DirectMessagingService.instance
           .getOrCreateDirectRoom(otherUserId);
 
+      if (!mounted) return;
+
       // Get other user info from existing conversation or search results
       String? otherUserAvatar;
       final existingConversation = _conversations.firstWhere(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sabo_arena/services/club_permission_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ActivityHistoryScreen extends StatefulWidget {
   final String clubId;
@@ -49,6 +49,8 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
         'view_reports', // Activity history is part of reports
       );
 
+      if (!mounted) return;
+
       if (!canView) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -62,18 +64,22 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
 
       final activities = await _fetchActivitiesFromDatabase();
 
+      if (!mounted) return;
+
       setState(() {
         _activities = activities;
         _isLoading = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi khi tải lịch sử hoạt động: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi tải lịch sử hoạt động: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -91,7 +97,7 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
             activity_data,
             created_at,
             actor_id,
-            profiles:actor_id (
+            users:actor_id (
               username,
               full_name,
               avatar_url
@@ -108,16 +114,15 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
           description: item['activity_description'],
           actorId: item['actor_id'],
           actorName:
-              item['profiles']?['full_name'] ??
-              item['profiles']?['username'] ??
-              'Unknown User',
-          actorAvatar: item['profiles']?['avatar_url'],
+              item['users']?['full_name'] ??
+              item['users']?['username'] ??
+              'Người dùng không xác định',
+          actorAvatar: item['users']?['avatar_url'],
           timestamp: DateTime.parse(item['created_at']),
           data: item['activity_data'],
         );
       }).toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Return mock data for development
       return _getMockActivities();
     }

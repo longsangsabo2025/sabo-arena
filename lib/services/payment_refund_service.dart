@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service to handle payment refunds
 class PaymentRefundService {
@@ -17,7 +17,6 @@ class PaymentRefundService {
     String? additionalNotes,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) {
@@ -52,10 +51,8 @@ class PaymentRefundService {
           .select()
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return refundRequest;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -116,7 +113,6 @@ class PaymentRefundService {
 
       return refund;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -143,7 +139,6 @@ class PaymentRefundService {
 
       return List<Map<String, dynamic>>.from(refunds);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -172,7 +167,6 @@ class PaymentRefundService {
 
       return List<Map<String, dynamic>>.from(refunds);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -183,7 +177,6 @@ class PaymentRefundService {
     String? adminNotes,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) {
@@ -214,10 +207,8 @@ class PaymentRefundService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -228,7 +219,6 @@ class PaymentRefundService {
     required String rejectionReason,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) {
@@ -245,10 +235,8 @@ class PaymentRefundService {
           })
           .eq('id', refundRequestId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -263,10 +251,6 @@ class PaymentRefundService {
       // This is a placeholder for VNPay API integration
       // In production, you would call VNPay's refund API here
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Simulated VNPay API response
       // Replace this with actual VNPay API call
@@ -281,7 +265,6 @@ class PaymentRefundService {
         'message': 'Refund submitted to VNPay successfully',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'success': false, 'error': e.toString()};
     }
   }
@@ -293,9 +276,6 @@ class PaymentRefundService {
     required String refundReason,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Placeholder for MoMo API integration
       await Future.delayed(const Duration(seconds: 1));
@@ -309,7 +289,6 @@ class PaymentRefundService {
         'message': 'Refund submitted to MoMo successfully',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'success': false, 'error': e.toString()};
     }
   }
@@ -345,7 +324,6 @@ class PaymentRefundService {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -387,7 +365,6 @@ class PaymentRefundService {
         'approved_amount': approvedAmount,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }

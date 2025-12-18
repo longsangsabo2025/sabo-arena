@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/welcome_voucher_service.dart';
 import '../widgets/welcome_voucher_popup.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Helper class để check và hiển thị welcome voucher popup
 class WelcomeVoucherHelper {
@@ -35,7 +35,6 @@ class WelcomeVoucherHelper {
       }
     } catch (e) {
       // Bỏ qua lỗi để không ảnh hưởng user experience
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -44,7 +43,7 @@ class WelcomeVoucherHelper {
     try {
       await _service.manuallyIssueWelcomeVoucher(userId);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -54,7 +53,6 @@ class WelcomeVoucherHelper {
       final result = await _service.checkUserEligibility(userId);
       return result['eligible'] == true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/user_profile.dart';
+import '../../../models/user_stats.dart';
+import '../../../models/user_social_stats.dart';
 import '../../../models/tournament.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/user_service.dart';
@@ -9,6 +11,7 @@ import '../../../services/club_permission_service.dart';
 import '../../../services/messaging_service.dart';
 import '../../../services/notification_service.dart';
 import '../../../services/tournament_service.dart';
+import '../../../models/tournament_tab_status.dart';
 import '../../../widgets/avatar_with_quick_follow.dart';
 import 'package:sabo_arena/utils/production_logger.dart';
 
@@ -24,7 +27,8 @@ class UserProfileController extends ChangeNotifier {
   // State
   bool isLoading = true;
   UserProfile? userProfile;
-  Map<String, dynamic> socialData = {};
+  UserStats? userStats;
+  UserSocialStats socialData = const UserSocialStats();
   List<Tournament> tournaments = [];
   bool hasClubManagementAccess = false;
   int unreadMessageCount = 0;
@@ -36,12 +40,19 @@ class UserProfileController extends ChangeNotifier {
   RealtimeChannel? _userProfileChannel;
 
   // Initialize
-  void init() {
-    loadUserProfile();
-    loadClubManagementAccess();
-    loadUnreadMessageCount();
-    loadUnreadNotificationCount();
-    loadTournaments();
+  void init({String? userId}) {
+    loadUserProfile(userId: userId);
+    
+    // Only load private data if it's the current user
+    final isCurrentUser = userId == null || userId == _authService.currentUser?.id;
+    
+    if (isCurrentUser) {
+      loadClubManagementAccess();
+      loadUnreadMessageCount();
+      loadUnreadNotificationCount();
+    }
+    
+    loadTournaments(); // This might need adjustment to load target user's tournaments
 
     // Listen to follow events
     _followEventSubscription = FollowEventBroadcaster.stream.listen((event) {
@@ -51,7 +62,9 @@ class UserProfileController extends ChangeNotifier {
       }
     });
 
-    _setupRealtimeListener();
+    if (isCurrentUser) {
+      _setupRealtimeListener();
+    }
   }
 
   @override
@@ -62,29 +75,42 @@ class UserProfileController extends ChangeNotifier {
   }
 
   // Logic Methods
-  Future<void> loadUserProfile({bool forceRefresh = false}) async {
+  void updateUserProfile(UserProfile profile) {
+    userProfile = profile;
+    notifyListeners();
+  }
+
+  Future<void> loadUserProfile({String? userId, bool forceRefresh = false}) async {
     try {
       isLoading = true;
       notifyListeners();
 
-      final currentUser = _authService.currentUser;
-      if (currentUser != null) {
+      final targetUserId = userId ?? _authService.currentUser?.id;
+      
+      if (targetUserId != null) {
         try {
-          userProfile = await _userService.getUserProfileById(currentUser.id, forceRefresh: forceRefresh);
+          userProfile = await _userService.getUserProfileById(targetUserId, forceRefresh: forceRefresh);
           await _loadProfileData(userProfile!.id);
         } catch (e) {
-          // Auto-create profile logic
-          ProductionLogger.info('⚠️ Profile not found, creating new profile...');
-          await _authService.upsertUserRecord(
-            fullName: currentUser.userMetadata?['full_name'] ??
-                currentUser.email?.split('@')[0] ??
-                'User',
-            email: currentUser.email,
-            phone: currentUser.phone,
-            role: 'player',
-          );
-          userProfile = await _userService.getUserProfileById(currentUser.id, forceRefresh: true);
-          await _loadProfileData(userProfile!.id);
+          // Auto-create profile logic only for current user
+          if (userId == null || userId == _authService.currentUser?.id) {
+            ProductionLogger.info('⚠️ Profile not found, creating new profile...');
+            final currentUser = _authService.currentUser;
+            if (currentUser != null) {
+              await _authService.upsertUserRecord(
+                fullName: currentUser.userMetadata?['full_name'] ??
+                    currentUser.email?.split('@')[0] ??
+                    'User',
+                email: currentUser.email,
+                phone: currentUser.phone,
+                role: 'player',
+              );
+              userProfile = await _userService.getUserProfileById(currentUser.id, forceRefresh: true);
+              await _loadProfileData(userProfile!.id);
+            }
+          } else {
+            rethrow;
+          }
         }
       }
     } catch (e) {
@@ -98,16 +124,15 @@ class UserProfileController extends ChangeNotifier {
   Future<void> _loadProfileData(String userId) async {
     try {
       final followCounts = await _userService.getUserFollowCounts(userId);
-      final userStats = await _userService.getUserStats(userId);
-      final userRanking = await _userService.getUserRanking(userId);
-
-      socialData = {
-        "followersCount": followCounts['followers'] ?? 0,
-        "followingCount": followCounts['following'] ?? 0,
-        "challengesCount": 0,
-        "tournamentsCount": userStats['total_tournaments'] ?? 0,
-        "ranking": userRanking,
-      };
+      userStats = await _userService.getUserStats(userId);
+      
+      socialData = UserSocialStats(
+        followersCount: followCounts['followers'] ?? 0,
+        followingCount: followCounts['following'] ?? 0,
+        challengesCount: 0,
+        tournamentsCount: userStats?.totalTournaments ?? 0,
+        ranking: userStats?.ranking ?? 0,
+      );
       notifyListeners();
     } catch (e) {
       ProductionLogger.error('❌ Profile data error: $e', error: e);
@@ -117,8 +142,10 @@ class UserProfileController extends ChangeNotifier {
   Future<void> _reloadFollowCounts(String userId) async {
     try {
       final followCounts = await _userService.getUserFollowCounts(userId);
-      socialData['followersCount'] = followCounts['followers'] ?? 0;
-      socialData['followingCount'] = followCounts['following'] ?? 0;
+      socialData = socialData.copyWith(
+        followersCount: followCounts['followers'] ?? 0,
+        followingCount: followCounts['following'] ?? 0,
+      );
       notifyListeners();
     } catch (e) {
       ProductionLogger.error('❌ Error reloading follow counts: $e', error: e);
@@ -181,10 +208,10 @@ class UserProfileController extends ChangeNotifier {
   Future<void> loadTournaments() async {
     try {
       final status = currentTab == 'live'
-          ? 'ongoing'
+          ? TournamentTabStatus.live
           : currentTab == 'done'
-              ? 'completed'
-              : 'upcoming';
+              ? TournamentTabStatus.completed
+              : TournamentTabStatus.upcoming;
 
       tournaments = await _tournamentService.getTournaments(
         status: status,

@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../universal_match_progression_service.dart';
 import 'package:sabo_arena/utils/round_name_calculator.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// 🏆 Hardcoded SABO DE16 Service (ENHANCED v2 - COMPLETE)
 /// ✅ ENHANCED STRUCTURE with LB-B R3 & R4 for WB R3 losers
@@ -45,9 +45,6 @@ class HardcodedSaboDE16Service {
     required List<String> participantIds,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (participantIds.length != 16) {
         throw Exception('SABO DE16 requires exactly 16 participants');
@@ -55,7 +52,6 @@ class HardcodedSaboDE16Service {
 
       // Generate advancement map
       final advancementMap = _calculateAdvancementMap();
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Generate all matches with advancement info
       final allMatches = <Map<String, dynamic>>[];
@@ -462,10 +458,8 @@ class HardcodedSaboDE16Service {
       });
 
       // Save matches to database
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       await _supabase.from('matches').insert(allMatches);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': true,
         'matches_count': allMatches.length,
@@ -473,7 +467,6 @@ class HardcodedSaboDE16Service {
         'advancement_mappings': advancementMap.length,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'success': false, 'error': e.toString()};
     }
   }

@@ -8,7 +8,7 @@ import '../../../core/utils/rank_migration_helper.dart';
 import '../../../services/share_service.dart';
 import '../../../services/referral_service.dart';
 import '../../../models/user_profile.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class QRCodeWidget extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -83,15 +83,12 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
       setState(() {
         _isGenerating = false;
       });
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     // Debug: Print userData to check avatar field
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     return Container(
       width: double.infinity,
@@ -252,7 +249,14 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
                               version: QrVersions.auto,
                               size: 40.w,
                               backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
+                              eyeStyle: const QrEyeStyle(
+                                eyeShape: QrEyeShape.square,
+                                color: Colors.black,
+                              ),
+                              dataModuleStyle: const QrDataModuleStyle(
+                                dataModuleShape: QrDataModuleShape.square,
+                                color: Colors.black,
+                              ),
                             )
                           : _buildQRPattern(),
                     ),
@@ -526,6 +530,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
           );
         }
       } catch (e) {
+        if (!context.mounted) return;
         // Fallback: copy QR data to clipboard
         Clipboard.setData(ClipboardData(text: _qrData!));
         ScaffoldMessenger.of(context).showSnackBar(

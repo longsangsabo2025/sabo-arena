@@ -39,10 +39,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'setupTournamentPrizeVouchers',
-          context: 'Error setup prize vouchers',
+          context: 'Lỗi khi thiết lập voucher giải thưởng',
         ),
       );
-      ProductionLogger.error('Error setup prize vouchers', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi thiết lập voucher giải thưởng', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -65,10 +65,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getTournamentPrizeVouchers',
-          context: 'Error getting prize vouchers',
+          context: 'Lỗi khi lấy danh sách voucher giải thưởng',
         ),
       );
-      ProductionLogger.error('Error getting prize vouchers', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách voucher giải thưởng', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -107,10 +107,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getClubPrizeVouchers',
-          context: 'Error getting club prize vouchers',
+          context: 'Lỗi khi lấy danh sách voucher giải thưởng của CLB',
         ),
       );
-      ProductionLogger.error('Error getting club prize vouchers', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách voucher giải thưởng của CLB', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -153,10 +153,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'issuePrizeVoucher',
-          context: 'Error issuing prize voucher',
+          context: 'Lỗi khi cấp voucher giải thưởng',
         ),
       );
-      ProductionLogger.error('Error issuing prize voucher', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi cấp voucher giải thưởng', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -185,10 +185,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getUserTablePaymentVouchers',
-          context: 'Error getting table payment vouchers',
+          context: 'Lỗi khi lấy danh sách voucher thanh toán bàn',
         ),
       );
-      ProductionLogger.error('Error getting table payment vouchers', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách voucher thanh toán bàn', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -229,10 +229,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'applyVoucherToTablePayment',
-          context: 'Error applying voucher',
+          context: 'Lỗi khi áp dụng voucher',
         ),
       );
-      ProductionLogger.error('Error applying voucher', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi áp dụng voucher', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -260,10 +260,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getUserTablePaymentHistory',
-          context: 'Error getting payment history',
+          context: 'Lỗi khi lấy lịch sử thanh toán',
         ),
       );
-      ProductionLogger.error('Error getting payment history', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy lịch sử thanh toán', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -291,10 +291,10 @@ class TournamentPrizeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getClubTablePaymentHistory',
-          context: 'Error getting club payment history',
+          context: 'Lỗi khi lấy lịch sử thanh toán của CLB',
         ),
       );
-      ProductionLogger.error('Error getting club payment history', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy lịch sử thanh toán của CLB', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }

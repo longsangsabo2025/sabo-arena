@@ -4,7 +4,7 @@ import 'package:sabo_arena/core/app_export.dart';
 import 'package:sabo_arena/theme/app_theme.dart';
 import 'package:sabo_arena/services/tournament_service.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ParticipantManagementTab extends StatefulWidget {
   final String tournamentId;
@@ -37,10 +37,8 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
     try {
       final participants = await _tournamentService
           .getTournamentParticipantsWithPaymentStatus(widget.tournamentId);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       for (int i = 0; i < participants.length; i++) {
         // Note: Display name priority is now handled by UserDisplayNameText component
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       setState(() {
         _participants = participants;
@@ -400,6 +398,8 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
 
       if (confirm != true) return;
 
+      if (!mounted) return;
+
       // Show loading indicator
       showDialog(
         context: context,
@@ -415,6 +415,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
             'Đã xác nhận thanh toán bởi quản lý CLB - ${DateTime.now().toString().substring(0, 19)}',
       );
 
+      if (!mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -435,6 +436,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
 
       _loadParticipants(); // Refresh list
     } catch (e) {
+      if (!mounted) return;
       Navigator.of(context).pop(); // Close loading dialog if open
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -476,6 +478,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
         notes: 'Đặt lại trạng thái thanh toán bởi quản lý CLB',
       );
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Đã đặt lại trạng thái thanh toán'),
@@ -485,6 +488,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
 
       _loadParticipants();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Lỗi đặt lại trạng thái: ${e.toString()}'),
@@ -501,7 +505,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Row(
           children: [
             Text('Ghi chú cho: '),
@@ -523,7 +527,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text('Hủy'),
           ),
           ElevatedButton(
@@ -535,18 +539,24 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                   paymentStatus: participant['payment_status'],
                   notes: noteController.text,
                 );
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Đã cập nhật ghi chú')));
-                _loadParticipants();
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).pop();
+                }
+                if (mounted) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Đã cập nhật ghi chú')));
+                  _loadParticipants();
+                }
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Lỗi cập nhật ghi chú: ${e.toString()}'),
-                    backgroundColor: AppTheme.errorLight,
-                  ),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Lỗi cập nhật ghi chú: ${e.toString()}'),
+                      backgroundColor: AppTheme.errorLight,
+                    ),
+                  );
+                }
               }
             },
             child: Text('Lưu'),
@@ -561,7 +571,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Row(
           children: [
             Icon(Icons.warning_amber_rounded, color: AppTheme.errorLight),
@@ -665,14 +675,14 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
           TextButton(
             onPressed: () {
               reasonController.dispose();
-              Navigator.of(context).pop();
+              Navigator.of(dialogContext).pop();
             },
             child: Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () async {
               try {
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop();
                 
                 // Show loading
                 ScaffoldMessenger.of(context).showSnackBar(

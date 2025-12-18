@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Shared header component for all bracket types
 class BracketHeader extends StatelessWidget {
@@ -149,7 +149,6 @@ class MatchCard extends StatelessWidget {
 
     // Debug print to see actual data
     if (isCompleted) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     return Container(
@@ -284,9 +283,7 @@ class PlayerRow extends StatelessWidget {
   Widget build(BuildContext context) {
     // Debug: Log avatar URLs to verify they're being fetched
     if (avatarUrl != null && avatarUrl!.isNotEmpty) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } else {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
     
     return Row(

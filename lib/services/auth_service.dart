@@ -28,7 +28,7 @@ class AuthService {
         tag: 'Auth',
       );
       throw Exception(
-        'Authentication service not available. Please restart the app.',
+        'Dịch vụ xác thực không khả dụng. Vui lòng khởi động lại ứng dụng.',
       );
     }
   }
@@ -456,7 +456,7 @@ class AuthService {
 
       final user = currentUser;
       if (user == null) {
-        throw Exception('No authenticated user');
+        throw Exception('Người dùng chưa đăng nhập');
       }
 
       // Ensure Supabase is initialized
@@ -485,26 +485,20 @@ class AuthService {
 
   Future<void> signOut() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Sign out from Supabase
       await _supabase.auth.signOut();
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Clear remembered login info when signing out
       await PreferencesService.instance.clearLoginInfo();
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Verify session is cleared
       final session = _supabase.auth.currentSession;
       if (session == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      throw Exception('Sign out failed: $error');
+      throw Exception('Đăng xuất thất bại: $error');
     }
   }
 
@@ -587,7 +581,7 @@ class AuthService {
       );
       rethrow;
     } catch (error) {
-      throw Exception('Password reset failed: $error');
+      throw Exception('Đặt lại mật khẩu thất bại: $error');
     }
   }
 
@@ -629,7 +623,6 @@ class AuthService {
       ];
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Check if user exists with any of these phone formats
@@ -662,8 +655,6 @@ class AuthService {
 
       if (kDebugMode) {
         // 🔒 SECURITY: OTP only shown in debug mode for development
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       ProductionLogger.info('OTP sent successfully', tag: 'Auth');
@@ -717,7 +708,6 @@ class AuthService {
       ];
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Find valid OTP (search all possible phone formats)
@@ -841,7 +831,7 @@ class AuthService {
     String? location,
   }) async {
     try {
-      if (!isAuthenticated) throw Exception('User not authenticated');
+      if (!isAuthenticated) throw Exception('Người dùng chưa đăng nhập');
 
       final updates = <String, dynamic>{};
       if (username != null) updates['username'] = username;
@@ -864,27 +854,34 @@ class AuthService {
 
       return UserProfile.fromJson(response);
     } catch (error) {
-      throw Exception('Failed to update profile: $error');
+      throw Exception('Lỗi cập nhật hồ sơ: $error');
     }
   }
 
   Future<String?> uploadAvatar(String filePath, List<int> fileBytes) async {
     try {
-      if (!isAuthenticated) throw Exception('User not authenticated');
+      if (!isAuthenticated) throw Exception('Người dùng chưa đăng nhập');
 
       final fileName =
           '${currentUser!.id}/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       await _supabase.storage
           .from('user-content')
-          .uploadBinary(fileName, Uint8List.fromList(fileBytes));
+          .uploadBinary(
+            fileName, 
+            Uint8List.fromList(fileBytes),
+            fileOptions: const FileOptions(
+              contentType: 'image/jpeg',
+              upsert: true,
+            ),
+          );
 
       // Get signed URL for private bucket
       final response = await _supabase.storage
           .from('user-content')
           .createSignedUrl(fileName, 3600 * 24 * 365); // 1 year expiry
 
-      if (response.isEmpty) throw Exception('Failed to get image URL');
+      if (response.isEmpty) throw Exception('Lỗi lấy đường dẫn ảnh');
 
       // Update user profile with new avatar URL
       await _supabase
@@ -897,7 +894,7 @@ class AuthService {
 
       return response;
     } catch (error) {
-      throw Exception('Failed to upload avatar: $error');
+      throw Exception('Lỗi tải lên ảnh đại diện: $error');
     }
   }
 
@@ -911,7 +908,7 @@ class AuthService {
 
       return response == null;
     } catch (error) {
-      throw Exception('Failed to check username availability: $error');
+      throw Exception('Lỗi kiểm tra tên người dùng: $error');
     }
   }
 
@@ -930,7 +927,7 @@ class AuthService {
         error: error,
         tag: 'Auth',
       );
-      throw Exception('Failed to refresh session: $error');
+      throw Exception('Lỗi làm mới phiên đăng nhập: $error');
     }
   }
 
@@ -940,12 +937,11 @@ class AuthService {
     try {
       final userEmail = email ?? currentUser?.email;
       if (userEmail == null) {
-        throw Exception('No email address found');
+        throw Exception('Không tìm thấy địa chỉ email');
       }
 
       ProductionLogger.info('Resending verification email', tag: 'Auth');
       if (kDebugMode)
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase.auth.resend(type: OtpType.signup, email: userEmail);
 
@@ -959,7 +955,7 @@ class AuthService {
         error: error,
         tag: 'Auth',
       );
-      throw Exception('Failed to resend verification email: $error');
+      throw Exception('Lỗi gửi lại email xác thực: $error');
     }
   }
 
@@ -994,7 +990,6 @@ class AuthService {
   }) async {
     try {
       ProductionLogger.info('Attempting phone login', tag: 'Auth');
-      if (kDebugMode) ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Rate limiting check
       final rateLimitService = RateLimitService.instance;
@@ -1130,6 +1125,7 @@ class AuthService {
   // =============================================================================
 
   /// Hook 1: Send welcome notification (non-blocking)
+  // ignore: unused_element
   void _runWelcomeNotificationHook(String userId, String userName) {
     Future.delayed(Duration.zero, () async {
       try {
@@ -1154,6 +1150,7 @@ class AuthService {
   }
 
   /// Hook 2: Create referral code (non-blocking)
+  // ignore: unused_element
   void _runCreateReferralCodeHook(String userId) {
     Future.delayed(Duration.zero, () async {
       try {
@@ -1174,6 +1171,7 @@ class AuthService {
   }
 
   /// Hook 3: Process stored referral code (non-blocking)
+  // ignore: unused_element
   void _runProcessReferralCodeHook(String userId) {
     Future.delayed(Duration.zero, () async {
       try {

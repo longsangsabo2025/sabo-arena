@@ -55,6 +55,8 @@ class _StaffVoucherDashboardScreenState extends State<StaffVoucherDashboardScree
 
       final results = await Future.wait([pendingFuture, usedFuture, statsFuture]);
 
+      if (!mounted) return;
+
       setState(() {
         _pendingVouchers = results[0] as List<Map<String, dynamic>>;
         _usedVouchers = results[1] as List<Map<String, dynamic>>;

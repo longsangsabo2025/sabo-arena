@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for testing opponent tab backend integration
 class OpponentTabBackendService {
@@ -21,14 +21,12 @@ class OpponentTabBackendService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (response is List) {
         return List<Map<String, dynamic>>.from(response);
       }
       return [];
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -55,10 +53,8 @@ class OpponentTabBackendService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return response?.toString();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -76,14 +72,12 @@ class OpponentTabBackendService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (response is List) {
         return List<Map<String, dynamic>>.from(response);
       }
       return [];
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -102,10 +96,8 @@ class OpponentTabBackendService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return response?.toString();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -124,10 +116,8 @@ class OpponentTabBackendService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return response == true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -135,33 +125,26 @@ class OpponentTabBackendService {
   /// Check if backend tables have required columns
   Future<void> checkBackendSchema() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Check matches table columns
-      final matchesSchema = await _supabase
+      await _supabase
           .from('matches')
           .select('match_type,challenger_id,stakes_type')
           .limit(1);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Check users table columns
-      final usersSchema = await _supabase
+      await _supabase
           .from('users')
           .select('latitude,longitude,spa_points,is_available_for_challenges')
           .limit(1);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Check challenges table exists
-      final challengesExists = await _supabase
+      await _supabase
           .from('challenges')
           .select('id')
           .limit(1);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore errors in schema check
     }
   }
 
@@ -184,45 +167,35 @@ class OpponentTabBackendService {
         };
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore errors getting location
     }
     return null;
   }
 
   /// Run comprehensive backend tests
   Future<void> runComprehensiveTest() async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // 1. Check schema
     await checkBackendSchema();
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // 2. Test nearby players
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     final location = await getCurrentUserLocation();
     if (location != null) {
-      final nearbyPlayers = await testGetNearbyPlayers(
+      await testGetNearbyPlayers(
         latitude: location['latitude']!,
         longitude: location['longitude']!,
         radiusKm: 20,
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } else {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      final nearbyPlayers = await testGetNearbyPlayers(
+      await testGetNearbyPlayers(
         latitude: 21.028511,
         longitude: 105.804817,
         radiusKm: 20,
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // 3. Test user challenges
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    final userChallenges = await testGetUserChallenges();
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
+    await testGetUserChallenges();
 
     // 4. Test creating challenge (if we have nearby players)
     final nearbyPlayers = await testGetNearbyPlayers(
@@ -232,7 +205,6 @@ class OpponentTabBackendService {
     );
 
     if (nearbyPlayers.isNotEmpty) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       final targetUser = nearbyPlayers.first;
       final challengeId = await testCreateChallenge(
         challengedUserId: targetUser['user_id'],
@@ -242,11 +214,9 @@ class OpponentTabBackendService {
       );
 
       if (challengeId != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 }
 

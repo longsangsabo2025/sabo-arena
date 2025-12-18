@@ -10,41 +10,43 @@ import 'package:sabo_arena/widgets/common/common_widgets.dart'; // Phase 4
 
 import '../../core/app_export.dart' hide AppTheme, AppColors;
 import '../../core/device/device_info.dart';
-import '../../core/performance/performance_widgets.dart';
+// import '../../core/performance/performance_widgets.dart';
 import '../../core/design_system/design_system.dart';
 import '../../models/user_profile.dart';
+// import '../../models/notification_models.dart';
+import '../../models/user_social_stats.dart';
 import '../../services/auth_service.dart';
 import '../../services/user_service.dart';
-import '../../services/storage_service.dart';
 import '../../services/permission_service.dart';
 import '../../services/share_service.dart';
 import '../../services/club_service.dart';
 import '../help_support_screen/help_support_screen.dart';
-import '../../services/notification_service.dart';
+// import '../../services/notification_service.dart';
 import '../../models/tournament.dart';
 import '../../widgets/custom_app_bar.dart';
 // Import FollowEventBroadcaster
 import '../club_dashboard_screen/club_owner_main_screen.dart';
 import '../club_registration_screen/club_registration_screen.dart';
 import '../direct_messages_screen/direct_messages_screen.dart';
-import '../notification_settings_screen_enhanced.dart';
-import '../friends_list_screen/friends_list_screen.dart';
+import '../notification_settings_screen.dart';
+// import '../friends_list_screen/friends_list_screen.dart';
 import '../../widgets/loading_state_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import './widgets/edit_profile_modal.dart';
 import './widgets/modern_profile_header_widget.dart';
 import './widgets/profile_tab_navigation_widget.dart';
-import './widgets/tournament_card_widget.dart';
+// import './widgets/tournament_card_widget.dart';
 import './widgets/matches_section_widget.dart';
-import './widgets/profile_quick_actions_widget.dart';
+// import './widgets/profile_quick_actions_widget.dart';
 import './widgets/qr_code_widget.dart';
 import './widgets/user_posts_grid_widget.dart';
 import './widgets/posts_sub_tab_navigation.dart';
+import './widgets/tabs/user_profile_tournaments_tab.dart';
 import '../user_voucher_screen/user_voucher_screen.dart';
 import '../account_settings_screen/account_settings_screen.dart';
 import './controller/user_profile_controller.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -71,23 +73,40 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   // Facade getters for backward compatibility
   UserProfile? get _userProfile => _controller.userProfile;
-  Map<String, dynamic> get _socialData => _controller.socialData;
+  UserSocialStats get _socialData => _controller.socialData;
   List<Tournament> get _tournaments => _controller.tournaments;
   bool get _hasClubManagementAccess => _controller.hasClubManagementAccess;
   int get _unreadMessageCount => _controller.unreadMessageCount;
-  int get _unreadNotificationCount => _controller.unreadNotificationCount;
+  // int get _unreadNotificationCount => _controller.unreadNotificationCount;
   String get _currentTab => _controller.currentTab;
   bool get _isLoading => _controller.isLoading;
   
   // Services (kept for local usage if needed, but should prefer controller)
   final UserService _userService = UserService.instance;
   final AuthService _authService = AuthService.instance;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _controller.init();
     _controller.addListener(_onControllerUpdate);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      String? userId;
+      if (args is String) {
+        userId = args;
+      } else if (args is Map && args.containsKey('user_id')) {
+        userId = args['user_id'] as String?;
+      }
+      
+      _controller.init(userId: userId);
+      _isInitialized = true;
+    }
   }
 
   @override
@@ -103,12 +122,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
   
   // Legacy methods stubbed out or redirected to controller
-  Future<void> _loadUserProfile() async => await _controller.loadUserProfile();
-  Future<void> _loadUnreadMessageCount() async => await _controller.loadUnreadMessageCount();
-  Future<void> _loadUnreadNotificationCount() async => await _controller.loadUnreadNotificationCount();
-  Future<void> _loadTournaments() async => await _controller.loadTournaments();
-
-
+  
   String _formatTournamentDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -126,139 +140,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   String _formatPrizePool(double amount) {
-    if (amount == 0) return 'Free';
+    if (amount == 0) return 'Miễn phí';
     if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(0)} Million';
+      return '${(amount / 1000000).toStringAsFixed(0)} Triệu';
     }
     return '${(amount / 1000).toStringAsFixed(0)}K';
   }
 
-  String _formatEntryFee(double amount) {
-    if (amount == 0) return 'Miễn phí';
-    if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(1)}M';
-    }
-    if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(0)}K';
-    }
-    return '${amount.toStringAsFixed(0)}đ';
-  }
 
-  String _getIconNumberFromFormat(String gameFormat) {
-    // Extract icon number from game format (8-ball, 9-ball, 10-ball)
-    final formatLower = gameFormat.toLowerCase();
 
-    // Check for exact matches first
-    if (formatLower == '8-ball' ||
-        formatLower == '8ball' ||
-        formatLower == '8') {
-      return '8';
-    } else if (formatLower == '9-ball' ||
-        formatLower == '9ball' ||
-        formatLower == '9') {
-      return '9';
-    } else if (formatLower == '10-ball' ||
-        formatLower == '10ball' ||
-        formatLower == '10') {
-      return '10';
-    }
 
-    // Fallback: Check if format contains numbers
-    if (formatLower.contains('8')) return '8';
-    if (formatLower.contains('9')) return '9';
-    if (formatLower.contains('10')) return '10';
-
-    return '9'; // Default ball number
-  }
-
-  int _getMangCountFromBracketFormat(String bracketFormat) {
-    // "Mạng" = số lần thua được phép (Vietnamese billiard terminology)
-    // Single Elimination = 1 Mạng (thua 1 trận là out)
-    // Double Elimination = 2 Mạng (thua 2 trận mới out)
-    final formatLower = bracketFormat.toLowerCase();
-
-    if (formatLower.contains('double') || formatLower == 'double_elimination') {
-      return 2; // Double Elimination = 2 Mạng
-    } else if (formatLower.contains('single') ||
-        formatLower == 'single_elimination') {
-      return 1; // Single Elimination = 1 Mạng
-    }
-
-    // Other formats don't have "mạng" concept
-    if (formatLower.contains('robin') ||
-        formatLower.contains('swiss') ||
-        formatLower.contains('ladder') ||
-        formatLower.contains('sabo')) {
-      return 0; // Hide mạng badge for these formats
-    }
-
-    return 1; // Default to single elimination
-  }
-
-  String _formatRankRange(String? minRank, String? maxRank) {
-    if (minRank != null && maxRank != null) {
-      return '$minRank → $maxRank';
-    } else if (minRank != null) {
-      return '$minRank+';
-    } else if (maxRank != null) {
-      return '≤ $maxRank';
-    }
-    return 'All Ranks';
-  }
-
-  Map<String, dynamic> _tournamentToCardData(Tournament tournament) {
-    // ✅ Get prize breakdown from prize_distribution
-    Map<String, String>? prizeBreakdown;
-    final prizeDistribution = tournament.prizeDistribution;
-    if (prizeDistribution != null) {
-      // Check for text-based format (first, second, third keys)
-      if (prizeDistribution.containsKey('first') && prizeDistribution['first'] is String) {
-        prizeBreakdown = {
-          'first': prizeDistribution['first'] as String,
-          if (prizeDistribution['second'] != null)
-            'second': prizeDistribution['second'] as String,
-          if (prizeDistribution['third'] != null)
-            'third': prizeDistribution['third'] as String,
-        };
-      }
-    }
-
-    final cardData = {
-      'id': tournament.id,
-      'name': tournament.title,
-      'date': _formatTournamentDate(tournament.startDate),
-      'playersCount':
-          '${tournament.currentParticipants}/${tournament.maxParticipants}',
-      'prizePool': _formatPrizePool(tournament.prizePool),
-      'prizeBreakdown': prizeBreakdown,
-      'rating': _formatRankRange(tournament.minRank, tournament.maxRank),
-      'gameFormat': tournament.format, // Game format (8-ball, 9-ball, 10-ball)
-      'venue': tournament.venueAddress ?? tournament.clubName ?? '',
-      'clubLogo': tournament.clubLogo,
-      'entryFee': _formatEntryFee(tournament.entryFee),
-      'iconNumber': _getIconNumberFromFormat(
-        tournament.format,
-      ), // Ball icon from game format
-      'mangCount': _getMangCountFromBracketFormat(
-        tournament.tournamentType,
-      ), // Mạng from bracket format
-      'isLive': tournament.status == 'in_progress',
-      'status': _currentTab,
-    };
-
-    // Debug log
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
-    return cardData;
-  }
 
   Future<void> _refreshProfile() async {
     if (_isRefreshing) return;
@@ -268,9 +159,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     });
 
     HapticFeedback.lightImpact();
-    await _loadUserProfile();
-    await _loadUnreadMessageCount();
-    await _loadUnreadNotificationCount();
+    await _controller.loadUserProfile();
+    await _controller.loadUnreadMessageCount();
+    await _controller.loadUnreadNotificationCount();
     if (mounted) {
       setState(() {
         _isRefreshing = false;
@@ -289,7 +180,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       MaterialPageRoute(builder: (_) => const DirectMessagesScreen()),
     ).then((_) {
       // Refresh unread count when returning from messaging
-      _loadUnreadMessageCount();
+      _controller.loadUnreadMessageCount();
     });
   }
 
@@ -335,56 +226,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
     }
 
-    final userDataMap = _userProfile!.toJson();
-
-    // Merge with temporary images for immediate UI update
-    final displayUserData = Map<String, dynamic>.from(userDataMap);
-
-    // Map database fields to widget expected keys
-    displayUserData['avatar'] = _tempAvatarPath ?? _userProfile!.avatarUrl;
-    displayUserData['coverPhoto'] =
-        _tempCoverPhotoPath ?? _userProfile!.coverPhotoUrl;
-    // Display name logic: prioritize displayName > fullName (NEVER username)
-    displayUserData['displayName'] =
-        _userProfile!.displayName.isNotEmpty == true
-        ? _userProfile!.displayName
-        : _userProfile!.fullName;
-    displayUserData['currentRankCode'] =
-        _userProfile!.rank; // Map rank field - null if unverified
-
-    // Stats from UserProfile - USE REAL DATA
-    displayUserData['eloRating'] =
-        _userProfile!.eloRating; // Real ELO from database
-    displayUserData['spaPoints'] =
-        _userProfile!.spaPoints; // Real SPA points from database
-    displayUserData['totalMatches'] =
-        _userProfile!.totalWins +
-        _userProfile!.totalLosses; // Real total matches
-    displayUserData['totalTournaments'] =
-        _userProfile!.totalTournaments; // Real tournaments
-
-    // Ranking - use cached or 0 if not loaded yet
-    displayUserData['ranking'] = _socialData['ranking'] ?? 0;
-
-    // Social stats - use real counts from getUserFollowCounts
-    displayUserData['followersCount'] = _socialData['followersCount'] ?? 0;
-    displayUserData['followingCount'] = _socialData['followingCount'] ?? 0;
-    displayUserData['likesCount'] =
-        0; // Placeholder until likes feature is implemented
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: _buildAppBar(),
       body: RefreshIndicator(
         onRefresh: _refreshProfile,
         color: Theme.of(context).colorScheme.primary,
-        child: _buildResponsiveBody(displayUserData),
+        child: _buildResponsiveBody(),
       ),
     );
   }
 
   // 🎯 iPad: Responsive body with max-width constraint
-  Widget _buildResponsiveBody(Map<String, dynamic> displayUserData) {
+  Widget _buildResponsiveBody() {
     final isIPad = DeviceInfo.isIPad(context);
     final maxWidth = isIPad ? 900.0 : double.infinity;
     
@@ -397,9 +251,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             // Modern Profile Header - Cover + Rank + 4 Metrics + Main Tabs
             SliverToBoxAdapter(
               child: ModernProfileHeaderWidget(
-                userData: displayUserData,
+                userProfile: _userProfile!,
+                userStats: _controller.userStats, // Assuming controller has userStats
+                socialData: _socialData,
+                tempAvatar: _tempAvatarPath,
+                tempCoverPhoto: _tempCoverPhotoPath,
                 onEditProfile: _showEditProfileModal,
+                onAvatarTap: _changeAvatar,
                 onCoverPhotoTap: _changeCoverPhoto,
+                selectedTabIndex: _mainTabIndex,
                 onTabChanged: (tabIndex) {
                   // Nếu là tab "Kết quả" (index 3), chuyển hướng tới LeaderboardScreen
                   if (tabIndex == 3) {
@@ -463,7 +323,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     setState(() {
                       _controller.currentTab = tab;
                     });
-                    _loadTournaments(); // Reload tournaments when tab changes
+                    _controller.loadTournaments(); // Reload tournaments when tab changes
                   },
                 ),
               ),
@@ -471,10 +331,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
               // Tournament List based on current tab
-              _buildTournamentListSliver(),
+              UserProfileTournamentsTab(
+                tournaments: _getTournamentsForCurrentTab(),
+                currentTab: _currentTab,
+                onTournamentTap: _navigateToTournamentDetail,
+                onShareTap: _shareTournament,
+              ),
             ] else if (_mainTabIndex == 2) ...[
               // Trận Đấu tab - Matches Section with tabs
-              _buildMatchesSectionSliver(),
+              SliverToBoxAdapter(
+                child: MatchesSectionWidget(userId: _authService.currentUser?.id ?? ''),
+              ),
             ] else if (_mainTabIndex == 3) ...[
               // Kết quả tab - No content needed as it navigates to LeaderboardScreen
               // But add a placeholder in case navigation fails
@@ -607,35 +474,40 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       backgroundColor: Colors.transparent,
       builder: (context) => EditProfileModal(
         userProfile: _userProfile!,
-        onSave: (updatedProfile) async {
+        onSave: (updatedProfile, avatarBytes, avatarName, removeAvatar) async {
           try {
-            // Cập nhật profile qua API
-            await _userService.updateUserProfile(
+            // 🚀 MUSK: Atomic update via UserService
+            final newProfile = await _userService.updateProfileWithAvatarUpload(
               fullName: updatedProfile.fullName,
               displayName: updatedProfile.displayName,
               bio: updatedProfile.bio,
               phone: updatedProfile.phone,
               location: updatedProfile.location,
-              avatarUrl: updatedProfile.avatarUrl,
+              avatarBytes: avatarBytes,
+              avatarFileName: avatarName,
+              removeAvatar: removeAvatar,
             );
 
-            // Refresh local data
-            await _loadUserProfile();
+            // Refresh local data directly to avoid replica lag
+            _controller.updateUserProfile(newProfile);
 
-            if (mounted) {
-              Navigator.pop(context);
-              AppSnackbar.success(
-                context: context,
-                message: '✅ Cập nhật hồ sơ thành công',
-              );
-            }
+            if (!context.mounted) return;
+            
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context);
+            // ignore: use_build_context_synchronously
+            AppSnackbar.success(
+              context: context,
+              message: '✅ Cập nhật hồ sơ thành công',
+            );
           } catch (e) {
-            if (mounted) {
-              AppSnackbar.error(
-                context: context,
-                message: '❌ Lỗi cập nhật hồ sơ: $e',
-              );
-            }
+            if (!context.mounted) return;
+            
+            // ignore: use_build_context_synchronously
+            AppSnackbar.error(
+              context: context,
+              message: '❌ Lỗi cập nhật hồ sơ: $e',
+            );
           }
         },
         onCancel: () => Navigator.pop(context),
@@ -674,12 +546,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 _buildImageSourceOption(
                   icon: Icons.camera_alt,
                   label: 'Chụp ảnh',
-                  onTap: () => _pickCoverPhotoFromCamera(),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickCoverPhotoFromCamera();
+                  },
                 ),
                 _buildImageSourceOption(
                   icon: Icons.photo_library,
                   label: 'Chọn ảnh',
-                  onTap: () => _pickCoverPhotoFromGallery(),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickCoverPhotoFromGallery();
+                  },
                 ),
               ],
             ),
@@ -696,133 +574,120 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  // Cover Photo Functions
-  Future<void> _pickCoverPhotoFromCamera() async {
-    Navigator.pop(context); // Đóng bottom sheet
+  void _changeAvatar() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.gray300,
+                borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Thay đổi ảnh đại diện', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildImageSourceOption(
+                  icon: Icons.camera_alt,
+                  label: 'Chụp ảnh',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAvatarFromCamera();
+                  },
+                ),
+                _buildImageSourceOption(
+                  icon: Icons.photo_library,
+                  label: 'Chọn ảnh',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAvatarFromGallery();
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 30),
+            AppButton(
+              label: 'Hủy',
+              type: AppButtonType.text,
+              onPressed: () => Navigator.pop(context),
+            ),
+            SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 🚀 MUSK: Unified image picker and uploader
+  Future<void> _pickAndUpload({
+    required ImageSource source,
+    required bool isAvatar,
+  }) async {
+    Navigator.pop(context); // Close bottom sheet
 
     try {
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.camera,
-        maxWidth: 1200,
-        maxHeight: 800,
-        imageQuality: 85,
-      );
-
-      if (image != null) {
-        setState(() {
-          _tempCoverPhotoPath = image.path;
-        });
-        _showSuccessMessage('✅ Đã chọn ảnh bìa từ camera');
-        _uploadCoverPhoto(image.path);
-      }
-    } catch (e) {
-      // If permission denied, show message only (Apple 5.1.1 - do not auto-redirect)
-      if (e.toString().contains('photo access') ||
-          e.toString().contains('camera') ||
-          e.toString().contains('denied')) {
-        _showErrorMessage(
-          'Cần cấp quyền camera để chụp ảnh. Bạn có thể bật trong Cài đặt > Sabo Arena > Camera',
-        );
+      // Check permissions
+      if (source == ImageSource.camera) {
+        if (!await PermissionService.checkCameraPermission()) {
+          _showErrorMessage('Cần cấp quyền camera để chụp ảnh');
+          return;
+        }
       } else {
-        _showErrorMessage('Lỗi khi chụp ảnh: $e');
+        if (!await PermissionService.checkPhotosPermission()) {
+          _showPermissionDialog();
+          return;
+        }
       }
-    }
-  }
 
-  Future<void> _pickCoverPhotoFromGallery() async {
-    Navigator.pop(context); // Đóng bottom sheet
-
-    try {
       final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1200,
-        maxHeight: 800,
+        source: source,
+        maxWidth: isAvatar ? 1024 : 1200,
+        maxHeight: isAvatar ? 1024 : 800,
         imageQuality: 85,
       );
 
       if (image != null) {
         setState(() {
-          _tempCoverPhotoPath = image.path;
+          if (isAvatar) {
+            _tempAvatarPath = image.path;
+          } else {
+            _tempCoverPhotoPath = image.path;
+          }
         });
-        _showSuccessMessage('✅ Đã chọn ảnh bìa từ thư viện');
-        _uploadCoverPhoto(image.path);
-      }
-    } catch (e) {
-      // If permission denied, show message only (Apple 5.1.1 - do not auto-redirect)
-      if (e.toString().contains('photo') ||
-          e.toString().contains('library') ||
-          e.toString().contains('denied')) {
-        _showErrorMessage(
-          'Cần cấp quyền thư viện ảnh để chọn ảnh. Bạn có thể bật trong Cài đặt > Sabo Arena > Ảnh',
-        );
-      } else {
-        _showErrorMessage('Lỗi khi chọn ảnh: $e');
-      }
-    }
-  }
-
-  // Avatar Functions
-  // ignore: unused_element
-  Future<void> _pickAvatarFromCamera() async {
-    Navigator.pop(context); // Đóng bottom sheet
-
-    try {
-      // Kiểm tra quyền camera
-      final cameraGranted = await PermissionService.checkCameraPermission();
-      if (!cameraGranted) {
-        _showErrorMessage('Cần cấp quyền truy cập camera để chụp ảnh');
-        return;
-      }
-
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.camera,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
-
-      if (image != null) {
-        setState(() {
-          _tempAvatarPath = image.path;
-        });
-        _showSuccessMessage('✅ Đã chọn ảnh đại diện từ camera');
-        _uploadAvatar(image.path);
-      }
-    } catch (e) {
-      _showErrorMessage('Lỗi khi chụp ảnh: $e');
-    }
-  }
-
-  // ignore: unused_element
-  Future<void> _pickAvatarFromGallery() async {
-    Navigator.pop(context); // Đóng bottom sheet
-
-    try {
-      // Kiểm tra quyền truy cập thư viện ảnh
-      final photosGranted = await PermissionService.checkPhotosPermission();
-      if (!photosGranted) {
-        _showPermissionDialog();
-        return;
-      }
-
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
-
-      if (image != null) {
-        setState(() {
-          _tempAvatarPath = image.path;
-        });
-        _showSuccessMessage('✅ Đã chọn ảnh đại diện từ thư viện');
-        _uploadAvatar(image.path);
+        
+        if (isAvatar) {
+          await _uploadAvatar(image);
+        } else {
+          await _uploadCoverPhoto(image);
+        }
       }
     } catch (e) {
       _showErrorMessage('Lỗi khi chọn ảnh: $e');
     }
   }
+
+  // Cover Photo Functions
+  void _pickCoverPhotoFromCamera() => _pickAndUpload(source: ImageSource.camera, isAvatar: false);
+  void _pickCoverPhotoFromGallery() => _pickAndUpload(source: ImageSource.gallery, isAvatar: false);
+
+  // Avatar Functions
+  void _pickAvatarFromCamera() => _pickAndUpload(source: ImageSource.camera, isAvatar: true);
+  void _pickAvatarFromGallery() => _pickAndUpload(source: ImageSource.gallery, isAvatar: true);
 
   // ignore: unused_element
   void _removeAvatar() {
@@ -858,29 +723,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   // Upload functions
-  Future<void> _uploadCoverPhoto(String imagePath) async {
+  Future<void> _uploadCoverPhoto(XFile image) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
-      // Get old cover photo URL to delete later
+      // 🚀 MUSK: Atomic operation handled by service
       final oldCoverUrl = _userProfile?.coverPhotoUrl ?? '';
-
-      // Upload to Supabase Storage and update database
-      final newCoverUrl = await StorageService.uploadCoverPhoto(
-        File(imagePath),
+      final bytes = await image.readAsBytes();
+      
+      final newCoverUrl = await _userService.uploadCoverPhoto(
+        bytes,
+        oldUrl: oldCoverUrl,
+        fileName: image.name,
       );
 
       if (newCoverUrl != null) {
-        // Delete old cover photo if exists
-        if (oldCoverUrl.isNotEmpty) {
-          StorageService.deleteOldCoverPhoto(oldCoverUrl);
-        }
-
         // Update local state with new URL
         setState(() {
           _tempCoverPhotoPath = null; // Clear temp path
           if (_controller.userProfile != null) {
-            _controller.userProfile = _controller.userProfile!.copyWith(coverPhotoUrl: newCoverUrl);
+            _controller.updateUserProfile(_controller.userProfile!.copyWith(coverPhotoUrl: newCoverUrl));
           }
         });
 
@@ -889,32 +749,28 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         _showErrorMessage('❌ Không thể tải lên ảnh bìa. Vui lòng thử lại.');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _showErrorMessage('Lỗi khi tải ảnh bìa: $e');
     }
   }
 
-  Future<void> _uploadAvatar(String imagePath) async {
+  Future<void> _uploadAvatar(XFile image) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
-      // Get old avatar URL to delete later
+      // 🚀 MUSK: Atomic operation handled by service
       final oldAvatarUrl = _userProfile?.avatarUrl ?? '';
+      final bytes = await image.readAsBytes();
 
-      // Upload to Supabase Storage and update database
-      final newAvatarUrl = await StorageService.uploadAvatar(File(imagePath));
+      final newAvatarUrl = await _userService.uploadAvatar(
+        bytes,
+        oldUrl: oldAvatarUrl,
+        fileName: image.name,
+      );
 
       if (newAvatarUrl != null) {
-        // Delete old avatar if exists
-        if (oldAvatarUrl.isNotEmpty) {
-          StorageService.deleteOldAvatar(oldAvatarUrl);
-        }
-
         // Update local state with new URL
         setState(() {
           _tempAvatarPath = null; // Clear temp path
           if (_userProfile != null) {
-            _controller.userProfile = _controller.userProfile!.copyWith(avatarUrl: newAvatarUrl);
+            _controller.updateUserProfile(_controller.userProfile!.copyWith(avatarUrl: newAvatarUrl));
           }
         });
 
@@ -925,45 +781,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _showErrorMessage('Lỗi khi tải ảnh đại diện: $e');
     }
   }
 
   Future<void> _removeAvatarFromServer() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // 🚀 MUSK: Atomic removal via service
+      await _userService.removeAvatar();
 
-      final oldAvatarUrl = _userProfile?.avatarUrl ?? '';
-
-      if (oldAvatarUrl.isNotEmpty) {
-        // Delete from storage
-        await StorageService.deleteOldAvatar(oldAvatarUrl);
-
-        // Update user profile in database to remove avatar URL
-        final user = Supabase.instance.client.auth.currentUser;
-        if (user != null) {
-          await Supabase.instance.client
-              .from('users')
-              .update({
-                'avatar_url': null,
-                'updated_at': DateTime.now().toIso8601String(),
-              })
-              .eq('id', user.id);
+      // Update local state
+      setState(() {
+        _tempAvatarPath = null;
+        if (_userProfile != null) {
+          _controller.userProfile = _controller.userProfile!.copyWith(avatarUrl: null);
         }
+      });
 
-        // Update local state
-        setState(() {
-          _tempAvatarPath = null;
-          if (_userProfile != null) {
-            _controller.userProfile = _controller.userProfile!.copyWith(avatarUrl: null);
-          }
-        });
-
-        _showSuccessMessage('✅ Đã xóa ảnh đại diện');
-      }
+      _showSuccessMessage('✅ Đã xóa ảnh đại diện');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _showErrorMessage('Lỗi khi xóa ảnh đại diện: $e');
     }
   }
@@ -1067,14 +903,20 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         _userProfile!.id,
       );
 
+      if (!context.mounted) return;
+
       // Close loading dialog
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
 
       if (club == null) {
         // Show club creation options for club owner without clubs
+        // ignore: use_build_context_synchronously
         _showClubCreationOptions();
         return;
       }
+
+      if (!mounted) return;
 
       // Navigate to club dashboard with clubId
       Navigator.push(
@@ -1085,8 +927,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
     } catch (e) {
       // Close loading dialog
-      Navigator.pop(context);
-      _showErrorMessage('Lỗi khi tải thông tin club: $e');
+      if (context.mounted) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+        _showErrorMessage('Lỗi khi tải thông tin club: $e');
+      }
     }
   }
 
@@ -1435,6 +1280,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
+  /*
   void _viewAllAchievements() {
     showModalBottomSheet(
       context: context,
@@ -1618,7 +1464,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       builder: (context) => _buildTournamentHistoryModal(),
     );
   }
+  */
 
+  /*
   Widget _buildChallengesHistoryModal() {
     // Mock data for challenges
     final challenges = List.generate(
@@ -1804,7 +1652,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
   }
+  */
 
+  /*
   Widget _buildTournamentHistoryModal() {
     // Mock data for tournaments
     final tournaments = List.generate(
@@ -1972,7 +1822,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
   }
+  */
 
+  /*
   Widget _buildStatItem(String label, String value, Color color) {
     return Column(
       children: [
@@ -1989,6 +1841,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ],
     );
   }
+  */
 
   void _openAccountSettings() {
     if (_userProfile == null) return;
@@ -2003,7 +1856,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     ).then((shouldRefresh) {
       // If settings were saved, refresh the profile
       if (shouldRefresh == true) {
-        _loadUserProfile();
+        _refreshProfile();
       }
     });
   }
@@ -2012,7 +1865,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const NotificationSettingsScreenEnhanced(),
+        builder: (context) => const NotificationSettingsScreen(),
       ),
     );
   }
@@ -2190,10 +2043,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         throw 'Could not launch $appUrl';
       }
     } catch (e) {
-      AppSnackbar.error(
-        context: context,
-        message: 'Không thể mở store: $e',
-      );
+      if (mounted) {
+        AppSnackbar.error(
+          context: context,
+          message: 'Không thể mở store: $e',
+        );
+      }
     }
   }
 
@@ -2300,6 +2155,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           .eq('approval_status', 'approved')
           .maybeSingle();
 
+      if (!mounted) return;
+
       if (response == null) {
         AppSnackbar.info(
           context: context,
@@ -2316,10 +2173,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ),
       );
     } catch (e) {
-      AppSnackbar.error(
-        context: context,
-        message: 'Lỗi: $e',
-      );
+      if (mounted) {
+        AppSnackbar.error(
+          context: context,
+          message: 'Lỗi: $e',
+        );
+      }
     }
   }
 
@@ -2392,6 +2251,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
   }
 
+  /*
   void _showNotificationsModal() {
     showModalBottomSheet(
       context: context,
@@ -2400,7 +2260,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       builder: (context) => _buildNotificationsModal(),
     );
   }
+  */
 
+  /*
   Widget _buildNotificationsModal() {
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
@@ -2475,7 +2337,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
           // Notifications List
           Expanded(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
+            child: FutureBuilder<List<NotificationModel>>(
               future: NotificationService.instance.getUserNotifications(limit: 50),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -2587,11 +2449,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildNotificationItem(Map<String, dynamic> notification) {
-    final isRead = notification['is_read'] ?? false;
-    final type = notification['type'] ?? 'default';
-    final createdAt =
-        DateTime.tryParse(notification['created_at'] ?? '') ?? DateTime.now();
+  Widget _buildNotificationItem(NotificationModel notification) {
+    final isRead = notification.isRead;
+    final type = notification.type.value;
+    final createdAt = notification.createdAt;
     final timeAgo = _getTimeAgo(createdAt);
 
     IconData iconData;
@@ -2649,7 +2510,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      notification['title'] ?? 'Thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      notification.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: isRead ? FontWeight.w600 : FontWeight.w700,
                         letterSpacing: -0.2,
@@ -2658,7 +2521,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     ),
                     SizedBox(height: 2),
                     Text(
-                      notification['message'] ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      notification.body,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                         letterSpacing: -0.2,
@@ -2707,7 +2572,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
   }
+  */
 
+  /*
   String _getTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
@@ -2723,18 +2590,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
   }
 
-  void _handleNotificationTap(Map<String, dynamic> notification) {
+  void _handleNotificationTap(NotificationModel notification) {
     // Mark as read if not already read
-    if (!(notification['is_read'] ?? false)) {
-      NotificationService.instance.markNotificationAsRead(notification['id']);
+    if (!notification.isRead) {
+      NotificationService.instance.markNotificationAsRead(notification.id);
       // Reload unread count from controller
       _controller.loadUnreadNotificationCount();
       setState(() {});
     }
 
     // Handle different notification types
-    final type = notification['type'] ?? '';
-    final actionData = notification['action_data'] ?? {};
+    final type = notification.type.value;
+    final actionData = notification.data;
 
     switch (type) {
       case 'tournament_invitation':
@@ -2763,7 +2630,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       default:
         AppSnackbar.info(
           context: context,
-          message: 'Đã xem thông báo: ${notification['title']}',
+          message: 'Đã xem thông báo: ${notification.title}',
         );
     }
   }
@@ -2773,6 +2640,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       await NotificationService.instance.markAllNotificationsAsRead();
       // Reload unread count from controller
       await _controller.loadUnreadNotificationCount();
+      if (!mounted) return;
       setState(() {});
       Navigator.pop(context); // Close modal
       AppSnackbar.success(
@@ -2780,12 +2648,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         message: '✅ Đã đánh dấu tất cả thông báo là đã đọc',
       );
     } catch (e) {
-      AppSnackbar.error(
-        context: context,
-        message: '❌ Lỗi đánh dấu thông báo: $e',
-      );
+      if (mounted) {
+        AppSnackbar.error(
+          context: context,
+          message: '❌ Lỗi đánh dấu thông báo: $e',
+        );
+      }
     }
   }
+  */
 
   void _showClubCreationOptions() {
     showDialog(
@@ -2882,154 +2753,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  // Build Tournament List based on current tab (UNUSED - kept for reference)
-  // ignore: unused_element
-  Widget _buildTournamentList() {
-    // NOTE: This method is unused. Remove if not needed.
-    // Mock tournament data - Replace with real data from backend when implementing
-    final List<Map<String, dynamic>> tournaments = [
-      {
-        'name': 'SABO Kick-off Cup',
-        'date': '06/09 - Thứ 7',
-        'playersCount': '16/16',
-        'prizePool': '10 Million',
-        'rating': 'I → H+',
-        'iconNumber': '9',
-        'mangCount': 2,
-        'isLive': true,
-        'status': 'live',
-      },
-      {
-        'name': 'Championship Tournament',
-        'date': '15/09 - Chủ nhật',
-        'playersCount': '8/16',
-        'prizePool': '20 Million',
-        'rating': 'G → F+',
-        'iconNumber': '12',
-        'mangCount': 3,
-        'isLive': false,
-        'status': 'ready',
-      },
-      {
-        'name': 'Weekend Cup',
-        'date': '20/09 - Thứ 7',
-        'playersCount': '16/16',
-        'prizePool': '5 Million',
-        'rating': 'H → G+',
-        'iconNumber': '8',
-        'mangCount': 2,
-        'isLive': false,
-        'status': 'done',
-      },
-    ];
-
-    // Filter tournaments based on current tab
-    final filteredTournaments = tournaments.where((tournament) {
-      final status = tournament['status'] as String;
-      return status == _currentTab;
-    }).toList();
-
-    if (filteredTournaments.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(
-                Icons.emoji_events_outlined,
-                size: 64,
-                color: AppColors.gray300,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _currentTab == 'ready'
-                    ? 'Không có giải đấu sắp diễn ra'
-                    : _currentTab == 'live'
-                    ? 'Không có giải đấu đang diễn ra'
-                    : 'Không có giải đấu đã hoàn thành', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      children: filteredTournaments
-          .map(
-            (tournament) => TournamentCardWidget(
-              tournament: tournament,
-              onTap: () {
-                // TODO: Implement navigation to tournament detail screen
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => TournamentDetailScreen(...)));
-              },
-              onShareTap: () => _shareTournament(tournament),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  // Build Tournament List as Sliver
-  Widget _buildTournamentListSliver() {
-    final tournaments = _getTournamentsForCurrentTab();
-
-    if (tournaments.isEmpty) {
-      return SliverToBoxAdapter(
-        child: Container(
-          height: 300,
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.emoji_events_outlined,
-                size: 64,
-                color: AppColors.gray300,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _currentTab == 'ready'
-                    ? 'Không có giải đấu sắp diễn ra'
-                    : _currentTab == 'live'
-                    ? 'Không có giải đấu đang diễn ra'
-                    : 'Không có giải đấu đã hoàn thành', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
-        final tournament = tournaments[index];
-        final tournamentId = tournament['id'] as String?;
-        final status = tournament['status'] as String?;
-
-        return TournamentCardWidget(
-          tournament: tournament,
-          onTap: () {
-            if (tournamentId != null) {
-              _navigateToTournamentDetail(tournamentId);
-            }
-          },
-          onResultTap: () {
-            if (tournamentId != null && status == 'done') {
-              _navigateToTournamentDetail(tournamentId, showResults: true);
-            }
-          },
-          onDetailTap: () {
-            if (tournamentId != null && status == 'ready') {
-              _navigateToTournamentDetail(tournamentId);
-            }
-          },
-          onShareTap: () => _shareTournament(tournament),
-        );
-      }, childCount: tournaments.length),
-    );
-  }
-
   void _navigateToTournamentDetail(
     String tournamentId, {
     bool showResults = false,
@@ -3040,22 +2763,41 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Future<void> _shareTournament(Map<String, dynamic> tournament) async {
+  Future<void> _shareTournament(dynamic tournamentData) async {
     try {
-      final tournamentId = tournament['id'] as String?;
-      final tournamentName = tournament['name'] as String? ?? 'Tournament';
-      final date = tournament['date'] as String? ?? '';
-      final playersCount = tournament['playersCount'] as String? ?? '0';
-      final prizePool = tournament['prizePool'] as String? ?? '0';
-      final format = tournament['format'] as String? ?? 'Single Elimination';
-      final status = tournament['status'] as String? ?? 'upcoming';
+      String tournamentId;
+      String tournamentName;
+      String date;
+      String playersCount;
+      String prizePool;
+      String format;
+      String status;
+
+      if (tournamentData is Tournament) {
+        tournamentId = tournamentData.id;
+        tournamentName = tournamentData.title;
+        date = _formatTournamentDate(tournamentData.startDate);
+        playersCount = '${tournamentData.currentParticipants}/${tournamentData.maxParticipants}';
+        prizePool = _formatPrizePool(tournamentData.prizePool);
+        format = tournamentData.format;
+        status = tournamentData.status;
+      } else {
+        final tournament = tournamentData as Map<String, dynamic>;
+        tournamentId = tournament['id'] as String? ?? '';
+        tournamentName = tournament['name'] as String? ?? 'Tournament';
+        date = tournament['date'] as String? ?? '';
+        playersCount = tournament['playersCount'] as String? ?? '0';
+        prizePool = tournament['prizePool'] as String? ?? '0';
+        format = tournament['format'] as String? ?? 'Single Elimination';
+        status = tournament['status'] as String? ?? 'upcoming';
+      }
       
       // Extract participant count from "16/32" format
       final participants = playersCount.split('/').first;
       
       // Use rich share with 4:5 image card
       await ShareService.shareTournamentRich(
-        tournamentId: tournamentId ?? '',
+        tournamentId: tournamentId,
         tournamentName: tournamentName,
         startDate: date,
         participants: int.tryParse(participants) ?? 0,
@@ -3072,7 +2814,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         AppSnackbar.error(
           context: context,
@@ -3082,92 +2823,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
   }
 
-  // Build Matches Section as Sliver
-  Widget _buildMatchesSectionSliver() {
-    return SliverToBoxAdapter(
-      child: MatchesSectionWidget(userId: _authService.currentUser?.id ?? ''),
-    );
-  }
-
   // Helper method to get tournaments for current tab (now using real data)
-  List<Map<String, dynamic>> _getTournamentsForCurrentTab() {
-    return _tournaments
-        .map((tournament) => _tournamentToCardData(tournament))
-        .toList();
+  List<Tournament> _getTournamentsForCurrentTab() {
+    // Filter based on _currentTab
+    return _tournaments.where((t) {
+      if (_currentTab == 'ready') return t.status == 'upcoming' || t.status == 'ready';
+      if (_currentTab == 'live') return t.status == 'active' || t.status == 'live' || t.status == 'in_progress';
+      if (_currentTab == 'done') return t.status == 'completed' || t.status == 'ended' || t.status == 'done';
+      return true;
+    }).toList();
   }
 
-  // Build Quick Actions list
-  // ignore: unused_element
-  List<QuickAction> _buildQuickActions() {
-    // Calculate stats
-    final friendsCount = _socialData['friendsCount'] ?? 0;
-    final totalWins = _userProfile?.totalWins ?? 0;
-    final totalLosses = _userProfile?.totalLosses ?? 0;
-    final totalMatches = totalWins + totalLosses;
-    final winRate = totalMatches > 0
-        ? ((totalWins / totalMatches) * 100).toStringAsFixed(1)
-        : '0.0';
-    final totalTournaments = _userProfile?.totalTournaments ?? 0;
-    final challengesCount = _socialData['challengesCount'] ?? 0;
 
-    return [
-      QuickAction(
-        icon: 'people',
-        iconColor: AppColors.primary, // Facebook blue
-        title: 'Bạn bè',
-        subtitle: '$friendsCount người bạn',
-        showChevron: true,
-        onTap: _viewFriendsList,
-      ),
-      QuickAction(
-        icon: 'groups',
-        iconColor: AppColors.success, // Facebook green
-        title: 'Câu lạc bộ',
-        subtitle: 'Xem các club của bạn',
-        showChevron: true,
-        onTap: () {
-          if (_userProfile?.role == 'clb' ||
-              _userProfile?.role == 'club_owner') {
-            _switchToClubInterface();
-          } else {
-            _showClubCreationOptions();
-          }
-        },
-      ),
-      QuickAction(
-        icon: 'emoji_events',
-        iconColor: AppColors.warning, // Facebook yellow
-        title: 'Giải đấu',
-        subtitle:
-            '$totalTournaments giải đấu • ${totalWins}W-${totalLosses}L ($winRate%)',
-        showChevron: true,
-        onTap: _viewTournamentHistory,
-      ),
-      QuickAction(
-        icon: 'sports_martial_arts',
-        iconColor: AppColors.premium, // Purple
-        title: 'Thách đấu',
-        subtitle: '$challengesCount trận • ${totalWins}W-${totalLosses}L',
-        showChevron: true,
-        onTap: _viewRecentChallenges,
-      ),
-      QuickAction(
-        icon: 'military_tech',
-        iconColor: AppColors.error, // Facebook red
-        title: 'Thành tích',
-        subtitle: 'Xem tất cả huy hiệu và thành tích',
-        showChevron: true,
-        onTap: _viewAllAchievements,
-      ),
-      QuickAction(
-        icon: 'settings',
-        iconColor: AppColors.textSecondary, // Gray
-        title: 'Cài đặt',
-        subtitle: 'Tài khoản, thông báo và quyền riêng tư',
-        showChevron: true,
-        onTap: _showMoreOptions,
-      ),
-    ];
-  }
 }
 

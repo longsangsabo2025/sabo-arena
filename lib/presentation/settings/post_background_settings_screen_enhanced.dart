@@ -6,7 +6,7 @@ import '../../models/post_background_theme.dart';
 import '../../core/design_system/design_system.dart';
 import '../../theme/app_bar_theme.dart' as app_theme;
 import '../../core/utils/user_friendly_messages.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Màn hình cài đặt background cho posts không có ảnh - Enhanced version
 /// Features:
@@ -76,7 +76,7 @@ class _PostBackgroundSettingsScreenEnhancedState
         _overlayOpacity = prefs.getDouble('post_bg_overlay_opacity') ?? 0.3;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -104,7 +104,7 @@ class _PostBackgroundSettingsScreenEnhancedState
       await prefs.setDouble('post_bg_brightness', _brightness);
 
       // Save overlay color
-      await prefs.setInt('post_bg_overlay_color', _overlayColor.value);
+      await prefs.setInt('post_bg_overlay_color', _overlayColor.toARGB32());
 
       // Save overlay opacity
       await prefs.setDouble('post_bg_overlay_opacity', _overlayOpacity);

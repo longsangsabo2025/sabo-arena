@@ -581,15 +581,15 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
       primaryColor = color;
       // Auto-generate complementary colors
       secondaryColor = Color.fromRGBO(
-        (color.red * 0.8).round(),
-        (color.green * 0.8).round(),
-        (color.blue * 0.8).round(),
+        (color.r * 255 * 0.8).round(),
+        (color.g * 255 * 0.8).round(),
+        (color.b * 255 * 0.8).round(),
         1.0,
       );
       accentColor = Color.fromRGBO(
-        255 - color.red,
-        255 - color.green,
-        255 - color.blue,
+        255 - (color.r * 255).round(),
+        255 - (color.g * 255).round(),
+        255 - (color.b * 255).round(),
         1.0,
       );
     });

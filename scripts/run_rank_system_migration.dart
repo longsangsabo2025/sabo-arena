@@ -21,7 +21,7 @@ class RunRankSystemMigration {
     // Step 2: Insert new rank system
     print('Step 2: Inserting new rank system (12 ranks)...');
     final insertSql = '''
-INSERT INTO public.rank_system (rank_code, rank_value, rank_name, rank_name_vi, color_hex, elo_min, elo_max) VALUES
+INSERT INTO public.rank_system (rank_code, rank_order, rank_name, rank_name_vi, rank_color, elo_min, elo_max) VALUES
 ('K',  1,  'Starter',           'Người mới',        '#8BC34A', 1000, 1099),
 ('K+', 2,  'Apprentice',        'Học việc',         '#4CAF50', 1100, 1199),
 ('I',  3,  'Worker III',        'Thợ 3',            '#2196F3', 1200, 1299),
@@ -101,7 +101,7 @@ BEGIN
   SELECT rs.rank_code INTO rank_code
   FROM public.rank_system rs
   WHERE elo >= rs.elo_min AND elo <= rs.elo_max
-  ORDER BY rs.rank_value DESC LIMIT 1;
+  ORDER BY rs.rank_order DESC LIMIT 1;
   RETURN COALESCE(rank_code, 'K');
 END;
 \$\$;
@@ -199,7 +199,7 @@ END;
     print('Verifying...\n');
 
     final ranks = await _query(
-      'SELECT rank_code, rank_name_vi, elo_min, elo_max FROM public.rank_system ORDER BY rank_value;',
+      'SELECT rank_code, rank_name_vi, elo_min, elo_max FROM public.rank_system ORDER BY rank_order;',
     );
     print('📊 Rank System (${ranks.length} ranks):');
     for (var rank in ranks) {

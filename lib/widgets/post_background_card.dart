@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../models/post_background_theme.dart';
 
 /// Card hiển thị post không có ảnh với background đẹp
@@ -203,6 +204,7 @@ class PostBackgroundCard extends StatelessWidget {
 
   String _getSystemFont() {
     try {
+      if (kIsWeb) return 'Roboto';
       if (Platform.isIOS) {
         return '.SF Pro Display';
       } else {
@@ -303,6 +305,7 @@ class PostBackgroundCardCompact extends StatelessWidget {
 
   String _getSystemFont() {
     try {
+      if (kIsWeb) return 'Roboto';
       if (Platform.isIOS) {
         return '.SF Pro Display';
       } else {

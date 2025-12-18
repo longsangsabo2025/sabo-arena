@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sabo_arena/utils/production_logger.dart';
 import 'match_card_widget.dart';
 import '../../../services/match_service.dart';
 import '../../../services/share_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Matches Section Widget - Hiển thị danh sách trận đấu
 /// Design: Tabs Ready/Live/Done + Match cards list
@@ -34,7 +35,6 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
         _isLoading = true;
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Fetch matches from Supabase
       final matches = await _matchService.getUserMatches(
@@ -42,11 +42,9 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
         limit: 50,
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Log chi tiết các matches
       for (final _ in matches) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       if (mounted) {
@@ -56,7 +54,6 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
         });
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -97,9 +94,8 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
             itemBuilder: (context, index) {
               final match = filteredMatches[index];
               return MatchCardWidget(
-                match: match,
+                matchObj: match,
                 onTap: () {
-                  ProductionLogger.debug('Debug log', tag: 'AutoFix');
                 },
                 onShareTap: () => _shareMatch(match),
               );
@@ -115,11 +111,11 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Expanded(child: _buildStatusTab(label: 'Ready', index: 0)),
+          Expanded(child: _buildStatusTab(label: 'Sắp diễn ra', index: 0)),
           Expanded(
-            child: _buildStatusTab(label: 'Live', index: 1, showRedDot: true),
+            child: _buildStatusTab(label: 'Đang diễn ra', index: 1, showRedDot: true),
           ),
-          Expanded(child: _buildStatusTab(label: 'Done', index: 2)),
+          Expanded(child: _buildStatusTab(label: 'Hoàn thành', index: 2)),
         ],
       ),
     );
@@ -176,7 +172,7 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
     );
   }
 
-  List<Map<String, dynamic>> _getFilteredMatches() {
+  List<Match> _getFilteredMatches() {
     String status;
     switch (_selectedStatusIndex) {
       case 0:
@@ -193,82 +189,16 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
     }
 
     // Filter real matches from Supabase
-    final filtered = _allMatches
-        .where((match) => match.status == status)
-        .toList();
-
-    // Convert Match objects to Map format for MatchCardWidget
-    return filtered.map((match) => _convertMatchToCardData(match)).toList();
+    return _allMatches.where((match) {
+      if (status == 'pending') {
+        return match.status == 'pending' || match.status == 'scheduled';
+      }
+      return match.status == status;
+    }).toList();
   }
 
-  Map<String, dynamic> _convertMatchToCardData(Match match) {
-    // Determine if current user is player1 or player2
-    final isPlayer1 = match.player1Id == widget.userId;
 
-    // Get player data based on position
-    final currentUserName = isPlayer1 ? match.player1Name : match.player2Name;
-    final currentUserRank = isPlayer1 ? match.player1Rank : match.player2Rank;
-    final currentUserAvatar = isPlayer1
-        ? match.player1Avatar
-        : match.player2Avatar;
 
-    final opponentName = isPlayer1 ? match.player2Name : match.player1Name;
-    final opponentRank = isPlayer1 ? match.player2Rank : match.player1Rank;
-    final opponentAvatar = isPlayer1
-        ? match.player2Avatar
-        : match.player1Avatar;
-
-    // Get scores
-    final currentUserScore = isPlayer1
-        ? match.player1Score
-        : match.player2Score;
-    final opponentScore = isPlayer1 ? match.player2Score : match.player1Score;
-
-    // Format date and time
-    String dateStr = '';
-    String timeStr = '';
-    if (match.scheduledTime != null) {
-      final date = match.scheduledTime!;
-      final formatter = DateFormat('EEE - dd/MM');
-      dateStr = formatter.format(date);
-      timeStr = DateFormat('HH:mm').format(date);
-    }
-
-    // Determine status for card
-    String cardStatus;
-    if (match.status == 'pending' || match.status == 'scheduled') {
-      cardStatus = 'ready';
-    } else if (match.status == 'in_progress') {
-      cardStatus = 'live';
-    } else if (match.status == 'completed') {
-      cardStatus = 'done';
-    } else {
-      cardStatus = 'ready';
-    }
-
-    return {
-      'id': match.id,
-      // Opponent data (shown on left)
-      'player1Name': opponentName ?? 'Unknown',
-      'player1Rank': opponentRank ?? 'H',
-      'player1Avatar': opponentAvatar,
-      'player1Online': false, // TODO: Fetch real online status from presence
-      // Current user data (shown on right)
-      'player2Name': currentUserName ?? 'You',
-      'player2Rank': currentUserRank ?? 'H',
-      'player2Avatar': currentUserAvatar,
-      'player2Online': true, // Assume current user is online
-      'status': cardStatus,
-      'date': dateStr,
-      'time': timeStr,
-      'score1': opponentScore.toString(),
-      'score2': currentUserScore.toString(),
-      'handicap': match.notes ?? '',
-      'prize': '', // TODO: Fetch from tournament if needed
-      'raceInfo': match.tournamentTitle ?? 'Match ${match.matchNumber}',
-      'currentTable': 'Round ${match.roundNumber}',
-    };
-  }
 
   Widget _buildEmptyState() {
     String message;
@@ -316,20 +246,40 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
     );
   }
 
-  Future<void> _shareMatch(Map<String, dynamic> match) async {
+  Future<void> _shareMatch(dynamic matchData) async {
     try {
-      final player1Name = match['player1Name'] as String? ?? 'Player 1';
-      final player2Name = match['player2Name'] as String? ?? 'Player 2';
-      final score1 = match['score1'] as String? ?? '?';
-      final score2 = match['score2'] as String? ?? '?';
+      String player1Name;
+      String player2Name;
+      String score1;
+      String score2;
+      String date;
+      String? matchId;
+
+      if (matchData is Match) {
+        player1Name = matchData.player1Name ?? 'Player 1';
+        player2Name = matchData.player2Name ?? 'Player 2';
+        score1 = matchData.player1Score.toString();
+        score2 = matchData.player2Score.toString();
+        date = matchData.scheduledTime != null 
+            ? DateFormat('dd/MM').format(matchData.scheduledTime!) 
+            : '';
+        matchId = matchData.id;
+      } else {
+        final match = matchData as Map<String, dynamic>;
+        player1Name = match['player1Name'] as String? ?? 'Player 1';
+        player2Name = match['player2Name'] as String? ?? 'Player 2';
+        score1 = match['score1'] as String? ?? '?';
+        score2 = match['score2'] as String? ?? '?';
+        date = match['date'] as String? ?? '';
+        matchId = match['id'] as String?;
+      }
+
       final score = '$score1 - $score2';
       final winner = score1 != '?' && score2 != '?' 
         ? (int.tryParse(score1) ?? 0) > (int.tryParse(score2) ?? 0) 
           ? player1Name 
           : player2Name
         : 'TBD';
-      final date = match['date'] as String? ?? '';
-      final matchId = match['id'] as String?;
       
       await ShareService.shareMatchResult(
         player1Name: player1Name,
@@ -340,7 +290,7 @@ class _MatchesSectionWidgetState extends State<MatchesSectionWidget> {
         matchId: matchId,
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.error('Share match result failed', error: e, tag: 'MatchesSectionWidget');
     }
   }
 }

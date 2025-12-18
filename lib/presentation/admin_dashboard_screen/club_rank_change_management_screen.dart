@@ -85,7 +85,7 @@ class _ClubRankChangeManagementScreenState
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Lỗi: ${response['error'] ?? 'Unknown error'}'),
+              content: Text('Lỗi: ${response['error'] ?? 'Lỗi không xác định'}'),
               backgroundColor: Colors.red,
             ),
           );

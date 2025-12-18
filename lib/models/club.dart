@@ -27,6 +27,8 @@ class Club {
   final int totalReviews;
   final double? latitude;
   final double? longitude;
+  final String? businessLicenseUrl;
+  final String? identityCardUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -71,6 +73,8 @@ class Club {
     required this.totalReviews,
     this.latitude,
     this.longitude,
+    this.businessLicenseUrl,
+    this.identityCardUrl,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -113,6 +117,8 @@ class Club {
       longitude: json['longitude'] != null
           ? (json['longitude'] as num).toDouble()
           : null,
+      businessLicenseUrl: json['business_license_url'],
+      identityCardUrl: json['identity_card_url'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -146,6 +152,8 @@ class Club {
       'total_reviews': totalReviews,
       'latitude': latitude,
       'longitude': longitude,
+      'business_license_url': businessLicenseUrl,
+      'identity_card_url': identityCardUrl,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };

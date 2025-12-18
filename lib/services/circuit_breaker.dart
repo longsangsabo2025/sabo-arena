@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Circuit Breaker Pattern
 /// Prevents cascading failures by stopping requests to failing services
@@ -37,13 +37,11 @@ class CircuitBreaker {
       if (_shouldAttemptReset()) {
         _state = CircuitState.halfOpen;
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       } else {
         // Circuit is open, use fallback
         if (fallback != null) {
           if (kDebugMode) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
           return await fallback();
         }
@@ -59,7 +57,6 @@ class CircuitBreaker {
       _onFailure();
       if (fallback != null && _state == CircuitState.open) {
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
         return await fallback();
       }
@@ -76,7 +73,6 @@ class CircuitBreaker {
         _state = CircuitState.closed;
         _successCount = 0;
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
     }
@@ -90,7 +86,6 @@ class CircuitBreaker {
       _state = CircuitState.open;
       _successCount = 0;
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       
       // Schedule reset attempt
@@ -99,7 +94,6 @@ class CircuitBreaker {
         if (_state == CircuitState.open) {
           _state = CircuitState.halfOpen;
           if (kDebugMode) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
         }
       });
@@ -121,7 +115,6 @@ class CircuitBreaker {
     _lastFailureTime = null;
     _resetTimer?.cancel();
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 

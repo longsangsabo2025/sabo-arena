@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX // For debugPrint
+// ELON_MODE_AUTO_FIX // For debugPrint
 
 class AdminRankApprovalService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -14,7 +14,7 @@ class AdminRankApprovalService {
       final currentUserId = _supabase.auth.currentUser?.id;
 
       if (currentUserId == null) {
-        return {'success': false, 'error': 'User not authenticated'};
+        return {'success': false, 'error': 'Người dùng chưa đăng nhập'};
       }
 
       if (approved) {
@@ -31,13 +31,13 @@ class AdminRankApprovalService {
         if (response is Map && response['success'] == true) {
           return {
             'success': true,
-            'message': response['message'] ?? 'Request approved successfully',
+            'message': response['message'] ?? 'Đã duyệt yêu cầu thành công',
             'status': response['status'],
           };
         } else {
           return {
             'success': false,
-            'error': response['error'] ?? 'Failed to approve request',
+            'error': response['error'] ?? 'Lỗi duyệt yêu cầu',
           };
         }
       } else {
@@ -47,24 +47,24 @@ class AdminRankApprovalService {
           params: {
             'p_request_id': requestId,
             'p_approved': false,
-            'p_comments': comments ?? 'No reason provided',
+            'p_comments': comments ?? 'Không có lý do',
           },
         );
 
         if (response is Map && response['success'] == true) {
           return {
             'success': true,
-            'message': response['message'] ?? 'Request rejected successfully',
+            'message': response['message'] ?? 'Đã từ chối yêu cầu thành công',
           };
         } else {
           return {
             'success': false,
-            'error': response['error'] ?? 'Failed to reject request',
+            'error': response['error'] ?? 'Lỗi từ chối yêu cầu',
           };
         }
       }
     } catch (e) {
-      return {'success': false, 'error': 'Database error: ${e.toString()}'};
+      return {'success': false, 'error': 'Lỗi cơ sở dữ liệu: ${e.toString()}'};
     }
   }
 
@@ -73,10 +73,9 @@ class AdminRankApprovalService {
     try {
       final currentUserId = _supabase.auth.currentUser?.id;
       if (currentUserId == null) {
-        throw Exception('User not authenticated');
+        throw Exception('Người dùng chưa đăng nhập');
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Check if user is system admin
       final userResponse = await _supabase
@@ -88,7 +87,6 @@ class AdminRankApprovalService {
       final isSystemAdmin = userResponse['role'] == 'admin';
 
       if (isSystemAdmin) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         // System admin: Get ALL pending requests from rank_requests table
         final response = await _supabase
@@ -111,11 +109,9 @@ class AdminRankApprovalService {
             .eq('status', 'pending')
             .order('requested_at', ascending: false);
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return List<Map<String, dynamic>>.from(response);
       } else {
         // Club owner: Get requests for their club
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         // First, find which club this user owns
         final clubResponse = await _supabase
@@ -125,12 +121,10 @@ class AdminRankApprovalService {
             .maybeSingle();
 
         if (clubResponse == null) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           return []; // Not a club owner
         }
 
         final clubId = clubResponse['id'];
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         // Get pending rank_requests for this club
         final response = await _supabase
@@ -150,11 +144,9 @@ class AdminRankApprovalService {
             .eq('status', 'pending')
             .order('requested_at', ascending: false);
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return List<Map<String, dynamic>>.from(response);
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to load rank requests: $e');
     }
   }
@@ -193,7 +185,6 @@ class AdminRankApprovalService {
         throw Exception('User not authenticated');
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Check if user is system admin
       final userResponse = await _supabase
@@ -205,7 +196,6 @@ class AdminRankApprovalService {
       final isSystemAdmin = userResponse['role'] == 'admin';
 
       if (isSystemAdmin) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         // System admin: Get ALL approved/rejected requests
         final response = await _supabase
@@ -228,11 +218,9 @@ class AdminRankApprovalService {
             .inFilter('status', ['approved', 'rejected'])
             .order('reviewed_at', ascending: false);
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return List<Map<String, dynamic>>.from(response);
       } else {
         // Club owner: Get requests for their club
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         // First, find which club this user owns
         final clubResponse = await _supabase
@@ -242,12 +230,10 @@ class AdminRankApprovalService {
             .maybeSingle();
 
         if (clubResponse == null) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           return []; // Not a club owner
         }
 
         final clubId = clubResponse['id'];
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         // Get approved/rejected rank_requests for this club
         final response = await _supabase
@@ -267,11 +253,9 @@ class AdminRankApprovalService {
             .inFilter('status', ['approved', 'rejected'])
             .order('reviewed_at', ascending: false);
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return List<Map<String, dynamic>>.from(response);
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to load approved rank requests: $e');
     }
   }

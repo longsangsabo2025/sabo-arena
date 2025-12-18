@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'notification_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Simple Challenge Service for basic challenge functionality
 /// This version doesn't depend on advanced challenge rules
@@ -27,29 +27,15 @@ class SimpleChallengeService {
     String? rankMax, // Hạng tối đa (null = không giới hạn)
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final currentUser = _supabase.auth.currentUser;
 
       if (currentUser == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         throw Exception('User not authenticated');
       }
 
       final userId = currentUser.id;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get current user details
       final userResponse = await _supabase
@@ -58,21 +44,19 @@ class SimpleChallengeService {
           .eq('id', userId)
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get challenged user details (skip for open challenge)
-      Map<String, dynamic>? challengedUserResponse;
+      // Map<String, dynamic>? challengedUserResponse; // Unused
       bool isOpenChallenge = challengedUserId.isEmpty;
 
       if (!isOpenChallenge) {
-        challengedUserResponse = await _supabase
+        // Check if user exists
+        await _supabase
             .from('users')
             .select('display_name, elo_rating')
             .eq('id', challengedUserId)
             .single();
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Create challenge record using existing table schema
@@ -107,7 +91,6 @@ class SimpleChallengeService {
         // expires_at will be set automatically by database default
       };
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final challengeResponse = await _supabase
           .from('challenges')
@@ -115,7 +98,6 @@ class SimpleChallengeService {
           .select()
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Send notification (skip for open challenge)
       if (!isOpenChallenge) {
@@ -130,18 +112,14 @@ class SimpleChallengeService {
             location: location,
             spaPoints: spaPoints,
           );
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } catch (notificationError) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           // Don't fail the whole challenge if notification fails
         }
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       return challengeResponse;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Không thể gửi thách đấu: $error');
     }
   }
@@ -183,7 +161,6 @@ Hãy vào ứng dụng để phản hồi!
         data: {'challenge_id': challengeId},
       );
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Don't throw - notification failure shouldn't fail the challenge
     }
   }
@@ -227,7 +204,6 @@ Hãy vào ứng dụng để phản hồi!
 
       return true; // Both users exist
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }

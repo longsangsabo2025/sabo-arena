@@ -9,7 +9,7 @@ import '../services/config_service.dart';
 import '../models/user_profile.dart';
 import 'dart:math' as math;
 import 'auto_notification_hooks.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service tích hợp ELO rating với tournament system
 class TournamentEloService {
@@ -217,7 +217,6 @@ class TournamentEloService {
       });
     } catch (error) {
       // Log error but don't throw
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -262,7 +261,7 @@ class TournamentEloService {
         );
       }
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 

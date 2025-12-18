@@ -2,7 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/models/user_profile.dart';
 import 'package:sabo_arena/services/share_service.dart';
 import 'package:sabo_arena/services/user_code_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class RegistrationQRService {
   static final SupabaseClient _supabase = Supabase.instance.client;
@@ -20,11 +20,9 @@ class RegistrationQRService {
     String role = 'player',
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 1. Generate unique user code
       final userCode = await UserCodeService.generateUniqueUserCode(userId);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 2. Generate QR data
       final qrData = ShareService.generateUserQRData(
@@ -48,7 +46,6 @@ class RegistrationQRService {
           updatedAt: DateTime.now(),
         ),
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 3. Create/Update user profile with QR system
       final profileData = {
@@ -82,7 +79,6 @@ class RegistrationQRService {
           .select()
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 5. Return success with user code and QR data
       return {
@@ -94,7 +90,6 @@ class RegistrationQRService {
         'profile': result,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': e.toString(),
@@ -116,7 +111,6 @@ class RegistrationQRService {
 
       return result;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -154,7 +148,6 @@ class RegistrationQRService {
         'message': 'Mã QR đã được tạo mới thành công!',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': e.toString(),
@@ -186,7 +179,6 @@ class RegistrationQRService {
         return {'success': false, 'message': 'QR code không đúng định dạng'};
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': e.toString(),
@@ -214,7 +206,6 @@ class RegistrationQRService {
         }).length,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'error': e.toString()};
     }
   }

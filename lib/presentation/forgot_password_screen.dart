@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -42,7 +42,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           phoneNumber = '0$phoneNumber';
         }
         
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         final result = await AuthService.instance.sendPhoneOTP(phoneNumber);
 
@@ -70,7 +69,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       } else {
         // ✅ Improved email reset handling
         final email = _emailController.text.trim();
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         await AuthService.instance.resetPassword(email);
 
@@ -88,7 +86,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         }
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       if (mounted) {
         String errorMessage = e.toString().replaceAll('Exception: ', '');

@@ -1019,6 +1019,8 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
 
     if (!confirmed) return;
 
+    if (!mounted) return;
+
     // Show loading dialog
     showDialog(
       context: context,
@@ -1041,6 +1043,7 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
         tournamentId: widget.tournamentId,
       );
 
+      if (!mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
 
       if (success) {
@@ -1055,6 +1058,7 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
         throw Exception('Reward distribution failed');
       }
     } catch (e) {
+      if (!mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
       
       ScaffoldMessenger.of(context).showSnackBar(

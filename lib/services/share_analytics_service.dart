@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// 📊 Share Analytics Service
 /// Track share events, engagement, and conversion metrics
@@ -25,10 +25,8 @@ class ShareAnalyticsService {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      // Don't throw - analytics shouldn't break app flow
+      // Ignore error
     }
   }
 
@@ -53,9 +51,8 @@ class ShareAnalyticsService {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -78,9 +75,8 @@ class ShareAnalyticsService {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -103,9 +99,9 @@ class ShareAnalyticsService {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -126,9 +122,9 @@ class ShareAnalyticsService {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -183,7 +179,6 @@ class ShareAnalyticsService {
         'top_destinations': destinations,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }
@@ -207,7 +202,6 @@ class ShareAnalyticsService {
 
       return List<Map<String, dynamic>>.from(response as List);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -231,7 +225,6 @@ class ShareAnalyticsService {
 
       return List<Map<String, dynamic>>.from(response as List);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -256,9 +249,9 @@ class ShareAnalyticsService {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 }

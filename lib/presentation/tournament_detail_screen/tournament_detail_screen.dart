@@ -5,33 +5,31 @@ import '../../core/device/device_info.dart';
 import 'package:sabo_arena/core/app_export.dart' hide AppTheme, AppColors;
 import '../../core/design_system/design_system.dart';
 import '../../services/tournament_service.dart';
-import '../../services/club_service.dart';
+// import '../../services/club_service.dart';
 import '../../services/tournament_eligibility_service.dart';
 import '../../services/user_service.dart';
 import '../../services/share_service.dart';
 import '../../models/tournament.dart';
 import '../../models/user_profile.dart';
-import '../../models/club.dart';
+// import '../../models/club.dart';
 import '../../models/tournament_eligibility.dart';
-import '../../utils/number_formatter.dart';
+// import '../../utils/number_formatter.dart';
 
 import 'widgets/tournament_management_panel.dart';
 import 'widgets/tournament_bracket_view.dart';
 import 'widgets/participant_management_tab.dart';
 import 'widgets/match_management_tab.dart';
 import 'widgets/tournament_stats_view.dart';
-import 'widgets/tournament_rankings_widget.dart';
-import '../../widgets/tournament/eligibility_status_card.dart';
-import './widgets/participants_list_widget.dart';
-import './widgets/prize_pool_widget.dart';
-import './widgets/registration_widget.dart';
 import './widgets/payment_options_dialog.dart';
 import '../tournament_management_center/widgets/bracket_management_tab.dart';
 import './widgets/tournament_header_widget.dart';
-import './widgets/tournament_info_widget.dart';
-import './widgets/tournament_rules_widget.dart';
 import '../tournament_prize_voucher/tournament_prize_voucher_setup_screen.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+
+import 'widgets/tabs/tournament_detail_overview_tab.dart';
+import 'widgets/tabs/tournament_detail_rules_tab.dart';
+import 'widgets/tabs/tournament_detail_participants_tab.dart';
+import 'widgets/tabs/tournament_detail_results_tab.dart';
 
 class TournamentDetailScreen extends StatefulWidget {
   const TournamentDetailScreen({super.key});
@@ -48,11 +46,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
 
   // Service instances
   final TournamentService _tournamentService = TournamentService.instance;
-  final ClubService _clubService = ClubService.instance;
+  // final ClubService _clubService = ClubService.instance;
 
   // State variables
   Tournament? _tournament;
-  Club? _organizerClub;
+  // Club? _organizerClub;
   List<UserProfile> _participants = [];
   bool _isLoading = true;
   String? _error;
@@ -60,8 +58,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   UserProfile? _currentUser;
   EligibilityResult? _eligibilityResult;
 
-  // Tournament data for UI (converted from Tournament model)
-  Map<String, dynamic> _tournamentData = {};
+
 
   // Tournament rules - default fallback if not provided by API
   final List<String> _tournamentRules = [
@@ -99,10 +96,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
 
         // If showResults is true, switch to results/rankings tab after loading
         if (showResults) {
-          // Tab index 3 is usually rankings/results (adjust if needed)
+          // Tab index 4 is rankings/results
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_tabController.length > 3) {
-              _tabController.animateTo(3);
+            if (_tabController.length > 4) {
+              _tabController.animateTo(4);
             }
           });
         }
@@ -111,9 +108,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   Future<void> _loadTournamentData() async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     if (_tournamentId == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -127,14 +122,13 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       _tournament = await _tournamentService.getTournamentById(_tournamentId!);
 
       // Load organizer club if available
-      if (_tournament?.clubId != null) {
+      /* if (_tournament?.clubId != null) {
         try {
           _organizerClub = await _clubService.getClubById(_tournament!.clubId!);
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          ProductionLogger.warning('Failed to load organizer club', error: e, tag: 'TournamentDetailScreen');
         }
-      }
+      } */
 
       // Load participants
       _participants = await _tournamentService.getTournamentParticipants(
@@ -150,7 +144,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       try {
         _currentUser = await UserService.instance.getCurrentUserProfile();
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        ProductionLogger.warning('Failed to load current user', error: e, tag: 'TournamentDetailScreen');
       }
 
       // Check eligibility
@@ -160,14 +154,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
           user: _currentUser!,
           isAlreadyRegistered: _isRegistered,
         );
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Convert tournament model to UI data format
       _convertTournamentToUIData();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       setState(() {
         _isLoading = false;
@@ -183,83 +174,16 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   void _convertTournamentToUIData() {
     if (_tournament == null) return;
 
-    _tournamentData = _convertTournamentToMap(_tournament!);
+
   }
 
-  Map<String, dynamic> _convertTournamentToMap(Tournament tournament) {
-    return {
-      "id": tournament.id,
-      "title": tournament.title,
-      "format": tournament.tournamentType, // Game type (8-ball, 9-ball)
-      "coverImage":
-          tournament.coverImageUrl ??
-          "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3",
-      "location":
-          _organizerClub?.address ?? _organizerClub?.name ?? "Chưa cập nhật",
-      "organizerClubName": _organizerClub?.name ?? "features",
-      "organizerClubLogo": _organizerClub?.logoUrl,
-      "startDate": _formatDate(tournament.startDate),
-      "endDate": tournament.endDate != null
-          ? _formatDate(tournament.endDate!)
-          : null,
-      "registrationDeadline": _formatDate(tournament.registrationDeadline),
-      "currentParticipants": tournament.currentParticipants,
-      "maxParticipants": tournament.maxParticipants,
-      "eliminationType": tournament
-          .formatDisplayName, // Use formatDisplayName for proper display
-      "status": _getStatusText(tournament.status),
-      "entryFee": tournament.entryFee > 0
-          ? "${tournament.entryFee.toStringAsFixed(0)} VNĐ"
-          : "Miễn phí",
-      "entryFeeRaw": tournament.entryFee, // Store raw number for payment
-      "rankRequirement": tournament.skillLevelRequired ?? "Tất cả",
-      "description": tournament.description,
-      // ✅ Include prize_distribution from tournament model (contains custom distribution)
-      "prize_distribution": tournament.prizeDistribution,
-      // ✅ Include raw prize pool value for widgets to calculate from prize_distribution
-      "prize_pool": tournament.prizePool,
-      // Old prizePool structure kept for backward compatibility (widgets should prefer prize_distribution)
-      "prizePool": {
-        "total": "${NumberFormatter.formatCurrency(tournament.prizePool)} VNĐ",
-      },
-    };
-  }
 
-  List<Map<String, dynamic>> _convertParticipantsToUIData() {
-    return _participants.map((participant) {
-      return {
-        "id": participant.id,
-        "name": participant.displayName.isNotEmpty && participant.displayName.toLowerCase() != 'user'
-            ? participant.displayName
-            : participant.fullName.isNotEmpty && participant.fullName.toLowerCase() != 'user'
-                ? participant.fullName
-                : participant.username ?? participant.email.split('@')[0],
-        "avatar": participant.avatarUrl,
-        "rank": participant.rank ?? participant.skillLevel,
-        "elo": participant.eloRating,
-        "registrationDate": _formatDate(participant.createdAt),
-      };
-    }).toList();
-  }
 
-  String _formatDate(DateTime date) {
-    return "${date.day}/${date.month}/${date.year}";
-  }
 
-  String _getStatusText(String status) {
-    switch (status.toLowerCase()) {
-      case 'upcoming':
-        return 'Sắp diễn ra';
-      case 'registration_open':
-        return 'Đang mở đăng ký';
-      case 'ongoing':
-        return 'Đang diễn ra';
-      case 'completed':
-        return 'Đã kết thúc';
-      default:
-        return status;
-    }
-  }
+
+
+
+
 
   @override
   void dispose() {
@@ -333,7 +257,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               TournamentHeaderWidget(
-                tournament: _tournamentData,
+                tournament: _tournament!,
                 scrollController: _scrollController,
                 onShareTap: _handleShareTournament,
                 onMenuAction: _handleMenuAction,
@@ -404,46 +328,17 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   Widget _buildOverviewTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: Gaps.lg),
-      child: Column(
-        children: [
-          const SizedBox(height: Gaps.lg),
-          
-          // Eligibility Status Card
-          if (_eligibilityResult != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: EligibilityStatusCard(
-                result: _eligibilityResult!,
-                onActionPressed: () {
-                  final primaryIssue = _eligibilityResult!.primaryIssue;
-                  if (primaryIssue?.actionRoute != null) {
-                    Navigator.pushNamed(context, primaryIssue!.actionRoute!);
-                  }
-                },
-              ),
-            ),
-          
-          if (_eligibilityResult != null) const SizedBox(height: Gaps.lg),
-          
-          TournamentInfoWidget(tournament: _tournamentData),
-          const SizedBox(height: Gaps.lg),
-          PrizePoolWidget(tournament: _tournamentData),
-          const SizedBox(height: Gaps.lg),
-          RegistrationWidget(
-            tournament: _tournamentData,
-            isRegistered: _isRegistered,
-            onRegisterTap: _eligibilityResult?.isEligible == true 
-                ? _handleRegistration 
-                : null, // Disable if not eligible
-            onRegisterWithPayment: _eligibilityResult?.isEligible == true
-                ? (paymentMethod) => _performRegistration(paymentMethod: paymentMethod)
-                : null, // NEW: Direct payment callback
-            onWithdrawTap: _handleWithdrawal,
-          ),
-        ],
-      ),
+    return TournamentDetailOverviewTab(
+      eligibilityResult: _eligibilityResult,
+      tournament: _tournament!,
+      isRegistered: _isRegistered,
+      onRegisterTap: _eligibilityResult?.isEligible == true 
+          ? _handleRegistration 
+          : null,
+      onRegisterWithPayment: _eligibilityResult?.isEligible == true
+          ? (paymentMethod) => _performRegistration(paymentMethod: paymentMethod)
+          : null,
+      onWithdrawTap: _handleWithdrawal,
     );
   }
 
@@ -457,98 +352,33 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   Widget _buildParticipantsTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: Gaps.lg),
-      child: Column(
-        children: [
-          const SizedBox(height: Gaps.lg),
-          ParticipantsListWidget(
-            participants: _convertParticipantsToUIData(),
-            onViewAllTap: _handleViewAllParticipants,
-          ),
-        ],
-      ),
+    return TournamentDetailParticipantsTab(
+      participants: _participants,
+      onViewAllTap: _handleViewAllParticipants,
     );
   }
 
   Widget _buildRulesTab() {
-    List<String> rules = [];
-    
-    // Try to get rules from tournament
-    if (_tournament?.rules != null && _tournament!.rules!.trim().isNotEmpty) {
-      // Split rules by newline and clean them
-      rules = _tournament!.rules!
-          .split('\n')
-          .map((rule) => rule.trim())
-          .where((rule) => rule.isNotEmpty)
-          .map((rule) {
-            // Remove bullet point if it exists
-            if (rule.startsWith('•')) {
-              return rule.substring(1).trim();
-            }
-            return rule;
-          })
-          .toList();
-      
-      ProductionLogger.info('📋 Loaded ${rules.length} rules from tournament data', tag: 'tournament_detail_screen');
-    }
-    
-    // Try special rules if main rules is empty
-    if (rules.isEmpty && _tournament?.specialRules != null && _tournament!.specialRules!.trim().isNotEmpty) {
-      rules = _tournament!.specialRules!
-          .split('\n')
-          .map((rule) => rule.trim())
-          .where((rule) => rule.isNotEmpty)
-          .toList();
-      
-      ProductionLogger.info('📋 Loaded ${rules.length} rules from special rules', tag: 'tournament_detail_screen');
-    }
-    
-    // Fallback to default rules if still empty
-    if (rules.isEmpty) {
-      rules = _tournamentRules;
-      ProductionLogger.info('📋 Using ${rules.length} default fallback rules', tag: 'tournament_detail_screen');
-    }
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: Gaps.lg),
-      child: Column(
-        children: [
-          const SizedBox(height: Gaps.lg),
-          TournamentRulesWidget(rules: rules),
-        ],
-      ),
+    return TournamentDetailRulesTab(
+      tournament: _tournament,
+      defaultRules: _tournamentRules,
     );
   }
 
   Widget _buildResultsTab() {
-    if (_tournamentId == null) {
-      return const Center(child: Text('Không có thông tin giải đấu'));
-    }
-
-    // Remove SingleChildScrollView - let TournamentRankingsWidget handle its own scrolling
-    return Padding(
-      padding: const EdgeInsets.all(Gaps.lg),
-      child: TournamentRankingsWidget(
-        tournamentId: _tournamentId!,
-        tournamentStatus: _tournament?.status ?? 'not_started',
-      ),
+    return TournamentDetailResultsTab(
+      tournamentId: _tournamentId,
+      tournament: _tournament,
     );
   }
 
   Widget? _buildFloatingActionButton() {
     // Don't show button if tournament data is not loaded
-    if (_tournamentData.isEmpty) return null;
+    if (_tournament == null) return null;
 
-    final registrationDeadline =
-        _tournamentData["registrationDeadline"] as String?;
-    final isDeadlinePassed =
-        registrationDeadline != null && _isDeadlinePassed(registrationDeadline);
-    final isFull =
-        (_tournamentData["currentParticipants"] as int? ?? 0) >=
-        (_tournamentData["maxParticipants"] as int? ?? 0);
-    final paymentStatus = _tournamentData["paymentStatus"] as String?;
-
+    final isDeadlinePassed = DateTime.now().isAfter(_tournament!.registrationDeadline);
+    final isFull = _tournament!.currentParticipants >= _tournament!.maxParticipants;
+    
     // Determine button state
     String buttonText;
     Color buttonColor;
@@ -559,11 +389,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       buttonText = 'Hết hạn đăng ký';
       buttonColor = AppColors.border;
       buttonIcon = Icons.event_busy;
-      onPressed = null;
-    } else if (paymentStatus == 'paid' || paymentStatus == 'confirmed') {
-      buttonText = 'Đã thanh toán ✓';
-      buttonColor = AppColors.success;
-      buttonIcon = Icons.check_circle;
       onPressed = null;
     } else if (_isRegistered) {
       buttonText = 'Đã đăng ký ✓';
@@ -619,7 +444,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
     );
   }
 
-  bool _isDeadlinePassed(String deadline) {
+  /* bool _isDeadlinePassed(String deadline) {
     try {
       final deadlineDate = DateTime.parse(
         deadline.split(' ')[0].split('/').reversed.join('-'),
@@ -628,7 +453,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
     } catch (e) {
       return false;
     }
-  }
+  } */
 
   void _showRegistrationOptions() {
     showModalBottomSheet(
@@ -822,7 +647,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
 
       _showMessage('✅ Đã chia sẻ giải đấu!');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       if (!mounted) return;
       Navigator.pop(context); // Close loading dialog
@@ -832,9 +656,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   void _handleRegistration() {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-    if (_tournamentData.isEmpty) {
+    if (_tournament == null) {
       _showMessage('Không thể tải thông tin giải đấu', isError: true);
       return;
     }
@@ -843,12 +666,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
     showDialog(
       context: context,
       builder: (context) => PaymentOptionsDialog(
-        tournamentId: _tournamentData['id'] ?? '',
-        tournamentName: _tournamentData['title'] ?? 'Không rõ',
-        entryFee: (_tournamentData['entryFeeRaw'] as num?)?.toDouble() ?? 0.0,
+        tournamentId: _tournament!.id,
+        tournamentName: _tournament!.title,
+        entryFee: _tournament!.entryFee,
         clubId: _tournament?.clubId ?? '',
         onPaymentConfirmed: (paymentMethod) async {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
           // Perform registration with selected payment method
           await _performRegistration(paymentMethod: paymentMethod);
@@ -858,8 +680,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   Future<void> _performRegistration({String? paymentMethod}) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       // Show loading message
@@ -867,11 +687,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
 
       // Call registration service with actual payment method
       final success = await _tournamentService.registerForTournament(
-        _tournamentData['id'],
+        _tournamentId!,
         paymentMethod: paymentMethod ?? '0', // Use provided method or default
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (success && mounted) {
         // Update UI state
@@ -901,12 +720,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
           duration: 5,
         );
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
         throw Exception('Registration service returned false');
       }
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         _showMessage(
           'Đăng ký thất bại: ${error.toString()}',
@@ -988,7 +805,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   void _handleViewAllParticipants() {
-    final participantsData = _convertParticipantsToUIData();
+    final participantsData = {}; // _convertParticipantsToUIData() // Temporarily disabled;
 
     showModalBottomSheet(
       context: context,
@@ -1110,9 +927,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => TournamentBracketView(
-        tournamentId: _tournamentData['id'] as String,
-        format: _tournamentData['format'] as String,
-        totalParticipants: _tournamentData['currentParticipants'] as int,
+        tournamentId: _tournament!.id,
+        format: _tournament!.tournamentType,
+        totalParticipants: _tournament!.currentParticipants,
         isEditable: _canManageTournament(),
       ),
     );
@@ -1130,7 +947,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: ParticipantManagementTab(
-          tournamentId: _tournamentData['id'] as String,
+          tournamentId: _tournament!.id,
         ),
       ),
     );
@@ -1142,8 +959,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => TournamentManagementPanel(
-        tournamentId: _tournamentData['id'] as String,
-        tournamentStatus: _tournamentData['status'] as String,
+        tournamentId: _tournament!.id,
+        tournamentStatus: _tournament!.status,
         onStatusChanged: () {
           // Reload tournament data if needed
           setState(() {});
@@ -1164,7 +981,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: MatchManagementTab(
-          tournamentId: _tournamentData['id'] as String,
+          tournamentId: _tournament!.id,
         ),
       ),
     );
@@ -1176,8 +993,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => TournamentStatsView(
-        tournamentId: _tournamentData['id'] as String,
-        tournamentStatus: _tournamentData['status'] as String,
+        tournamentId: _tournament!.id,
+        tournamentStatus: _tournament!.status,
       ),
     );
   }
@@ -1257,7 +1074,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                 onTap: () async {
                   final picker = ImagePicker();
                   final image = await picker.pickImage(source: ImageSource.camera);
-                  if (mounted) {
+                  if (context.mounted) {
                     Navigator.pop(context, image);
                   }
                 },
@@ -1269,7 +1086,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                 onTap: () async {
                   final picker = ImagePicker();
                   final image = await picker.pickImage(source: ImageSource.gallery);
-                  if (mounted) {
+                  if (context.mounted) {
                     Navigator.pop(context, image);
                   }
                 },
@@ -1311,7 +1128,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
         // Update UI
         setState(() {
           _tournament = updatedTournament;
-          _tournamentData = _convertTournamentToMap(updatedTournament);
+
         });
 
         // Show success message

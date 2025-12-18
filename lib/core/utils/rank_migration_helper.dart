@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './sabo_rank_system.dart';
 import '../constants/ranking_constants.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// 🔄 RANK MIGRATION HELPER
 ///
@@ -85,7 +85,6 @@ class RankMigrationHelper {
     }
 
     // ⚠️ FIXED: Nếu rank không hợp lệ (như "B"), trả về "Chưa xếp hạng" thay vì giá trị gốc
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     return 'Chưa xếp hạng'; // Fallback: trả về giá trị mặc định thay vì input gốc
   }
 
@@ -141,15 +140,12 @@ class RankMigrationHelper {
 
   /// Debug method: In ra mapping comparison
   static void printRankMappingComparison() {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     for (final _ in RankingConstants.RANK_ORDER) {
       // Unused variables removed
       // String newName = SaboRankSystem.getRankDisplayName(code);
       // String? oldName = oldNameToRankCode.entries...
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 }

@@ -1,5 +1,5 @@
 import '../social_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for creating social posts about tournament completion
 class SocialIntegrationService {
@@ -11,11 +11,9 @@ class SocialIntegrationService {
     required List<Map<String, dynamic>> standings,
     required Map<String, dynamic> tournament,
   }) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       if (standings.isEmpty) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -49,12 +47,9 @@ class SocialIntegrationService {
           ],
         );
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Don't rethrow - social posts are not critical
     }
   }

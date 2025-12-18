@@ -572,6 +572,8 @@ class _AddMemberDialogState extends State<AddMemberDialog>
       // Simulate API call
       await Future.delayed(Duration(seconds: 2));
 
+      if (!mounted) return;
+
       // Create mock member data based on current tab
       MemberData newMember = _createMockMember();
 

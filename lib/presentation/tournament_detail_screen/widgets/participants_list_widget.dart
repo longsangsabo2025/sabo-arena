@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:sabo_arena/widgets/user/user_avatar_widget.dart';
 
 import '../../../core/app_export.dart';
+import '../../../models/user_profile.dart';
 
 class ParticipantsListWidget extends StatelessWidget {
-  final List<Map<String, dynamic>> participants;
+  final List<UserProfile> participants;
   final VoidCallback? onViewAllTap;
 
   const ParticipantsListWidget({
@@ -127,7 +128,7 @@ class ParticipantsListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildParticipantItem(Map<String, dynamic> participant) {
+  Widget _buildParticipantItem(UserProfile participant) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,
@@ -135,9 +136,9 @@ class ParticipantsListWidget extends StatelessWidget {
         children: [
           // Avatar with rank border
           UserAvatarWidget(
-            avatarUrl: participant["avatar"] as String?,
-            userName: participant["name"] as String?,
-            rankCode: participant["rank"] as String?,
+            avatarUrl: participant.avatarUrl,
+            userName: participant.displayName,
+            rankCode: participant.rank,
             size: 48,
             showRankBorder: true,
             borderWidth: 2,
@@ -149,7 +150,7 @@ class ParticipantsListWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  participant["name"] as String,
+                  participant.displayName,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -168,11 +169,11 @@ class ParticipantsListWidget extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: _getRankColor(participant["rank"] as String),
+                        color: _getRankColor(participant.rank ?? 'UnRank'),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Rank ${participant["rank"]}',
+                        'Rank ${participant.rank ?? 'UnRank'}',
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -183,7 +184,7 @@ class ParticipantsListWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${participant["elo"]} ELO',
+                      '${participant.eloRating ?? 0} ELO',
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,

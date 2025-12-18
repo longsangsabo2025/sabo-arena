@@ -169,6 +169,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
   }
 
   /// Header with bracket controls
+  // ignore: unused_element
   Widget _buildHeader() {
     return Container(
       padding: EdgeInsets.all(4.w),
@@ -465,8 +466,6 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
           'participantCount': widget.tournament.currentParticipants, // Add for compatibility
         };
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         setState(() {
           _bracketData = bracketData;
@@ -519,7 +518,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
             SnackBar(
               content: Text(
                 result?['message'] as String? ??
-                    'Bracket generated successfully',
+                    'Đã tạo bảng đấu thành công',
               ),
               backgroundColor: Colors.green,
             ),
@@ -528,7 +527,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
       } else {
         setState(() {
           _errorMessage =
-              result?['error'] as String? ?? 'Failed to generate bracket';
+              result?['error'] as String? ?? 'Không thể tạo bảng đấu';
           _isLoading = false;
         });
       }
@@ -647,7 +646,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         if (result['success'] == true) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('🎉 Tournament completed! Use "Gửi Quà" button to distribute rewards.'),
+              content: Text('🎉 Giải đấu đã hoàn thành! Sử dụng nút "Gửi Quà" để phân phát phần thưởng.'),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 4),
             ),
@@ -658,7 +657,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error: ${result['error'] ?? 'Unknown error'}'),
+              content: Text('Lỗi: ${result['error'] ?? 'Lỗi không xác định'}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -669,7 +668,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         Navigator.of(context).pop(); // Close progress dialog
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error completing tournament: $e'),
+            content: Text('Lỗi khi hoàn thành giải đấu: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -680,8 +679,8 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
   /// Regenerate bracket
   Future<void> _regenerateBracket() async {
     final confirm = await _showConfirmationDialog(
-      'Regenerate Bracket',
-      'This will create a new bracket and overwrite the existing one. Continue?',
+      'Tạo lại bảng đấu',
+      'Hành động này sẽ tạo bảng đấu mới và ghi đè lên bảng đấu hiện tại. Bạn có chắc chắn muốn tiếp tục?',
     );
 
     if (confirm == true) {
@@ -692,7 +691,6 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
   /// Handle match tap
   void _handleMatchTap() {
     // TODO: Navigate to match detail or show match management dialog
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   // ==================== UTILITY METHODS ====================
@@ -700,17 +698,17 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
   String _formatTournamentType(String type) {
     switch (type.toLowerCase()) {
       case 'single_elimination':
-        return 'Single Elimination';
+        return 'Loại trực tiếp';
       case 'double_elimination':
-        return 'Double Elimination';
+        return 'Nhánh thắng nhánh thua';
       case 'sabo_de16':
         return 'SABO DE16';
       case 'sabo_de32':
         return 'SABO DE32';
       case 'round_robin':
-        return 'Round Robin';
+        return 'Vòng tròn tính điểm';
       case 'swiss_system':
-        return 'Swiss System';
+        return 'Hệ Thụy Sĩ';
       default:
         return type.toUpperCase();
     }
@@ -725,7 +723,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -749,8 +747,8 @@ class _CompletionProgressDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false, // Prevent dismissal
+    return PopScope(
+      canPop: false, // Prevent dismissal
       child: ValueListenableBuilder<CompletionProgress>(
         valueListenable: progressNotifier,
         builder: (context, progress, child) {

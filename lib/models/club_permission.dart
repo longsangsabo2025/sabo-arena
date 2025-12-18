@@ -139,6 +139,8 @@ class ClubMemberWithPermissions {
   final String userName;
   final String? userAvatar;
   final String? userRank;
+  final int? eloRating;
+  final String? skillLevel;
   final ClubRole role;
   final DateTime joinedAt;
   
@@ -152,6 +154,8 @@ class ClubMemberWithPermissions {
     required this.userName,
     this.userAvatar,
     this.userRank,
+    this.eloRating,
+    this.skillLevel,
     required this.role,
     required this.joinedAt,
     this.customPermissions,
@@ -165,6 +169,8 @@ class ClubMemberWithPermissions {
       userName: json['user_name'] as String? ?? 'Unknown',
       userAvatar: json['user_avatar'] as String?,
       userRank: json['user_rank'] as String?,
+      eloRating: json['elo_rating'] as int?,
+      skillLevel: json['skill_level'] as String?,
       role: ClubRole.fromString(json['role'] as String? ?? 'member'),
       joinedAt: DateTime.parse(json['joined_at'] as String),
       customPermissions: json['permissions'] != null

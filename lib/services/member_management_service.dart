@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'notification_service.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
+import '../models/notification_models.dart';
+
 class MemberManagementService {
   static final SupabaseClient _supabase = Supabase.instance.client;
 
@@ -387,7 +389,7 @@ class MemberManagementService {
   }
 
   /// Get user notifications
-  static Future<List<Map<String, dynamic>>> getUserNotifications(
+  static Future<List<NotificationModel>> getUserNotifications(
     String userId,
   ) async {
     try {
@@ -397,7 +399,9 @@ class MemberManagementService {
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
-      return List<Map<String, dynamic>>.from(response);
+      return (response as List)
+          .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       throw Exception('Error fetching user notifications: $e');
     }

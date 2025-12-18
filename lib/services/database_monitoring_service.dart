@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'performance_monitor.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Database Monitoring Service
 /// Tracks database query performance and identifies slow queries
@@ -77,12 +77,10 @@ class DatabaseMonitoringService {
     if (durationMs > _criticalQueryThresholdMs) {
       _criticalQueries++;
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } else if (durationMs > _slowQueryThresholdMs) {
       _slowQueries++;
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -90,7 +88,6 @@ class DatabaseMonitoringService {
   /// Record query error
   void _recordQueryError(String queryName, dynamic error) {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -195,30 +192,15 @@ class DatabaseMonitoringService {
   /// Print monitoring report
   void printReport() {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // overall variable removed - only used in debug log
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final slowQueries = getSlowQueriesReport();
       if (slowQueries.isNotEmpty) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        for (final entry in slowQueries.entries) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        }
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // for (final entry in slowQueries.entries) {
+        // }
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -231,7 +213,6 @@ class DatabaseMonitoringService {
     _criticalQueries = 0;
 
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 }

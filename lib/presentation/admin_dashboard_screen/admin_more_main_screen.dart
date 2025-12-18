@@ -3,7 +3,7 @@ import '../../theme/app_theme.dart';
 import './widgets/admin_scaffold_wrapper.dart';
 import './economy_dashboard_screen.dart';
 import './refund_management_screen.dart';
-import '../notification_settings_screen_enhanced.dart';
+import '../notification_settings_screen.dart';
 import './admin_guide_library_screen.dart';
 import '../spa_management/admin_spa_management_screen.dart';
 import './admin_voucher_campaign_approval_screen.dart';
@@ -167,7 +167,7 @@ class AdminMoreMainScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (_) =>
-                          const NotificationSettingsScreenEnhanced(),
+                          const NotificationSettingsScreen(),
                     ),
                   );
                 },

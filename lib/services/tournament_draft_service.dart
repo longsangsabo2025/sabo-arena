@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service để quản lý việc lưu và khôi phục nháp giải đấu
 class TournamentDraftService {
@@ -38,9 +38,8 @@ class TournamentDraftService {
       // Cập nhật danh sách drafts
       await _updateDraftsList(draftId, draft['name'] as String);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -79,9 +78,8 @@ class TournamentDraftService {
       }
 
       await prefs.setString('$_draftKeyPrefix$draftId', jsonEncode(draft));
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -96,7 +94,6 @@ class TournamentDraftService {
       }
       return null;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -131,7 +128,6 @@ class TournamentDraftService {
       }
       return [];
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -147,9 +143,8 @@ class TournamentDraftService {
       // Update drafts list
       await _removeDraftFromList(draftId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -171,10 +166,9 @@ class TournamentDraftService {
           isAutoSave: draft['isAutoSave'] ?? false,
         );
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -195,7 +189,6 @@ class TournamentDraftService {
       }
       throw Exception('Original draft not found');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -218,7 +211,6 @@ class TournamentDraftService {
       }
       return null;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -237,10 +229,9 @@ class TournamentDraftService {
         for (final draft in draftsToDelete) {
           await deleteDraft(draft['id']);
         }
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -275,7 +266,7 @@ class TournamentDraftService {
 
       await prefs.setString(_draftsListKey, jsonEncode(draftsList));
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -293,8 +284,9 @@ class TournamentDraftService {
 
         await prefs.setString(_draftsListKey, jsonEncode(draftsList));
       }
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 }

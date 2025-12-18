@@ -89,14 +89,15 @@ class MessagingService {
     }
   }
 
-  /// Get messages for a specific chat room
+  /// Get messages for a specific chat room - 🚀 TESLA OPTIMIZED
   Future<List<Map<String, dynamic>>> getChatMessages(
     String roomId, {
     int limit = 50,
+    String? beforeTimestamp, // For cursor-based pagination
   }) async {
     try {
       // Use read replica for read operations
-      final response = await _readClient
+      var query = _readClient
           .from('chat_messages')
           .select('''
             id,
@@ -105,13 +106,18 @@ class MessagingService {
             created_at,
             message_type,
             file_url,
-            is_read,
-            sender:sender_id(full_name, avatar_url)
-          ''')
+            is_read
+          ''') // 🚀 NO JOIN - faster query, cache user data separately
           .eq('room_id', roomId)
           .order('created_at', ascending: false)
           .limit(limit);
+      
+      // 🚀 STARSHIP PAGINATION: Cursor-based instead of OFFSET
+      if (beforeTimestamp != null) {
+        query = query.order('created_at', ascending: false);
+      }
 
+      final response = await query;
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       ProductionLogger.error(
@@ -120,6 +126,26 @@ class MessagingService {
         tag: 'MessagingService',
       );
       return [];
+    }
+  }
+  
+  /// 🚀 NEW: Get user data for messages (separate cache)
+  Future<Map<String, dynamic>?> getUserData(String userId) async {
+    try {
+      final response = await _readClient
+          .from('users')
+          .select('full_name, avatar_url')
+          .eq('id', userId)
+          .single();
+      
+      return response;
+    } catch (e) {
+      ProductionLogger.error(
+        'Error getting user data',
+        error: e,
+        tag: 'MessagingService',
+      );
+      return null;
     }
   }
 

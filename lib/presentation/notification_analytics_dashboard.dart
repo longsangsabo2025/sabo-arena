@@ -68,7 +68,7 @@ class _NotificationAnalyticsDashboardState
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         title: const Text(
-          'Notification Analytics',
+          'Phân tích thông báo',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         backgroundColor: const Color(0xFF1877F2),
@@ -81,9 +81,9 @@ class _NotificationAnalyticsDashboardState
               _loadAnalytics();
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: '7d', child: Text('Last 7 days')),
-              const PopupMenuItem(value: '30d', child: Text('Last 30 days')),
-              const PopupMenuItem(value: '90d', child: Text('Last 90 days')),
+              const PopupMenuItem(value: '7d', child: Text('7 ngày qua')),
+              const PopupMenuItem(value: '30d', child: Text('30 ngày qua')),
+              const PopupMenuItem(value: '90d', child: Text('90 ngày qua')),
             ],
             child: Padding(
               padding: const EdgeInsets.all(12.0),
@@ -139,7 +139,7 @@ class _NotificationAnalyticsDashboardState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Real-time Metrics (Last 24h)',
+          'Chỉ số thời gian thực (24h qua)',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
@@ -147,7 +147,7 @@ class _NotificationAnalyticsDashboardState
           children: [
             Expanded(
               child: _buildMetricCard(
-                'Sent',
+                'Đã gửi',
                 '${_realTimeMetrics!['notifications_sent_24h']}',
                 Icons.send,
                 const Color(0xFF1877F2),
@@ -156,7 +156,7 @@ class _NotificationAnalyticsDashboardState
             const SizedBox(width: 12),
             Expanded(
               child: _buildMetricCard(
-                'Read',
+                'Đã đọc',
                 '${_realTimeMetrics!['notifications_read_24h']}',
                 Icons.mark_email_read,
                 const Color(0xFF42B883),
@@ -169,7 +169,7 @@ class _NotificationAnalyticsDashboardState
           children: [
             Expanded(
               child: _buildMetricCard(
-                'Active Users',
+                'Người dùng hoạt động',
                 '${_realTimeMetrics!['active_users_24h']}',
                 Icons.people,
                 const Color(0xFFE1306C),
@@ -178,7 +178,7 @@ class _NotificationAnalyticsDashboardState
             const SizedBox(width: 12),
             Expanded(
               child: _buildMetricCard(
-                'Avg Read Time',
+                'Thời gian đọc TB',
                 '${_realTimeMetrics!['avg_read_time_minutes']}m',
                 Icons.schedule,
                 const Color(0xFFFF6B35),
@@ -195,7 +195,7 @@ class _NotificationAnalyticsDashboardState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Overview (${_getPeriodLabel(_selectedPeriod)})',
+          'Tổng quan (${_getPeriodLabel(_selectedPeriod)})',
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
@@ -203,9 +203,9 @@ class _NotificationAnalyticsDashboardState
           children: [
             Expanded(
               child: _buildStatCard(
-                'Total Sent',
+                'Tổng đã gửi',
                 '${_analytics!.totalSent}',
-                '${_analytics!.deliveryRate.toStringAsFixed(1)}% delivered',
+                '${_analytics!.deliveryRate.toStringAsFixed(1)}% đã gửi',
                 Icons.outbox,
                 const Color(0xFF1877F2),
               ),
@@ -213,9 +213,9 @@ class _NotificationAnalyticsDashboardState
             const SizedBox(width: 12),
             Expanded(
               child: _buildStatCard(
-                'Total Read',
+                'Tổng đã đọc',
                 '${_analytics!.totalRead}',
-                '${_analytics!.readRate.toStringAsFixed(1)}% read rate',
+                '${_analytics!.readRate.toStringAsFixed(1)}% tỷ lệ đọc',
                 Icons.visibility,
                 const Color(0xFF42B883),
               ),
@@ -227,9 +227,9 @@ class _NotificationAnalyticsDashboardState
           children: [
             Expanded(
               child: _buildStatCard(
-                'Clicked',
+                'Đã nhấn',
                 '${_analytics!.totalClicked}',
-                '${_analytics!.clickRate.toStringAsFixed(1)}% click rate',
+                '${_analytics!.clickRate.toStringAsFixed(1)}% tỷ lệ nhấn',
                 Icons.touch_app,
                 const Color(0xFFE1306C),
               ),
@@ -237,9 +237,9 @@ class _NotificationAnalyticsDashboardState
             const SizedBox(width: 12),
             Expanded(
               child: _buildStatCard(
-                'Engagement',
+                'Tương tác',
                 _analytics!.engagementMetrics.averageEngagementScore.toStringAsFixed(1),
-                '${_analytics!.engagementMetrics.totalActiveUsers} active users',
+                '${_analytics!.engagementMetrics.totalActiveUsers} người dùng hoạt động',
                 Icons.trending_up,
                 const Color(0xFFFF6B35),
               ),
@@ -255,7 +255,7 @@ class _NotificationAnalyticsDashboardState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Trends & Patterns',
+          'Xu hướng & Mẫu',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
@@ -278,7 +278,7 @@ class _NotificationAnalyticsDashboardState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Hourly Activity Distribution',
+                'Phân phối hoạt động theo giờ',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
@@ -352,7 +352,7 @@ class _NotificationAnalyticsDashboardState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Daily Trends',
+                'Xu hướng hàng ngày',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
@@ -435,7 +435,7 @@ class _NotificationAnalyticsDashboardState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Performance by Notification Type',
+            'Hiệu suất theo loại thông báo',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),

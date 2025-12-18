@@ -92,6 +92,8 @@ class _ClubOwnerRankApprovalScreenState
         comments: comments,
       );
 
+      if (!mounted) return;
+
       if (result['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -105,7 +107,7 @@ class _ClubOwnerRankApprovalScreenState
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${result['error'] ?? 'Unknown error'}'),
+            content: Text('Lỗi: ${result['error'] ?? 'Lỗi không xác định'}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -250,51 +252,57 @@ class _ClubOwnerRankApprovalScreenState
   }
 
   Widget _buildRequestCard(Map<String, dynamic> request, {required bool isPending}) {
-    final userName = request['users']?['display_name'] ?? 'Unknown User';
-    final userEmail = request['users']?['email'] ?? '';
-    final currentRank = request['users']?['rank'] ?? '';
+    final userData = request['users'] ?? {};
+    final userName = userData['display_name'] ?? userData['email']?.split('@')[0] ?? 'Người dùng';
+    final userEmail = userData['email'] ?? '';
+    final avatarUrl = userData['avatar_url'];
+    final currentRank = userData['rank'] ?? 'N/A';
     final requestedRank = _extractRequestedRank(request['notes'] ?? '');
     final reason = request['notes'] ?? '';
     final requestedAt =
         DateTime.tryParse(request['requested_at'] ?? '') ?? DateTime.now();
     final status = request['status'] ?? 'pending';
-    final reviewedAt = request['reviewed_at'] != null 
-        ? DateTime.tryParse(request['reviewed_at']) 
-        : null;
+
+    // Elon Audit: Don't show arrow if no change
+    final isRankChange = currentRank != requestedRank;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!, width: 1),
+        borderRadius: BorderRadius.circular(16), // More rounded, modern
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.03), // Subtler shadow
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(20), // More breathing room
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // User info header
+            // User info header - Simplified
             Row(
               children: [
                 CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.blue.withValues(alpha: 0.1),
-                  child: Text(
-                    userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
+                  radius: 24, // Slightly larger
+                  backgroundColor: Colors.blue.shade50,
+                  backgroundImage: avatarUrl != null && avatarUrl.toString().isNotEmpty
+                      ? NetworkImage(avatarUrl)
+                      : null,
+                  child: avatarUrl == null || avatarUrl.toString().isEmpty
+                      ? Text(
+                          userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                          style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                          ),
+                        )
+                      : null,
                 ),
                 SizedBox(width: 12),
                 Expanded(
@@ -306,27 +314,27 @@ class _ClubOwnerRankApprovalScreenState
                           Expanded(
                             child: Text(
                               userName, style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 fontSize: 16,
+                                color: Colors.black87,
                               ),
                             ),
                           ),
                           if (!isPending) _buildStatusBadge(status),
+                          if (isPending)
+                             Text(
+                              _formatDate(requestedAt),
+                              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                            ),
                         ],
                       ),
                       if (userEmail.isNotEmpty)
                         Text(
                           userEmail, style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
+                            color: Colors.grey[500],
+                            fontSize: 13,
                           ),
                         ),
-                      Text(
-                        isPending 
-                          ? 'Gửi lúc: ${_formatDate(requestedAt)}'
-                          : 'Duyệt lúc: ${reviewedAt != null ? _formatDate(reviewedAt) : "N/A"}',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
                     ],
                   ),
                 ),
@@ -335,36 +343,78 @@ class _ClubOwnerRankApprovalScreenState
 
             SizedBox(height: 16),
 
-            // Rank change info
+            // Rank change info - The Core Value
             Container(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.blue.withValues(alpha: 0.2),
-                  width: 1,
-                ),
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildRankBadge(currentRank),
-                  SizedBox(width: 12),
-                  Icon(Icons.arrow_forward, color: Colors.blue, size: 20),
-                  SizedBox(width: 12),
-                  _buildRankBadge(requestedRank, isRequested: true),
+                  _buildRankBadge(currentRank, label: "Hiện tại"),
+                  if (isRankChange) ...[
+                    Icon(Icons.arrow_forward_rounded, color: Colors.grey.shade400, size: 20),
+                    _buildRankBadge(requestedRank, isRequested: true, label: "Đề xuất"),
+                  ] else 
+                    Text("Không thay đổi hạng", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
 
             if (reason.isNotEmpty) ...[
               SizedBox(height: 16),
-              Text(
-                'Lý do yêu cầu:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              ),
-              SizedBox(height: 8),
-              Text(
-                reason, style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade100),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: reason
+                      .replaceAll(RegExp(r'Rank mong muốn:.*?\n'), '')
+                      .trim()
+                      .split('\n')
+                      .map<Widget>((line) {
+                    if (line.contains(':')) {
+                      final parts = line.split(':');
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${parts[0].trim()}: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                parts.sublist(1).join(':').trim(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return Text(
+                      line,
+                      style: TextStyle(fontSize: 13, color: Colors.black87),
+                    );
+                  }).toList(),
+                ),
               ),
             ],
 
@@ -372,32 +422,33 @@ class _ClubOwnerRankApprovalScreenState
             if (isPending) ...[
               SizedBox(height: 20),
 
-              // Action buttons
+              // Action buttons - High Contrast
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton.icon(
+                    child: TextButton(
                       onPressed: () => _showRejectDialog(request['id']),
-                      icon: Icon(Icons.close, size: 18),
-                      label: Text('Từ chối'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: BorderSide(color: Colors.red),
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey.shade600,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
+                      child: Text('Từ chối', style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton.icon(
+                    flex: 2, // Approve is the primary action
+                    child: ElevatedButton(
                       onPressed: () => _handleRequestReview(request['id'], true),
-                      icon: Icon(Icons.check, size: 18),
-                      label: Text('Chấp thuận'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.black, // Musk Black
                         foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
+                      child: Text('Chấp thuận', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -409,27 +460,63 @@ class _ClubOwnerRankApprovalScreenState
     );
   }
 
-  Widget _buildRankBadge(String rank, {bool isRequested = false}) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: isRequested
-            ? Colors.green.withValues(alpha: 0.1)
-            : Colors.blue.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isRequested ? Colors.green : Colors.blue,
-          width: 1,
+  Widget _buildRankBadge(String rank, {bool isRequested = false, String? label}) {
+    final rankCode = RankMigrationHelper.getRankCodeFromName(rank) ?? rank;
+    final displayName = RankMigrationHelper.getNewDisplayName(rank);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (label != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(label.toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+          ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isRequested
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isRequested ? Colors.green.withValues(alpha: 0.5) : Colors.grey.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                displayName,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isRequested ? Colors.green.shade700 : Colors.grey.shade700,
+                  fontSize: 13,
+                ),
+              ),
+              if (rankCode.isNotEmpty && rankCode != 'N/A') ...[
+                SizedBox(width: 4),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: (isRequested ? Colors.green : Colors.grey).withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'Rank $rankCode',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      color: isRequested ? Colors.green.shade800 : Colors.grey.shade800,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
-      ),
-      child: Text(
-        RankMigrationHelper.getNewDisplayName(rank),
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: isRequested ? Colors.green : Colors.blue,
-          fontSize: 12,
-        ),
-      ),
+      ],
     );
   }
 

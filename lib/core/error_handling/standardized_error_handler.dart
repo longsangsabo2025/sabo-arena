@@ -24,7 +24,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../services/error_handling_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Error categories matching React pattern
 enum ErrorCategory {
@@ -193,10 +193,7 @@ class StandardizedErrorHandler {
 
     // Log in debug mode
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (context != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
 
@@ -228,7 +225,6 @@ class StandardizedErrorHandler {
     } catch (e) {
       // Don't fail if Sentry is not initialized
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -245,7 +241,6 @@ class StandardizedErrorHandler {
     // set up in main.dart, so we don't need to manually report here
     // Just log for debugging
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 

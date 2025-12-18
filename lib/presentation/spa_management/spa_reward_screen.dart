@@ -66,7 +66,6 @@ class _SpaRewardScreenState extends State<SpaRewardScreen>
             value: _userId,
           ),
           callback: (payload) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
             
             final newStatus = payload.newRecord['status'];
             final voucherCode = payload.newRecord['voucher_code'];
@@ -98,9 +97,7 @@ class _SpaRewardScreenState extends State<SpaRewardScreen>
         )
         .subscribe((status, error) {
           if (status == RealtimeSubscribeStatus.subscribed) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           } else if (error != null) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
         });
   }
@@ -135,7 +132,6 @@ class _SpaRewardScreenState extends State<SpaRewardScreen>
         _setupRealtimeSubscription();
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -182,12 +178,14 @@ class _SpaRewardScreenState extends State<SpaRewardScreen>
 
     if (confirmed != true) return;
 
+    if (!mounted) return;
+
     // Show progress dialog with clear message
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false, // Prevent back button
+      builder: (context) => PopScope(
+        canPop: false, // Prevent back button
         child: Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -266,6 +264,8 @@ class _SpaRewardScreenState extends State<SpaRewardScreen>
         _userId!,
         widget.clubId,
       );
+
+      if (!mounted) return;
 
       Navigator.pop(context); // Close loading dialog
 
@@ -388,8 +388,10 @@ class _SpaRewardScreenState extends State<SpaRewardScreen>
         );
       }
     } catch (e) {
-      Navigator.pop(context); // Close loading dialog
+      if (mounted) Navigator.pop(context); // Close loading dialog
       
+      if (!mounted) return;
+
       // Show detailed error in dialog instead of snackbar
       showDialog(
         context: context,

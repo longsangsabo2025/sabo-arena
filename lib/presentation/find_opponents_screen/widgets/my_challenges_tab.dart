@@ -12,6 +12,7 @@ import '../../../presentation/live_stream/live_stream_player_screen.dart';
 import '../../../services/share_service.dart';
 import '../../../services/challenge_management_service.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/models/match.dart';
 
 /// Tab "Của tôi" - Hiển thị TẤT CẢ challenges mà user tạo hoặc tham gia
 /// CHỈ DÙNG BẢNG CHALLENGES, KHÔNG CẦN BẢNG MATCHES!
@@ -27,7 +28,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
     with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   final SupabaseClient _supabase = Supabase.instance.client;
   final _challengeManagementService = ChallengeManagementService();
-  int _currentSubTab = 0;
+  // int _currentSubTab = 0;
 
   List<Map<String, dynamic>> _allChallenges = [];
   bool _isLoading = true;
@@ -52,7 +53,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
     _subTabController.addListener(() {
       if (_subTabController.indexIsChanging) {
         setState(() {
-          _currentSubTab = _subTabController.index;
+          // _currentSubTab = _subTabController.index;
         });
       }
     });
@@ -62,7 +63,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
 
   Future<void> _loadMyChallenges() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() {
         _isLoading = true;
         _errorMessage = null;
@@ -107,7 +107,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
           )
           .order('created_at', ascending: false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // WORKAROUND: Fetch matches separately since schema cache hasn't recognized FK yet
       // Get all challenge IDs that are accepted
@@ -120,7 +119,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
       
       if (challengeIds.isNotEmpty) {
         try {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           final matchesResponse = await _supabase
               .from('matches')
               .select('id, challenge_id, status, is_live, video_urls, player1_score, player2_score')
@@ -133,9 +131,8 @@ class _MyChallengesTabState extends State<MyChallengesTab>
               matchesMap[challengeId] = match;
             }
           }
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // Ignore error
         }
       }
 
@@ -155,7 +152,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
           final status = challenge['status'] as String? ?? 'unknown';
           statusCounts[status] = (statusCounts[status] ?? 0) + 1;
         }
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       if (mounted) {
@@ -165,7 +161,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
         });
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -227,7 +222,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
                   children: [
                     const Icon(Icons.schedule, size: 18),
                     const SizedBox(width: 8),
-                    Text('Ready (${readyChallenges.length})'),
+                    Text('Sắp diễn ra (${readyChallenges.length})'),
                   ],
                 ),
               ),
@@ -237,7 +232,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
                   children: [
                     const Icon(Icons.check_circle, size: 18),
                     const SizedBox(width: 8),
-                    Text('Complete (${completedChallenges.length})'),
+                    Text('Hoàn thành (${completedChallenges.length})'),
                   ],
                 ),
               ),
@@ -315,9 +310,8 @@ class _MyChallengesTabState extends State<MyChallengesTab>
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: MatchCardWidgetRealtime(
-                match: matchData,
+                match: Match.fromJson(matchData),
                 onWatchLive: () {
-                  ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
                   // Extract video URL from match data
                   final videoUrls = match?['video_urls'] as List?;
@@ -334,7 +328,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
                       ),
                     );
                   } else {
-                    ProductionLogger.debug('Debug log', tag: 'AutoFix');
                   }
                 },
               ),
@@ -343,9 +336,8 @@ class _MyChallengesTabState extends State<MyChallengesTab>
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: MatchCardWidget(
-                match: matchData,
+                matchMap: matchData,
                 onTap: () {
-                  ProductionLogger.debug('Debug log', tag: 'AutoFix');
                   // TODO: Navigate to challenge detail
                 },
                 onShareTap: () => _shareMatch(matchData),

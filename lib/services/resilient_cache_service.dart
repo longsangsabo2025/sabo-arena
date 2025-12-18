@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'circuit_breaker.dart';
 import 'redis_cache_service.dart';
 import 'app_cache_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Resilient Cache Service
 /// Multi-layer cache with automatic fallback and circuit breakers
@@ -35,7 +35,6 @@ class ResilientCacheService {
     final memoryCache = await AppCacheService.instance.getCache('tournament:$tournamentId');
     if (memoryCache != null) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return memoryCache as Map<String, dynamic>?;
     }
@@ -60,7 +59,6 @@ class ResilientCacheService {
         return await _databaseBreaker.execute(
           () async {
             if (kDebugMode) {
-              ProductionLogger.debug('Debug log', tag: 'AutoFix');
             }
             final response = await _supabase
                 .from('tournaments')
@@ -80,7 +78,6 @@ class ResilientCacheService {
               // Try to cache in Redis (non-blocking)
               RedisCacheService.instance.setTournament(tournamentId, data).catchError((e) {
                 if (kDebugMode) {
-                  ProductionLogger.debug('Debug log', tag: 'AutoFix');
                 }
               });
             }
@@ -90,7 +87,6 @@ class ResilientCacheService {
           fallback: () async {
             // Layer 4: Return null (network/error)
             if (kDebugMode) {
-              ProductionLogger.debug('Debug log', tag: 'AutoFix');
             }
             return null as Map<String, dynamic>?;
           },
@@ -126,7 +122,7 @@ class ResilientCacheService {
         return await _databaseBreaker.execute(
           () async {
             final response = await _supabase
-                .from('profiles')
+                .from('users')
                 .select()
                 .eq('id', userId)
                 .single();
@@ -141,7 +137,6 @@ class ResilientCacheService {
               );
               RedisCacheService.instance.setUser(userId, data).catchError((e) {
                 if (kDebugMode) {
-                  ProductionLogger.debug('Debug log', tag: 'AutoFix');
                 }
               });
             }
@@ -196,7 +191,6 @@ class ResilientCacheService {
               );
               RedisCacheService.instance.setClub(clubId, data).catchError((e) {
                 if (kDebugMode) {
-                  ProductionLogger.debug('Debug log', tag: 'AutoFix');
                 }
               });
             }

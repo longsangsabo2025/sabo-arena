@@ -5,7 +5,7 @@ import '../../theme/app_theme.dart';
 import '../user_voucher_screen/user_voucher_screen.dart';
 // import '../club_list_screen/club_list_screen.dart'; // File not found
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Màn hình Khuyến mãi & Ưu đãi cho User
 /// Tổng hợp tất cả voucher, khuyến mãi từ các CLB
@@ -20,7 +20,7 @@ class _UserPromotionScreenState extends State<UserPromotionScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _supabase = Supabase.instance.client;
-  bool _isLoading = false;
+  // bool _isLoading = false;
 
   int _myVoucherCount = 0;
   int _availablePromotionCount = 0;
@@ -42,7 +42,7 @@ class _UserPromotionScreenState extends State<UserPromotionScreen>
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) {
-        setState(() => _isLoading = false);
+        // setState(() => _isLoading = false);
         return;
       }
 
@@ -57,11 +57,10 @@ class _UserPromotionScreenState extends State<UserPromotionScreen>
       setState(() {
         _myVoucherCount = (voucherResponse as List).length;
         _availablePromotionCount = 5; // TODO: Load from database
-        _isLoading = false;
+        // _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      setState(() => _isLoading = false);
+      // setState(() => _isLoading = false);
     }
   }
 

@@ -3,11 +3,16 @@ import '../core/design_system/design_system.dart';
 import '../core/performance/performance_widgets.dart';
 import '../services/notification_service.dart';
 import '../services/notification_navigation_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import '../models/notification_models.dart';
 
 /// Modern Notification List Screen - Facebook 2025 Style with Real Data
 class NotificationListScreen extends StatefulWidget {
-  const NotificationListScreen({super.key});
+  final bool isClubContext;
+
+  const NotificationListScreen({
+    super.key,
+    this.isClubContext = false,
+  });
 
   @override
   State<NotificationListScreen> createState() => _NotificationListScreenState();
@@ -18,7 +23,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   final NotificationNavigationService _navigationService =
       NotificationNavigationService.instance;
   String _selectedFilter = 'Tất cả';
-  List<Map<String, dynamic>> _notifications = [];
+  List<NotificationModel> _notifications = [];
   bool _isLoading = true;
 
   @override
@@ -28,33 +33,42 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   }
 
   Future<void> _loadNotifications() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
-      List<Map<String, dynamic>> notifications;
+      List<NotificationModel> notifications;
 
       if (_selectedFilter == 'Tất cả') {
-        notifications = await _notificationService.getNotifications(limit: 50);
+        notifications = await _notificationService.getNotifications(
+          limit: 50,
+          isClubContext: widget.isClubContext,
+        );
       } else if (_selectedFilter == 'Chưa đọc') {
         notifications = await _notificationService.getNotifications(
           isRead: false,
           limit: 50,
+          isClubContext: widget.isClubContext,
         );
       } else {
         // Đã đọc
         notifications = await _notificationService.getNotifications(
           isRead: true,
           limit: 50,
+          isClubContext: widget.isClubContext,
         );
       }
 
-      setState(() {
-        _notifications = notifications;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _notifications = notifications;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -80,7 +94,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       centerTitle: false,
       titleSpacing: 16,
       title: const Text(
-        'Thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
+        'Thông báo',
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
@@ -109,13 +125,15 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           ),
         ),
         // Mark all as read button
-        if (_notifications.any((n) => !(n['is_read'] as bool? ?? false)))
+        if (_notifications.any((n) => !n.isRead))
           Container(
             margin: const EdgeInsets.only(right: 4),
             child: TextButton(
               onPressed: _markAllAsRead,
               child: const Text(
-                'Đánh dấu tất cả', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Đánh dấu tất cả',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF0866FF),
@@ -184,7 +202,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    filter, style: TextStyle(
+                    filter,
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.2,
@@ -227,13 +246,12 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     );
   }
 
-  Widget _buildNotificationItem(Map<String, dynamic> notification) {
-    final isRead = notification['is_read'] as bool? ?? false;
-    final type = notification['type'] as String? ?? 'default';
-    final title = notification['title'] as String? ?? '';
-    final message = notification['message'] as String? ?? '';
-    final createdAt = notification['created_at'] as String?;
-    // final data = notification['data'] as Map<String, dynamic>?; // For future use
+  Widget _buildNotificationItem(NotificationModel notification) {
+    final isRead = notification.isRead;
+    final type = notification.type;
+    final title = notification.title;
+    final message = notification.body;
+    final createdAt = notification.createdAt;
 
     // Get icon and color based on type
     final iconData = _getIconForType(type);
@@ -246,15 +264,16 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         onTap: () async {
           // Mark as read
           if (!isRead) {
-            await _markAsRead(notification['id'] as String);
+            await _markAsRead(notification.id);
           }
 
+          if (!mounted) return;
+
           // Navigate to appropriate screen based on notification type
-          final data = notification['data'] as Map<String, dynamic>?;
           _navigationService.navigateFromNotification(
             context: context,
-            type: type,
-            data: data,
+            type: type.value,
+            data: notification.data,
           );
         },
         child: Container(
@@ -280,7 +299,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                   children: [
                     // Title
                     Text(
-                      title, style: TextStyle(
+                      title,
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: isRead ? FontWeight.w600 : FontWeight.w700,
                         letterSpacing: -0.2,
@@ -292,7 +312,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                     const SizedBox(height: 4),
                     // Message
                     Text(
-                      message, style: const TextStyle(
+                      message,
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                         letterSpacing: -0.2,
@@ -305,7 +326,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                     const SizedBox(height: 6),
                     // Time
                     Text(
-                      timeAgo, style: const TextStyle(
+                      timeAgo,
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         letterSpacing: -0.1,
@@ -346,77 +368,57 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     );
   }
 
-  void _showNotificationOptions(Map<String, dynamic> notification) {
+  void _showNotificationOptions(NotificationModel notification) {
     // TODO: Show bottom sheet with options (delete, turn off, etc.)
   }
 
-
-
   // Helper methods for notification display
-  IconData _getIconForType(String type) {
+  IconData _getIconForType(NotificationType type) {
     switch (type) {
-      case 'tournament_invitation':
-      case 'tournament_registration':
-      case 'tournament':
+      case NotificationType.tournamentInvitation:
+      case NotificationType.tournamentRegistration:
         return Icons.emoji_events;
-      case 'match_result':
-      case 'match':
+      case NotificationType.matchResult:
         return Icons.sports_soccer;
-      case 'club_announcement':
-      case 'club':
+      case NotificationType.clubAnnouncement:
         return Icons.business;
-      case 'rank_update':
-      case 'rank':
+      case NotificationType.rankUpdate:
         return Icons.trending_up;
-      case 'friend_request':
-      case 'follow':
+      case NotificationType.friendRequest:
         return Icons.person_add;
-      case 'comment':
-      case 'mention':
-        return Icons.alternate_email;
-      case 'like':
-      case 'reaction':
-        return Icons.favorite;
+      case NotificationType.systemNotification:
+        return Icons.notifications;
       default:
         return Icons.notifications;
     }
   }
 
-  Color _getColorForType(String type) {
+  Color _getColorForType(NotificationType type) {
     switch (type) {
-      case 'tournament_invitation':
-      case 'tournament_registration':
-      case 'tournament':
+      case NotificationType.tournamentInvitation:
+      case NotificationType.tournamentRegistration:
         return const Color(0xFFF7B500);
-      case 'match_result':
-      case 'match':
+      case NotificationType.matchResult:
         return const Color(0xFF10B981);
-      case 'club_announcement':
-      case 'club':
-      case 'friend_request':
-      case 'follow':
+      case NotificationType.clubAnnouncement:
+      case NotificationType.friendRequest:
         return const Color(0xFF0866FF);
-      case 'rank_update':
-      case 'rank':
+      case NotificationType.rankUpdate:
         return const Color(0xFF9333EA);
-      case 'like':
-      case 'reaction':
-        return const Color(0xFFE11D48);
       default:
         return const Color(0xFF65676B);
     }
   }
 
-  String _getTimeAgo(String? createdAt) {
+  String _getTimeAgo(DateTime? createdAt) {
     if (createdAt == null) return '';
 
     try {
-      final dateTime = DateTime.parse(createdAt);
       final now = DateTime.now();
-      final difference = now.difference(dateTime);
+      final difference = now.difference(createdAt);
 
       if (difference.inDays > 7) {
-        return '${dateTime.day}/${dateTime.month}';
+        return '${createdAt.day}/${createdAt.month}';
       } else if (difference.inDays > 0) {
         return '${difference.inDays} ngày';
       } else if (difference.inHours > 0) {
@@ -434,20 +436,20 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   Future<void> _markAsRead(String notificationId) async {
     try {
       await _notificationService.markNotificationAsRead(notificationId);
-      await _notificationService.refreshUnreadCount();
+      await _notificationService.getUnreadNotificationCount(); // Refresh count
       _loadNotifications(); // Reload to update UI
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Handle error
     }
   }
 
   Future<void> _markAllAsRead() async {
     try {
       await _notificationService.markAllNotificationsAsRead();
-      await _notificationService.refreshUnreadCount();
+      await _notificationService.getUnreadNotificationCount(); // Refresh count
       _loadNotifications(); // Reload to update UI
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Handle error
     }
   }
 
@@ -471,7 +473,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Không có thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Không có thông báo',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
               letterSpacing: -0.3,
@@ -480,7 +484,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Bạn chưa có thông báo nào', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Bạn chưa có thông báo nào',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
               letterSpacing: -0.2,

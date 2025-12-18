@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
 import '../../../services/club_permission_service.dart';
 import '../../../services/user_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import '../../../services/match_service.dart'; // Import Match model
+// ELON_MODE_AUTO_FIX
 import 'package:sabo_arena/widgets/club/club_logo_widget.dart';
+import 'package:sabo_arena/widgets/user/user_widgets.dart';
 
 /// Match Card Widget - Hiển thị thông tin trận đấu theo thiết kế mới
 /// Design: 2 players (left vs right) với match info ở giữa
 class MatchCardWidget extends StatefulWidget {
-  final Map<String, dynamic> match;
+  final Map<String, dynamic>? matchMap;
+  final Match? matchObj;
   final VoidCallback? onTap;
   final VoidCallback? onShareTap;
   final VoidCallback? onInputScore; // ✅ NEW: Callback for score input
+  final Widget? bottomAction; // ✅ NEW: Custom bottom action widget
 
   const MatchCardWidget({
     super.key,
-    required this.match,
+    this.matchMap,
+    this.matchObj,
     this.onTap,
     this.onShareTap,
     this.onInputScore,
-  });
+    this.bottomAction,
+  }) : assert(matchMap != null || matchObj != null, 'Either matchMap or matchObj must be provided');
   
   @override
   State<MatchCardWidget> createState() => _MatchCardWidgetState();
@@ -39,7 +45,7 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
   Future<void> _checkScoreInputPermission() async {
     try {
       // Get club_id from match data
-      final clubId = widget.match['clubId'] as String?;
+      final clubId = widget.matchObj?.clubId ?? widget.matchMap?['clubId'] as String?;
       
       if (clubId == null || clubId.isEmpty) {
         // No club → no permission needed
@@ -74,7 +80,6 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
         });
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _canInputScore = false;
@@ -86,38 +91,118 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Player info
-    final player1Id = widget.match['player1Id'] as String?;
-    final player1Name = widget.match['player1Name'] as String? ?? 'Player 1';
-    final player1Rank = widget.match['player1Rank'] as String?; // NULL = chưa xác minh
-    final player1Avatar = widget.match['player1Avatar'] as String?;
-    final player1Online = widget.match['player1Online'] as bool? ?? false;
+    // Player info extraction (Elon Style: Strong typing preference)
+    final String? player1Id;
+    final String player1Name;
+    final String? player1Rank;
+    final String? player1Avatar;
+    final bool player1Online;
 
-    final player2Id = widget.match['player2Id'] as String?;
-    final player2Name = widget.match['player2Name'] as String? ?? 'Player 2';
-    final player2Rank = widget.match['player2Rank'] as String?; // NULL = chưa xác minh
-    final player2Avatar = widget.match['player2Avatar'] as String?;
-    final player2Online = widget.match['player2Online'] as bool? ?? false;
+    final String? player2Id;
+    final String player2Name;
+    final String? player2Rank;
+    final String? player2Avatar;
+    final bool player2Online;
+    
+    if (widget.matchObj != null) {
+      final m = widget.matchObj!;
+      player1Id = m.player1Id;
+      player1Name = m.player1Name ?? 'Player 1';
+      player1Rank = m.player1Rank;
+      player1Avatar = m.player1Avatar;
+      player1Online = false; // TODO: Real presence
+
+      player2Id = m.player2Id;
+      player2Name = m.player2Name ?? 'Player 2';
+      player2Rank = m.player2Rank;
+      player2Avatar = m.player2Avatar;
+      player2Online = false; // TODO: Real presence
+    } else {
+      final m = widget.matchMap!;
+      player1Id = m['player1Id'] as String?;
+      player1Name = m['player1Name'] as String? ?? 'Player 1';
+      player1Rank = m['player1Rank'] as String?;
+      player1Avatar = m['player1Avatar'] as String?;
+      player1Online = m['player1Online'] as bool? ?? false;
+
+      player2Id = m['player2Id'] as String?;
+      player2Name = m['player2Name'] as String? ?? 'Player 2';
+      player2Rank = m['player2Rank'] as String?;
+      player2Avatar = m['player2Avatar'] as String?;
+      player2Online = m['player2Online'] as bool? ?? false;
+    }
 
     // Club info
-    final clubName = widget.match['clubName'] as String?;
-    final clubLogo = widget.match['clubLogo'] as String?;
-    final clubAddress = widget.match['clubAddress'] as String?;
+    final String? clubName;
+    final String? clubLogo;
+    final String? clubAddress;
 
     // Match info
-    final status = widget.match['status'] as String? ?? 'ready'; // ready, live, done
-    final matchType = widget.match['matchType'] as String?; // Giao lưu hoặc Thách đấu
-    final date = widget.match['date'] as String? ?? 'T7 - 06/09';
-    final time = widget.match['time'] as String? ?? '19:00';
-    final score1 = widget.match['score1'] as String? ?? '?';
-    final score2 = widget.match['score2'] as String? ?? '?';
-    final handicap = widget.match['handicap'] as String? ?? 'Handicap 0.5 ván';
-    final prize = widget.match['prize'] as String? ?? '100 SPA';
-    final raceInfo = widget.match['raceInfo'] as String? ?? 'Race to 7';
-    final currentTable = widget.match['currentTable'] as String? ?? 'Bàn 1';
+    final String status;
+    final String? matchType;
+    final String date;
+    final String time;
+    final String score1;
+    final String score2;
+    final String handicap;
+    final String prize;
+    final String raceInfo;
+    final String currentTable;
     
-    // Winner info (for completed matches)
-    final winnerId = widget.match['winnerId'] as String?;
+    // Winner info
+    final String? winnerId;
+
+    if (widget.matchObj != null) {
+      final m = widget.matchObj!;
+      // Assuming Match object has these fields or we need to join/fetch them
+      // For now, using what's available in Match model or defaults
+      clubName = null; // Match model doesn't have clubName directly yet
+      clubLogo = null;
+      clubAddress = null;
+      
+      status = m.status;
+      matchType = null; // Not in Match model
+      
+      if (m.scheduledTime != null) {
+        // Format date/time
+        // We need intl here, but let's assume it's imported or use basic string
+        // Using basic string formatting to avoid import issues if intl is not available
+        // But wait, intl is likely available. Let's try to use it if possible or stick to basic.
+        // Actually, let's use basic formatting for now to be safe and fast.
+        final dt = m.scheduledTime!;
+        date = "${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}";
+        time = "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
+      } else {
+        date = 'T7 - 06/09';
+        time = '19:00';
+      }
+      
+      score1 = m.player1Score.toString();
+      score2 = m.player2Score.toString();
+      handicap = m.notes ?? 'Handicap 0.5 ván';
+      prize = '100 SPA'; // Placeholder
+      raceInfo = m.tournamentTitle ?? 'Race to 7';
+      currentTable = 'Round ${m.roundNumber}';
+      winnerId = m.winnerId;
+    } else {
+      final m = widget.matchMap!;
+      clubName = m['clubName'] as String?;
+      clubLogo = m['clubLogo'] as String?;
+      clubAddress = m['clubAddress'] as String?;
+      
+      status = m['status'] as String? ?? 'ready';
+      matchType = m['matchType'] as String?;
+      date = m['date'] as String? ?? 'T7 - 06/09';
+      time = m['time'] as String? ?? '19:00';
+      score1 = m['score1'] as String? ?? '?';
+      score2 = m['score2'] as String? ?? '?';
+      handicap = m['handicap'] as String? ?? 'Handicap 0.5 ván';
+      prize = m['prize'] as String? ?? '100 SPA';
+      raceInfo = m['raceInfo'] as String? ?? 'Race to 7';
+      currentTable = m['currentTable'] as String? ?? 'Bàn 1';
+      winnerId = m['winnerId'] as String?;
+    }
+
     final isPlayer1Winner = winnerId != null && winnerId == player1Id;
     final isPlayer2Winner = winnerId != null && winnerId == player2Id;
 
@@ -192,21 +277,37 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
                 // Match Info (Center)
                 Column(
                   children: [
-                    // Date & Time
-                    Text(
-                      date,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF9E9E9E),
-                        fontWeight: FontWeight.w500,
+                    // Date & Time - Highlighted
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                        ),
                       ),
-                    ),
-                    Text(
-                      time,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF9E9E9E),
-                        fontWeight: FontWeight.w500,
+                      child: Column(
+                        children: [
+                          Text(
+                            time,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            date,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
 
@@ -408,6 +509,12 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
                 ),
               ),
             ],
+
+            // ✅ NEW: Custom Bottom Action
+            if (widget.bottomAction != null) ...[
+              const SizedBox(height: 12),
+              widget.bottomAction!,
+            ],
           ],
         ),
       ),
@@ -430,10 +537,15 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
         textColor = Colors.white;
         label = 'Live';
         break;
+      case 'scheduled':
+        bgColor = const Color(0xFF2196F3); // Blue
+        textColor = Colors.white;
+        label = 'Sắp đấu';
+        break;
       case 'done':
         bgColor = const Color(0xFF9E9E9E);
         textColor = Colors.white;
-        label = 'Done';
+        label = 'Hoàn thành';
         break;
       default:
         bgColor = const Color(0xFFE0E0E0);
@@ -496,6 +608,9 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
     required bool isOnline,
     bool isWinner = false, // ✅ NEW: Winner highlight
   }) {
+    // Check if this is a "Waiting" placeholder
+    final isWaiting = name == 'Đang chờ...' || name == 'Waiting...';
+
     return Container(
       padding: isWinner ? const EdgeInsets.all(8) : EdgeInsets.zero,
       decoration: isWinner
@@ -514,37 +629,26 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
           Stack(
             children: [
               Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFE0E0E0),
-                  border: Border.all(
-                    color: isWinner ? const Color(0xFFFFD700) : const Color(0xFFBDBDBD),
-                    width: isWinner ? 3 : 2,
-                  ),
-                ),
-                child: ClipOval(
-                  child: avatar != null
-                      ? Image.network(
-                          avatar,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.person,
-                              size: 32,
-                              color: Color(0xFF757575),
-                            );
-                          },
-                        )
-                      : const Icon(
-                          Icons.person,
-                          size: 32,
-                          color: Color(0xFF757575),
+                decoration: isWinner
+                    ? BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFFFFD700),
+                          width: 3,
                         ),
-                ),
+                      )
+                    : null,
+                child: isWaiting
+                    ? _buildWaitingAvatar() // ✅ NEW: Distinct waiting avatar
+                    : UserAvatarWidget(
+                        avatarUrl: avatar,
+                        userName: name,
+                        rankCode: rank,
+                        size: 60,
+                        showRankBorder: rank != null && rank.isNotEmpty,
+                      ),
               ),
-              if (isOnline)
+              if (isOnline && !isWaiting)
                 Positioned(
                   bottom: 2,
                   right: 2,
@@ -589,7 +693,10 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: isWinner ? FontWeight.w800 : FontWeight.w700,
-              color: isWinner ? const Color(0xFFF57F17) : const Color(0xFF212121),
+              color: isWaiting 
+                  ? const Color(0xFF9E9E9E) // Grey for waiting
+                  : (isWinner ? const Color(0xFFF57F17) : const Color(0xFF212121)),
+              fontStyle: isWaiting ? FontStyle.italic : FontStyle.normal,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -598,61 +705,41 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
 
           const SizedBox(height: 4),
 
-          // Rank badge (only show if rank is verified)
-          if (rank != null) _buildRankBadge(rank),
-          if (rank == null) _buildUnverifiedBadge(),
+          // Rank badge using unified component
+          UserRankBadgeWidget(
+            rankCode: rank,
+            style: RankBadgeStyle.compact,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildRankBadge(String rank) {
+  // ✅ NEW: Distinct waiting avatar with pulse effect or dashed border
+  Widget _buildWaitingAvatar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      width: 60,
+      height: 60,
       decoration: BoxDecoration(
-        color: const Color(0xFF00695C).withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
+        color: Colors.grey[100],
+        shape: BoxShape.circle,
         border: Border.all(
-          color: const Color(0xFF00695C).withValues(alpha: 0.3),
-          width: 1,
+          color: Colors.grey[400]!,
+          width: 2,
+          style: BorderStyle.solid, // Could use dashed border if custom painter
         ),
       ),
-      child: Text(
-        rank,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF00695C),
-          letterSpacing: 0.5,
+      child: Center(
+        child: Icon(
+          Icons.person_outline,
+          size: 32,
+          color: Colors.grey[400],
         ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }
 
-  Widget _buildUnverifiedBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: const Color(0xFF9E9E9E).withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: const Color(0xFF9E9E9E).withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: const Text(
-        '?',
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF9E9E9E),
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
+  // Note: Old rank badge methods removed - now using unified UserRankBadgeWidget
 
   Widget _buildClubInfo({
     required String clubName,

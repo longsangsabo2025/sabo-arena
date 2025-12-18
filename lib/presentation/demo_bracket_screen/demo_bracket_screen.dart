@@ -40,7 +40,7 @@ class DemoBracketScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Demo Bracket', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Sơ Đồ Mẫu', overflow: TextOverflow.ellipsis, style: TextStyle(
                       color: Color(0xFF2E86AB),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -68,7 +68,7 @@ class DemoBracketScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Text(
-              'DEMO', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'MẪU', overflow: TextOverflow.ellipsis, style: TextStyle(
                 color: Color(0xFF2E86AB),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -87,8 +87,8 @@ class DemoBracketScreen extends StatelessWidget {
     try {
       await ShareService.shareBracket(
         tournamentId: 'demo',
-        tournamentName: 'Demo Tournament Bracket',
-        clubName: 'Demo Club',
+        tournamentName: 'Sơ Đồ Giải Đấu Mẫu',
+        clubName: 'CLB Mẫu',
       );
     } catch (e) {
       if (context.mounted) {

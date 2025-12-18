@@ -122,6 +122,8 @@ class _StaffRedemptionScreenState extends State<StaffRedemptionScreen> {
         widget.clubId,
       );
 
+      if (!mounted) return;
+
       if (result['success'] == true) {
         // Show success and clear form
         showDialog(

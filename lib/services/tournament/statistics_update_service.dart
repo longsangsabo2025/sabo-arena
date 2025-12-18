@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for updating tournament statistics
 class StatisticsUpdateService {
@@ -11,7 +11,6 @@ class StatisticsUpdateService {
     required List<Map<String, dynamic>> standings,
     required Map<String, dynamic> tournament,
   }) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       // Update user statistics for all participants
@@ -33,9 +32,7 @@ class StatisticsUpdateService {
         await _updateClubStatistics(clubId: clubId);
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -78,9 +75,8 @@ class StatisticsUpdateService {
         'total_losses': newTotalLosses,
       }).eq('id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -103,9 +99,8 @@ class StatisticsUpdateService {
           .update({'tournaments_hosted': newCount})
           .eq('id', clubId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 }

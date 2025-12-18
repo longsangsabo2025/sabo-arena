@@ -652,8 +652,7 @@ class _MembershipTypeDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: MembershipType.values.map((type) {
-          return RadioListTile<MembershipType>(
-            value: type,
+          return RadioGroup<MembershipType>(
             groupValue: currentType,
             onChanged: (value) {
               if (value != null) {
@@ -661,7 +660,10 @@ class _MembershipTypeDialog extends StatelessWidget {
                 Navigator.pop(context);
               }
             },
-            title: Text(_getMembershipTypeLabel(type)),
+            child: RadioListTile<MembershipType>(
+              value: type,
+              title: Text(_getMembershipTypeLabel(type)),
+            ),
           );
         }).toList(),
       ),

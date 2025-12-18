@@ -11,6 +11,7 @@ import '../../core/device/device_info.dart';
 import '../../core/utils/user_friendly_messages.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/error_state_widget.dart';
+import '../../widgets/common/app_button.dart';
 
 import '../../models/post_model.dart';
 import '../../services/post_repository.dart';
@@ -26,10 +27,11 @@ import './widgets/create_post_hint_widget.dart';
 import './widgets/empty_feed_widget.dart';
 import './widgets/feed_tab_widget.dart';
 import './widgets/feed_post_card_widget.dart';
+import '../search_screen/simple_modern_search_screen.dart';
 
 // 🎯 Coach Marks Tutorial
 import '../../widgets/app_coach_marks.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class HomeFeedScreen extends StatefulWidget {
   const HomeFeedScreen({super.key});
@@ -42,7 +44,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     with TickerProviderStateMixin {
   int _selectedTabIndex = 0;
   bool _isLoading = true;
-  bool _isPlayer = true;
+  // bool _isPlayer = true;
   final ScrollController _scrollController = ScrollController();
   late AnimationController _fabAnimationController;
   late Animation<double> _fabAnimation;
@@ -194,7 +196,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       final cachedFollowing = await AppCacheService.instance.getCache('home_feed_following');
       
       if (cachedNearby != null && cachedFollowing != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         if (mounted) {
           setState(() {
             _nearbyPosts = (cachedNearby as List).map((json) => PostModel.fromJson(json)).toList();
@@ -202,7 +203,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             _isLoading = false; // No spinner, show cached data immediately
           });
         }
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
         // No cache, show loading spinner
         if (mounted) {
@@ -215,7 +215,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       }
 
       // 📡 Then fetch fresh data in background (Facebook approach)
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       final nearbyFuture = _postRepository.getNearbyFeed(limit: 20);
       final followingFuture = _postRepository.getFollowingFeed(limit: 20);
 
@@ -242,10 +241,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           ttl: const Duration(minutes: 5),
         );
         
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -402,12 +399,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   Future<void> _handleLikeToggle(dynamic postData) async {
     // Extract post ID
     final postId = postData is PostModel ? postData.id : postData['id'];
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // 🎯 FACEBOOK APPROACH: Cancel previous request if user clicks again
     if (_pendingLikeRequests.containsKey(postId)) {
       // Already processing - ignore duplicate clicks
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -417,7 +412,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         : (postData['isLiked'] ?? false);
 
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 🎯 Optimistic UI update - update the PostModel in list
       final targetList = _selectedTabIndex == 0 ? _nearbyPosts : _followingPosts;
@@ -449,19 +443,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       _pendingLikeRequests[postId] = request;
 
       await request;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // � PHASE 2: Invalidate cache after like/unlike to ensure fresh data next time
       await AppCacheService.instance.removeCache('home_feed_nearby');
       await AppCacheService.instance.removeCache('home_feed_following');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // �🔄 Sync isLiked from DB sau khi API thành công
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       await _reloadPost(postId);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // ✅ Revert on error
       final targetList = _selectedTabIndex == 0 ? _nearbyPosts : _followingPosts;
@@ -503,24 +492,17 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     } finally {
       // Clean up pending request
       _pendingLikeRequests.remove(postId);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
   Future<void> _executeLikeRequest(String postId, bool shouldLike) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     try {
       if (shouldLike) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         await _postRepository.likePost(postId);
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         await _postRepository.unlikePost(postId);
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -602,7 +584,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       }
     } catch (e) {
       // Silent fail - counts will sync on next refresh
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -641,7 +622,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         postTitle: post['content'] ?? 'Bài viết',
         postContent: post['content'],
         postImageUrl: post['imageUrl'],
-        authorName: post['authorName'] ?? post['author_name'] ?? 'Unknown',
+        authorName: post['authorName'] ?? post['author_name'] ?? 'Không xác định',
         authorAvatar: post['authorAvatarUrl'] ?? post['author_avatar_url'],
         likeCount: post['likeCount'] ?? post['like_count'] ?? 0,
         commentCount: post['commentCount'] ?? post['comment_count'] ?? 0,
@@ -790,83 +771,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
-  void _showSearchDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        String searchQuery = '';
-        return AlertDialog(
-          title: const Text('Tìm kiếm'),
-          content: TextField(
-            autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'Nhập từ khóa tìm kiếm...',
-              prefixIcon: Icon(Icons.search),
-            ),
-            onChanged: (value) {
-              searchQuery = value;
-            },
-            onSubmitted: (value) {
-              Navigator.pop(context);
-              if (value.trim().isNotEmpty) {
-                _performSearch(value.trim());
-              }
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Hủy'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                if (searchQuery.trim().isNotEmpty) {
-                  _performSearch(searchQuery.trim());
-                }
-              },
-              child: const Text('Tìm kiếm'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // 🚀 MUSK: Old search methods removed - using ModernSearchScreen now
 
-  Future<void> _performSearch(String query) async {
-    try {
-      setState(() => _isLoading = true);
-
-      final results = await _postRepository.searchPosts(query);
-
-      setState(() {
-        _nearbyPosts = results;
-        _followingPosts = results;
-        _isLoading = false;
-      });
-
-      if (results.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Không tìm thấy kết quả cho "$query"')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tìm thấy ${results.length} kết quả')),
-        );
-      }
-    } catch (e) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(UserFriendlyMessages.searchError)));
-    }
-  }
-
-  void _handleNavigation(String route) {
-    if (route != AppRoutes.homeFeedScreen) {
-      Navigator.pushReplacementNamed(context, route);
-    }
-  }
+  // void _handleNavigation(String route) {
+  //   if (route != AppRoutes.homeFeedScreen) {
+  //     Navigator.pushReplacementNamed(context, route);
+  //   }
+  // }
 
   List<Map<String, dynamic>> get _currentPosts {
     final postModels = _selectedTabIndex == 0 ? _nearbyPosts : _followingPosts;
@@ -892,8 +803,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           Navigator.pushNamed(context, AppRoutes.notificationListScreen);
         },
         onSearchTap: () {
-          // Show search dialog for now
-          _showSearchDialog();
+          // 🚀 MUSK: Navigate to modern search screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ModernSearchScreen(),
+            ),
+          );
         },
       ),
       body: SafeArea(
@@ -1229,19 +1145,19 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           setState(() {
             _isClubOwner = true;
             _hasClub = club != null;
-            _isPlayer = false;
+            // _isPlayer = false;
           });
         }
       } else if (userRole == 'player') {
         if (mounted) {
           setState(() {
-            _isPlayer = true;
+            // _isPlayer = true;
             _isClubOwner = false;
           });
         }
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -1258,9 +1174,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         });
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -1276,9 +1191,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         });
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -1302,9 +1217,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             });
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -1368,7 +1283,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                   ],
                 ),
               ),
-              ElevatedButton(
+              AppButton(
+                label: 'Đăng ký CLB',
+                type: AppButtonType.primary,
+                size: AppButtonSize.medium,
+                customColor: AppColors.info600,
+                customTextColor: AppColors.textOnPrimary,
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -1377,20 +1297,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                     ),
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.info600,
-                  foregroundColor: AppColors.textOnPrimary,
-                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  'Đăng ký CLB', overflow: TextOverflow.ellipsis, style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
               ),
             ],
           ),
@@ -1505,50 +1411,28 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
           SizedBox(height: 2.h),
 
-          // Action button
+          // Action button với gradient (giữ nguyên gradient design)
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _navigateToClubRegistration,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.info700, AppColors.info600],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Ink(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.info700, AppColors.info600],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 1.5.h),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.arrow_forward,
-                        color: AppColors.textOnPrimary,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Đăng ký ngay', overflow: TextOverflow.ellipsis, style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textOnPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              child: AppButton(
+                label: 'Đăng ký ngay',
+                type: AppButtonType.primary,
+                size: AppButtonSize.large,
+                icon: Icons.arrow_forward,
+                iconTrailing: false,
+                customColor: Colors.transparent, // Gradient sẽ override
+                customTextColor: AppColors.textOnPrimary,
+                fullWidth: true,
+                onPressed: _navigateToClubRegistration,
               ),
             ),
           ),

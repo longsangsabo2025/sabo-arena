@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ClubDashboardService {
   static ClubDashboardService? _instance;
@@ -88,7 +88,6 @@ class ClubDashboardService {
         }
       } catch (e) {
         // Tournaments table might not exist yet
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Sort activities by timestamp
@@ -96,7 +95,6 @@ class ClubDashboardService {
 
       return activities.take(limit).toList();
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return _getMockActivities(); // Fallback to mock data
     }
   }
@@ -111,7 +109,6 @@ class ClubDashboardService {
 
       return response.length;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0;
     }
   }
@@ -125,7 +122,6 @@ class ClubDashboardService {
 
       return response.length;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0; // Return 0 if tournaments table doesn't exist yet
     }
   }
@@ -150,7 +146,6 @@ class ClubDashboardService {
 
       return total;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0.0; // Return 0 if payments table doesn't exist yet
     }
   }
@@ -175,7 +170,6 @@ class ClubDashboardService {
 
       return higherRatedClubs.length + 1; // Add 1 for current position
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0;
     }
   }

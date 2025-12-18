@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import '../components/bracket_components.dart';
 import '../shared/tournament_data_generator.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class DoubleEliminationBracket extends StatelessWidget {
   final int playerCount;
@@ -46,7 +46,7 @@ class DoubleEliminationBracket extends StatelessWidget {
   Widget _buildWinnersBracket() {
     final winnersRounds =
         TournamentDataGenerator.calculateDoubleEliminationWinners(playerCount);
-    ProductionLogger.debug('Debug log', tag: 'AutoFix'); // Debug
+ // Debug
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +126,7 @@ class DoubleEliminationBracket extends StatelessWidget {
   Widget _buildLosersBracket() {
     final losersRounds =
         TournamentDataGenerator.calculateDoubleEliminationLosers(playerCount);
-    ProductionLogger.debug('Debug log', tag: 'AutoFix'); // Debug
+ // Debug
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

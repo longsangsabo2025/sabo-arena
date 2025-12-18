@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+// ELON_MODE_AUTO_FIX
 
 class ChatService {
   static final SupabaseClient _supabase = Supabase.instance.client;
@@ -193,7 +194,7 @@ class ChatService {
           .eq('room_id', roomId)
           .eq('user_id', user.id);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.warning('Failed to update last read time', error: e, tag: 'ChatService');
     }
   }
 
@@ -335,7 +336,6 @@ class ChatService {
 
       return response.length;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0;
     }
   }

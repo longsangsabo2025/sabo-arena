@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Debug utility để kiểm tra và sửa lỗi like count
 class LikeCountDebugger {
@@ -72,17 +72,8 @@ class LikeCountDebugger {
         'legacy_likes': legacyLikesResponse.map((e) => e['user_id']).toList(),
       };
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
       return debug;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'error': e.toString()};
     }
   }
@@ -90,7 +81,6 @@ class LikeCountDebugger {
   /// 🔧 Sửa like count cho một post cụ thể
   static Future<bool> fixPostLikeCount(String postId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 1. Migrate legacy likes to post_interactions if any
       final legacyLikes = await _supabase
@@ -98,7 +88,6 @@ class LikeCountDebugger {
           .select('*')
           .eq('post_id', postId);
 
-      int migratedCount = 0;
       for (final like in legacyLikes) {
         // Check if already exists in post_interactions
         final existing = await _supabase
@@ -117,7 +106,6 @@ class LikeCountDebugger {
             'interaction_type': 'like',
             'created_at': like['created_at'],
           });
-          migratedCount++;
         }
       }
 
@@ -134,13 +122,9 @@ class LikeCountDebugger {
           .update({'like_count': actualLikes.length})
           .eq('id', postId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -148,23 +132,17 @@ class LikeCountDebugger {
   /// 🔧 Sửa like count cho tất cả posts (chạy một lần)
   static Future<void> fixAllPostLikeCounts() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
       // 1. Get all posts
-      final posts = await _supabase
-          .from('posts')
-          .select('id, like_count');
+      final posts = await _supabase.from('posts').select('id, like_count');
 
-      int fixedCount = 0;
-      int totalPosts = posts.length;
-
+      // int fixedCount = 0;
       for (int i = 0; i < posts.length; i++) {
         final post = posts[i];
         final postId = post['id'];
 
         // Show progress every 10 posts
         if (i % 10 == 0) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // REMOVED: debugPrint('Processing post $i/${posts.length}...');
         }
 
         // Count actual likes
@@ -180,17 +158,12 @@ class LikeCountDebugger {
               .from('posts')
               .update({'like_count': actualLikes.length})
               .eq('id', postId);
-          fixedCount++;
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // fixedCount++;
         }
       }
-
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
+      // REMOVED: debugPrint('Fixed $fixedCount posts.');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // REMOVED: debugPrint('Error fixing all post like counts: $e');
     }
   }
 

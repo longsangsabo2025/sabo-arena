@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 import 'package:image_picker/image_picker.dart';
-// import 'package:permission_handler/permission_handler.dart'; // TODO: Re-enable after App Store approval
-import 'dart:io';
+import 'package:path/path.dart' as path;
 import 'package:sabo_arena/widgets/common/common_widgets.dart'; // Phase 4
 
 import '../../../models/user_profile.dart';
-import '../../../services/user_service.dart';
+import '../../../services/permission_service.dart';
 import '../../../widgets/user/user_avatar_widget.dart';
 
 class EditProfileModal extends StatefulWidget {
   final UserProfile userProfile;
-  final Function(UserProfile) onSave;
+  // 🚀 MUSK: Updated signature for atomic operations
+  final Future<void> Function(UserProfile profile, List<int>? avatarBytes, String? avatarName, bool removeAvatar) onSave;
   final VoidCallback onCancel;
 
   const EditProfileModal({
@@ -28,14 +28,16 @@ class EditProfileModal extends StatefulWidget {
 
 class _EditProfileModalState extends State<EditProfileModal> {
   final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
-  final _displayNameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _bioController = TextEditingController();
-  final _locationController = TextEditingController();
+  late TextEditingController _fullNameController;
+  late TextEditingController _displayNameController;
+  late TextEditingController _phoneController;
+  late TextEditingController _bioController;
+  late TextEditingController _locationController;
 
   bool _isLoading = false;
   String? _selectedAvatarPath;
+  Uint8List? _selectedAvatarBytes; // Store bytes for Web support
+  String? _selectedFileName; // Store filename for extension
   final ImagePicker _imagePicker = ImagePicker();
 
   @override
@@ -45,11 +47,11 @@ class _EditProfileModalState extends State<EditProfileModal> {
   }
 
   void _initializeControllers() {
-    _fullNameController.text = widget.userProfile.fullName;
-    _displayNameController.text = widget.userProfile.displayName;
-    _phoneController.text = widget.userProfile.phone ?? '';
-    _bioController.text = widget.userProfile.bio ?? '';
-    _locationController.text = widget.userProfile.location ?? '';
+    _fullNameController = TextEditingController(text: widget.userProfile.fullName);
+    _displayNameController = TextEditingController(text: widget.userProfile.displayName);
+    _phoneController = TextEditingController(text: widget.userProfile.phone ?? '');
+    _bioController = TextEditingController(text: widget.userProfile.bio ?? '');
+    _locationController = TextEditingController(text: widget.userProfile.location ?? '');
   }
 
   @override
@@ -72,25 +74,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
     HapticFeedback.lightImpact();
 
     try {
-      String? avatarUrl = widget.userProfile.avatarUrl;
-
-      // Xử lý upload ảnh nếu có ảnh mới được chọn
-      if (_selectedAvatarPath != null &&
-          _selectedAvatarPath != 'REMOVE_AVATAR') {
-        final file = File(_selectedAvatarPath!);
-        final bytes = await file.readAsBytes();
-        final fileName = file.path.split('/').last;
-
-        // Upload ảnh lên Supabase storage
-        final uploadedUrl = await _uploadAvatar(bytes, fileName);
-        if (uploadedUrl != null) {
-          avatarUrl = uploadedUrl;
-        }
-      } else if (_selectedAvatarPath == 'REMOVE_AVATAR') {
-        avatarUrl = null;
-      }
-
-      // Sử dụng copyWith để cập nhật thông tin
+      // Prepare profile update
       final updatedProfile = widget.userProfile.copyWith(
         fullName: _fullNameController.text.trim().isEmpty
             ? widget.userProfile.fullName
@@ -107,10 +91,26 @@ class _EditProfileModalState extends State<EditProfileModal> {
         location: _locationController.text.trim().isEmpty
             ? null
             : _locationController.text.trim(),
-        avatarUrl: avatarUrl,
+        // Avatar URL is handled by the service, we don't set it here
       );
 
-      await widget.onSave(updatedProfile);
+      final removeAvatar = _selectedAvatarPath == 'REMOVE_AVATAR';
+      String? fileName;
+      if (_selectedAvatarBytes != null && !removeAvatar) {
+         // FIX: Use correct extension
+         final ext = _selectedFileName != null ? path.extension(_selectedFileName!) : 
+                     (_selectedAvatarPath != null ? path.extension(_selectedAvatarPath!) : '.jpg');
+         fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
+      }
+
+      // 🚀 MUSK: Delegate to parent/service for atomic operation
+      await widget.onSave(
+        updatedProfile, 
+        removeAvatar ? null : _selectedAvatarBytes, 
+        fileName,
+        removeAvatar
+      );
+      
     } catch (e) {
       if (mounted) {
         AppSnackbar.error(
@@ -127,21 +127,11 @@ class _EditProfileModalState extends State<EditProfileModal> {
     }
   }
 
-  Future<String?> _uploadAvatar(List<int> bytes, String fileName) async {
-    try {
-      // Import UserService để sử dụng upload method
-      final userService = UserService.instance;
-      return await userService.uploadAvatar(bytes, fileName);
-    } catch (e) {
-      _showErrorMessage('Lỗi upload ảnh: $e');
-      return null;
-    }
-  }
-
   void _changeAvatar() {
+    final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -154,36 +144,76 @@ class _EditProfileModalState extends State<EditProfileModal> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: theme.dividerColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             SizedBox(height: 20),
             Text(
-              'Thay đổi ảnh đại diện',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Chọn ảnh đại diện',
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            // 📱 MARK Z: Facebook-style image picker with better UX
+            Column(
               children: [
-                _buildImageSourceOption(
-                  icon: Icons.camera_alt,
-                  label: 'Chụp ảnh',
-                  onTap: () => _pickImageFromCamera(),
-                ),
-                _buildImageSourceOption(
-                  icon: Icons.photo_library,
-                  label: 'Chọn ảnh',
-                  onTap: () => _pickImageFromGallery(),
-                ),
-                if (widget.userProfile.avatarUrl != null)
-                  _buildImageSourceOption(
-                    icon: Icons.delete,
-                    label: 'Xóa ảnh',
-                    onTap: () => _removeAvatar(),
-                    color: Colors.red,
+                // Primary action: Choose from Gallery (most common)
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _pickImageFromGallery();
+                    },
+                    icon: Icon(Icons.photo_library),
+                    label: Text('Chọn từ thư viện ảnh'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                    ),
                   ),
+                ),
+                SizedBox(height: 12),
+                // Secondary action: Take Photo
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _pickImageFromCamera();
+                    },
+                    icon: Icon(Icons.camera_alt),
+                    label: Text('Chụp ảnh mới'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: theme.colorScheme.primary,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      side: BorderSide(color: theme.colorScheme.primary),
+                    ),
+                  ),
+                ),
+                if (widget.userProfile.avatarUrl != null) ...[
+                  SizedBox(height: 12),
+                  // Destructive action: Remove
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: TextButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _removeAvatar();
+                      },
+                      icon: Icon(Icons.delete_outline),
+                      label: Text('Xóa ảnh hiện tại'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: theme.colorScheme.error,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
             SizedBox(height: 30),
@@ -199,38 +229,25 @@ class _EditProfileModalState extends State<EditProfileModal> {
     );
   }
 
-  Widget _buildImageSourceOption({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    Color? color,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: (color ?? Colors.green).withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color ?? Colors.green, size: 30),
-          ),
-          SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(fontSize: 14, color: color ?? Colors.black87),
-          ),
-        ],
-      ),
-    );
-  }
+  // 📱 MARK Z: Removed old _buildImageSourceOption - using Facebook-style buttons now
 
   Future<void> _pickImageFromCamera() async {
-    Navigator.pop(context); // Đóng bottom sheet
+    // Navigator.pop(context); // 🚀 MUSK_FIX: Removed double pop (handled by caller)
+    
+    // 📱 MARK Z: Debug logging for user action tracking
+    print('🎥 USER ACTION: _pickImageFromCamera() called - should open CAMERA');
 
     try {
+      final cameraGranted = await PermissionService.checkCameraPermission();
+      if (!cameraGranted) {
+        _showErrorMessage(
+          'Cần cấp quyền camera để chụp ảnh. Bạn có thể bật trong Cài đặt > Sabo Arena > Camera',
+        );
+        return;
+      }
+
+      // 📱 MARK Z: Explicit source confirmation
+      print('🎥 CALLING ImagePicker with source: ImageSource.camera');
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1024,
@@ -239,29 +256,39 @@ class _EditProfileModalState extends State<EditProfileModal> {
       );
 
       if (image != null) {
+        final bytes = await image.readAsBytes();
+        if (!mounted) return; // 🚀 MUSK_FIX: Check mounted after async
         setState(() {
           _selectedAvatarPath = image.path;
+          _selectedAvatarBytes = bytes;
+          _selectedFileName = image.name;
         });
-        _showSuccessMessage('✅ Đã chọn ảnh từ camera');
+        // 📱 MARK Z: Facebook-style success feedback
+        _showSuccessMessage('📸 Ảnh đã được chụp! Nhấn Lưu để cập nhật.');
       }
     } catch (e) {
-      // If permission denied, show message only (Apple 5.1.1 - do not auto-redirect)
-      if (e.toString().contains('photo access') ||
-          e.toString().contains('camera') ||
-          e.toString().contains('denied')) {
-        _showErrorMessage(
-          'Cần cấp quyền camera để chụp ảnh. Bạn có thể bật trong Cài đặt > Sabo Arena > Camera',
-        );
-      } else {
-        _showErrorMessage('Lỗi khi chụp ảnh: $e');
-      }
+      // 🚀 MUSK: Removed fragile string matching. If we are here, it's a real error.
+      _showErrorMessage('Lỗi khi chụp ảnh: $e');
     }
   }
 
   Future<void> _pickImageFromGallery() async {
-    Navigator.pop(context); // Đóng bottom sheet
+    // Navigator.pop(context); // 🚀 MUSK_FIX: Removed double pop (handled by caller)
+    
+    // 📱 MARK Z: Debug logging for user action tracking
+    print('📷 USER ACTION: _pickImageFromGallery() called - should open GALLERY');
 
     try {
+      final photosGranted = await PermissionService.checkPhotosPermission();
+      if (!photosGranted) {
+        _showErrorMessage(
+          'Cần cấp quyền thư viện ảnh để chọn ảnh. Bạn có thể bật trong Cài đặt > Sabo Arena > Ảnh',
+        );
+        return;
+      }
+
+      // 📱 MARK Z: Explicit source confirmation
+      print('📷 CALLING ImagePicker with source: ImageSource.gallery');
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1024,
@@ -270,27 +297,24 @@ class _EditProfileModalState extends State<EditProfileModal> {
       );
 
       if (image != null) {
+        final bytes = await image.readAsBytes();
+        if (!mounted) return; // 🚀 MUSK_FIX: Check mounted after async
         setState(() {
           _selectedAvatarPath = image.path;
+          _selectedAvatarBytes = bytes;
+          _selectedFileName = image.name;
         });
-        _showSuccessMessage('✅ Đã chọn ảnh từ thư viện');
+        // 📱 MARK Z: Facebook-style success feedback
+        _showSuccessMessage('🖼️ Ảnh đã được chọn! Nhấn Lưu để cập nhật.');
       }
     } catch (e) {
-      // If permission denied, show message only (Apple 5.1.1 - do not auto-redirect)
-      if (e.toString().contains('photo') ||
-          e.toString().contains('library') ||
-          e.toString().contains('denied')) {
-        _showErrorMessage(
-          'Cần cấp quyền thư viện ảnh để chọn ảnh. Bạn có thể bật trong Cài đặt > Sabo Arena > Ảnh',
-        );
-      } else {
-        _showErrorMessage('Lỗi khi chọn ảnh: $e');
-      }
+       // 🚀 MUSK: Removed fragile string matching.
+      _showErrorMessage('Lỗi khi chọn ảnh: $e');
     }
   }
 
   void _removeAvatar() {
-    Navigator.pop(context); // Đóng bottom sheet
+    // Navigator.pop(context); // 🚀 MUSK_FIX: Removed double pop (handled by caller)
 
     showDialog(
       context: context,
@@ -306,13 +330,14 @@ class _EditProfileModalState extends State<EditProfileModal> {
           AppButton(
             label: 'Xóa',
             type: AppButtonType.text,
-            customColor: Colors.red,
+            customColor: Theme.of(context).colorScheme.error,
             onPressed: () {
               Navigator.pop(context);
               setState(() {
                 _selectedAvatarPath = 'REMOVE_AVATAR';
+                _selectedAvatarBytes = null;
               });
-              _showSuccessMessage('✅ Đã xóa ảnh đại diện');
+              _showSuccessMessage('🗑️ Ảnh đại diện đã được xóa! Nhấn Lưu để cập nhật.');
             },
           ),
         ],
@@ -336,10 +361,12 @@ class _EditProfileModalState extends State<EditProfileModal> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -348,7 +375,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
           Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+              border: Border(bottom: BorderSide(color: theme.dividerColor)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -360,12 +387,12 @@ class _EditProfileModalState extends State<EditProfileModal> {
                 ),
                 Text(
                   'Chỉnh sửa hồ sơ',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 AppButton(
                   label: 'Lưu',
                   type: AppButtonType.text,
-                  customColor: Colors.green,
+                  customColor: theme.colorScheme.primary,
                   isLoading: _isLoading,
                   onPressed: _isLoading ? null : _handleSave,
                 ),
@@ -391,12 +418,11 @@ class _EditProfileModalState extends State<EditProfileModal> {
                             height: 100,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.grey[200],
+                              color: theme.colorScheme.surfaceContainerHighest,
                             ),
                             clipBehavior: Clip.antiAlias,
-                            child: _selectedAvatarPath != null &&
-                                    _selectedAvatarPath != 'REMOVE_AVATAR'
-                                ? Image.file(File(_selectedAvatarPath!),
+                            child: _selectedAvatarBytes != null
+                                ? Image.memory(_selectedAvatarBytes!,
                                     fit: BoxFit.cover)
                                 : widget.userProfile.avatarUrl != null &&
                                         _selectedAvatarPath != 'REMOVE_AVATAR'
@@ -407,7 +433,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
                                     : Icon(
                                         Icons.person,
                                         size: 50,
-                                        color: Colors.grey,
+                                        color: theme.colorScheme.onSurfaceVariant,
                                       ),
                           ),
                           Positioned(
@@ -415,13 +441,13 @@ class _EditProfileModalState extends State<EditProfileModal> {
                             right: 0,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.green,
+                                color: theme.colorScheme.primary,
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
                                 icon: Icon(
                                   Icons.camera_alt,
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                   size: 18,
                                 ),
                                 onPressed: _changeAvatar,
@@ -546,15 +572,15 @@ class _EditProfileModalState extends State<EditProfileModal> {
     int? maxLength,
     String? Function(String?)? validator,
   }) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         SizedBox(height: 1.h),
@@ -568,7 +594,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
             prefixIcon: Icon(icon),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           ),
         ),
       ],
@@ -576,15 +602,15 @@ class _EditProfileModalState extends State<EditProfileModal> {
   }
 
   Widget _buildInfoDisplay(String label, String value, IconData icon) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         SizedBox(height: 1.h),
@@ -592,21 +618,23 @@ class _EditProfileModalState extends State<EditProfileModal> {
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: theme.dividerColor),
             borderRadius: BorderRadius.circular(12),
-            color: Colors.grey.shade100,
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           ),
           child: Row(
             children: [
-              Icon(icon, color: Colors.grey.shade600),
+              Icon(icon, color: theme.colorScheme.onSurfaceVariant),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   value,
-                  style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
               ),
-              Icon(Icons.lock_outlined, color: Colors.grey.shade400, size: 18),
+              Icon(Icons.lock_outlined, color: theme.colorScheme.outline, size: 18),
             ],
           ),
         ),

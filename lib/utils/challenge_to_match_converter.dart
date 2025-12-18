@@ -80,7 +80,9 @@ class ChallengeToMatchConverter {
     String cardStatus = 'ready'; // default
     if (status == 'pending') {
       cardStatus = 'ready';
-    } else if (status == 'accepted' || status == 'in_progress') {
+    } else if (status == 'accepted') {
+      cardStatus = 'scheduled'; // Changed from 'live' to 'scheduled'
+    } else if (status == 'in_progress') {
       cardStatus = 'live';
     } else if (status == 'completed') {
       cardStatus = 'done';

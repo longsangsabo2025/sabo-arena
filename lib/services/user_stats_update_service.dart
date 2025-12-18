@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service để cập nhật thống kê user sau các trận đấu/giải đấu
 class UserStatsUpdateService {
@@ -13,7 +13,6 @@ class UserStatsUpdateService {
   /// Cập nhật toàn bộ thống kê của user từ database
   Future<void> updateUserStats(String userId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 1. Đếm số trận thắng
       final winsResponse = await _supabase
@@ -57,7 +56,7 @@ class UserStatsUpdateService {
       final totalPrizePool = await _calculateTotalPrizePool(userId);
 
       // 6. Tính win streak hiện tại
-      final currentWinStreak = await calculateWinStreak(userId);
+      // final currentWinStreak = await calculateWinStreak(userId); // Unused
 
       // 7. Cập nhật vào database
       await _supabase
@@ -72,9 +71,7 @@ class UserStatsUpdateService {
           })
           .eq('id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to update user stats: $e');
     }
   }
@@ -85,7 +82,7 @@ class UserStatsUpdateService {
       try {
         await updateUserStats(userId);
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // Ignore error
       }
     }
   }
@@ -103,9 +100,8 @@ class UserStatsUpdateService {
           .toList();
 
       await updateMultipleUserStats(userIds);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -124,10 +120,8 @@ class UserStatsUpdateService {
         totalSpa += (transaction['amount'] as num).toInt();
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return totalSpa;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0;
     }
   }
@@ -136,10 +130,8 @@ class UserStatsUpdateService {
   Future<int> _calculateSpaFromTournaments(String userId) async {
     try {
       // Không tính toán ở đây nữa, SPA được cộng qua transactions khi tournament hoàn thành
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0;
     }
   }
@@ -151,7 +143,6 @@ class UserStatsUpdateService {
       // Hiện tại return 0.0, cần implement logic tính prize pool từ tournament standings
       return 0.0;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0.0;
     }
   }
@@ -179,7 +170,6 @@ class UserStatsUpdateService {
 
       return streak;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return 0;
     }
   }

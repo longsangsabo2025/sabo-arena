@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../core/design_system/design_system.dart';
 
 /// Theme constants cho AppBar trong toàn bộ app
@@ -21,6 +22,7 @@ class AppBarTheme {
   // Lấy font family phù hợp với platform
   static String _getFontFamily() {
     try {
+      if (kIsWeb) return 'Roboto';
       if (Platform.isIOS) {
         return '.SF Pro Display'; // SF Pro Display - iOS system font
       } else {

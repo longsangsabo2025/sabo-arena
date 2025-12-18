@@ -620,9 +620,10 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
                         await _pricingService.updateTableRate(updated);
                     setState(() => tableRates[index!] = saved);
                   }
-                  if (mounted) Navigator.pop(context);
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
                 } catch (e) {
-                  if (mounted) {
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('❌ Lỗi: $e'),
@@ -654,7 +655,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(
           item == null ? 'Thêm gói thành viên' : 'Chỉnh sửa gói thành viên',
         ),
@@ -703,7 +704,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Hủy'),
           ),
           ElevatedButton(
@@ -743,7 +744,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
                         await _pricingService.updateMembershipFee(updated);
                     setState(() => membershipFees[index!] = saved);
                   }
-                  if (mounted) Navigator.pop(context);
+                  if (dialogContext.mounted) Navigator.pop(dialogContext);
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -775,7 +776,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(item == null ? 'Thêm dịch vụ' : 'Chỉnh sửa dịch vụ'),
         content: SingleChildScrollView(
           child: Column(
@@ -820,7 +821,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Hủy'),
           ),
           ElevatedButton(
@@ -856,7 +857,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
                         .updateAdditionalService(updated);
                     setState(() => additionalServices[index!] = saved);
                   }
-                  if (mounted) Navigator.pop(context);
+                  if (dialogContext.mounted) Navigator.pop(dialogContext);
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(

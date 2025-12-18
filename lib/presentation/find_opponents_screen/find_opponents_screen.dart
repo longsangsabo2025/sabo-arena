@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_bar_theme.dart' as app_theme;
 import '../../routes/app_routes.dart';
-import './widgets/competitive_challenges_tab.dart';
 import './widgets/community_tab.dart';
-import './widgets/social_invites_tab.dart';
 import './widgets/my_challenges_tab.dart';
+import '../find_opponents_list_screen/find_opponents_list_screen.dart';
 // TODO: Re-enable after App Store approval
 // import '../../widgets/qr_scanner_widget.dart';
 
@@ -22,7 +21,7 @@ class _FindOpponentsScreenState extends State<FindOpponentsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -31,11 +30,11 @@ class _FindOpponentsScreenState extends State<FindOpponentsScreen>
     super.dispose();
   }
 
-  void _handleNavigation(String route) {
-    if (route != AppRoutes.findOpponentsScreen) {
-      Navigator.pushReplacementNamed(context, route);
-    }
-  }
+  // void _handleNavigation(String route) {
+  //   if (route != AppRoutes.findOpponentsScreen) {
+  //     Navigator.pushReplacementNamed(context, route);
+  //   }
+  // }
 
   // TODO: Re-enable after App Store approval
   // void _showQRScanner() {
@@ -75,13 +74,6 @@ class _FindOpponentsScreenState extends State<FindOpponentsScreen>
         title: app_theme.AppBarTheme.buildGradientTitle('Tìm đối thủ'),
         centerTitle: false,
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.findOpponentsListScreen);
-            },
-            icon: const Icon(Icons.person_search),
-            tooltip: 'Tìm đối thủ',
-          ),
           // TODO: Re-enable QR Scanner after App Store approval
           // IconButton(
           //   onPressed: _showQRScanner,
@@ -104,18 +96,13 @@ class _FindOpponentsScreenState extends State<FindOpponentsScreen>
           ),
           tabs: const [
             Tab(
-              icon: Icon(Icons.emoji_events, size: 22),
-              text: 'Thách đấu',
+              icon: Icon(Icons.search, size: 22),
+              text: 'Tìm đối',
               iconMargin: EdgeInsets.only(bottom: 4),
             ),
             Tab(
               icon: Icon(Icons.people, size: 22),
               text: 'Cộng đồng',
-              iconMargin: EdgeInsets.only(bottom: 4),
-            ),
-            Tab(
-              icon: Icon(Icons.groups, size: 22),
-              text: 'Giao lưu',
               iconMargin: EdgeInsets.only(bottom: 4),
             ),
             Tab(
@@ -129,9 +116,8 @@ class _FindOpponentsScreenState extends State<FindOpponentsScreen>
       body: TabBarView(
         controller: _tabController,
         children: const [
-          CompetitiveChallengesTab(),
+          FindOpponentsListScreen(isTab: true),
           CommunityTab(),
-          SocialInvitesTab(),
           MyChallengesTab(),
         ],
       ),

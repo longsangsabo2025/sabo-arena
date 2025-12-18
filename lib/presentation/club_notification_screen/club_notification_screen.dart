@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-import '../../theme/app_theme.dart';
+import 'package:sabo_arena/theme/app_theme.dart';
+import 'package:sabo_arena/widgets/custom_app_bar.dart';
 
 class ClubNotificationScreen extends StatefulWidget {
   final String? clubId;
@@ -8,10 +8,12 @@ class ClubNotificationScreen extends StatefulWidget {
   const ClubNotificationScreen({super.key, this.clubId});
 
   @override
-  _ClubNotificationScreenState createState() => _ClubNotificationScreenState();
+  State<ClubNotificationScreen> createState() =>
+      _ClubNotificationScreenState();
 }
 
-class _ClubNotificationScreenState extends State<ClubNotificationScreen> {
+class _ClubNotificationScreenState
+    extends State<ClubNotificationScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Form Controllers
@@ -34,49 +36,23 @@ class _ClubNotificationScreenState extends State<ClubNotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimaryLight),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Gửi thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
-            color: AppTheme.textPrimaryLight,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: _isLoading ? null : _sendNotification,
-            child: Text(
-              'Gửi', overflow: TextOverflow.ellipsis, style: TextStyle(
-                color: AppTheme.primaryLight,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(title: 'Gửi thông báo'),
+      backgroundColor: Colors.grey[50],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: EdgeInsets.all(16.w),
+              padding: const EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildMessageSection(),
-                    SizedBox(height: 24.h),
-                    _buildSettingsSection(),
-                    SizedBox(height: 24.h),
-                    _buildPreviewSection(),
-                    SizedBox(height: 32.h),
+                    const SizedBox(height: 24),
+                    _buildTargetSection(),
+                    const SizedBox(height: 24),
+                    _buildOptionsSection(),
+                    const SizedBox(height: 32),
                     _buildSendButton(),
                   ],
                 ),
@@ -87,67 +63,53 @@ class _ClubNotificationScreenState extends State<ClubNotificationScreen> {
 
   Widget _buildMessageSection() {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
             offset: const Offset(0, 2),
+            blurRadius: 8,
+            spreadRadius: -2,
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Nội dung thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimaryLight,
-            ),
+          const Text(
+            'Nội dung thông báo',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
-          SizedBox(height: 16.h),
-
-          // Title
+          const SizedBox(height: 16),
           TextFormField(
             controller: _titleController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Tiêu đề',
-              hintText: 'VD: Thông báo quan trọng',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              prefixIcon: Icon(Icons.title),
+              hintText: 'Nhập tiêu đề thông báo',
+              border: OutlineInputBorder(),
             ),
             validator: (value) {
-              if (value?.isEmpty ?? true) {
+              if (value == null || value.isEmpty) {
                 return 'Vui lòng nhập tiêu đề';
               }
               return null;
             },
           ),
-
-          SizedBox(height: 16.h),
-
-          // Message
+          const SizedBox(height: 16),
           TextFormField(
             controller: _messageController,
-            maxLines: 5,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Nội dung',
-              hintText: 'Nhập nội dung thông báo...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              prefixIcon: Icon(Icons.message),
-              alignLabelWithHint: true,
+              hintText: 'Nhập nội dung thông báo',
+              border: OutlineInputBorder(),
             ),
+            maxLines: 5,
             validator: (value) {
-              if (value?.isEmpty ?? true) {
-                return 'Vui lòng nhập nội dung thông báo';
+              if (value == null || value.isEmpty) {
+                return 'Vui lòng nhập nội dung';
               }
               return null;
             },
@@ -157,313 +119,192 @@ class _ClubNotificationScreenState extends State<ClubNotificationScreen> {
     );
   }
 
-  Widget _buildSettingsSection() {
+  Widget _buildTargetSection() {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
             offset: const Offset(0, 2),
+            blurRadius: 8,
+            spreadRadius: -2,
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Cài đặt gửi', overflow: TextOverflow.ellipsis, style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimaryLight,
+          const Text(
+            'Đối tượng nhận thông báo',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
+          ...[
+            'all_members',
+            'active_members',
+            'vip_members',
+            'new_members',
+          ].map(
+            (audience) => RadioGroup<String>(
+              groupValue: _targetAudience,
+              onChanged: (value) {
+                setState(() {
+                  _targetAudience = value!;
+                });
+              },
+              child: RadioListTile<String>(
+                title: Text(_getAudienceLabel(audience)),
+                value: audience,
+              ),
             ),
           ),
-          SizedBox(height: 16.h),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildOptionsSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            offset: const Offset(0, 2),
+            blurRadius: 8,
+            spreadRadius: -2,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Tùy chọn',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
           // Notification Type
-          DropdownButtonFormField<String>(
-            initialValue: _notificationType,
-            decoration: InputDecoration(
-              labelText: 'Loại thông báo',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              prefixIcon: Icon(Icons.category),
-            ),
-            items: const [
-              DropdownMenuItem(
-                value: 'general',
-                child: Text('Thông báo chung'),
-              ),
-              DropdownMenuItem(
-                value: 'tournament',
-                child: Text('Thông báo giải đấu'),
-              ),
-              DropdownMenuItem(
-                value: 'event',
-                child: Text('Thông báo sự kiện'),
-              ),
-              DropdownMenuItem(
-                value: 'maintenance',
-                child: Text('Bảo trì/Nghỉ lễ'),
-              ),
-            ],
-            onChanged: (value) {
-              setState(() {
-                _notificationType = value!;
-              });
-            },
+          const Text(
+            'Loại thông báo',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
-
-          SizedBox(height: 16.h),
-
-          // Target Audience
-          DropdownButtonFormField<String>(
-            initialValue: _targetAudience,
-            decoration: InputDecoration(
-              labelText: 'Đối tượng nhận',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              prefixIcon: Icon(Icons.people),
-            ),
-            items: const [
-              DropdownMenuItem(
-                value: 'all_members',
-                child: Text('Tất cả thành viên'),
-              ),
-              DropdownMenuItem(
-                value: 'active_members',
-                child: Text('Thành viên hoạt động'),
-              ),
-              DropdownMenuItem(
-                value: 'premium_members',
-                child: Text('Thành viên VIP'),
-              ),
-              DropdownMenuItem(
-                value: 'admins',
-                child: Text('Chỉ quản trị viên'),
-              ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              _buildTypeChip('general', 'Thông báo chung'),
+              _buildTypeChip('event', 'Sự kiện'),
+              _buildTypeChip('promotion', 'Khuyến mãi'),
+              _buildTypeChip('system', 'Hệ thống'),
             ],
-            onChanged: (value) {
-              setState(() {
-                _targetAudience = value!;
-              });
-            },
           ),
-
-          SizedBox(height: 16.h),
-
-          // Urgent Toggle
+          const SizedBox(height: 16),
+          // Urgent flag
           SwitchListTile(
-            title: Text('Thông báo khẩn cấp'),
-            subtitle: Text(
-              _isUrgent
-                  ? 'Thông báo sẽ được ưu tiên hiển thị'
-                  : 'Thông báo thường', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.sp),
-            ),
+            title: const Text('Thông báo khẩn cấp'),
+            subtitle: const Text('Ưu tiên hiển thị và gửi push notification'),
             value: _isUrgent,
             onChanged: (value) {
               setState(() {
                 _isUrgent = value;
               });
             },
-            activeThumbColor: AppTheme.errorLight,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPreviewSection() {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.preview, color: AppTheme.primaryLight),
-              SizedBox(width: 8.w),
-              Text(
-                'Xem trước', overflow: TextOverflow.ellipsis, style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimaryLight,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          // Preview Card
-          Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: _isUrgent ? Colors.red.shade50 : Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: _isUrgent ? Colors.red.shade200 : Colors.grey.shade200,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.notifications,
-                      color: _isUrgent ? Colors.red : AppTheme.primaryLight,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: Text(
-                        _titleController.text.isNotEmpty
-                            ? _titleController.text
-                            : 'Tiêu đề thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimaryLight,
-                        ),
-                      ),
-                    ),
-                    if (_isUrgent)
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'KHẨN', overflow: TextOverflow.ellipsis, style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  _messageController.text.isNotEmpty
-                      ? _messageController.text
-                      : 'Nội dung thông báo sẽ hiển thị ở đây...', overflow: TextOverflow.ellipsis, style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppTheme.textSecondaryLight,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  'Gửi đến: ${_getAudienceText()}',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppTheme.textSecondaryLight,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+  Widget _buildTypeChip(String value, String label) {
+    final isSelected = _notificationType == value;
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _notificationType = value;
+        });
+      },
+      selectedColor: AppTheme.primaryLight.withValues(alpha: 0.2),
+      checkmarkColor: AppTheme.primaryLight,
     );
   }
 
   Widget _buildSendButton() {
     return SizedBox(
       width: double.infinity,
-      height: 48.h,
-      child: ElevatedButton.icon(
+      height: 50,
+      child: ElevatedButton(
         onPressed: _isLoading ? null : _sendNotification,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _isUrgent ? Colors.red : AppTheme.primaryLight,
+          backgroundColor: AppTheme.primaryLight,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        icon: _isLoading
+        child: _isLoading
             ? const SizedBox(
-                width: 20,
                 height: 20,
+                width: 20,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
                   strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : Icon(Icons.send, color: Colors.white),
-        label: Text(
-          _isLoading ? 'Đang gửi...' : 'Gửi thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+            : const Text(
+                'Gửi thông báo',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
       ),
     );
   }
 
-  String _getAudienceText() {
-    switch (_targetAudience) {
+  String _getAudienceLabel(String audience) {
+    switch (audience) {
       case 'all_members':
         return 'Tất cả thành viên';
       case 'active_members':
         return 'Thành viên hoạt động';
-      case 'premium_members':
+      case 'vip_members':
         return 'Thành viên VIP';
-      case 'admins':
-        return 'Quản trị viên';
+      case 'new_members':
+        return 'Thành viên mới';
       default:
-        return 'Tất cả thành viên';
+        return 'Không xác định';
     }
   }
 
   Future<void> _sendNotification() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // TODO: Implement notification sending API call
+      // TODO: Implement actual notification sending
       await Future.delayed(const Duration(seconds: 2)); // Simulate API call
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gửi thông báo thành công!'),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text('Gửi thông báo thành công!')),
         );
-        Navigator.pop(context, true); // Return true to indicate success
+        Navigator.pop(context);
       }
-    } catch (error) {
+    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Có lỗi xảy ra: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi gửi thông báo: $e')));
       }
     } finally {
       if (mounted) {

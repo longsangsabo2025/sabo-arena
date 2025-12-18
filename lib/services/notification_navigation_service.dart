@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../routes/app_routes.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service to handle navigation from notifications
 class NotificationNavigationService {
@@ -15,7 +16,6 @@ class NotificationNavigationService {
     required String type,
     Map<String, dynamic>? data,
   }) {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       switch (type) {
@@ -92,12 +92,10 @@ class NotificationNavigationService {
           break;
 
         default:
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           // Navigate to notification detail screen as fallback
           _navigateToNotificationDetail(context, data);
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Show error snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -113,7 +111,6 @@ class NotificationNavigationService {
   void _navigateToTournament(BuildContext context, Map<String, dynamic>? data) {
     final tournamentId = data?['tournament_id'] as String?;
     if (tournamentId == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -129,7 +126,6 @@ class NotificationNavigationService {
     final tournamentId = data?['tournament_id'] as String?;
 
     if (matchId == null && tournamentId == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -150,7 +146,6 @@ class NotificationNavigationService {
   void _navigateToChallenge(BuildContext context, Map<String, dynamic>? data) {
     final challengeId = data?['challenge_id'] as String?;
     if (challengeId == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -162,7 +157,6 @@ class NotificationNavigationService {
   void _navigateToClub(BuildContext context, Map<String, dynamic>? data) {
     final clubId = data?['club_id'] as String?;
     if (clubId == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -176,7 +170,6 @@ class NotificationNavigationService {
   void _navigateToProfile(BuildContext context, Map<String, dynamic>? data) {
     final userId = data?['user_id'] as String?;
     if (userId == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -195,19 +188,25 @@ class NotificationNavigationService {
   void _navigateToPost(BuildContext context, Map<String, dynamic>? data) {
     final postId = data?['post_id'] as String?;
     if (postId == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
-    // TODO: Add post detail screen
-    // For now, navigate to home feed
-    Navigator.pushNamed(context, AppRoutes.homeFeedScreen);
+    Navigator.pushNamed(
+      context,
+      AppRoutes.postDetailScreen,
+      arguments: {'postId': postId},
+    );
   }
 
   void _navigateToWallet(BuildContext context) {
-    // TODO: Add wallet/voucher screen
-    // For now, navigate to user profile
-    Navigator.pushNamed(context, AppRoutes.userProfileScreen);
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) return;
+
+    Navigator.pushNamed(
+      context,
+      AppRoutes.userVoucherScreen,
+      arguments: userId,
+    );
   }
 
   void _navigateToNotificationDetail(
@@ -489,7 +488,6 @@ class NotificationNavigationService {
               onPressed: () {
                 Navigator.pop(context);
                 // Handle action URL if needed
-                ProductionLogger.debug('Debug log', tag: 'AutoFix');
               },
               child: const Text('Xem chi tiết'),
             ),

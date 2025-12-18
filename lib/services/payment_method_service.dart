@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/payment_method.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class PaymentMethodService {
   static final PaymentMethodService _instance =
@@ -27,7 +27,6 @@ class PaymentMethodService {
           .map((data) => PaymentMethod.fromMap(data))
           .toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -46,7 +45,6 @@ class PaymentMethodService {
       if (response == null) return null;
       return PaymentMethod.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -58,9 +56,15 @@ class PaymentMethodService {
   ) async {
     try {
       final bytes = await imageFile.readAsBytes();
+      final ext = imageFile.name.split('.').last.toLowerCase();
+      final safeExt = (ext == 'png' || ext == 'jpg' || ext == 'jpeg') ? ext : 'png';
       final fileName =
-          'qr_${clubId}_${DateTime.now().millisecondsSinceEpoch}.png';
+          'qr_${clubId}_${DateTime.now().millisecondsSinceEpoch}.$safeExt';
       final path = 'payment_qr_codes/$clubId/$fileName';
+
+      // Determine content type
+      String contentType = 'image/png';
+      if (safeExt == 'jpg' || safeExt == 'jpeg') contentType = 'image/jpeg';
 
       // Upload to Supabase Storage
       await _supabase.storage
@@ -68,8 +72,8 @@ class PaymentMethodService {
           .uploadBinary(
             path,
             bytes,
-            fileOptions: const FileOptions(
-              contentType: 'image/png',
+            fileOptions: FileOptions(
+              contentType: contentType,
               upsert: true,
             ),
           );
@@ -79,7 +83,6 @@ class PaymentMethodService {
 
       return {'url': url, 'path': path};
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -128,7 +131,6 @@ class PaymentMethodService {
 
       return PaymentMethod.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -172,7 +174,6 @@ class PaymentMethodService {
 
       return PaymentMethod.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -215,7 +216,7 @@ class PaymentMethodService {
           try {
             await _supabase.storage.from('club_assets').remove([oldPath]);
           } catch (e) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
+            // Ignore error deleting old QR code
           }
         }
 
@@ -249,7 +250,6 @@ class PaymentMethodService {
 
       return PaymentMethod.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -271,7 +271,7 @@ class PaymentMethodService {
         try {
           await _supabase.storage.from('club_assets').remove([qrPath]);
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // Ignore error deleting QR code
         }
       }
 
@@ -284,7 +284,6 @@ class PaymentMethodService {
           })
           .eq('id', paymentMethodId);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -300,7 +299,6 @@ class PaymentMethodService {
       );
       return image;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -316,7 +314,6 @@ class PaymentMethodService {
       );
       return image;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -348,7 +345,6 @@ class PaymentMethodService {
 
       return TournamentPayment.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -368,7 +364,7 @@ class PaymentMethodService {
           .eq('id', paymentId)
           .single();
 
-      final userId = payment['user_id'] as String;
+      // final userId = payment['user_id'] as String;
       final tournamentId = payment['tournament_id'] as String;
 
       // Upload proof image
@@ -409,7 +405,6 @@ class PaymentMethodService {
 
       return TournamentPayment.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -433,7 +428,6 @@ class PaymentMethodService {
 
       return TournamentPayment.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -459,7 +453,6 @@ class PaymentMethodService {
 
       return TournamentPayment.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -478,7 +471,6 @@ class PaymentMethodService {
           .map((data) => TournamentPayment.fromMap(data))
           .toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -499,7 +491,6 @@ class PaymentMethodService {
       if (response == null) return null;
       return TournamentPayment.fromMap(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -517,7 +508,6 @@ class PaymentMethodService {
           .map((data) => TournamentPayment.fromMap(data))
           .toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }

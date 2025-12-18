@@ -14,7 +14,6 @@ import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX 
 // Safe debug print wrapper to avoid null debug service errors
 void _safeDebugPrint(String message) {
   try {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   } catch (e) {
     // Ignore debug service errors in production
     ProductionLogger.info(message, tag: 'match_management_tab');
@@ -97,9 +96,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       },
     );
     
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     if (filteredMatches.isNotEmpty) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     Map<String, dynamic> structure = {};
@@ -879,7 +876,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           
           // Debug log
           if (filtered.indexOf(m) == 0) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
           
           if (_selectedBracketGroup == 'CROSS') {
@@ -1975,7 +1971,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
   }
 
   void _enterScore(Map<String, dynamic> match) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Get player names using same logic as _buildCompactPlayerRow
     String player1Name = 'Player 1';
@@ -2093,7 +2088,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                     final p2Score = int.tryParse(player2Controller.text) ?? 0;
 
                     await _updateMatchScore(match, p1Score, p2Score);
-                    Navigator.of(context).pop();
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
                   },
                 ),
               ],
@@ -2117,26 +2114,20 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       // Determine winner based on scores
       if (player1Score > player2Score) {
         winnerId = match['player1_id'] ?? '';
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else if (player2Score > player1Score) {
         winnerId = match['player2_id'] ?? '';
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Validate winner_id
       if (winnerId.isEmpty && player1Score != player2Score) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Update in database (with silent caching)
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       try {
         // ⚡ CRITICAL FIX: Always update directly to database first
         // This ensures data is persisted before cache update
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         await Supabase.instance.client
             .from('matches')
@@ -2150,7 +2141,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
             })
             .eq('id', matchId);
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         // Then update cache to reflect database state
         try {
@@ -2162,13 +2152,11 @@ class _MatchManagementTabState extends State<MatchManagementTab>
             winnerId: winnerId.isEmpty ? null : winnerId,
             status: status,
           );
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } catch (cacheError) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           // Cache failure is non-critical since database is already updated
+          ProductionLogger.warning('Cache update failed', error: cacheError, tag: 'MatchManagement');
         }
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         rethrow; // Rethrow to show error to user
       }
 
@@ -2194,13 +2182,11 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         }
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // ✅ NEW: Call advancement service if match is completed with a winner
       if (status == 'completed' && winnerId.isNotEmpty) {
         try {
           // ✅ Use UnifiedBracketService for ALL formats
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           await UnifiedBracketService.instance.processMatchResult(
             matchId: matchId,
             winnerId: winnerId,
@@ -2209,9 +2195,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
               'player2': player2Score,
             },
           );
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } catch (advError) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          ProductionLogger.error('Advancement failed', error: advError, tag: 'MatchManagement');
         }
       }
       
@@ -2235,7 +2220,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         widget.onMatchScoreUpdated!();
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Show error to user
       if (mounted) {
@@ -2255,8 +2239,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
   Future<void> _checkAndCreateNextRound(Map<String, dynamic> completedMatch) async {
     try {
       final currentRound = completedMatch['round'] ?? completedMatch['round_number'] ?? 1;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // Get all matches for the current round
       final currentRoundMatches = await Supabase.instance.client
@@ -2265,7 +2247,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           .eq('tournament_id', widget.tournamentId)
           .eq('round_number', currentRound);
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // Get completed matches with winners (progressive creation)
       final completedMatches = currentRoundMatches
@@ -2283,7 +2264,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       final possibleNextMatches = availableWinners.length ~/ 2;
       
       if (possibleNextMatches == 0) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
       
@@ -2298,10 +2278,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       final maxPossibleNextMatches = currentRoundMatches.length ~/ 2;
       final existingCount = existingNextRoundMatches.length;
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       if (existingCount >= maxPossibleNextMatches) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
       
@@ -2309,11 +2287,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       final matchesToCreate = possibleNextMatches - existingCount;
       
       if (matchesToCreate <= 0) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // Create next round matches progressively
       final nextRoundMatches = <Map<String, dynamic>>[];
@@ -2337,11 +2313,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           
           final p1Short = availableWinners[i].length > 8 ? availableWinners[i].substring(0, 8) : availableWinners[i];
           final p2Short = availableWinners[i + 1].length > 8 ? availableWinners[i + 1].substring(0, 8) : availableWinners[i + 1];
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } else {
           // Odd number of winners - bye for the last player
           final playerShort = availableWinners[i].length > 8 ? availableWinners[i].substring(0, 8) : availableWinners[i];
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
       
@@ -2351,22 +2325,17 @@ class _MatchManagementTabState extends State<MatchManagementTab>
               .from('matches')
               .insert(nextRoundMatches);
           
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           
           // Refresh the matches list to show new round
           await _loadMatches();
           
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           rethrow;
         }
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
   */
@@ -2473,12 +2442,10 @@ class _MatchManagementTabState extends State<MatchManagementTab>
   }
 
   void _editCompletedMatch(Map<String, dynamic> match) {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   Future<void> _autoUpdateMatchStatus(String matchId, String newStatus) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Update in database
       await Supabase.instance.client
@@ -2496,9 +2463,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         }
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.error('Auto update match status failed', error: e, tag: 'MatchManagement');
     }
   }
 

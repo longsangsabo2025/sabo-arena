@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Utility class to launch external map applications
 class MapLauncher {
@@ -20,7 +21,6 @@ class MapLauncher {
       }
       return false;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -44,13 +44,17 @@ class MapLauncher {
       }
       return false;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
 
   /// Build platform-specific map URL
   static String _buildMapUrl(double lat, double lng, String? label) {
+    if (kIsWeb) {
+      // Google Maps URL (works on Android and web)
+      final query = label != null ? Uri.encodeComponent(label) : '';
+      return 'https://www.google.com/maps/search/?api=1&query=$lat,$lng&query_place_id=$query';
+    }
     if (Platform.isIOS) {
       // Apple Maps URL scheme
       final query = label != null ? Uri.encodeComponent(label) : '';
@@ -68,6 +72,10 @@ class MapLauncher {
     double destLng,
     String? label,
   ) {
+    if (kIsWeb) {
+      // Google Maps directions
+      return 'https://www.google.com/maps/dir/?api=1&destination=$destLat,$destLng&travelmode=driving';
+    }
     if (Platform.isIOS) {
       // Apple Maps directions
       return 'http://maps.apple.com/?daddr=$destLat,$destLng&dirflg=d';

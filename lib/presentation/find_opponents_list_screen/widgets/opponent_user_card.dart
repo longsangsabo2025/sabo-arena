@@ -4,18 +4,21 @@ import '../../../models/user_profile.dart';
 import '../../../services/user_service.dart';
 import '../../../utils/profile_navigation_utils.dart';
 import '../../../widgets/avatar_with_quick_follow.dart'; // Import FollowEventBroadcaster
+import '../../../widgets/user/user_widgets.dart';
 import '../../find_opponents_screen/widgets/modern_challenge_modal.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
 /// Facebook-style user card với Follow button và action buttons
 class OpponentUserCard extends StatefulWidget {
   final UserProfile user;
-  final VoidCallback onRefresh;
+  final VoidCallback? onRefresh; // 🚀 MUSK: Make optional to reduce coupling
+  final VoidCallback? onFollowChanged; // 🚀 MUSK: Better callback for follow status changes
 
   const OpponentUserCard({
     super.key,
     required this.user,
-    required this.onRefresh,
+    this.onRefresh,
+    this.onFollowChanged,
   });
 
   @override
@@ -34,8 +37,21 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
     _checkFollowStatus();
   }
 
+  /// 🚀 MUSK OPTIMIZATION: Smart follow status với caching
   Future<void> _checkFollowStatus() async {
     try {
+      // Check cache first to avoid redundant API calls
+      final cachedStatus = _userService.getCachedFollowStatus(widget.user.id);
+      if (cachedStatus != null) {
+        if (mounted) {
+          setState(() {
+            _isFollowing = cachedStatus;
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+      
       final isFollowing = await _userService.isFollowingUser(widget.user.id);
       if (mounted) {
         setState(() {
@@ -44,6 +60,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
         });
       }
     } catch (e) {
+      ProductionLogger.error('👥 Follow status check failed: $e', tag: 'opponent_card');
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -124,35 +141,75 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
       // ❌ REMOVED: widget.onRefresh();
       // ✅ Không reload page, chỉ update state local để tăng trải nghiệm
     } catch (e) {
+      ProductionLogger.error('👥 Follow toggle failed: $e', tag: 'opponent_card');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Có lỗi xảy ra: $e',
-                    style: TextStyle(fontFamily: _getSystemFont()),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red.shade700,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        );
+        _showErrorSnackbar('Không thể ${_isFollowing ? "bỏ theo dõi" : "theo dõi"} ${widget.user.displayName}');
       }
     } finally {
       if (mounted) {
         setState(() => _isProcessing = false);
       }
     }
+  }
+  
+  /// Show follow success snackbar
+  // void _showFollowSuccessSnackbar() {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Row(
+  //         children: [
+  //           const Icon(
+  //             Icons.check_circle,
+  //             color: Color(0xFF42B72A),
+  //             size: 20,
+  //           ),
+  //           const SizedBox(width: 8),
+  //           Text(
+  //             '✅ Đã theo dõi ${widget.user.displayName}',
+  //             style: TextStyle(fontFamily: _getSystemFont()),
+  //           ),
+  //         ],
+  //       ),
+  //       duration: const Duration(milliseconds: 2000),
+  //       behavior: SnackBarBehavior.floating,
+  //       backgroundColor: Colors.black87,
+  //       margin: const EdgeInsets.all(16),
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(8),
+  //       ),
+  //     ),
+  //   );
+  // }
+  
+  /// Show error snackbar với context-aware message
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(fontFamily: _getSystemFont()),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        action: SnackBarAction(
+          label: 'Thử lại',
+          textColor: Colors.white,
+          onPressed: _toggleFollow,
+        ),
+      ),
+    );
   }
 
   @override
@@ -208,7 +265,10 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
                       // Rank & Stats
                       Row(
                         children: [
-                          _buildRankBadge(),
+                          UserRankBadgeWidget(
+                            rankCode: widget.user.rank,
+                            style: RankBadgeStyle.compact,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             '${widget.user.totalWins}W - ${widget.user.totalLosses}L',
@@ -235,15 +295,10 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
                               color: const Color(0xFF65676B),
                             ),
                           ),
-                          // TODO: Re-enable when distance feature is implemented
-                          // if (widget.user.distance != null) ...[
-                          //   const SizedBox(width: 12),
-                          //   const Icon(Icons.location_on, size: 14, color: Color(0xFF65676B)),
-                          //   const SizedBox(width: 4),
-                          //   Text(
-                          //     '${widget.user.distance!.toStringAsFixed(1)} km',
-                          //     style: TextStyle(
-                          //       fontFamily: _getSystemFont(),
+                          
+                          // 🚀 MUSK: Smart distance/activity indicator
+                          const SizedBox(width: 12),
+                          _buildActivityIndicator(),
                           //       fontSize: 13,
                           //       color: const Color(0xFF65676B),
                           //     ),
@@ -305,21 +360,10 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFFCED0D4), width: 2),
             ),
-            child: ClipOval(
-              child: widget.user.avatarUrl != null && widget.user.avatarUrl!.isNotEmpty
-                  ? Image.network(
-                      widget.user.avatarUrl!,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return _buildDefaultAvatar();
-                      },
-                      errorBuilder: (_, __, ___) {
-                        ProductionLogger.info('🖼️ Failed to load avatar: ${widget.user.avatarUrl}', tag: 'opponent_user_card');
-                        return _buildDefaultAvatar();
-                      },
-                    )
-                  : _buildDefaultAvatar(),
+            child: UserAvatarWidget(
+              avatarUrl: widget.user.avatarUrl,
+              userName: widget.user.displayName,
+              size: 76, // Slightly smaller than container (80-4 for border)
             ),
           ),
         ),
@@ -389,85 +433,116 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
     );
   }
 
-  Widget _buildDefaultAvatar() {
-    // Tạo avatar từ chữ cái đầu của tên
-    String initials = _getInitials(widget.user.displayName);
-    Color backgroundColor = _getAvatarColor(widget.user.displayName);
+  // Widget _buildDefaultAvatar() {
+  //   // Tạo avatar từ chữ cái đầu của tên
+  //   String initials = _getInitials(widget.user.displayName);
+  //   Color backgroundColor = _getAvatarColor(widget.user.displayName);
+  //   
+  //   return Container(
+  //     color: backgroundColor,
+  //     child: Center(
+  //       child: Text(
+  //         initials,
+  //         style: const TextStyle(
+  //           fontSize: 28,
+  //           fontWeight: FontWeight.w600,
+  //           color: Colors.white,
+  //           letterSpacing: -0.5,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  
+  // String _getInitials(String name) {
+  //   List<String> nameParts = name.trim().split(' ');
+  //   if (nameParts.length >= 2) {
+  //     return '${nameParts[0][0].toUpperCase()}${nameParts[1][0].toUpperCase()}';
+  //   } else if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
+  //     return nameParts[0][0].toUpperCase();
+  //   }
+  //   return '?';
+  // }
+  
+  // Color _getAvatarColor(String name) {
+  //   // Tạo màu consistent dựa trên tên
+  //   final colors = [
+  //     const Color(0xFF1877F2), // Facebook Blue
+  //     const Color(0xFF42B883), // Green
+  //     const Color(0xFFE1306C), // Instagram Pink  
+  //     const Color(0xFF1DA1F2), // Twitter Blue
+  //     const Color(0xFFFF6B6B), // Coral Red
+  //     const Color(0xFF4ECDC4), // Turquoise
+  //     const Color(0xFF45B7D1), // Sky Blue
+  //     const Color(0xFF96CEB4), // Mint Green
+  //     const Color(0xFFFECEB7), // Peach
+  //     const Color(0xFFE17055), // Orange Red
+  //   ];
     
-    return Container(
-      color: backgroundColor,
-      child: Center(
-        child: Text(
-          initials,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-            letterSpacing: -0.5,
+  //   int hash = name.hashCode.abs();
+  //   return colors[hash % colors.length];
+  // }
+
+  /// 🚀 MUSK: Smart activity indicator
+  Widget _buildActivityIndicator() {
+    final lastSeen = DateTime.now().difference(widget.user.updatedAt).inDays;
+    
+    if (lastSeen == 0) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
+              color: Color(0xFF42B72A),
+              shape: BoxShape.circle,
+            ),
           ),
-        ),
-      ),
-    );
-  }
-  
-  String _getInitials(String name) {
-    List<String> nameParts = name.trim().split(' ');
-    if (nameParts.length >= 2) {
-      return '${nameParts[0][0].toUpperCase()}${nameParts[1][0].toUpperCase()}';
-    } else if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
-      return nameParts[0][0].toUpperCase();
-    }
-    return '?';
-  }
-  
-  Color _getAvatarColor(String name) {
-    // Tạo màu consistent dựa trên tên
-    final colors = [
-      const Color(0xFF1877F2), // Facebook Blue
-      const Color(0xFF42B883), // Green
-      const Color(0xFFE1306C), // Instagram Pink  
-      const Color(0xFF1DA1F2), // Twitter Blue
-      const Color(0xFFFF6B6B), // Coral Red
-      const Color(0xFF4ECDC4), // Turquoise
-      const Color(0xFF45B7D1), // Sky Blue
-      const Color(0xFF96CEB4), // Mint Green
-      const Color(0xFFFECEB7), // Peach
-      const Color(0xFFE17055), // Orange Red
-    ];
-    
-    int hash = name.hashCode.abs();
-    return colors[hash % colors.length];
-  }
-
-  Widget _buildRankBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: _getRankColor().withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        widget.user.rank ?? 'Chưa xếp hạng',
-        style: TextStyle(
-          fontFamily: _getSystemFont(),
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: _getRankColor(),
-        ),
-      ),
-    );
-  }
-
-  Color _getRankColor() {
-    switch (widget.user.rank) {
-      case 'Cao cấp':
-        return const Color(0xFFD32F2F);
-      case 'Trung cấp':
-        return const Color(0xFFFF9800);
-      case 'Sơ cấp':
-        return const Color(0xFF4CAF50);
-      default:
-        return const Color(0xFF65676B);
+          const SizedBox(width: 4),
+          Text(
+            'Hoạt động',
+            style: TextStyle(
+              fontFamily: _getSystemFont(),
+              fontSize: 11,
+              color: const Color(0xFF42B72A),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      );
+    } else if (lastSeen <= 7) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.access_time, size: 12, color: Color(0xFFFF9800)),
+          const SizedBox(width: 4),
+          Text(
+            '$lastSeen ngày trước',
+            style: TextStyle(
+              fontFamily: _getSystemFont(),
+              fontSize: 11,
+              color: const Color(0xFFFF9800),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.schedule, size: 12, color: Color(0xFF9E9E9E)),
+          const SizedBox(width: 4),
+          Text(
+            'Lâu rồi',
+            style: TextStyle(
+              fontFamily: _getSystemFont(),
+              fontSize: 11,
+              color: const Color(0xFF9E9E9E),
+            ),
+          ),
+        ],
+      );
     }
   }
 
@@ -522,7 +597,10 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
         },
         challengeType: challengeType,
       ),
-    ).then((_) => widget.onRefresh());
+    ).then((_) {
+      // 🚀 MUSK: Smart callback - only refresh if really needed
+      widget.onRefresh?.call(); // Make onRefresh optional
+    });
   }
 
   String _getSystemFont() {

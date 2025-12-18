@@ -3,102 +3,8 @@ import 'user_stats_update_service.dart';
 import '../core/error_handling/standardized_error_handler.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
-class Match {
-  final String id;
-  final String tournamentId;
-  final String? player1Id;
-  final String? player2Id;
-  final String? winnerId;
-  final int player1Score;
-  final int player2Score;
-  final int roundNumber;
-  final int matchNumber;
-  final String status;
-  final DateTime? scheduledTime;
-  final DateTime? startTime;
-  final DateTime? endTime;
-  final String? notes;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
-  // Additional fields from joins
-  final String? player1Name;
-  final String? player2Name;
-  final String? player1Rank;
-  final String? player2Rank;
-  final String? player1Avatar;
-  final String? player2Avatar;
-  final String? winnerName;
-  final String? tournamentTitle;
-
-  const Match({
-    required this.id,
-    required this.tournamentId,
-    this.player1Id,
-    this.player2Id,
-    this.winnerId,
-    required this.player1Score,
-    required this.player2Score,
-    required this.roundNumber,
-    required this.matchNumber,
-    required this.status,
-    this.scheduledTime,
-    this.startTime,
-    this.endTime,
-    this.notes,
-    required this.createdAt,
-    required this.updatedAt,
-    this.player1Name,
-    this.player2Name,
-    this.player1Rank,
-    this.player2Rank,
-    this.player1Avatar,
-    this.player2Avatar,
-    this.winnerName,
-    this.tournamentTitle,
-  });
-
-  factory Match.fromJson(Map<String, dynamic> json) {
-    return Match(
-      id: json['id'] ?? '',
-      tournamentId: json['tournament_id'] ?? '',
-      player1Id: json['player1_id'],
-      player2Id: json['player2_id'],
-      winnerId: json['winner_id'],
-      player1Score: json['player1_score'] ?? 0,
-      player2Score: json['player2_score'] ?? 0,
-      roundNumber: json['round_number'] ?? 1,
-      matchNumber: json['match_number'] ?? 1,
-      status: json['status'] ?? 'pending',
-      scheduledTime:
-          json['scheduled_at'] !=
-              null // Fixed: scheduled_time -> scheduled_at
-          ? DateTime.parse(json['scheduled_at'])
-          : null,
-      startTime:
-          json['started_at'] !=
-              null // Fixed: start_time -> started_at
-          ? DateTime.parse(json['started_at'])
-          : null,
-      endTime:
-          json['completed_at'] !=
-              null // Fixed: end_time -> completed_at
-          ? DateTime.parse(json['completed_at'])
-          : null,
-      notes: json['notes'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      player1Name: json['player1']?['display_name'] ?? json['player1']?['full_name'],
-      player2Name: json['player2']?['display_name'] ?? json['player2']?['full_name'],
-      player1Rank: json['player1']?['rank'],
-      player2Rank: json['player2']?['rank'],
-      player1Avatar: json['player1']?['avatar_url'],
-      player2Avatar: json['player2']?['avatar_url'],
-      winnerName: json['winner']?['display_name'] ?? json['winner']?['full_name'],
-      tournamentTitle: json['tournament']?['title'],
-    );
-  }
-}
+import 'package:sabo_arena/models/match.dart';
+export 'package:sabo_arena/models/match.dart';
 
 class MatchService {
   static MatchService? _instance;
@@ -146,7 +52,7 @@ class MatchService {
             player1:users!matches_player1_id_fkey (display_name, full_name),
             player2:users!matches_player2_id_fkey (display_name, full_name),
             winner:users!matches_winner_id_fkey (display_name, full_name),
-            tournament:tournaments (title)
+            tournament:tournaments (title, club_id)
           ''')
           .eq('tournament_id', tournamentId)
           .order('round_number')
@@ -175,7 +81,7 @@ class MatchService {
             player1:users!matches_player1_id_fkey (id, display_name, full_name, avatar_url, rank),
             player2:users!matches_player2_id_fkey (id, display_name, full_name, avatar_url, rank),
             winner:users!matches_winner_id_fkey (display_name, full_name),
-            tournament:tournaments (title)
+            tournament:tournaments (title, club_id)
           ''')
           .or('player1_id.eq.$userId,player2_id.eq.$userId')
           .order('created_at', ascending: false)
@@ -204,7 +110,7 @@ class MatchService {
             player1:users!matches_player1_id_fkey (display_name, full_name),
             player2:users!matches_player2_id_fkey (display_name, full_name),
             winner:users!matches_winner_id_fkey (display_name, full_name),
-            tournament:tournaments (title)
+            tournament:tournaments (title, club_id)
           ''')
           .eq('status', 'in_progress')
           .order('start_time', ascending: false)
@@ -233,7 +139,7 @@ class MatchService {
             player1:users!matches_player1_id_fkey (display_name, full_name),
             player2:users!matches_player2_id_fkey (display_name, full_name),
             winner:users!matches_winner_id_fkey (display_name, full_name),
-            tournament:tournaments (title)
+            tournament:tournaments (title, club_id)
           ''')
           .eq(
             'status',

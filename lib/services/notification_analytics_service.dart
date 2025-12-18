@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/notification_models.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+// ELON_MODE_AUTO_FIX
 
 /// Advanced analytics service for notification system monitoring
 class NotificationAnalyticsService {
@@ -63,7 +64,6 @@ class NotificationAnalyticsService {
         periodEnd: end,
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return NotificationAnalytics.empty();
     }
   }
@@ -105,7 +105,6 @@ class NotificationAnalyticsService {
         peakHours: await _getPeakHoursForType(type, start, end),
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return NotificationTypeAnalytics.empty(type);
     }
   }
@@ -127,7 +126,7 @@ class NotificationAnalyticsService {
         'metadata': metadata,
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.warning('Failed to track notification sent', error: e, tag: 'NotificationAnalyticsService');
     }
   }
 
@@ -140,7 +139,7 @@ class NotificationAnalyticsService {
         'timestamp': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.warning('Failed to track notification read', error: e, tag: 'NotificationAnalyticsService');
     }
   }
 
@@ -158,7 +157,7 @@ class NotificationAnalyticsService {
         'metadata': {'action_id': actionId, ...?metadata},
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.warning('Failed to track notification click', error: e, tag: 'NotificationAnalyticsService');
     }
   }
 
@@ -185,7 +184,6 @@ class NotificationAnalyticsService {
         'current_hour_activity': metrics['current_hour_activity'] ?? 0,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }
@@ -206,7 +204,6 @@ class NotificationAnalyticsService {
       );
       return response as Map<String, dynamic>;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }
@@ -231,7 +228,6 @@ class NotificationAnalyticsService {
       }
       return rates;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }
@@ -251,7 +247,6 @@ class NotificationAnalyticsService {
 
       return UserEngagementMetrics.fromJson(response as Map<String, dynamic>);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return UserEngagementMetrics.empty();
     }
   }
@@ -273,7 +268,6 @@ class NotificationAnalyticsService {
           .map((item) => HourlyActivity.fromJson(item as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -292,7 +286,6 @@ class NotificationAnalyticsService {
           .map((item) => DailyTrend.fromJson(item as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -315,7 +308,6 @@ class NotificationAnalyticsService {
       final minutes = (response as num).toDouble();
       return Duration(minutes: minutes.round());
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return const Duration(minutes: 0);
     }
   }
@@ -337,7 +329,6 @@ class NotificationAnalyticsService {
 
       return (response as List<dynamic>).cast<int>();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }

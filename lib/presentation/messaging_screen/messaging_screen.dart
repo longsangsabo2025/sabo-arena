@@ -156,11 +156,14 @@ class _MessagingScreenState extends State<MessagingScreen> {
         'message_type': 'text',
       });
 
+      if (!mounted) return;
       _scrollToBottom();
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Lỗi gửi tin nhắn: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi gửi tin nhắn: $e')));
+      }
     }
   }
 
@@ -190,6 +193,8 @@ class _MessagingScreenState extends State<MessagingScreen> {
         ],
       ),
     );
+
+    if (!mounted) return;
 
     if (result != null && result.isNotEmpty) {
       try {

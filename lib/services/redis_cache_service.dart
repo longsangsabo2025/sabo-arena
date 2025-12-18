@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'circuit_breaker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Redis Cache Service with Circuit Breaker and Fallback
 /// Server-side caching layer for frequently accessed data
@@ -42,7 +42,6 @@ class RedisCacheService {
   void initialize({String? redisEndpoint}) {
     _redisEndpoint = redisEndpoint;
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -54,7 +53,6 @@ class RedisCacheService {
         final cached = await _get(cacheKey);
         if (cached != null) {
           if (kDebugMode) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
           return jsonDecode(cached) as Map<String, dynamic>;
         }
@@ -63,7 +61,6 @@ class RedisCacheService {
       fallback: () async {
         // Fallback to database if Redis fails
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
         try {
           final response = await _supabase
@@ -74,7 +71,6 @@ class RedisCacheService {
           return response as Map<String, dynamic>?;
         } catch (e) {
           if (kDebugMode) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
           return null;
         }
@@ -97,11 +93,9 @@ class RedisCacheService {
         ttl ?? _defaultTournamentTTL,
       );
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -112,11 +106,9 @@ class RedisCacheService {
       final cacheKey = 'tournament:$tournamentId';
       await _delete(cacheKey);
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -128,14 +120,12 @@ class RedisCacheService {
       final cached = await _get(cacheKey);
       if (cached != null) {
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
         return jsonDecode(cached) as Map<String, dynamic>;
       }
       return null;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }
@@ -157,7 +147,6 @@ class RedisCacheService {
       );
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -169,7 +158,6 @@ class RedisCacheService {
       await _delete(cacheKey);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -204,7 +192,6 @@ class RedisCacheService {
       );
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -216,7 +203,6 @@ class RedisCacheService {
       await _delete(cacheKey);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -254,7 +240,6 @@ class RedisCacheService {
       );
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -266,7 +251,6 @@ class RedisCacheService {
       await _delete(cacheKey);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -285,7 +269,6 @@ class RedisCacheService {
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -309,7 +292,6 @@ class RedisCacheService {
       return null;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }
@@ -333,7 +315,6 @@ class RedisCacheService {
       );
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -349,7 +330,6 @@ class RedisCacheService {
       );
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }

@@ -19,6 +19,8 @@ class EnhancedScheduleStep extends StatefulWidget {
 
 class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
   final _venueController = TextEditingController();
+  final _contactNameController = TextEditingController();
+  final _contactPhoneController = TextEditingController();
 
   // Form validation
   final Map<String, String> _errors = {};
@@ -32,13 +34,34 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
   }
 
   @override
+  void didUpdateWidget(EnhancedScheduleStep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.data != oldWidget.data) {
+      // Only update if controllers are empty (don't overwrite user input)
+      if (_venueController.text.isEmpty && widget.data['venue'] != null) {
+        _venueController.text = widget.data['venue'];
+      }
+      if (_contactNameController.text.isEmpty && widget.data['venueContact'] != null) {
+        _contactNameController.text = widget.data['venueContact'];
+      }
+      if (_contactPhoneController.text.isEmpty && widget.data['venuePhone'] != null) {
+        _contactPhoneController.text = widget.data['venuePhone'];
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _venueController.dispose();
+    _contactNameController.dispose();
+    _contactPhoneController.dispose();
     super.dispose();
   }
 
   void _initializeFromData() {
     _venueController.text = widget.data['venue'] ?? '';
+    _contactNameController.text = widget.data['venueContact'] ?? '';
+    _contactPhoneController.text = widget.data['venuePhone'] ?? '';
   }
 
   void _validateAndUpdate() {
@@ -47,6 +70,8 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
     _successes.clear();
 
     final venue = _venueController.text.trim();
+    final contactName = _contactNameController.text.trim();
+    final contactPhone = _contactPhoneController.text.trim();
     final regStartDate = widget.data['registrationStartDate'] as DateTime?;
     final regEndDate = widget.data['registrationEndDate'] as DateTime?;
     final tournamentStartDate = widget.data['tournamentStartDate'] as DateTime?;
@@ -59,6 +84,11 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
       _warnings['Địa điểm'] = 'Nên có thông tin địa điểm chi tiết hơn';
     } else {
       _successes['Địa điểm'] = 'Địa điểm hợp lệ';
+    }
+
+    // Contact validation (Optional but recommended)
+    if (contactPhone.isNotEmpty && contactPhone.length < 10) {
+      _warnings['Liên hệ'] = 'Số điện thoại có vẻ không đúng';
     }
 
     // Date validation
@@ -94,7 +124,11 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
     }
 
     // Update data
-    widget.onDataChanged({'venue': venue});
+    widget.onDataChanged({
+      'venue': venue,
+      'venueContact': contactName,
+      'venuePhone': contactPhone,
+    });
 
     setState(() {});
   }
@@ -158,6 +192,41 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
                       _venueController.text = value;
                       _validateAndUpdate();
                     },
+                  ),
+
+                  SizedBox(height: 24.h),
+
+                  // Contact Info
+                  Text(
+                    'Thông tin liên hệ (Tại địa điểm)',
+                    style: TextStyle(
+                      fontSize: 16.h,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: EnhancedFormField(
+                          label: 'Người liên hệ',
+                          controller: _contactNameController,
+                          prefixIcon: Icons.person_outline,
+                          onChanged: (_) => _validateAndUpdate(),
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: EnhancedFormField(
+                          label: 'Số điện thoại',
+                          controller: _contactPhoneController,
+                          prefixIcon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                          onChanged: (_) => _validateAndUpdate(),
+                        ),
+                      ),
+                    ],
                   ),
 
                   SizedBox(height: 24.h),
@@ -445,6 +514,8 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 365)),
     );
+
+    if (!mounted) return;
 
     if (date != null) {
       final time = await showTimePicker(

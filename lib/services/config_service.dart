@@ -142,10 +142,9 @@ class ConfigService {
 
     try {
       final response = await _supabase
-          .from('ranking_definitions')
+          .from('rank_system')
           .select('*')
-          .eq('is_active', true)
-          .order('min_elo');
+          .order('rank_order');
 
       final definitions = response
           .map<RankingDefinition>((json) => RankingDefinition.fromJson(json))
@@ -567,16 +566,16 @@ class RankingDefinition {
 
   factory RankingDefinition.fromJson(Map<String, dynamic> json) {
     return RankingDefinition(
-      id: json['id'],
-      rankCode: json['rank_code'],
-      rankName: json['rank_name'],
-      rankNameVi: json['rank_name_vi'],
-      minElo: json['min_elo'],
-      maxElo: json['max_elo'],
-      colorHex: json['color_hex'],
-      iconCode: json['icon_code'],
-      displayOrder: json['display_order'] ?? 0,
-      isActive: json['is_active'] ?? true,
+      id: json['id'] ?? '',
+      rankCode: json['rank_code'] ?? '',
+      rankName: json['rank_name'] ?? '',
+      rankNameVi: json['rank_name_vi'] ?? '',
+      minElo: json['elo_min'] ?? 0,
+      maxElo: json['elo_max'] ?? 0,
+      colorHex: json['rank_color'] ?? '#808080',
+      iconCode: json['rank_code'] ?? '',
+      displayOrder: json['rank_order'] ?? 0,
+      isActive: true,
     );
   }
 
@@ -586,12 +585,10 @@ class RankingDefinition {
       'rank_code': rankCode,
       'rank_name': rankName,
       'rank_name_vi': rankNameVi,
-      'min_elo': minElo,
-      'max_elo': maxElo,
-      'color_hex': colorHex,
-      'icon_code': iconCode,
-      'display_order': displayOrder,
-      'is_active': isActive,
+      'elo_min': minElo,
+      'elo_max': maxElo,
+      'rank_color': colorHex,
+      'rank_order': displayOrder,
     };
   }
 }

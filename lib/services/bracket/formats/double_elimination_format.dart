@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// 🏆 Hardcoded Double Elimination 16 Service
 /// ✅ CORRECT STRUCTURE with standardized bracket metadata
@@ -24,9 +24,6 @@ class HardcodedDoubleEliminationService {
     required List<String> participantIds,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (participantIds.length != 16) {
         throw Exception('DE16 requires exactly 16 participants');
@@ -34,7 +31,6 @@ class HardcodedDoubleEliminationService {
 
       // Generate advancement map
       final advancementMap = _calculateAdvancementMap();
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Generate all matches with advancement info
       final allMatches = <Map<String, dynamic>>[];
@@ -345,10 +341,8 @@ class HardcodedDoubleEliminationService {
       //   - Both players advance to bracket reset match
 
       // Save matches to database
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       await _supabase.from('matches').insert(allMatches);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': true,
         'matches_count': allMatches.length,
@@ -356,7 +350,6 @@ class HardcodedDoubleEliminationService {
         'advancement_mappings': advancementMap.length,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'success': false, 'error': e.toString()};
     }
   }

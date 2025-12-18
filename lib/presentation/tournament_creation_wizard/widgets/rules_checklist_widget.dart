@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sabo_arena/utils/size_extensions.dart';
 import 'package:sabo_arena/theme/theme_extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Rules checklist with common tournament rules
 class RulesChecklistWidget extends StatefulWidget {
@@ -182,7 +182,7 @@ class _RulesChecklistWidgetState extends State<RulesChecklistWidget> {
         });
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -217,7 +217,7 @@ class _RulesChecklistWidgetState extends State<RulesChecklistWidget> {
         );
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -385,7 +385,7 @@ class _RulesChecklistWidgetState extends State<RulesChecklistWidget> {
             '${rules.where((r) => _selectedRules.contains(r.id)).length}/${rules.length} đã chọn',
             style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
-          children: rules.map((rule) => _buildRuleItem(rule)).toList(),
+          children: rules.map<Widget>((rule) => _buildRuleItem(rule)).toList(),
         ),
       ),
     );

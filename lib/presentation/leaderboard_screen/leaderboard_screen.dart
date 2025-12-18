@@ -9,7 +9,7 @@ import '../../widgets/user/user_widgets.dart';
 import '../../core/design_system/design_system.dart';
 import '../../widgets/error_state_widget.dart';
 import '../../widgets/empty_state_widget.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -78,7 +78,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
         _currentUser = user;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -117,7 +117,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Fallback to mock data for development
       _loadMockData();
@@ -777,7 +776,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
         totalPlayers: _leaderboardData.length,
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Không thể chia sẻ: $e')),

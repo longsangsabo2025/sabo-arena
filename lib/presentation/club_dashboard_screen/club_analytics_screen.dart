@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
 import '../../services/club_analytics_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 import 'dart:math' as math;
 
 /// Club owner analytics dashboard
@@ -45,7 +45,6 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }

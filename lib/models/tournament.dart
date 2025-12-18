@@ -51,6 +51,7 @@ class Tournament {
   final String? clubName;
   final String? clubLogo;
   final String? clubAddress;
+  final String? clubOwnerId;
 
   const Tournament({
     required this.id,
@@ -97,6 +98,7 @@ class Tournament {
     this.clubName,
     this.clubLogo,
     this.clubAddress,
+    this.clubOwnerId,
   });
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
@@ -155,6 +157,7 @@ class Tournament {
       clubName: json['clubs']?['name'],
       clubLogo: json['clubs']?['logo_url'],
       clubAddress: json['clubs']?['address'],
+      clubOwnerId: json['clubs']?['owner_id'],
     );
   }
 
@@ -306,5 +309,31 @@ class Tournament {
   double get participationRate {
     if (maxParticipants == 0) return 0.0;
     return (currentParticipants / maxParticipants) * 100;
+  }
+
+  // Helper getters for UI (Elon Musk Audit)
+  String get iconNumber {
+    final formatLower = format.toLowerCase();
+    if (formatLower.contains('8')) return '8';
+    if (formatLower.contains('10')) return '10';
+    return '9'; // Default
+  }
+
+  int get mangCount {
+    final typeLower = tournamentType.toLowerCase();
+    if (typeLower.contains('double') || typeLower.contains('de')) return 2;
+    if (typeLower.contains('single') || typeLower.contains('se')) return 1;
+    return 0; // Others (Round Robin, Swiss, etc.)
+  }
+
+  String get rankRange {
+    if (minRank != null && maxRank != null) {
+      return '$minRank → $maxRank';
+    } else if (minRank != null) {
+      return '$minRank+';
+    } else if (maxRank != null) {
+      return '≤ $maxRank';
+    }
+    return 'All Ranks';
   }
 }

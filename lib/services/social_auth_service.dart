@@ -46,7 +46,8 @@ class SocialAuthService {
       case 'facebook':
         return true; // Supported on all platforms when properly configured
       case 'apple':
-        return !kIsWeb && (Platform.isIOS || Platform.isMacOS);
+        if (kIsWeb) return false;
+        return Platform.isIOS || Platform.isMacOS;
       default:
         return false;
     }

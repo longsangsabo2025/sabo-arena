@@ -2,6 +2,13 @@
 
 *Tổng hợp toàn bộ thông tin về database schema, migrations, RLS policies*
 
+> **⚠️ CRITICAL WARNING (ELON PROTOCOL):**
+> **DO NOT TRUST STATIC MARKDOWN FILES FOR SCHEMA INFORMATION.**
+> The only source of truth is the **LIVE DATABASE**.
+>
+> Always run: `dart scripts/get_live_table_count.dart` to get the current state.
+> Refer to `LIVE_SCHEMA_SNAPSHOT.md` for the latest verified snapshot.
+
 ---
 
 ## 📁 Structure
@@ -9,6 +16,8 @@
 ```
 _DATABASE_INFO/
 ├── 00_DATABASE_GUIDE.md          (This file)
+├── LIVE_SCHEMA_SNAPSHOT.md       (✅ TRUTH: Live Schema from Supabase)
+├── ARCHIVE_DEPRECATED/           (🗑️ OLD: Outdated reports - DO NOT USE)
 ├── 01_SCHEMA/                    (Table definitions, schema files)
 ├── 02_MIGRATIONS/                (Migration scripts)
 ├── 03_RLS_POLICIES/              (Row Level Security policies)

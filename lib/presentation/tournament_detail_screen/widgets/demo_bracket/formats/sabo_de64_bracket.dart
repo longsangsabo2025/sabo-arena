@@ -76,7 +76,7 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
   }
 
   // Get matches by bracket type within a group
-  List<Map<String, dynamic>> _getMatchesByTypeInGroup(
+  /* List<Map<String, dynamic>> _getMatchesByTypeInGroup(
     String group,
     String type,
   ) {
@@ -94,7 +94,7 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
     }).toList();
 
     return filtered;
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -566,7 +566,7 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
     );
   }
 
-  Widget _buildBracketSection(
+  /* Widget _buildBracketSection(
     String title,
     List<Map<String, dynamic>> matches,
     Color color,
@@ -648,6 +648,9 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
     final player1Name = player1?['display_name'] as String? ?? 
                         player1?['full_name'] as String? ?? 
                         player1?['username'] as String? ?? 'TBD';
+    // ... (rest of the method)
+    return Container(); // Placeholder for commented out code
+  }
     final player2Name = player2?['display_name'] as String? ?? 
                         player2?['full_name'] as String? ?? 
                         player2?['username'] as String? ?? 'TBD';
@@ -730,16 +733,16 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
     switch (status.toLowerCase()) {
       case 'completed':
         badgeColor = Colors.green;
-        badgeText = 'Done';
+        badgeText = 'Hoàn thành';
         break;
       case 'in_progress':
         badgeColor = Colors.blue;
-        badgeText = 'Live';
+        badgeText = 'Đang đấu';
         break;
       case 'pending':
       default:
         badgeColor = Colors.grey;
-        badgeText = 'Pending';
+        badgeText = 'Chờ đấu';
         break;
     }
 
@@ -759,5 +762,5 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
         ),
       ),
     );
-  }
+  } */
 }

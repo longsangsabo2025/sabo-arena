@@ -4,7 +4,7 @@ import '../models/user_profile.dart';
 import '../models/admin_user_view.dart';
 import '../models/voucher_campaign.dart';
 import 'auto_notification_hooks.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class AdminService {
   static AdminService? _instance;
@@ -36,7 +36,7 @@ class AdminService {
 
       return response.map<Club>((json) => Club.fromJson(json)).toList();
     } catch (error) {
-      throw Exception('Failed to get pending clubs: $error');
+      throw Exception('Lỗi khi lấy danh sách CLB chờ duyệt: $error');
     }
   }
 
@@ -68,14 +68,12 @@ class AdminService {
 
       return (response as List).map<Club>((json) {
         if (json is! Map<String, dynamic>) {
-          throw Exception('Invalid club data type: ${json.runtimeType}');
+          throw Exception('Dữ liệu CLB không hợp lệ: ${json.runtimeType}');
         }
         return Club.fromJson(json);
       }).toList();
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      throw Exception('Failed to get clubs for admin: $error');
+      throw Exception('Lỗi khi lấy danh sách CLB cho quản trị viên: $error');
     }
   }
 
@@ -83,7 +81,7 @@ class AdminService {
   Future<Club> approveClub(String clubId, {String? adminNotes}) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('Admin not authenticated');
+      if (user == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       // First, get the club to find the owner_id
       final clubData = await _supabase
@@ -94,7 +92,7 @@ class AdminService {
 
       final ownerId = clubData['owner_id'];
       if (ownerId == null) {
-        throw Exception('Club owner not found');
+        throw Exception('Không tìm thấy chủ câu lạc bộ');
       }
 
       // Update club status and activate it
@@ -125,13 +123,10 @@ class AdminService {
 
       if (userUpdateResponse == null) {
         throw Exception(
-          'Failed to update user role - user not found: $ownerId',
+          'Lỗi cập nhật vai trò người dùng - không tìm thấy người dùng: $ownerId',
         );
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Create or update club_members record with owner role
       try {
@@ -156,7 +151,6 @@ class AdminService {
               .eq('user_id', ownerId)
               .select()
               .single();
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } else {
           // Create new record
           await _supabase
@@ -170,10 +164,8 @@ class AdminService {
               })
               .select()
               .single();
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       } catch (memberError) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         // Don't throw - this is not critical if user role was updated
       }
 
@@ -190,11 +182,6 @@ class AdminService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final club = Club.fromJson(clubResponse);
 
@@ -208,8 +195,7 @@ class AdminService {
 
       return club;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      throw Exception('Failed to approve club: $error');
+      throw Exception('Lỗi phê duyệt câu lạc bộ: $error');
     }
   }
 
@@ -221,7 +207,7 @@ class AdminService {
   }) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('Admin not authenticated');
+      if (user == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       // Get club data first (owner_id and name)
       final clubData = await _supabase
@@ -264,7 +250,7 @@ class AdminService {
 
       return club;
     } catch (error) {
-      throw Exception('Failed to reject club: $error');
+      throw Exception('Lỗi từ chối câu lạc bộ: $error');
     }
   }
 
@@ -318,7 +304,7 @@ class AdminService {
         'matches': {'completed': matchesCount},
       };
     } catch (error) {
-      throw Exception('Failed to get admin stats: $error');
+      throw Exception('Lỗi lấy thống kê quản trị: $error');
     }
   }
 
@@ -361,7 +347,7 @@ class AdminService {
 
       return activities.take(limit).toList();
     } catch (error) {
-      throw Exception('Failed to get recent activities: $error');
+      throw Exception('Lỗi lấy hoạt động gần đây: $error');
     }
   }
 
@@ -376,15 +362,12 @@ class AdminService {
   ) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('Admin not authenticated');
+      if (user == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       // Check if user is admin
       final isAdmin = await isCurrentUserAdmin();
-      if (!isAdmin) throw Exception('Only admins can perform this action');
+      if (!isAdmin) throw Exception('Chỉ quản trị viên mới có quyền thực hiện hành động này');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Call RPC function instead of direct table operations
       final result = await _supabase.rpc(
@@ -392,8 +375,6 @@ class AdminService {
         params: {'p_tournament_id': tournamentId},
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // The RPC function returns a JSON object with all necessary information
       if (result is Map<String, dynamic>) {
@@ -403,14 +384,12 @@ class AdminService {
         return {
           'success': true,
           'tournament_id': tournamentId,
-          'message': 'Users added successfully via RPC',
+          'message': 'Đã thêm người dùng thành công qua RPC',
           'raw_result': result,
         };
       }
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      throw Exception('Failed to add all users to tournament: $error');
+      throw Exception('Lỗi thêm tất cả người dùng vào giải đấu: $error');
     }
   }
 
@@ -421,15 +400,12 @@ class AdminService {
   ) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('Admin not authenticated');
+      if (user == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       // Check if user is admin
       final isAdmin = await isCurrentUserAdmin();
-      if (!isAdmin) throw Exception('Only admins can perform this action');
+      if (!isAdmin) throw Exception('Chỉ quản trị viên mới có quyền thực hiện hành động này');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Call RPC function instead of direct table operations
       final result = await _supabase.rpc(
@@ -437,8 +413,6 @@ class AdminService {
         params: {'p_tournament_id': tournamentId},
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // The RPC function returns a JSON object with all necessary information
       if (result is Map<String, dynamic>) {
@@ -448,14 +422,12 @@ class AdminService {
         return {
           'success': true,
           'tournament_id': tournamentId,
-          'message': 'Users removed successfully via RPC',
+          'message': 'Đã xóa người dùng thành công qua RPC',
           'raw_result': result,
         };
       }
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      throw Exception('Failed to remove all users from tournament: $error');
+      throw Exception('Lỗi xóa tất cả người dùng khỏi giải đấu: $error');
     }
   }
 
@@ -482,7 +454,7 @@ class AdminService {
 
       return response;
     } catch (error) {
-      throw Exception('Failed to get tournaments for admin: $error');
+      throw Exception('Lỗi lấy danh sách giải đấu: $error');
     }
   }
 
@@ -521,7 +493,7 @@ class AdminService {
           .map<AdminUserView>((json) => AdminUserView.fromJson(json))
           .toList();
     } catch (error) {
-      throw Exception('Failed to get users for admin: $error');
+      throw Exception('Lỗi khi lấy danh sách người dùng cho quản trị viên: $error');
     }
   }
 
@@ -551,7 +523,7 @@ class AdminService {
           .map<UserProfile>((json) => UserProfile.fromJson(json))
           .toList();
     } catch (error) {
-      throw Exception('Failed to get users for admin: $error');
+      throw Exception('Lỗi khi lấy danh sách người dùng cho quản trị viên: $error');
     }
   }
 
@@ -563,7 +535,7 @@ class AdminService {
   Future<void> blockUser(String userId, {String? reason}) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       await _supabase
           .from('users')
@@ -581,7 +553,7 @@ class AdminService {
         details: {'reason': reason},
       );
     } catch (error) {
-      throw Exception('Failed to block user: $error');
+      throw Exception('Lỗi chặn người dùng: $error');
     }
   }
 
@@ -589,7 +561,7 @@ class AdminService {
   Future<void> unblockUser(String userId) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       await _supabase
           .from('users')
@@ -606,7 +578,7 @@ class AdminService {
         targetId: userId,
       );
     } catch (error) {
-      throw Exception('Failed to unblock user: $error');
+      throw Exception('Lỗi bỏ chặn người dùng: $error');
     }
   }
 
@@ -614,7 +586,7 @@ class AdminService {
   Future<void> deleteUser(String userId) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       await _supabase
           .from('users')
@@ -630,7 +602,7 @@ class AdminService {
         targetId: userId,
       );
     } catch (error) {
-      throw Exception('Failed to delete user: $error');
+      throw Exception('Lỗi xóa người dùng: $error');
     }
   }
 
@@ -638,11 +610,11 @@ class AdminService {
   Future<void> updateUserRole(String userId, String newRole) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       // Validate role
       if (!['user', 'admin', 'moderator'].contains(newRole)) {
-        throw Exception('Invalid role: $newRole');
+        throw Exception('Vai trò không hợp lệ: $newRole');
       }
 
       await _supabase.from('users').update({'role': newRole}).eq('id', userId);
@@ -654,7 +626,7 @@ class AdminService {
         details: {'new_role': newRole},
       );
     } catch (error) {
-      throw Exception('Failed to update user role: $error');
+      throw Exception('Lỗi cập nhật vai trò người dùng: $error');
     }
   }
 
@@ -662,7 +634,7 @@ class AdminService {
   Future<void> verifyUser(String userId) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       await _supabase
           .from('users')
@@ -678,7 +650,7 @@ class AdminService {
         targetId: userId,
       );
     } catch (error) {
-      throw Exception('Failed to verify user: $error');
+      throw Exception('Lỗi xác minh người dùng: $error');
     }
   }
 
@@ -686,7 +658,7 @@ class AdminService {
   Future<void> unverifyUser(String userId) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       await _supabase
           .from('users')
@@ -699,7 +671,7 @@ class AdminService {
         targetId: userId,
       );
     } catch (error) {
-      throw Exception('Failed to unverify user: $error');
+      throw Exception('Lỗi hủy xác minh người dùng: $error');
     }
   }
 
@@ -738,7 +710,6 @@ class AdminService {
       });
     } catch (error) {
       // Log error but don't throw - logging failure shouldn't break main action
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -772,7 +743,6 @@ class AdminService {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -821,7 +791,7 @@ class AdminService {
             : '0.0',
       };
     } catch (error) {
-      throw Exception('Failed to get user statistics: $error');
+      throw Exception('Lỗi khi lấy thống kê người dùng: $error');
     }
   }
 
@@ -834,7 +804,7 @@ class AdminService {
   }) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       await _supabase.from('notifications').insert({
         'user_id': userId,
@@ -852,7 +822,7 @@ class AdminService {
         details: {'title': title, 'message': message},
       );
     } catch (error) {
-      throw Exception('Failed to send notification: $error');
+      throw Exception('Lỗi gửi thông báo: $error');
     }
   }
 
@@ -863,7 +833,7 @@ class AdminService {
   }) async {
     try {
       final admin = _supabase.auth.currentUser;
-      if (admin == null) throw Exception('Admin not authenticated');
+      if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       int successCount = 0;
       int failedCount = 0;
@@ -895,7 +865,7 @@ class AdminService {
 
       return {'success': successCount, 'failed': failedCount, 'errors': errors};
     } catch (error) {
-      throw Exception('Failed to bulk update users: $error');
+      throw Exception('Lỗi cập nhật hàng loạt người dùng: $error');
     }
   }
 
@@ -937,9 +907,7 @@ class AdminService {
           .map((json) => VoucherCampaign.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      throw Exception('Failed to get voucher campaigns: $error');
+      throw Exception('Lỗi khi lấy danh sách chiến dịch voucher: $error');
     }
   }
 
@@ -968,7 +936,7 @@ class AdminService {
 
       return VoucherCampaign.fromJson(response);
     } catch (error) {
-      throw Exception('Failed to get voucher campaign: $error');
+      throw Exception('Lỗi khi lấy thông tin chiến dịch voucher: $error');
     }
   }
 
@@ -979,7 +947,7 @@ class AdminService {
   }) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('Admin not authenticated');
+      if (user == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       final response = await _supabase
           .from('voucher_campaigns')
@@ -1001,10 +969,9 @@ class AdminService {
           ''')
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return VoucherCampaign.fromJson(response);
     } catch (error) {
-      throw Exception('Failed to approve voucher campaign: $error');
+      throw Exception('Lỗi phê duyệt chiến dịch voucher: $error');
     }
   }
 
@@ -1015,7 +982,7 @@ class AdminService {
   }) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('Admin not authenticated');
+      if (user == null) throw Exception('Quản trị viên chưa đăng nhập');
 
       final response = await _supabase
           .from('voucher_campaigns')
@@ -1037,10 +1004,9 @@ class AdminService {
           ''')
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return VoucherCampaign.fromJson(response);
     } catch (error) {
-      throw Exception('Failed to reject voucher campaign: $error');
+      throw Exception('Lỗi từ chối chiến dịch voucher: $error');
     }
   }
 
@@ -1073,9 +1039,8 @@ class AdminService {
         };
       }
       
-      throw Exception('Unexpected response format');
+      throw Exception('Định dạng phản hồi không mong đợi');
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       final allCampaigns = await getVoucherCampaigns(limit: 1000);
       return {
         'total': allCampaigns.length,

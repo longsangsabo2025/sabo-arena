@@ -50,19 +50,21 @@ class DSRadio<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Radio<T>(
-      value: value,
+    return RadioGroup<T>(
       groupValue: groupValue,
-      onChanged: onChanged != null
-          ? (newValue) {
-              if (enableHaptic) {
-                HapticFeedback.lightImpact();
-              }
-              onChanged?.call(newValue);
-            }
-          : null,
-      activeColor: activeColor ?? AppColors.primary,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      onChanged: (newValue) {
+        if (onChanged != null) {
+          if (enableHaptic) {
+            HapticFeedback.lightImpact();
+          }
+          onChanged!(newValue);
+        }
+      },
+      child: Radio<T>(
+        value: value,
+        activeColor: activeColor ?? AppColors.primary,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
     );
   }
 }
@@ -250,26 +252,28 @@ class DSRadioListTile<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RadioListTile<T>(
-      value: value,
+    return RadioGroup<T>(
       groupValue: groupValue,
-      onChanged: onChanged,
-      title: Text(title, style: AppTypography.bodyMedium),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            )
-          : null,
-      secondary: secondary,
-      controlAffinity: controlAffinity,
-      dense: dense,
-      activeColor: AppColors.primary,
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: DesignTokens.space16,
-        vertical: dense ? 0 : DesignTokens.space4,
+      onChanged: (val) => onChanged?.call(val),
+      child: RadioListTile<T>(
+        value: value,
+        title: Text(title, style: AppTypography.bodyMedium),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle!,
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              )
+            : null,
+        secondary: secondary,
+        controlAffinity: controlAffinity,
+        dense: dense,
+        activeColor: AppColors.primary,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: DesignTokens.space16,
+          vertical: dense ? 0 : DesignTokens.space4,
+        ),
       ),
     );
   }

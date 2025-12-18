@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/club_spa_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Screen for admins to manage SPA allocation to clubs
 class AdminSpaManagementScreen extends StatefulWidget {
@@ -50,7 +50,6 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
         _systemStats = results[2] as Map<String, dynamic>;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -124,6 +123,8 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
                       ? 'Cấp SPA cho $clubName'
                       : description,
                 );
+
+                if (!context.mounted) return;
 
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../models/user_profile.dart';
 
 /// 📝 UserDisplayNameText - Unified User Name Display
 ///
 /// **Single source of truth** cho việc hiển thị tên user trong toàn bộ app.
 ///
 /// ## Priority Logic:
+/// 0. ✅ `userProfile` model (Strongly typed)
 /// 1. ✅ `display_name` (snake_case từ Supabase)
 /// 2. ✅ `displayName` (camelCase từ model)
 /// 3. ✅ `full_name` (snake_case từ Supabase)
@@ -25,6 +27,11 @@ import 'package:flutter/material.dart';
 ///   userData: {'display_name': 'John Doe'},
 /// )
 ///
+/// // With Model
+/// UserDisplayNameText(
+///   userProfile: myUserProfile,
+/// )
+///
 /// // With verified badge
 /// UserDisplayNameText(
 ///   userData: userMap,
@@ -35,6 +42,9 @@ import 'package:flutter/material.dart';
 class UserDisplayNameText extends StatelessWidget {
   /// User data map (có thể từ Supabase query hoặc UserProfile.toJson())
   final Map<String, dynamic>? userData;
+
+  /// User Profile Model (Strongly typed)
+  final UserProfile? userProfile;
 
   /// Text style (nếu null sẽ dùng default)
   final TextStyle? style;
@@ -60,6 +70,7 @@ class UserDisplayNameText extends StatelessWidget {
   const UserDisplayNameText({
     super.key,
     this.userData,
+    this.userProfile,
     this.style,
     this.maxLength,
     this.showVerifiedBadge = false,
@@ -108,6 +119,12 @@ class UserDisplayNameText extends StatelessWidget {
 
   /// Get display name with priority logic
   String _getDisplayName() {
+    // Priority 0: UserProfile Model
+    if (userProfile != null) {
+      if (_isValidName(userProfile!.displayName)) return userProfile!.displayName;
+      if (_isValidName(userProfile!.fullName)) return userProfile!.fullName;
+    }
+
     if (userData == null) return fallbackText;
 
     // Priority 1: display_name (snake_case)
@@ -148,6 +165,9 @@ class UserDisplayNameText extends StatelessWidget {
 
   /// Check if user is verified
   bool _isVerified() {
+    if (userProfile != null) {
+      return userProfile!.isVerified;
+    }
     if (userData == null) return false;
     return userData!['is_verified'] == true ||
         userData!['isVerified'] == true;

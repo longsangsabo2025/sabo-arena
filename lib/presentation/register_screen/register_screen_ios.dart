@@ -21,7 +21,7 @@ class RegisterScreenIOS extends StatefulWidget {
 
 class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
   final _formKey = GlobalKey<FormState>();
-  String _fullPhoneNumber = '';
+  // String _fullPhoneNumber = '';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -335,6 +335,8 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
               'User',
           role: 'player',
         );
+
+        if (!mounted) return;
 
         // 🎯 Navigate to success screen for social auth
         final user = response.user!;
@@ -672,12 +674,12 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                             onChanged: (phone) {
                               // Normalize số điện thoại: loại bỏ spaces, dashes, brackets
                               // Twilio yêu cầu E.164 format: +[country][number] (không có spaces/dashes)
-                              final normalized = phone.completeNumber
-                                  .replaceAll(' ', '')
-                                  .replaceAll('-', '')
-                                  .replaceAll('(', '')
-                                  .replaceAll(')', '');
-                              _fullPhoneNumber = normalized;
+                              // final normalized = phone.completeNumber
+                              //     .replaceAll(' ', '')
+                              //     .replaceAll('-', '')
+                              //     .replaceAll('(', '')
+                              //     .replaceAll(')', '');
+                              // _fullPhoneNumber = normalized;
                             },
                             validator: (phone) {
                               if (phone == null || phone.number.isEmpty) {

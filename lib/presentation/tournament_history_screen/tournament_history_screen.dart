@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/app_export.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../tournament_detail_screen/tournament_detail_screen.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Màn hình quản lý lịch sử giải đấu cho Club Owner
 class TournamentHistoryScreen extends StatefulWidget {
@@ -58,7 +58,6 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
     });
 
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       final response = await _supabase
           .from('tournaments')
@@ -77,7 +76,6 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
           .eq('club_id', widget.clubId)
           .order('created_at', ascending: false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       setState(() {
         _allTournaments = List<Map<String, dynamic>>.from(response);
@@ -87,7 +85,6 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
 
       _filterTournaments();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() {
         _error = e.toString();
         _isLoading = false;

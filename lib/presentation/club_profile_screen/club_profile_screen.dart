@@ -3,6 +3,8 @@ import 'package:sizer/sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/app_export.dart';
+import '../../services/club_service.dart';
+import '../../models/club.dart';
 import '../../core/utils/sabo_rank_system.dart';
 import '../../core/constants/ranking_constants.dart';
 
@@ -31,33 +33,18 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
   Map<String, dynamic>? _userData;
   bool _isLoadingUser = false;
 
-  // Real data from Supabase (using mock data for now)
-  final Map<String, dynamic> _clubData = {
-    "id": 1,
-    "name": "Billiards Club Sài Gòn",
-    "location": "Quận 1, TP. Hồ Chí Minh",
-    "address": "123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
-    "memberCount": 156,
-    "isMember": false,
-    "isOwner": false,
-    "coverImage":
-        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000",
-    "logo":
-        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?fm=jpg&q=60&w=3000",
-    "description":
-        "Câu lạc bộ billiards hàng đầu tại Sài Gòn với hơn 20 năm kinh nghiệm.",
-    "phone": "0901234567",
-    "email": "contact@billiardsclubsg.com",
-    "rating": 4.8,
-    "reviewCount": 234,
-  };
+  // Real data from Supabase
+  Map<String, dynamic> _clubData = {};
+  bool _isLoadingClub = true;
+  String? _clubId;
+  bool _isDataLoaded = false;
 
   final List<String> _clubPhotos = [
     "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000",
     "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?fm=jpg&q=60&w=3000",
   ];
 
-  final List<Map<String, dynamic>> _clubMembers = [];
+  List<Map<String, dynamic>> _clubMembers = [];
   
   final List<Map<String, dynamic>> _clubTournaments = [
     {
@@ -104,6 +91,92 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
   ];
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isDataLoaded) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null) {
+        if (args is String) {
+          _clubId = args;
+        } else if (args is Map && args.containsKey('club_id')) {
+          _clubId = args['club_id'].toString();
+        } else if (args is Map && args.containsKey('id')) {
+          _clubId = args['id'].toString();
+        }
+        
+        if (_clubId != null) {
+          _loadClubData(_clubId!);
+        } else {
+           setState(() {
+            _isLoadingClub = false;
+          });
+        }
+      } else {
+        // Fallback or handle missing ID
+        setState(() {
+          _isLoadingClub = false;
+        });
+      }
+      _isDataLoaded = true;
+    }
+  }
+
+  Future<void> _loadClubData(String clubId) async {
+    setState(() {
+      _isLoadingClub = true;
+    });
+
+    try {
+      final club = await ClubService.instance.getClubById(clubId);
+      final members = await ClubService.instance.getClubMembers(clubId);
+      final isMember = await ClubService.instance.isClubMember(clubId);
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      final isOwner = currentUser != null && club.ownerId == currentUser.id;
+
+      if (mounted) {
+        setState(() {
+          _clubData = {
+            "id": club.id,
+            "name": club.name,
+            "location": club.address ?? "",
+            "address": club.address ?? "",
+            "memberCount": members.length,
+            "isMember": isMember,
+            "isOwner": isOwner,
+            "coverImage": club.coverImageUrl ?? "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000",
+            "logo": club.logoUrl ?? "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?fm=jpg&q=60&w=3000",
+            "description": club.description ?? "",
+            "phone": club.phone ?? "",
+            "email": club.email ?? "",
+            "rating": club.rating,
+            "reviewCount": club.totalReviews,
+          };
+          
+          _clubMembers = members.map((m) => {
+            "id": m.id,
+            "name": m.displayName ?? "Unknown",
+            "avatar": m.avatarUrl ?? "",
+            "role": "Member",
+          }).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading club data: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading club data: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingClub = false;
+        });
+      }
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
@@ -130,8 +203,6 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
           _userData = response;
         });
       }
-    } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } finally {
       setState(() {
         _isLoadingUser = false;
@@ -150,6 +221,27 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    if (_isLoadingClub) {
+      return Scaffold(
+        backgroundColor: colorScheme.surface,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_clubData.isEmpty) {
+      return Scaffold(
+        backgroundColor: colorScheme.surface,
+        appBar: AppBar(
+          title: const Text("Club Profile"),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: const Center(child: Text("Could not load club data")),
+      );
+    }
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -485,6 +577,7 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
             TournamentCreationWizard(clubId: _clubData['id'].toString()),
       ),
     ).then((result) {
+      if (!mounted) return;
       if (result != null && result is Map<String, dynamic>) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

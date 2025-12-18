@@ -10,6 +10,7 @@ import '../../../core/utils/user_friendly_messages.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../widgets/custom_icon_widget.dart';
 import '../../../widgets/custom_image_widget.dart';
+import '../../../widgets/common/app_button.dart';
 import '../../../services/post_repository.dart';
 import '../../../services/club_service.dart';
 import '../../../models/club.dart';
@@ -63,7 +64,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -88,9 +88,8 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         }
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -195,7 +194,7 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
 
       if (mounted) setState(() {});
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -205,14 +204,14 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
     try {
       await _cameraController!.setFocusMode(FocusMode.auto);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
 
     if (!kIsWeb) {
       try {
         await _cameraController!.setFlashMode(FlashMode.auto);
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // Ignore error
       }
     }
   }
@@ -229,7 +228,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         _showCamera = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -410,7 +408,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
             );
           }
         } catch (uploadError) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -429,7 +426,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         }
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // If permission denied, show helpful message
       if (e.toString().contains('photo') ||
           e.toString().contains('library') ||
@@ -734,7 +730,14 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
           // Upload to Supabase Storage
           await Supabase.instance.client.storage
               .from('user-images')
-              .uploadBinary(filePath, imageBytes);
+              .uploadBinary(
+                filePath, 
+                imageBytes,
+                fileOptions: const FileOptions(
+                  contentType: 'image/jpeg', // Most camera photos are JPEG
+                  upsert: true,
+                ),
+              );
 
           // Get public URL
           uploadedImageUrl = Supabase.instance.client.storage
@@ -812,8 +815,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         }
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       setState(() => _isLoading = false);
 
@@ -981,7 +982,7 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                   userData?['display_name'] as String? ??
                   userData?['username'] as String? ??
                   userData?['full_name'] as String? ??
-                  'User';
+                  'Người dùng';
               final avatarUrl = userData?['avatar_url'] as String?;
 
               return Row(
@@ -1178,7 +1179,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                             _selectedClub = _managedClubs.firstWhere((c) => c.id == clubId);
                           }
                         });
-                        ProductionLogger.debug('Debug log', tag: 'AutoFix');
                       },
                     ),
                   ),
@@ -1511,41 +1511,17 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                // Nút Đăng ở cuối hàng
+                // Nút Đăng ở cuối hàng - iOS style với AppButton
                 SizedBox(
                   width: 80,
-                  height: 36,
-                  child: ElevatedButton(
+                  child: AppButton(
+                    label: 'Đăng',
+                    type: AppButtonType.primary,
+                    size: AppButtonSize.medium,
+                    customColor: AppColors.info,
+                    customTextColor: AppColors.textOnPrimary,
+                    isLoading: _isLoading,
                     onPressed: _isLoading ? null : _createPost,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.info,
-                      foregroundColor: AppColors.textOnPrimary,
-                      elevation: 0,
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      disabledBackgroundColor: AppColors.border,
-                      disabledForegroundColor: AppColors.textDisabled,
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.textOnPrimary,
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            'Đăng',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
                   ),
                 ),
               ],
@@ -1674,9 +1650,10 @@ class _LocationPickerViewState extends State<_LocationPickerView> {
           });
         }
         _filteredLocations = _popularLocations;
+      // Ignore error
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -1700,7 +1677,9 @@ class _LocationPickerViewState extends State<_LocationPickerView> {
 
       // Get position
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
       );
 
       // TODO: Reverse geocoding để lấy tên địa điểm
@@ -1711,7 +1690,6 @@ class _LocationPickerViewState extends State<_LocationPickerView> {
         _isLoadingLocation = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() {
         _isLoadingLocation = false;
         _currentLocation = null;
@@ -2053,9 +2031,11 @@ class _TagClubViewState extends State<_TagClubView> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton(
+                        AppButton(
+                          label: 'Thử lại',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.medium,
                           onPressed: _loadClubs,
-                          child: const Text('Thử lại'),
                         ),
                       ],
                     ),

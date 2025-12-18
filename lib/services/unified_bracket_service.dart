@@ -261,29 +261,29 @@ class UnifiedBracketService {
   }
 
   /// Generic match result processing
-  Future<Map<String, dynamic>> _processGenericMatchResult({
-    required String matchId,
-    required String winnerId,
-    required Map<String, int> scores,
-  }) async {
-    await _supabase
-        .from('matches')
-        .update({
-          'winner_id': winnerId,
-          'player1_score': scores['player1'] ?? 0,
-          'player2_score': scores['player2'] ?? 0,
-          'is_completed': true,
-          'status': 'completed',
-          'updated_at': DateTime.now().toIso8601String(),
-        })
-        .eq('id', matchId);
+  // Future<Map<String, dynamic>> _processGenericMatchResult({ // Unused
+  //   required String matchId,
+  //   required String winnerId,
+  //   required Map<String, int> scores,
+  // }) async {
+  //   await _supabase
+  //       .from('matches')
+  //       .update({
+  //         'winner_id': winnerId,
+  //         'player1_score': scores['player1'] ?? 0,
+  //         'player2_score': scores['player2'] ?? 0,
+  //         'is_completed': true,
+  //         'status': 'completed',
+  //         'updated_at': DateTime.now().toIso8601String(),
+  //       })
+  //       .eq('id', matchId);
 
-    return {
-      'success': true,
-      'match_id': matchId,
-      'winner_id': winnerId,
-    };
-  }
+  //   return {
+  //     'success': true,
+  //     'match_id': matchId,
+  //     'winner_id': winnerId,
+  //   };
+  // }
 
   /// Get supported formats
   static List<String> get supportedFormats => [

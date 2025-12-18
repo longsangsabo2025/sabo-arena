@@ -491,7 +491,7 @@ class RoundRobinBracket extends StatelessWidget {
         Wrap(
           spacing: 16,
           runSpacing: 16,
-          children: matches.map((match) => MatchCard(match: match)).toList(),
+          children: matches.map<Widget>((match) => MatchCard(match: match)).toList(),
         ),
       ],
     );

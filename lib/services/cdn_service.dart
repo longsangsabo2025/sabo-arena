@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'circuit_breaker.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// CDN Service with Circuit Breaker and Fallback
 /// Manages CDN URLs for images and static assets
@@ -40,7 +40,6 @@ class CDNService {
     _enabled = cdnBaseUrl != null;
 
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -56,7 +55,6 @@ class CDNService {
     if (_circuitBreaker.state == CircuitState.open) {
       // Circuit is open, use fallback (direct storage)
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return originalUrl;
     }
@@ -102,7 +100,6 @@ class CDNService {
       },
       fallback: () async {
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
         return false;
       },
@@ -143,7 +140,6 @@ class CDNService {
       return path;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }

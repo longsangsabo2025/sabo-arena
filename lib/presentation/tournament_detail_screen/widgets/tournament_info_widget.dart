@@ -1,12 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:sabo_arena/models/tournament.dart';
 
 class TournamentInfoWidget extends StatelessWidget {
-  final Map<String, dynamic> tournament;
+  final Tournament tournament;
 
   const TournamentInfoWidget({super.key, required this.tournament});
 
+  String _getStatusDisplay(String status) {
+    switch (status) {
+      case 'upcoming':
+        return 'Sắp diễn ra';
+      case 'open':
+        return 'Đang mở đăng ký';
+      case 'ongoing':
+        return 'Đang diễn ra';
+      case 'completed':
+        return 'Đã kết thúc';
+      case 'cancelled':
+        return 'Đã hủy';
+      default:
+        return 'Không xác định';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -47,14 +69,14 @@ class TournamentInfoWidget extends StatelessWidget {
                     Expanded(
                       child: _buildInfoItem(
                         Icons.calendar_today,
-                        '${tournament["startDate"]}',
+                        dateFormat.format(tournament.startDate),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildInfoItem(
                         Icons.people,
-                        '${tournament["currentParticipants"]}/${tournament["maxParticipants"]} người',
+                        '${tournament.currentParticipants}/${tournament.maxParticipants} người',
                       ),
                     ),
                   ],
@@ -66,14 +88,18 @@ class TournamentInfoWidget extends StatelessWidget {
                     Expanded(
                       child: _buildInfoItem(
                         Icons.emoji_events,
-                        tournament["eliminationType"] as String,
+                        tournament.tournamentType == 'single_elimination' 
+                            ? 'Loại trực tiếp' 
+                            : (tournament.tournamentType == 'double_elimination' 
+                                ? 'Nhánh thắng thua' 
+                                : 'Vòng tròn'),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildInfoItem(
                         Icons.info_outline,
-                        tournament["status"] as String,
+                        _getStatusDisplay(tournament.status),
                       ),
                     ),
                   ],
@@ -85,18 +111,33 @@ class TournamentInfoWidget extends StatelessWidget {
                     Expanded(
                       child: _buildInfoItem(
                         Icons.payment,
-                        tournament["entryFee"] as String,
+                        tournament.entryFee == 0 
+                            ? 'Miễn phí' 
+                            : currencyFormat.format(tournament.entryFee),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildInfoItem(
                         Icons.military_tech,
-                        tournament["rankRequirement"] as String,
+                        tournament.skillLevelRequired ?? 'Tất cả trình độ',
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                // Row 4: Location
+                _buildInfoItem(
+                  Icons.location_on,
+                  tournament.venueAddress ?? 'Chưa cập nhật địa điểm',
+                ),
+                if (tournament.venuePhone != null) ...[
+                  const SizedBox(height: 12),
+                  _buildInfoItem(
+                    Icons.phone,
+                    '${tournament.venueContact ?? "Liên hệ"}: ${tournament.venuePhone}',
+                  ),
+                ],
               ],
             ),
           ),
@@ -117,7 +158,7 @@ class TournamentInfoWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  tournament["description"] as String,
+                  tournament.description,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,

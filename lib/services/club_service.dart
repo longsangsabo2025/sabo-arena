@@ -25,7 +25,9 @@ class ClubService {
     double? latitude,
     double? longitude,
     double? radiusKm,
+    String? searchQuery,
     int limit = 50,
+    int offset = 0,
   }) async {
     try {
       // Use read replica for read operations
@@ -42,11 +44,16 @@ class ClubService {
             .lte('longitude', longitude + (radiusKm / 111.0));
       }
 
+      // Add search query
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        query = query.ilike('name', '%$searchQuery%');
+      }
+
       final response = await query
           .eq('is_active', true)
           .eq('approval_status', 'approved')
           .order('rating', ascending: false)
-          .limit(limit);
+          .range(offset, offset + limit - 1);
 
       return response.map<Club>((json) => Club.fromJson(json)).toList();
     } catch (error) {
@@ -377,6 +384,11 @@ class ClubService {
     double? pricePerHour,
     double? latitude,
     double? longitude,
+    String? websiteUrl,
+    List<String>? amenities,
+    Map<String, dynamic>? openingHours,
+    String? businessLicenseUrl,
+    String? identityCardUrl,
   }) async {
     try {
       final user = _supabase.auth.currentUser;
@@ -393,6 +405,11 @@ class ClubService {
         'price_per_hour': pricePerHour,
         'latitude': latitude,
         'longitude': longitude,
+        'website_url': websiteUrl,
+        'amenities': amenities,
+        'opening_hours': openingHours,
+        'business_license_url': businessLicenseUrl,
+        'identity_card_url': identityCardUrl,
         'approval_status': 'pending', // New clubs need admin approval
         'is_verified': false,
         'is_active': false, // Inactive until approved
@@ -553,8 +570,15 @@ class ClubService {
       if (!isOwner) throw Exception('You are not the owner of this club');
 
       // Generate unique filename
+      final ext = fileName.split('.').last.toLowerCase();
+      final safeExt = (ext == 'png' || ext == 'jpg' || ext == 'jpeg' || ext == 'webp') ? ext : 'png';
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final uniqueFileName = 'club_logo_${clubId}_$timestamp.png';
+      final uniqueFileName = 'club_logo_${clubId}_$timestamp.$safeExt';
+
+      // Determine content type
+      String contentType = 'image/png';
+      if (safeExt == 'jpg' || safeExt == 'jpeg') contentType = 'image/jpeg';
+      else if (safeExt == 'webp') contentType = 'image/webp';
 
       // Upload file to storage
       await _supabase.storage
@@ -562,8 +586,8 @@ class ClubService {
           .uploadBinary(
             uniqueFileName,
             fileBytes,
-            fileOptions: const FileOptions(
-              contentType: 'image/png',
+            fileOptions: FileOptions(
+              contentType: contentType,
               upsert: true,
             ),
           );

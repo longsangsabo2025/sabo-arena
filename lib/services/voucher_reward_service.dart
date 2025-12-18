@@ -27,7 +27,7 @@ class VoucherRewardService {
           .map((json) => UserAchievement.fromJson(json))
           .toList();
     } catch (e) {
-      throw Exception('Failed to load user achievements: $e');
+      throw Exception('Lỗi tải thành tích người dùng: $e');
     }
   }
 
@@ -77,7 +77,7 @@ class VoucherRewardService {
 
       return completedAchievements;
     } catch (e) {
-      throw Exception('Failed to update achievement progress: $e');
+      throw Exception('Lỗi cập nhật tiến độ thành tích: $e');
     }
   }
 
@@ -111,7 +111,7 @@ class VoucherRewardService {
         rewardVoucherIds: voucherIds,
       );
     } catch (e) {
-      throw Exception('Failed to complete achievement: $e');
+      throw Exception('Lỗi hoàn thành thành tích: $e');
     }
   }
 
@@ -178,7 +178,7 @@ class VoucherRewardService {
 
       return voucherIds;
     } catch (e) {
-      throw Exception('Failed to generate achievement rewards: $e');
+      throw Exception('Lỗi tạo phần thưởng thành tích: $e');
     }
   }
 
@@ -207,14 +207,14 @@ class VoucherRewardService {
           .map((json) => UserVoucher.fromJson(json))
           .toList();
     } catch (e) {
-      throw Exception('Failed to load user vouchers: $e');
+      throw Exception('Lỗi tải voucher người dùng: $e');
     }
   }
 
   /// Sử dụng voucher
   Future<bool> useVoucher(String voucherId, String clubId) async {
     try {
-      final response = await _supabase
+      await _supabase
           .from('user_vouchers')
           .update({
             'status': VoucherStatus.used.name,
@@ -228,7 +228,7 @@ class VoucherRewardService {
 
       return true;
     } catch (e) {
-      throw Exception('Failed to use voucher: $e');
+      throw Exception('Lỗi sử dụng voucher: $e');
     }
   }
 
@@ -261,7 +261,7 @@ class VoucherRewardService {
 
       return voucher;
     } catch (e) {
-      throw Exception('Failed to validate voucher: $e');
+      throw Exception('Lỗi xác thực voucher: $e');
     }
   }
 

@@ -126,14 +126,29 @@ class VoucherNotificationService {
           .contains('data', {'voucher_code': voucherCode});
 
       // 4. Tạo thông báo cho user
-      await _supabase.from('user_notifications').insert({
-        'user_email': userEmail,
-        'notification_type': 'voucher_approved',
-        'title': 'Voucher đã được xác nhận',
-        'message': 'Voucher $voucherValue SPA đã được sử dụng thành công tại club',
-        'is_read': false,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+      // Note: 'user_notifications' table does not exist. Using 'notifications' table.
+      // We need user_id, but here we only have userEmail. 
+      // Assuming we can't easily get ID here without a query, but 'notifications' table requires user_id.
+      // For now, we will try to use 'notifications' table and hope we can get user_id or the logic needs refactoring.
+      // However, looking at the code context, this service seems to be handling club-side logic.
+      // Let's check if we can get user_id from somewhere or if we need to query it.
+      // The previous code was inserting 'user_email' into 'user_notifications', which implies 'user_notifications' might have supported email.
+      // But 'notifications' table definitely needs 'user_id' (uuid).
+      
+      // CRITICAL FIX: We must query user_id from email first if we want to insert into 'notifications'.
+      final userRes = await _supabase.from('users').select('id').eq('email', userEmail).maybeSingle();
+      
+      if (userRes != null) {
+        await _supabase.from('notifications').insert({
+          'user_id': userRes['id'],
+          'type': 'voucher_approved',
+          'title': 'Voucher đã được xác nhận',
+          'message': 'Voucher $voucherValue SPA đã được sử dụng thành công tại club',
+          'is_read': false,
+          'created_at': DateTime.now().toIso8601String(),
+          // 'data': {'email': userEmail} // Optional metadata
+        });
+      }
 
       return {
         'success': true,
@@ -177,14 +192,20 @@ class VoucherNotificationService {
           .contains('data', {'voucher_code': voucherCode});
 
       // 4. Thông báo cho user
-      await _supabase.from('user_notifications').insert({
-        'user_email': voucher['user_email'],
-        'notification_type': 'voucher_rejected',
-        'title': 'Yêu cầu voucher bị từ chối',
-        'message': 'Lý do: $reason',
-        'is_read': false,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+      // CRITICAL FIX: Query user_id from email to insert into 'notifications' table
+      final userEmail = voucher['user_email'];
+      final userRes = await _supabase.from('users').select('id').eq('email', userEmail).maybeSingle();
+
+      if (userRes != null) {
+        await _supabase.from('notifications').insert({
+          'user_id': userRes['id'],
+          'type': 'voucher_rejected',
+          'title': 'Yêu cầu voucher bị từ chối',
+          'message': 'Lý do: $reason',
+          'is_read': false,
+          'created_at': DateTime.now().toIso8601String(),
+        });
+      }
 
       return {
         'success': true,

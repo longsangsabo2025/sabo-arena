@@ -119,11 +119,11 @@ class LongSangErrorReporter {
     // Don't send errors in debug mode to avoid CORS issues on localhost
     // and to avoid spamming the server with dev errors.
     if (kDebugMode) {
-       final errors = List<Map<String, dynamic>>.from(_errorQueue);
+       // final errors = List<Map<String, dynamic>>.from(_errorQueue);
        _errorQueue.clear();
-       for (final error in errors) {
-         print('🐛 [DEBUG MODE] Error captured (not sent to server): ${error["type"]} - ${error["message"]}');
-       }
+       // for (final error in errors) {
+         // REMOVED: print('🐛 [DEBUG MODE] Error captured (not sent to server): ${error["type"]} - ${error["message"]}');
+       // }
        return;
     }
 
@@ -139,12 +139,12 @@ class LongSangErrorReporter {
           body: jsonEncode(error),
         );
         if (kDebugMode) {
-          print('📤 Error reported to LongSang Admin: ${error['type']}');
+          // REMOVED: print('📤 Error reported to LongSang Admin: ${error['type']}');
         }
       } catch (e) {
         // Silent fail - don't want error reporting to cause more errors
         if (kDebugMode) {
-          print('⚠️ Failed to report error: $e');
+          // REMOVED: print('⚠️ Failed to report error: $e');
         }
       }
     }

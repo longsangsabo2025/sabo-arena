@@ -1,0 +1,102 @@
+Analyzing services...                                           
+
+  error - Undefined name 'ProductionLogger' - lib\services\admin_guide_service.dart:116:7 - undefined_identifier
+warning - The declaration '_buildBracketSection' isn't referenced - lib\services\bracket_visualization_service.dart:404:10 - unused_element
+   info - Empty catch block - lib\services\challenge_list_service.dart:321:21 - empty_catches
+   info - Empty catch block - lib\services\challenge_list_service.dart:687:21 - empty_catches
+   info - Empty catch block - lib\services\chat_service.dart:195:17 - empty_catches
+warning - The value of the local variable 'breakdown' isn't used - lib\services\cost_monitoring_service.dart:232:13 - unused_local_variable
+warning - The value of the local variable 'entry' isn't used - lib\services\database_monitoring_service.dart:200:20 - unused_local_variable
+   info - Don't use 'BuildContext's across async gaps - lib\services\deep_link_handler.dart:86:35 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\services\deep_link_handler.dart:90:40 - use_build_context_synchronously
+warning - The value of the local variable 'bonusAmount' isn't used - lib\services\first_match_bonus_service.dart:88:15 - unused_local_variable
+warning - The value of the local variable 'compressionRatio' isn't used - lib\services\image_optimization_service.dart:75:13 - unused_local_variable
+warning - 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\services\location_service.dart:51:7 - deprecated_member_use
+   info - Empty catch block - lib\services\notification_analytics_service.dart:127:17 - empty_catches
+   info - Empty catch block - lib\services\notification_analytics_service.dart:139:17 - empty_catches
+   info - Empty catch block - lib\services\notification_analytics_service.dart:156:17 - empty_catches
+   info - Empty catch block - lib\services\notification_preferences_service.dart:261:17 - empty_catches
+   info - Empty catch block - lib\services\notification_preferences_service.dart:329:25 - empty_catches
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\notification_service.dart:129:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\notification_service.dart:164:13 - unused_local_variable
+warning - The value of the local variable 'successCount' isn't used - lib\services\notification_service.dart:522:11 - unused_local_variable
+   info - Empty catch block - lib\services\notification_service.dart:540:21 - empty_catches
+   info - Empty catch block - lib\services\notification_service.dart:675:17 - empty_catches
+   info - Empty catch block - lib\services\notification_service.dart:686:17 - empty_catches
+warning - The value of the local variable 'matchesSchema' isn't used - lib\services\opponent_tab_backend_service.dart:130:13 - unused_local_variable
+warning - The value of the local variable 'usersSchema' isn't used - lib\services\opponent_tab_backend_service.dart:136:13 - unused_local_variable
+warning - The value of the local variable 'challengesExists' isn't used - lib\services\opponent_tab_backend_service.dart:142:13 - unused_local_variable
+   info - Empty catch block - lib\services\opponent_tab_backend_service.dart:146:17 - empty_catches
+   info - Empty catch block - lib\services\opponent_tab_backend_service.dart:168:17 - empty_catches
+warning - The value of the local variable 'nearbyPlayers' isn't used - lib\services\opponent_tab_backend_service.dart:182:13 - unused_local_variable
+warning - The value of the local variable 'nearbyPlayers' isn't used - lib\services\opponent_tab_backend_service.dart:188:13 - unused_local_variable
+warning - The value of the local variable 'userChallenges' isn't used - lib\services\opponent_tab_backend_service.dart:196:11 - unused_local_variable
+   info - Empty catch block - lib\services\payment_method_service.dart:212:23 - empty_catches
+   info - Empty catch block - lib\services\payment_method_service.dart:266:21 - empty_catches
+warning - The value of the local variable 'userId' isn't used - lib\services\payment_method_service.dart:359:13 - unused_local_variable
+warning - The value of the local variable 'entry' isn't used - lib\services\performance_monitor.dart:194:18 - unused_local_variable
+   info - Empty catch block - lib\services\permission_service.dart:148:17 - empty_catches
+   info - Empty catch block - lib\services\permission_service.dart:157:17 - empty_catches
+   info - Empty catch block - lib\services\permission_service.dart:189:17 - empty_catches
+   info - Empty catch block - lib\services\push_service.dart:60:17 - empty_catches
+   info - Empty catch block - lib\services\push_service.dart:126:17 - empty_catches
+   info - Empty catch block - lib\services\push_service.dart:140:19 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:139:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:161:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:205:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:252:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:273:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:311:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:331:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:348:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:379:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:388:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:108:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:117:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:125:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:142:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:158:17 - empty_catches
+warning - The declaration '_detectChanges' isn't referenced - lib\services\realtime_tournament_service.dart:165:37 - unused_element
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:206:17 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\services\rich_share_service.dart:81:9 - use_build_context_synchronously
+   info - Empty catch block - lib\services\rich_share_service.dart:136:21 - empty_catches
+warning - The value of the local variable 'deleted' isn't used - lib\services\rich_share_service.dart:185:11 - unused_local_variable
+   info - Empty catch block - lib\services\rich_share_service.dart:193:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:54:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:77:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:100:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:121:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:246:17 - empty_catches
+warning - The value of the local variable 'challengedUserResponse' isn't used - lib\services\simple_challenge_service.dart:49:29 - unused_local_variable
+warning - The value of the local variable 's' isn't used - lib\services\tournament\ranking_service.dart:399:13 - unused_local_variable
+warning - The value of the local variable 'successCount' isn't used - lib\services\tournament\reward_execution_service.dart:33:11 - unused_local_variable
+warning - The value of the local variable 'participantName' isn't used - lib\services\tournament\reward_execution_service.dart:39:17 - unused_local_variable
+warning - The value of the local variable 'oldBalance' isn't used - lib\services\tournament\reward_execution_service.dart:128:15 - unused_local_variable
+warning - The value of the local variable 'newBalance' isn't used - lib\services\tournament\reward_execution_service.dart:129:15 - unused_local_variable
+   info - Empty catch block - lib\services\tournament\statistics_update_service.dart:78:17 - empty_catches
+   info - Empty catch block - lib\services\tournament\statistics_update_service.dart:101:17 - empty_catches
+warning - The value of the local variable 'issuedCount' isn't used - lib\services\tournament\voucher_issuance_service.dart:39:9 - unused_local_variable
+warning - The value of the local variable 'userName' isn't used - lib\services\tournament\voucher_issuance_service.dart:49:13 - unused_local_variable
+warning - The value of the local variable 'voucherCode' isn't used - lib\services\tournament\voucher_issuance_service.dart:61:17 - unused_local_variable
+   info - Empty catch block - lib\services\tournament\voucher_issuance_service.dart:85:19 - empty_catches
+   info - Empty catch block - lib\services\tournament_completion_voucher_service.dart:290:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:41:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:80:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:144:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:167:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:229:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:263:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:281:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_elo_service.dart:263:21 - empty_catches
+warning - The declaration '_generateLoserBracket' isn't referenced - lib\services\tournament_service.dart:1711:24 - unused_element
+warning - The value of the local variable 'winnerBracketRounds' isn't used - lib\services\tournament_service.dart:1997:11 - unused_local_variable
+warning - The declaration '_processGenericMatchResult' isn't referenced - lib\services\unified_bracket_service.dart:264:32 - unused_element
+warning - The value of the local variable 'bracketFormat' isn't used - lib\services\universal_match_progression_service.dart:49:15 - unused_local_variable
+warning - The declaration '_executeImmediateAdvancement' isn't referenced - lib\services\universal_match_progression_service.dart:120:32 - unused_element
+   info - Empty catch block - lib\services\user_journey_analytics.dart:370:17 - empty_catches
+   info - Empty catch block - lib\services\user_journey_analytics.dart:381:17 - empty_catches
+warning - The value of the local variable 'currentWinStreak' isn't used - lib\services\user_stats_update_service.dart:59:13 - unused_local_variable
+   info - Empty catch block - lib\services\user_stats_update_service.dart:84:19 - empty_catches
+   info - Empty catch block - lib\services\user_stats_update_service.dart:102:17 - empty_catches
+warning - The value of the local variable 'response' isn't used - lib\services\voucher_reward_service.dart:217:13 - unused_local_variable
+

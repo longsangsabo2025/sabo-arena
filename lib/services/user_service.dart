@@ -1,10 +1,12 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_profile.dart';
+import '../models/user_stats.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'user_stats_update_service.dart';
 import 'auth_service.dart';
 import 'cache_manager.dart';
+import 'storage_service.dart';
 import 'database_replica_manager.dart';
 import '../core/error_handling/standardized_error_handler.dart';
 import 'package:sabo_arena/utils/production_logger.dart';
@@ -16,6 +18,11 @@ class UserService {
 
   final SupabaseClient _supabase = Supabase.instance.client;
   
+  // 🚀 MUSK: Cache for follow status to improve performance
+  static final Map<String, bool> _followStatusCache = {};
+  static final Map<String, DateTime> _cacheTimestamps = {};
+  static const Duration _cacheExpiry = Duration(minutes: 5);
+  
   // Get read client (uses replica if available)
   SupabaseClient get _readClient => DatabaseReplicaManager.instance.readClient;
   
@@ -24,6 +31,32 @@ class UserService {
 
   /// Notifier for current user profile changes
   final ValueNotifier<UserProfile?> currentUserNotifier = ValueNotifier(null);
+
+  /// 🚀 MUSK: Get cached follow status if available and not expired
+  bool? getCachedFollowStatus(String userId) {
+    if (!_followStatusCache.containsKey(userId)) return null;
+    
+    final timestamp = _cacheTimestamps[userId];
+    if (timestamp == null || DateTime.now().difference(timestamp) > _cacheExpiry) {
+      _followStatusCache.remove(userId);
+      _cacheTimestamps.remove(userId);
+      return null;
+    }
+    
+    return _followStatusCache[userId];
+  }
+
+  /// Cache follow status with timestamp
+  void _cacheFollowStatus(String userId, bool isFollowing) {
+    _followStatusCache[userId] = isFollowing;
+    _cacheTimestamps[userId] = DateTime.now();
+  }
+
+  /// Clear follow status cache (useful for logout)
+  void clearFollowStatusCache() {
+    _followStatusCache.clear();
+    _cacheTimestamps.clear();
+  }
 
   Future<UserProfile?> getCurrentUserProfile({bool forceRefresh = false}) async {
     try {
@@ -185,7 +218,7 @@ class UserService {
       final response = await _readClient
           .from('users')
           .select()
-          .or('full_name.ilike.%$query%,username.ilike.%$query%')
+          .or('full_name.ilike.%$query%,username.ilike.%$query%,display_name.ilike.%$query%')
           .eq('is_active', true)
           .order('elo_rating', ascending: false)
           .limit(limit);
@@ -203,6 +236,67 @@ class UserService {
         ),
       );
       throw Exception(errorInfo.message);
+    }
+  }
+  
+  /// 🚀 MUSK SEARCH OPTIMIZATION - Exact username match
+  Future<List<UserProfile>> searchUsersByUsername(String query, {int limit = 5}) async {
+    try {
+      final response = await _readClient
+          .from('users')
+          .select()
+          .ilike('username', '%$query%')
+          .eq('is_active', true)
+          .order('username')
+          .limit(limit);
+
+      return response
+          .map<UserProfile>((json) => UserProfile.fromJson(json))
+          .toList();
+    } catch (error) {
+      ProductionLogger.error('🔍 Username search failed: $error', tag: 'user_search');
+      return [];
+    }
+  }
+  
+  /// 🚀 MUSK SEARCH OPTIMIZATION - Name-based search
+  Future<List<UserProfile>> searchUsersByName(String query, {int limit = 10}) async {
+    try {
+      final response = await _readClient
+          .from('users')
+          .select()
+          .or('full_name.ilike.%$query%,display_name.ilike.%$query%')
+          .eq('is_active', true)
+          .order('elo_rating', ascending: false)
+          .limit(limit);
+
+      return response
+          .map<UserProfile>((json) => UserProfile.fromJson(json))
+          .toList();
+    } catch (error) {
+      ProductionLogger.error('🔍 Name search failed: $error', tag: 'user_search');
+      return [];
+    }
+  }
+  
+  /// 🚀 MUSK SEARCH OPTIMIZATION - Similar rank suggestions
+  Future<List<UserProfile>> searchUsersBySimilarRank(String userRank, String query, {int limit = 5}) async {
+    try {
+      final response = await _readClient
+          .from('users')
+          .select()
+          .eq('rank', userRank)
+          .or('full_name.ilike.%$query%,username.ilike.%$query%,display_name.ilike.%$query%')
+          .eq('is_active', true)
+          .order('elo_rating', ascending: false)
+          .limit(limit);
+
+      return response
+          .map<UserProfile>((json) => UserProfile.fromJson(json))
+          .toList();
+    } catch (error) {
+      ProductionLogger.error('🔍 Rank search failed: $error', tag: 'user_search');
+      return [];
     }
   }
 
@@ -284,10 +378,65 @@ class UserService {
           .select()
           .single();
 
+      // 🚀 MUSK: Update cache with new data to avoid replica lag
+      await CacheManager.instance.setUserProfile(user.id, response);
+      
+      // Update local notifier
+      if (currentUserNotifier.value?.id == user.id) {
+        currentUserNotifier.value = UserProfile.fromJson(response);
+      }
+
       return UserProfile.fromJson(response);
     } catch (error) {
       throw Exception('Failed to update user profile: $error');
     }
+  }
+
+  /// 🚀 MUSK: Atomic update for profile with avatar upload
+  Future<UserProfile> updateProfileWithAvatarUpload({
+    String? username,
+    String? fullName,
+    String? displayName,
+    String? bio,
+    String? phone,
+    DateTime? dateOfBirth,
+    String? skillLevel,
+    String? location,
+    List<int>? avatarBytes,
+    String? avatarFileName,
+    bool removeAvatar = false,
+  }) async {
+    String? avatarUrl;
+    final oldUrl = currentUserNotifier.value?.avatarUrl;
+
+    if (removeAvatar) {
+      avatarUrl = 'REMOVE_AVATAR';
+      if (oldUrl != null) {
+        // Fire and forget deletion of old avatar
+        StorageService.deleteOldAvatar(oldUrl);
+      }
+    } else if (avatarBytes != null && avatarFileName != null) {
+      // 🚀 MUSK: Use atomic StorageService
+      avatarUrl = await StorageService.uploadAvatar(
+        Uint8List.fromList(avatarBytes), 
+        fileName: avatarFileName,
+        oldUrl: oldUrl,
+        skipDatabaseUpdate: true, // Let updateUserProfile handle the DB update
+      );
+      if (avatarUrl == null) throw Exception('Failed to upload avatar image');
+    }
+
+    return updateUserProfile(
+      username: username,
+      fullName: fullName,
+      displayName: displayName,
+      bio: bio,
+      phone: phone,
+      dateOfBirth: dateOfBirth,
+      skillLevel: skillLevel,
+      location: location,
+      avatarUrl: avatarUrl,
+    );
   }
 
   // Generic image upload method for evidence/documents
@@ -303,9 +452,23 @@ class UserService {
       final filePath =
           'evidence/${user.id}/${DateTime.now().millisecondsSinceEpoch}_$fileName';
 
+      // Determine content type based on extension
+      String contentType = 'image/jpeg'; // Default
+      final ext = fileName.split('.').last.toLowerCase();
+      if (ext == 'png') contentType = 'image/png';
+      else if (ext == 'webp') contentType = 'image/webp';
+      else if (ext == 'jpg' || ext == 'jpeg') contentType = 'image/jpeg';
+
       await _supabase.storage
           .from('user-images')
-          .uploadBinary(filePath, Uint8List.fromList(imageBytes));
+          .uploadBinary(
+            filePath, 
+            Uint8List.fromList(imageBytes),
+            fileOptions: FileOptions(
+              contentType: contentType,
+              upsert: true,
+            ),
+          );
 
       final publicUrl = _supabase.storage
           .from('user-images')
@@ -317,66 +480,93 @@ class UserService {
     }
   }
 
-  Future<String?> uploadAvatar(List<int> imageBytes, String fileName) async {
+  Future<String?> uploadAvatar(dynamic imageFile, {String? oldUrl, String? fileName}) async {
     try {
-      final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('User not authenticated');
-
-      final filePath =
-          'avatars/${user.id}/${DateTime.now().millisecondsSinceEpoch}_$fileName';
-
-      await _supabase.storage
-          .from('user-images')
-          .uploadBinary(filePath, Uint8List.fromList(imageBytes));
-
-      final publicUrl = _supabase.storage
-          .from('user-images')
-          .getPublicUrl(filePath);
-
-      // Update user profile with new avatar URL (use write client)
-      await _writeClient
-          .from('users')
-          .update({'avatar_url': publicUrl})
-          .eq('id', user.id);
+      debugPrint('🚀 MUSK_DEBUG: UserService.uploadAvatar entry');
+      final publicUrl = await StorageService.uploadAvatar(imageFile, oldUrl: oldUrl, fileName: fileName);
+      
+      if (publicUrl != null) {
+        debugPrint('🚀 MUSK_DEBUG: UserService.uploadAvatar SUCCESS: $publicUrl');
+        final user = _supabase.auth.currentUser;
+        if (user != null && currentUserNotifier.value?.id == user.id) {
+          debugPrint('🚀 MUSK_DEBUG: Updating currentUserNotifier with new avatar');
+          currentUserNotifier.value = currentUserNotifier.value?.copyWith(avatarUrl: publicUrl);
+        }
+      } else {
+        debugPrint('🚀 MUSK_DEBUG: UserService.uploadAvatar returned NULL');
+      }
 
       return publicUrl;
     } catch (error) {
+      debugPrint('🚀 MUSK_DEBUG: UserService.uploadAvatar EXCEPTION: $error');
       throw Exception('Failed to upload avatar: $error');
     }
   }
 
-  Future<String?> uploadCoverPhoto(
-    List<int> imageBytes,
-    String fileName,
-  ) async {
+  Future<String?> uploadCoverPhoto(dynamic imageFile, {String? oldUrl, String? fileName}) async {
     try {
-      final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('User not authenticated');
-
-      final filePath =
-          'covers/${user.id}/${DateTime.now().millisecondsSinceEpoch}_$fileName';
-
-      await _supabase.storage
-          .from('user-images')
-          .uploadBinary(filePath, Uint8List.fromList(imageBytes));
-
-      final publicUrl = _supabase.storage
-          .from('user-images')
-          .getPublicUrl(filePath);
-
-      // Update user profile with new cover photo URL
-      await _supabase
-          .from('users')
-          .update({'cover_photo_url': publicUrl})
-          .eq('id', user.id);
+      debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto entry');
+      final publicUrl = await StorageService.uploadCoverPhoto(imageFile, oldUrl: oldUrl, fileName: fileName);
+      
+      if (publicUrl != null) {
+        debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto SUCCESS: $publicUrl');
+        final user = _supabase.auth.currentUser;
+        if (user != null && currentUserNotifier.value?.id == user.id) {
+          debugPrint('🚀 MUSK_DEBUG: Updating currentUserNotifier with new cover photo');
+          currentUserNotifier.value = currentUserNotifier.value?.copyWith(coverPhotoUrl: publicUrl);
+        }
+      } else {
+        debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto returned NULL');
+      }
 
       return publicUrl;
     } catch (error) {
+      debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto EXCEPTION: $error');
       throw Exception('Failed to upload cover photo: $error');
     }
   }
 
-  Future<Map<String, int>> getUserStats(String userId) async {
+  Future<void> removeAvatar() async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) return;
+
+      // 🚀 MUSK: Atomic removal
+      await _writeClient
+          .from('users')
+          .update({'avatar_url': null})
+          .eq('id', user.id);
+
+      await CacheManager.instance.invalidateUser(user.id);
+      if (currentUserNotifier.value?.id == user.id) {
+        currentUserNotifier.value = currentUserNotifier.value?.copyWith(avatarUrl: null);
+      }
+    } catch (error) {
+      throw Exception('Failed to remove avatar: $error');
+    }
+  }
+
+  Future<void> removeCoverPhoto() async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) return;
+
+      // 🚀 MUSK: Atomic removal
+      await _writeClient
+          .from('users')
+          .update({'cover_photo_url': null})
+          .eq('id', user.id);
+
+      await CacheManager.instance.invalidateUser(user.id);
+      if (currentUserNotifier.value?.id == user.id) {
+        currentUserNotifier.value = currentUserNotifier.value?.copyWith(coverPhotoUrl: null);
+      }
+    } catch (error) {
+      throw Exception('Failed to remove cover photo: $error');
+    }
+  }
+
+  Future<UserStats> getUserStats(String userId) async {
     try {
       final userProfile = await getUserProfileById(userId);
 
@@ -398,15 +588,19 @@ class UserService {
       // Tính win streak
       final winStreak = await UserStatsUpdateService.instance
           .calculateWinStreak(userId);
+          
+      // Get ranking
+      final ranking = await getUserRanking(userId);
 
-      return {
-        'total_wins': userProfile.totalWins,
-        'total_losses': userProfile.totalLosses,
-        'total_tournaments': userProfile.totalTournaments,
-        'total_matches': totalMatches,
-        'elo_rating': userProfile.rankingPoints,
-        'win_streak': winStreak,
-      };
+      return UserStats(
+        totalWins: userProfile.totalWins,
+        totalLosses: userProfile.totalLosses,
+        totalTournaments: userProfile.totalTournaments,
+        totalMatches: totalMatches,
+        eloRating: userProfile.rankingPoints,
+        winStreak: winStreak,
+        ranking: ranking,
+      );
     } catch (error) {
       throw Exception('Failed to get user stats: $error');
     }
@@ -414,6 +608,7 @@ class UserService {
 
   Future<int> getUserRanking(String userId) async {
     try {
+      // 🚀 MUSK_DEBUG: Attempting RPC call
       final response = await _supabase.rpc(
         'get_user_ranking',
         params: {'user_id': userId},
@@ -421,22 +616,32 @@ class UserService {
 
       return response ?? 0;
     } catch (error) {
-      // Fallback: calculate ranking manually
+      // 🚀 MUSK_DEBUG: RPC failed (likely missing), falling back to manual calculation
+      debugPrint('🚀 MUSK_DEBUG: get_user_ranking RPC not found or failed. Using fallback. Error: $error');
+      
+      // Fallback: calculate ranking manually (Optimized)
       try {
-        final allUsers = await _supabase
+        // Get user's current ELO
+        final userRes = await _supabase
             .from('users')
-            .select('id, elo_rating')
-            .eq('is_active', true)
-            .order('elo_rating', ascending: false);
+            .select('elo_rating')
+            .eq('id', userId)
+            .maybeSingle();
+            
+        if (userRes == null) return 0;
+        final userElo = userRes['elo_rating'] as int? ?? 0;
 
-        for (int i = 0; i < allUsers.length; i++) {
-          if (allUsers[i]['id'] == userId) {
-            return i + 1;
-          }
-        }
-        return 0;
+        // Count users with higher ELO
+        final countRes = await _supabase
+            .from('users')
+            .count(CountOption.exact)
+            .eq('is_active', true)
+            .gt('elo_rating', userElo);
+            
+        return countRes + 1;
       } catch (fallbackError) {
-        throw Exception('Failed to get user ranking: $fallbackError');
+        ProductionLogger.error('Failed to get user ranking (fallback)', error: fallbackError, tag: 'UserService');
+        return 0;
       }
     }
   }
@@ -521,6 +726,9 @@ class UserService {
         'following_id': targetUserId,
       });
 
+      // 🚀 MUSK: Update cache after successful follow
+      _cacheFollowStatus(targetUserId, true);
+
       return true;
     } catch (error) {
       throw Exception('Failed to follow user: $error');
@@ -539,6 +747,9 @@ class UserService {
           .eq('follower_id', user.id)
           .eq('following_id', targetUserId);
 
+      // 🚀 MUSK: Update cache after successful unfollow
+      _cacheFollowStatus(targetUserId, false);
+
       return true;
     } catch (error) {
       throw Exception('Failed to unfollow user: $error');
@@ -550,6 +761,12 @@ class UserService {
       final user = _supabase.auth.currentUser;
       if (user == null) return false;
 
+      // 🚀 MUSK: Check cache first to avoid redundant API calls
+      final cachedStatus = getCachedFollowStatus(targetUserId);
+      if (cachedStatus != null) {
+        return cachedStatus;
+      }
+
       // Use read replica for read operations
       final response = await _readClient
           .from('user_follows')
@@ -558,7 +775,12 @@ class UserService {
           .eq('following_id', targetUserId)
           .maybeSingle();
 
-      return response != null;
+      final isFollowing = response != null;
+      
+      // Cache the result for future use
+      _cacheFollowStatus(targetUserId, isFollowing);
+
+      return isFollowing;
     } catch (error) {
       throw Exception('Failed to check follow status: $error');
     }

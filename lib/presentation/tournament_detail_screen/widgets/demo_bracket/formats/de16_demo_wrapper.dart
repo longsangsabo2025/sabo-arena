@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import './sabo_de16_bracket.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class DE16DemoWrapper extends StatelessWidget {
   const DE16DemoWrapper({super.key});
@@ -17,7 +17,6 @@ class DE16DemoWrapper extends StatelessWidget {
       matches: sampleMatches,
       onMatchTap: () {
         // Optional: Show match details in demo
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       },
     );
   }

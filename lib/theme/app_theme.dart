@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../core/design_system/design_system.dart';
 
 /// A class that contains all theme configurations for the Vietnamese billiards social networking application.
@@ -108,31 +110,41 @@ class AppTheme {
     cardColor: cardLight,
     dividerColor: dividerLight,
 
-    // AppBar theme for tournament and social contexts
+    // AppBar theme - iOS style (flat) on iOS, Material on Android
     appBarTheme: AppBarTheme(
       backgroundColor: surfaceLight,
       foregroundColor: textPrimaryLight,
-      elevation: 1.0, // Minimal elevation
+      elevation: (!kIsWeb && Platform.isIOS) ? 0.0 : 1.0, // iOS: flat, Android: minimal elevation
       shadowColor: shadowLight,
       surfaceTintColor: Colors.transparent,
-      titleTextStyle: GoogleFonts.roboto(
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
-        color: textPrimaryLight,
-        letterSpacing: 0.15,
-      ),
+      titleTextStyle: (!kIsWeb && Platform.isIOS)
+          ? TextStyle(
+              fontFamily: '.SF Pro Display',
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: textPrimaryLight,
+              letterSpacing: -0.3, // iOS negative spacing
+            )
+          : GoogleFonts.roboto(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: textPrimaryLight,
+              letterSpacing: 0.15,
+            ),
       iconTheme: IconThemeData(color: textPrimaryLight),
       actionsIconTheme: IconThemeData(color: textPrimaryLight),
     ),
 
-    // Card theme for tournament cards and player profiles
+    // Card theme - iOS style (16px radius, subtle shadow) on iOS
     cardTheme: CardThemeData(
       color: cardLight,
-      elevation: DesignTokens.elevation2, // Subtle depth
+      elevation: (!kIsWeb && Platform.isIOS) ? 0.0 : DesignTokens.elevation2, // iOS: flat
       shadowColor: shadowLight,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: DesignTokens.radius(DesignTokens.radiusMD),
+        borderRadius: BorderRadius.circular(
+          (!kIsWeb && Platform.isIOS) ? 16.0 : 12.0, // iOS: 16px, Android: 12px
+        ),
       ),
       margin: DesignTokens.only(
         left: DesignTokens.space16,
@@ -169,12 +181,12 @@ class AppTheme {
       ),
     ),
 
-    // Button themes for gaming actions
+    // Button themes - iOS style (flat, 12px radius) on iOS
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         foregroundColor: onPrimaryLight,
-        backgroundColor: primaryLight,
-        elevation: DesignTokens.elevation2,
+        backgroundColor: primaryLight, // Brand teal green #1E8A6F
+        elevation: (!kIsWeb && Platform.isIOS) ? 0.0 : DesignTokens.elevation2, // iOS: flat
         padding: DesignTokens.only(
           left: DesignTokens.space24,
           right: DesignTokens.space24,
@@ -182,40 +194,63 @@ class AppTheme {
           bottom: DesignTokens.space12,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
+          borderRadius: BorderRadius.circular(
+            (!kIsWeb && Platform.isIOS) ? 12.0 : 8.0, // iOS: 12px, Android: 8px
+          ),
         ),
-        textStyle: GoogleFonts.roboto(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          letterSpacing: DesignTokens.letterSpacingWide,
-        ),
+        textStyle: (!kIsWeb && Platform.isIOS)
+            ? TextStyle(
+                fontFamily: '.SF Pro Display',
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.3, // iOS negative spacing
+              )
+            : GoogleFonts.roboto(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                letterSpacing: DesignTokens.letterSpacingWide,
+              ),
       ),
     ),
 
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: primaryLight,
+        foregroundColor: primaryLight, // Brand teal green
         padding: DesignTokens.only(
           left: DesignTokens.space24,
           right: DesignTokens.space24,
           top: DesignTokens.space12,
           bottom: DesignTokens.space12,
         ),
-        side: const BorderSide(color: primaryLight, width: 1),
+        side: BorderSide(
+          color: primaryLight,
+          width: (!kIsWeb && Platform.isIOS) ? 1.0 : 1.5, // iOS: thinner border
+        ),
         shape: RoundedRectangleBorder(
-          borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
+          borderRadius: BorderRadius.circular(
+            (!kIsWeb && Platform.isIOS) ? 12.0 : 8.0, // iOS: 12px
+          ),
         ),
-        textStyle: GoogleFonts.roboto(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          letterSpacing: DesignTokens.letterSpacingWide,
-        ),
+        textStyle: (!kIsWeb && Platform.isIOS)
+            ? TextStyle(
+                fontFamily: '.SF Pro Display',
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.3,
+              )
+            : GoogleFonts.roboto(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                letterSpacing: DesignTokens.letterSpacingWide,
+              ),
       ),
     ),
 
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: primaryLight,
+        foregroundColor: (!kIsWeb && Platform.isIOS) 
+            ? const Color(0xFF007AFF) // iOS blue cho links
+            : primaryLight, // Brand color cho Android
         padding: DesignTokens.only(
           left: DesignTokens.space16,
           right: DesignTokens.space16,
@@ -223,22 +258,33 @@ class AppTheme {
           bottom: DesignTokens.space8,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
+          borderRadius: BorderRadius.circular(
+            (!kIsWeb && Platform.isIOS) ? 12.0 : 8.0, // iOS: 12px
+          ),
         ),
-        textStyle: GoogleFonts.roboto(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          letterSpacing: DesignTokens.letterSpacingWide,
-        ),
+        textStyle: (!kIsWeb && Platform.isIOS)
+            ? TextStyle(
+                fontFamily: '.SF Pro Display',
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                letterSpacing: -0.3,
+              )
+            : GoogleFonts.roboto(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                letterSpacing: DesignTokens.letterSpacingWide,
+              ),
       ),
     ),
 
     // Text theme with Vietnamese character support
     textTheme: _buildTextTheme(isLight: true),
 
-    // Input decoration for forms and search
+    // Input decoration - iOS style (rounded, no border) on iOS
     inputDecorationTheme: InputDecorationTheme(
-      fillColor: surfaceLight,
+      fillColor: (!kIsWeb && Platform.isIOS) 
+          ? const Color(0xFFF2F2F7) // iOS gray background
+          : surfaceLight,
       filled: true,
       contentPadding: DesignTokens.only(
         left: DesignTokens.space16,
@@ -246,18 +292,24 @@ class AppTheme {
         top: DesignTokens.space12,
         bottom: DesignTokens.space12,
       ),
-      border: OutlineInputBorder(
-        borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
-        borderSide: const BorderSide(color: dividerLight, width: 1),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
-        borderSide: const BorderSide(color: dividerLight, width: 1),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
-        borderSide: const BorderSide(color: primaryLight, width: 2),
-      ),
+      border: (!kIsWeb && Platform.isIOS)
+          ? InputBorder.none // iOS: no border
+          : OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(color: dividerLight, width: 1),
+            ),
+      enabledBorder: (!kIsWeb && Platform.isIOS)
+          ? InputBorder.none // iOS: no border
+          : OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(color: dividerLight, width: 1),
+            ),
+      focusedBorder: (!kIsWeb && Platform.isIOS)
+          ? InputBorder.none // iOS: no border, just background change
+          : OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(color: primaryLight, width: 2),
+            ),
       errorBorder: OutlineInputBorder(
         borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
         borderSide: const BorderSide(color: errorLight, width: 1),
@@ -616,12 +668,17 @@ class AppTheme {
   );
 
   /// Helper method to build text theme with Vietnamese character support
+  /// iOS Support: Uses SF Pro Display on iOS with negative letter spacing
   static TextTheme _buildTextTheme({required bool isLight}) {
     final Color textPrimary = isLight ? textPrimaryLight : textPrimaryDark;
     final Color textSecondary = isLight
         ? textSecondaryLight
         : textSecondaryDark;
     final Color textDisabled = isLight ? textDisabledLight : textDisabledDark;
+    
+    final isIOS = !kIsWeb && Platform.isIOS;
+    final fontFamily = isIOS ? '.SF Pro Display' : null; // iOS system font
+    final letterSpacing = isIOS ? -0.3 : 0.0; // iOS negative spacing
 
     return TextTheme(
       // Display styles for tournament headers - MONTSERRAT BOLD
@@ -684,28 +741,55 @@ class AppTheme {
         letterSpacing: 0.1,
       ),
 
-      // Body styles for content - SOURCE SANS 3 READABLE
-      bodyLarge: GoogleFonts.sourceSans3(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        color: textPrimary,
-        letterSpacing: 0.1,
-        height: 1.6, // Better line height for reading
-      ),
-      bodyMedium: GoogleFonts.sourceSans3(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: textPrimary,
-        letterSpacing: 0.1,
-        height: 1.5,
-      ),
-      bodySmall: GoogleFonts.sourceSans3(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: textSecondary,
-        letterSpacing: 0.1,
-        height: 1.4,
-      ),
+      // Body styles - iOS SF Pro on iOS, Source Sans 3 on Android
+      bodyLarge: isIOS
+          ? TextStyle(
+              fontFamily: fontFamily,
+              fontSize: 17, // iOS standard body size
+              fontWeight: FontWeight.w400,
+              color: textPrimary,
+              letterSpacing: letterSpacing,
+              height: 1.2, // iOS tighter line height
+            )
+          : GoogleFonts.sourceSans3(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: textPrimary,
+              letterSpacing: 0.1,
+              height: 1.6,
+            ),
+      bodyMedium: isIOS
+          ? TextStyle(
+              fontFamily: fontFamily,
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: textPrimary,
+              letterSpacing: letterSpacing,
+              height: 1.2,
+            )
+          : GoogleFonts.sourceSans3(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: textPrimary,
+              letterSpacing: 0.1,
+              height: 1.5,
+            ),
+      bodySmall: isIOS
+          ? TextStyle(
+              fontFamily: fontFamily,
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: textSecondary,
+              letterSpacing: letterSpacing,
+              height: 1.2,
+            )
+          : GoogleFonts.sourceSans3(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: textSecondary,
+              letterSpacing: 0.1,
+              height: 1.4,
+            ),
 
       // Label styles for buttons and captions - ROBOTO UI
       labelLarge: GoogleFonts.roboto(

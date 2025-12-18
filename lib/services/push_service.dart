@@ -4,7 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
@@ -36,13 +36,9 @@ class PushService {
     try {
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp();
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _initialized = true; // Mark as initialized to prevent retry loops
       return; // Can't continue without Firebase
     }
@@ -62,7 +58,7 @@ class PushService {
             sound: true,
           );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // REMOVED: if (kDebugMode) print('Error setting foreground options: $e');
     }
 
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -97,11 +93,12 @@ class PushService {
   Future<void> registerForPush(String userId) async {
     // 🌐 Skip push notifications on web (Firebase FCM not supported properly)
     if (kIsWeb) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
     await initialize();
+
+    if (kIsWeb) return;
 
     if (Platform.isIOS) {
       final settings = await _messaging.requestPermission(
@@ -130,7 +127,7 @@ class PushService {
         'updated_at': DateTime.now().toIso8601String(),
       }, onConflict: 'token');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // REMOVED: if (kDebugMode) print('Error registering push token: $e');
     }
 
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
@@ -145,7 +142,7 @@ class PushService {
           'updated_at': DateTime.now().toIso8601String(),
         }, onConflict: 'token');
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // REMOVED: if (kDebugMode) print('Error refreshing push token: $e');
       }
     });
   }

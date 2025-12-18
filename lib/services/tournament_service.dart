@@ -1,5 +1,6 @@
 import '../core/utils/rank_migration_helper.dart';
 import '../models/tournament.dart';
+import '../models/tournament_tab_status.dart';
 import '../models/user_profile.dart';
 import '../core/constants/tournament_constants.dart';
 import 'notification_service.dart';
@@ -29,7 +30,7 @@ class TournamentService {
   SupabaseClient get _writeClient => DatabaseReplicaManager.instance.writeClient;
 
   Future<List<Tournament>> getTournaments({
-    String? status,
+    TournamentTabStatus? status,
     String? clubId,
     String? skillLevel,
     int page = 1,
@@ -57,22 +58,25 @@ class TournamentService {
       // Use read replica for read operations
       var query = _readClient
           .from('tournaments')
-          .select('*, clubs(name, logo_url, address)');
+          .select('*, clubs(name, logo_url, address, owner_id)');
 
       if (status != null) {
-        query = query.eq('status', status);
+        query = query.eq('status', status.value);
       }
       if (clubId != null) {
         query = query.eq('club_id', clubId);
       }
-      // Removed skill_level_required filter - không dùng nữa
 
       final from = (page - 1) * pageSize;
       final to = from + pageSize - 1;
-
+      final isCompleted = status == TournamentTabStatus.completed;
+      
       final response = await query
           .eq('is_public', true)
-          .order('start_date', ascending: true)
+          .order(
+            isCompleted ? 'end_date' : 'start_date', 
+            ascending: !isCompleted
+          )
           .range(from, to);
 
       final tournaments = response
@@ -237,11 +241,53 @@ class TournamentService {
     }
   }
 
+  Future<void> hideTournament(String tournamentId) async {
+    try {
+      await _writeClient.from('tournaments').update({'is_public': false}).eq('id', tournamentId);
+      
+      // Invalidate cache
+      await CacheManager.instance.removeCache('tournaments_list');
+      
+      ProductionLogger.info('Hidden tournament: $tournamentId', tag: 'TournamentService');
+    } catch (error) {
+      final errorInfo = StandardizedErrorHandler.handleError(
+        error,
+        context: ErrorContext(
+          category: ErrorCategory.database,
+          operation: 'hideTournament',
+          context: 'Failed to hide tournament',
+        ),
+      );
+      throw Exception(errorInfo.message);
+    }
+  }
+
+  Future<void> deleteTournament(String tournamentId) async {
+    try {
+      await _writeClient.from('tournaments').delete().eq('id', tournamentId);
+      
+      // Invalidate cache
+      await CacheManager.instance.removeCache('tournaments_list');
+      
+      ProductionLogger.info('Deleted tournament: $tournamentId', tag: 'TournamentService');
+    } catch (error) {
+      final errorInfo = StandardizedErrorHandler.handleError(
+        error,
+        context: ErrorContext(
+          category: ErrorCategory.database,
+          operation: 'deleteTournament',
+          context: 'Failed to delete tournament',
+        ),
+      );
+      throw Exception(errorInfo.message);
+    }
+  }
+
   Future<List<UserProfile>> getTournamentParticipants(
     String tournamentId,
   ) async {
     try {
-      ProductionLogger.debug('Querying participants for tournament $tournamentId', tag: 'TournamentService');
+      // ProductionLogger.debug('Querying participants for tournament $tournamentId', tag: 'TournamentService');
       final response = await _supabase
           .from('tournament_participants')
           .select('''
@@ -251,7 +297,8 @@ class TournamentService {
           .eq('tournament_id', tournamentId)
           .order('registered_at');
 
-      ProductionLogger.debug('Raw response count: ${response.length}', tag: 'TournamentService');
+      // ProductionLogger.debug('Raw response count: ${response.length}', tag: 'TournamentService');
+      /*
       if (kDebugMode) {
         for (int i = 0; i < response.length; i++) {
           final item = response[i];
@@ -261,6 +308,7 @@ class TournamentService {
           );
         }
       }
+      */
 
       final participants = response
           .where((json) => json['users'] != null) // ✅ FIX: Filter out null users
@@ -298,7 +346,7 @@ class TournamentService {
     String tournamentId,
   ) async {
     try {
-      ProductionLogger.debug('Fetching matches for tournament $tournamentId', tag: 'TournamentService');
+      // ProductionLogger.debug('Fetching matches for tournament $tournamentId', tag: 'TournamentService');
 
       // First get matches with proper column names
       final matches = await _supabase
@@ -486,7 +534,7 @@ class TournamentService {
   }) async {
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) throw Exception('User not authenticated');
+      if (user == null) throw Exception('Người dùng chưa đăng nhập');
 
       // Check if already registered
       final existingRegistration = await _supabase
@@ -497,17 +545,17 @@ class TournamentService {
           .maybeSingle();
 
       if (existingRegistration != null) {
-        throw Exception('Already registered for this tournament');
+        throw Exception('Bạn đã đăng ký giải đấu này rồi');
       }
 
       // Check if tournament is still accepting registrations
       final tournament = await getTournamentById(tournamentId);
       if (tournament.currentParticipants >= tournament.maxParticipants) {
-        throw Exception('Tournament is full');
+        throw Exception('Giải đấu đã đủ số lượng người tham gia');
       }
 
       if (DateTime.now().isAfter(tournament.registrationDeadline)) {
-        throw Exception('Registration deadline has passed');
+        throw Exception('Đã hết hạn đăng ký');
       }
 
       // Register for tournament
@@ -1655,14 +1703,14 @@ class TournamentService {
   }
 
   /// Generate loser bracket for double elimination
-  Map<String, dynamic> _generateLoserBracket(int playerCount) {
-    // Simplified loser bracket structure
-    return {
-      'rounds': (math.log(playerCount) ~/ math.log(2)) * 2 - 1,
-      "structure": 'loser_bracket',
-      'feedFromWinner': true,
-    };
-  }
+  // Map<String, dynamic> _generateLoserBracket(int playerCount) { // Unused
+  //   // Simplified loser bracket structure
+  //   return {
+  //     'rounds': (math.log(playerCount) ~/ math.log(2)) * 2 - 1,
+  //     "structure": 'loser_bracket',
+  //     'feedFromWinner': true,
+  //   };
+  // }
 
   /// Generate matches từ bracket structure
   List<TournamentMatch> _generateMatches(
@@ -1941,9 +1989,9 @@ class TournamentService {
 
     // Loser Bracket matches - Generate based on winner bracket
     final loserBracket = bracket['loserBracket'] as Map<String, dynamic>;
-    final winnerBracketRounds = winnerBracket.containsKey('rounds')
-        ? winnerBracket['rounds'] as int
-        : 4;
+    // final winnerBracketRounds = winnerBracket.containsKey('rounds')
+    //     ? winnerBracket['rounds'] as int
+    //     : 4; // Unused
     final loserBracketRounds = loserBracket['rounds'] as int;
 
     ProductionLogger.info('📊 Loser Bracket: $loserBracketRounds rounds', tag: 'TournamentService');

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
 import 'package:sabo_arena/widgets/club/club_logo_widget.dart';
+import 'package:sabo_arena/widgets/user/user_widgets.dart';
+import 'package:sabo_arena/models/match.dart';
 
 /// Match Card Widget with Real-time Updates - Phase 5-6
 /// Features:
@@ -10,9 +12,9 @@ import 'package:sabo_arena/widgets/club/club_logo_widget.dart';
 /// - Automatic UI refresh when match data changes
 /// - Support for in_progress matches with live scores
 class MatchCardWidgetRealtime extends StatefulWidget {
-  final Map<String, dynamic> match;
+  final Match match;
   final VoidCallback? onTap;
-  final VoidCallback? onWatchLive; // New: Open live stream
+  final VoidCallback? onWatchLive;
 
   const MatchCardWidgetRealtime({
     super.key,
@@ -31,17 +33,23 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
   RealtimeChannel? _realtimeChannel;
   
   // Local state for real-time updates
-  late Map<String, dynamic> _currentMatch;
-  late int _player1Score;
-  late int _player2Score;
-  late String _status;
-  late bool _isLive;
+  late Match _currentMatch;
 
   @override
   void initState() {
     super.initState();
-    _initializeMatchData();
+    _currentMatch = widget.match;
     _subscribeToMatchUpdates();
+  }
+
+  @override
+  void didUpdateWidget(MatchCardWidgetRealtime oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.match.id != oldWidget.match.id) {
+      _unsubscribeFromUpdates();
+      _currentMatch = widget.match;
+      _subscribeToMatchUpdates();
+    }
   }
 
   @override
@@ -50,22 +58,13 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
     super.dispose();
   }
 
-  /// Initialize match data from props
-  void _initializeMatchData() {
-    _currentMatch = Map<String, dynamic>.from(widget.match);
-    _player1Score = _currentMatch['player1_score'] as int? ?? 0;
-    _player2Score = _currentMatch['player2_score'] as int? ?? 0;
-    _status = _currentMatch['status'] as String? ?? 'pending';
-    _isLive = _currentMatch['is_live'] as bool? ?? false;
-  }
-
   /// Subscribe to real-time match updates
   void _subscribeToMatchUpdates() {
-    final matchId = widget.match['id'];
-    if (matchId == null) return;
+    final matchId = widget.match.id;
+    if (matchId.isEmpty) return;
 
     // Only subscribe if match is in_progress
-    if (_status != 'in_progress') {
+    if (!_currentMatch.isInProgress) {
       ProductionLogger.info('⏸️ Match $matchId not in progress, skipping real-time subscription', tag: 'match_card_widget_realtime');
       return;
     }
@@ -102,16 +101,15 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
     if (!mounted) return;
 
     setState(() {
-      _player1Score = newData['player1_score'] as int? ?? _player1Score;
-      _player2Score = newData['player2_score'] as int? ?? _player2Score;
-      _status = newData['status'] as String? ?? _status;
-      _isLive = newData['is_live'] as bool? ?? _isLive;
-      
-      // Update current match data
-      _currentMatch.addAll(newData);
+      _currentMatch = _currentMatch.copyWith(
+        player1Score: newData['player1_score'] as int?,
+        player2Score: newData['player2_score'] as int?,
+        status: newData['status'] as String?,
+        isLive: newData['is_live'] as bool?,
+      );
     });
 
-    ProductionLogger.info('✅ UI updated - Score: $_player1Score - $_player2Score, Status: $_status, Live: $_isLive', tag: 'match_card_widget_realtime');
+    ProductionLogger.info('✅ UI updated - Score: ${_currentMatch.player1Score} - ${_currentMatch.player2Score}, Status: ${_currentMatch.status}, Live: ${_currentMatch.isLive}', tag: 'match_card_widget_realtime');
   }
 
   /// Unsubscribe from real-time updates
@@ -126,52 +124,45 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
   @override
   Widget build(BuildContext context) {
     // Player info
-    final player1Name = _currentMatch['player1Name'] as String? ?? 
-                        _currentMatch['player1']?['full_name'] as String? ?? 
+    final player1Name = _currentMatch.player1Profile?.fullName ?? 
+                        _currentMatch.player1Name ?? 
                         'Player 1';
-    final player1Rank = _currentMatch['player1Rank'] as String? ?? 
-                        _currentMatch['player1']?['rank'] as String? ?? 
-                        'H';
-    final player1Avatar = _currentMatch['player1Avatar'] as String? ?? 
-                          _currentMatch['player1']?['avatar_url'] as String?;
-    final player1Online = _currentMatch['player1Online'] as bool? ?? false;
+    final player1Rank = _currentMatch.player1Profile?.rank ?? 'H';
+    final player1Avatar = _currentMatch.player1Profile?.avatarUrl;
+    final player1Online = false;
 
-    final player2Name = _currentMatch['player2Name'] as String? ?? 
-                        _currentMatch['player2']?['full_name'] as String? ?? 
+    final player2Name = _currentMatch.player2Profile?.fullName ?? 
+                        _currentMatch.player2Name ?? 
                         'Player 2';
-    final player2Rank = _currentMatch['player2Rank'] as String? ?? 
-                        _currentMatch['player2']?['rank'] as String? ?? 
-                        'H';
-    final player2Avatar = _currentMatch['player2Avatar'] as String? ?? 
-                          _currentMatch['player2']?['avatar_url'] as String?;
-    final player2Online = _currentMatch['player2Online'] as bool? ?? false;
+    final player2Rank = _currentMatch.player2Profile?.rank ?? 'H';
+    final player2Avatar = _currentMatch.player2Profile?.avatarUrl;
+    final player2Online = false;
 
     // Club info
-    final clubName = _currentMatch['clubName'] as String? ?? 
-                     _currentMatch['club']?['name'] as String?;
-    final clubLogo = _currentMatch['clubLogo'] as String? ?? 
-                     _currentMatch['club']?['logo_url'] as String?;
-    final clubAddress = _currentMatch['clubAddress'] as String? ?? 
-                        _currentMatch['club']?['address'] as String?;
+    final clubName = _currentMatch.club?.name;
+    final clubLogo = _currentMatch.club?.logoUrl;
+    final clubAddress = _currentMatch.club?.address;
 
     // Match info
-    final matchType = _currentMatch['matchType'] as String? ?? 
-                      (_currentMatch['challenge_type'] == 'thach_dau' ? 'Thách đấu' : 'Giao lưu');
-    final date = _currentMatch['date'] as String? ?? 
-                 _formatDate(_currentMatch['scheduled_time']);
-    final time = _currentMatch['time'] as String? ?? 
-                 _formatTime(_currentMatch['scheduled_time']);
-    final handicap = _currentMatch['handicap'] as String? ?? 'Handicap 0.5 ván';
-    final prize = _currentMatch['prize'] as String? ?? '100 SPA';
-    final raceInfo = _currentMatch['raceInfo'] as String? ?? 'Race to 7';
-    final currentTable = _currentMatch['currentTable'] as String? ?? 
-                         (_currentMatch['table_number'] != null 
-                           ? 'Bàn ${_currentMatch['table_number']}' 
-                           : 'Bàn 1');
+    final matchType = _currentMatch.matchType == 'thach_dau' ? 'Thách đấu' : 
+                      (_currentMatch.matchType == 'giao_luu' ? 'Giao lưu' : 
+                      _currentMatch.matchTypeDisplay);
+    
+    final date = _formatDate(_currentMatch.scheduledAt);
+    final time = _formatTime(_currentMatch.scheduledAt);
+    
+    final handicap = _currentMatch.metadata?['handicap'] as String? ?? 'Handicap 0.5 ván';
+    final prize = _currentMatch.metadata?['prize'] as String? ?? '100 SPA';
+    final raceInfo = _currentMatch.metadata?['race_to'] != null 
+        ? 'Race to ${_currentMatch.metadata!['race_to']}' 
+        : 'Race to 7';
+    final currentTable = _currentMatch.table != null 
+        ? 'Bàn ${_currentMatch.table}' 
+        : 'Bàn 1';
 
     // Video URL for live streaming
-    final videoUrl = _currentMatch['video_url'] as String?;
-    final canWatchLive = _isLive && videoUrl != null && videoUrl.isNotEmpty;
+    final videoUrl = _currentMatch.videoUrls?.isNotEmpty == true ? _currentMatch.videoUrls!.first : null;
+    final canWatchLive = _currentMatch.isLive && videoUrl != null && videoUrl.isNotEmpty;
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -182,15 +173,15 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isLive ? const Color(0xFFFF5722) : const Color(0xFFE0E0E0),
-            width: _isLive ? 2 : 1,
+            color: _currentMatch.isLive ? const Color(0xFFFF5722) : const Color(0xFFE0E0E0),
+            width: _currentMatch.isLive ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: _isLive 
+              color: _currentMatch.isLive 
                 ? const Color(0xFFFF5722).withValues(alpha: 0.2) 
                 : Colors.black.withValues(alpha: 0.05),
-              blurRadius: _isLive ? 12 : 8,
+              blurRadius: _currentMatch.isLive ? 12 : 8,
               offset: const Offset(0, 2),
             ),
           ],
@@ -213,7 +204,7 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
                   const Expanded(child: SizedBox()),
 
                 // Status Badge ở giữa với live indicator
-                _buildStatusBadge(_status, _isLive),
+                _buildStatusBadge(_currentMatch.status, _currentMatch.isLive),
 
                 // Match Type badge ở góc phải
                 Expanded(
@@ -226,7 +217,7 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
             ),
 
             // Live streaming badge (nếu đang live)
-            if (_isLive) ...[
+            if (_currentMatch.isLive) ...[
               const SizedBox(height: 8),
               _buildLiveStreamingBadge(),
             ],
@@ -252,21 +243,37 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
                 // Match Info (Center)
                 Column(
                   children: [
-                    // Date & Time
-                    Text(
-                      date,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF9E9E9E),
-                        fontWeight: FontWeight.w500,
+                    // Date & Time - Highlighted
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                        ),
                       ),
-                    ),
-                    Text(
-                      time,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF9E9E9E),
-                        fontWeight: FontWeight.w500,
+                      child: Column(
+                        children: [
+                          Text(
+                            time,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            date,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
 
@@ -381,11 +388,11 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
         );
       },
       child: Row(
-        key: ValueKey('$_player1Score-$_player2Score'),
+        key: ValueKey('${_currentMatch.player1Score}-${_currentMatch.player2Score}'),
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            _player1Score.toString(),
+            (_currentMatch.player1Score ?? 0).toString(),
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
@@ -403,7 +410,7 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
           ),
           const SizedBox(width: 8),
           Text(
-            _player2Score.toString(),
+            (_currentMatch.player2Score ?? 0).toString(),
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
@@ -436,7 +443,7 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
       case 'completed':
         bgColor = const Color(0xFF9E9E9E);
         textColor = Colors.white;
-        label = 'Done';
+        label = 'Hoàn thành';
         break;
       default:
         bgColor = const Color(0xFFE0E0E0);
@@ -586,33 +593,12 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
         // Avatar with online status
         Stack(
           children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFE0E0E0),
-                border: Border.all(color: const Color(0xFFBDBDBD), width: 2),
-              ),
-              child: ClipOval(
-                child: avatar != null
-                    ? Image.network(
-                        avatar,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.person,
-                            size: 32,
-                            color: Color(0xFF757575),
-                          );
-                        },
-                      )
-                    : const Icon(
-                        Icons.person,
-                        size: 32,
-                        color: Color(0xFF757575),
-                      ),
-              ),
+            UserAvatarWidget(
+              avatarUrl: avatar,
+              userName: name,
+              rankCode: rank,
+              size: 60,
+              showRankBorder: rank.isNotEmpty,
             ),
             if (isOnline)
               Positioned(
@@ -648,32 +634,12 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
 
         const SizedBox(height: 4),
 
-        // Rank badge
-        _buildRankBadge(rank),
+        // Rank badge using unified component
+        UserRankBadgeWidget(
+          rankCode: rank,
+          style: RankBadgeStyle.compact,
+        ),
       ],
-    );
-  }
-
-  Widget _buildRankBadge(String rank) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: const Color(0xFF00695C).withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: const Color(0xFF00695C).withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Text(
-        rank,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF00695C),
-          letterSpacing: 0.5,
-        ),
-      ),
     );
   }
 

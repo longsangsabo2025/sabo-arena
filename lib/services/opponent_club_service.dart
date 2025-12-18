@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/club.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service để lấy dữ liệu CLB thật từ Supabase cho tab đối thủ
 class OpponentClubService {
@@ -23,11 +23,9 @@ class OpponentClubService {
       if (_cachedClubs != null &&
           _lastFetch != null &&
           DateTime.now().difference(_lastFetch!) < _cacheTimeout) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return _cachedClubs!;
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('clubs')
@@ -60,10 +58,8 @@ class OpponentClubService {
       _cachedClubs = clubs;
       _lastFetch = DateTime.now();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return clubs;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Return fallback mock data if Supabase fails
       return _getFallbackClubs();
@@ -83,7 +79,6 @@ class OpponentClubService {
       final randomIndex = DateTime.now().millisecondsSinceEpoch % clubs.length;
       return clubs[randomIndex].name;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return _getFallbackClubName();
     }
   }
@@ -98,7 +93,6 @@ class OpponentClubService {
             clubs.isNotEmpty ? clubs.first : _getFallbackClubs().first,
       );
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -107,7 +101,6 @@ class OpponentClubService {
   void clearCache() {
     _cachedClubs = null;
     _lastFetch = null;
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Fallback clubs nếu Supabase không hoạt động
@@ -189,7 +182,6 @@ class OpponentClubService {
                   .round(),
       };
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'total_clubs': 0, 'verified_clubs': 0, 'average_rating': 0};
     }
   }

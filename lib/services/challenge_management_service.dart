@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service to manage challenge lifecycle
 /// Handles: accepting, starting, completing challenges
@@ -13,7 +13,6 @@ class ChallengeManagementService {
     String? responseMessage,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase.from('challenges').update({
         'status': 'accepted',
@@ -22,9 +21,7 @@ class ChallengeManagementService {
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -34,7 +31,6 @@ class ChallengeManagementService {
     required String challengeId,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase.from('challenges').update({
         'status': 'in_progress',
@@ -42,9 +38,7 @@ class ChallengeManagementService {
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -57,9 +51,6 @@ class ChallengeManagementService {
     required int player2Score,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final updates = {
         'status': 'completed',
@@ -72,9 +63,7 @@ class ChallengeManagementService {
 
       await _supabase.from('challenges').update(updates).eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -86,7 +75,6 @@ class ChallengeManagementService {
     required int player2Score,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase.from('challenges').update({
         'player1_score': player1Score,
@@ -94,9 +82,7 @@ class ChallengeManagementService {
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -107,7 +93,6 @@ class ChallengeManagementService {
     String? responseMessage,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase.from('challenges').update({
         'status': 'rejected',
@@ -116,9 +101,7 @@ class ChallengeManagementService {
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -128,16 +111,13 @@ class ChallengeManagementService {
     required String challengeId,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase.from('challenges').update({
         'status': 'cancelled',
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -147,7 +127,6 @@ class ChallengeManagementService {
     required String challengeId,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('challenges')
@@ -178,7 +157,6 @@ class ChallengeManagementService {
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }

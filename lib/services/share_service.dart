@@ -7,7 +7,7 @@ import '../widgets/shareable_cards/shareable_tournament_card.dart';
 import '../widgets/shareable_cards/shareable_profile_card.dart';
 import '../widgets/shareable_cards/shareable_tournament_match_card.dart';
 import '../widgets/shareable_cards/shareable_post_card.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ShareService {
   static const String _baseUrl = 'https://saboarena.com';
@@ -64,7 +64,6 @@ class ShareService {
         contentId: user.id,
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Fallback to text-only share
       await shareUserProfile(user);
       return null;
@@ -174,7 +173,6 @@ $dateStr
         contentId: matchId,
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -230,7 +228,6 @@ ${content.isNotEmpty ? '$content\n\n' : ''}📊 $likeCount lượt thích • $c
         contentId: postId,
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -336,7 +333,6 @@ ${content.isNotEmpty ? '$content\n\n' : ''}📊 $likeCount lượt thích • $c
         contentId: tournamentId,
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Fallback to text-only share
       await shareTournament(
         tournamentId: tournamentId,

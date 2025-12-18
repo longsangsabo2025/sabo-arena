@@ -33,7 +33,7 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
   final SimpleChallengeService _challengeService =
       SimpleChallengeService.instance;
   final UserService _userService = UserService.instance;
-  bool _isLoadingSpaBalance = false;
+  // bool _isLoadingSpaBalance = false;
 
   // SPA Betting Configuration - matches challenge_rules_service.dart
   static const Map<int, int> _spaBettingConfig = {
@@ -81,18 +81,18 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
   Future<void> _loadUserSpaBalance() async {
     if (widget.currentUser == null) return;
 
-    setState(() => _isLoadingSpaBalance = true);
+    // setState(() => _isLoadingSpaBalance = true);
     try {
       final userProfile = await _userService.getCurrentUserProfile();
       setState(() {
         _currentUserSpaBalance = userProfile?.spaPoints ?? 0;
-        _isLoadingSpaBalance = false;
+        // _isLoadingSpaBalance = false;
       });
     } catch (e) {
       ProductionLogger.info('Error loading SPA balance: $e', tag: 'create_spa_challenge_modal');
       setState(() {
         _currentUserSpaBalance = 0;
-        _isLoadingSpaBalance = false;
+        // _isLoadingSpaBalance = false;
       });
     }
   }
@@ -1629,7 +1629,6 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
         if (clubBalance == null) {
           // If no club balance record exists, we can still create the challenge
           // The SPA reward will be handled when the match is completed
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } else {
           final availableSpa = clubBalance['available_spa'] ?? 0.0;
           if (availableSpa < _selectedSpaBonus) {
@@ -1727,7 +1726,6 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
         throw Exception('Không thể tạo thách đấu');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

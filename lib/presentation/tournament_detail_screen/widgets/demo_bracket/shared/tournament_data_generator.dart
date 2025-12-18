@@ -2,7 +2,7 @@
 // Handles match generation and tournament calculation logic
 
 import 'dart:math';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class TournamentDataGenerator {
   /// Calculate nearest power of 2 (for bracket sizing)
@@ -784,7 +784,7 @@ class TournamentDataGenerator {
       });
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix'); // Debug fix
+ // Debug fix
     return rounds;
   }
 

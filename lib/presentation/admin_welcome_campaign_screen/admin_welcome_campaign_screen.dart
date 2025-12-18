@@ -557,14 +557,14 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
           controller: reasonController,
           decoration: const InputDecoration(
             labelText: 'Rejection Reason',
-            hintText: 'Enter reason for rejection...',
+            hintText: 'Nhập lý do từ chối...',
           ),
           maxLines: 3,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () async {

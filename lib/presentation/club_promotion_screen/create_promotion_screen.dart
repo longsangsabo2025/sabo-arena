@@ -291,9 +291,7 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
             Row(
               children: [
                 Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text('Theo phần trăm (%)'),
-                    value: true,
+                  child: RadioGroup<bool>(
                     groupValue: _isPercentageDiscount,
                     onChanged: (value) {
                       setState(() {
@@ -301,12 +299,14 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
                         _discountAmountController.clear();
                       });
                     },
+                    child: RadioListTile<bool>(
+                      title: const Text('Theo phần trăm (%)'),
+                      value: true,
+                    ),
                   ),
                 ),
                 Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text('Theo số tiền (đ)'),
-                    value: false,
+                  child: RadioGroup<bool>(
                     groupValue: _isPercentageDiscount,
                     onChanged: (value) {
                       setState(() {
@@ -314,6 +314,10 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
                         _discountPercentageController.clear();
                       });
                     },
+                    child: RadioListTile<bool>(
+                      title: const Text('Theo số tiền (đ)'),
+                      value: false,
+                    ),
                   ),
                 ),
               ],
@@ -569,6 +573,8 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
       firstDate: firstDate,
       lastDate: lastDate,
     );
+
+    if (!mounted) return;
 
     if (date != null) {
       final time = await showTimePicker(

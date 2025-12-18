@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../widgets/custom_image_widget.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class CreatePostHintWidget extends StatefulWidget {
   final VoidCallback onTap;
@@ -47,7 +47,6 @@ class _CreatePostHintWidgetState extends State<CreatePostHintWidget> {
         setState(() => _isLoading = false);
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }
@@ -115,7 +114,7 @@ class _CreatePostHintWidgetState extends State<CreatePostHintWidget> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
-                  'What\'s on your mind?',
+                  'Bạn đang nghĩ gì?',
                   style: TextStyle(
                     fontSize: 15,
                     color: Color(0xFF65676B), // Facebook: gray600

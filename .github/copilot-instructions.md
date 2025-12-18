@@ -1,5 +1,18 @@
 # GitHub Copilot Instructions for SABO Arena
 
+## 🚨 CRITICAL DATABASE PROTOCOL (READ THIS FIRST)
+- **PRINCIPLE #1: CHECK LIVE SUPABASE SCHEMA FIRST.**
+  - Before assuming a table, column, or RPC is missing, **ALWAYS** verify its existence on the live Supabase instance.
+  - Use provided scripts (e.g., `scripts/check_db_state.py`) or create a verification script using credentials from `.env`.
+  - **NEVER** write fallback code for "missing" DB features without confirming they are actually missing.
+
+- **NEVER TRUST STATIC MARKDOWN FILES** in `_DATABASE_INFO` (except `LIVE_SCHEMA_SNAPSHOT.md`).
+- The database schema changes frequently. Old reports are LIES.
+- **Source of Truth**:
+  1. Run `dart scripts/get_live_table_count.dart` or python scripts to verify the current schema.
+  2. Check `_DATABASE_INFO/LIVE_SCHEMA_SNAPSHOT.md` (if recently updated).
+- **Action**: If you need to know if a table exists, CHECK IT LIVE. Do not guess.
+
 ## Project Context
 SABO Arena is a tournament management platform built with Flutter and Supabase.
 

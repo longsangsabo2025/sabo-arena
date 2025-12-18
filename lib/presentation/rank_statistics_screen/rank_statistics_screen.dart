@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../services/user_service.dart';
 import '../../core/utils/sabo_rank_system.dart';
 import '../../models/user_profile.dart';
+// import '../../models/user_stats.dart';
 
 class RankStatisticsScreen extends StatefulWidget {
   const RankStatisticsScreen({super.key});
@@ -49,7 +50,7 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
 
       setState(() {
         _userProfile = userProfile;
-        _userStats = userStats;
+        _userStats = userStats.toJson();
         _rankHistory = rankHistory;
         _recentMatches = recentMatches;
         _isLoading = false;

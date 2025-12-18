@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:math';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for issuing vouchers to top performers
 class VoucherIssuanceService {
@@ -13,17 +13,14 @@ class VoucherIssuanceService {
     required List<Map<String, dynamic>> standings,
     required Map<String, dynamic> tournament,
   }) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Get prize distribution config
     final prizeDistJson = tournament['prize_distribution'];
     if (prizeDistJson == null || prizeDistJson is! Map) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
     final voucherTemplate = prizeDistJson['template'] ?? 'top_4';
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Get voucher configs for top 4 positions
     final voucherConfigs = await _supabase
@@ -34,25 +31,22 @@ class VoucherIssuanceService {
         .order('position', ascending: true);
 
     if (voucherConfigs.isEmpty) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Issue vouchers to top 4
-    int issuedCount = 0;
+    // int issuedCount = 0; // Unused
     for (final config in voucherConfigs) {
       final position = config['position'] as int;
       
       if (position > standings.length) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         continue;
       }
 
       final standing = standings[position - 1]; // 0-indexed
       final userId = standing['participant_id'] as String;
-      final userName = standing['participant_name'] as String;
+      // final userName = standing['participant_name'] as String; // Unused
 
       try {
         // 🛡️ DEDUPLICATION CHECK: Prevent duplicate voucher issuance
@@ -64,8 +58,7 @@ class VoucherIssuanceService {
             .eq('position', position);
         
         if (existingVoucher.isNotEmpty) {
-          final voucherCode = existingVoucher.first['voucher_code'];
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // final voucherCode = existingVoucher.first['voucher_code']; // Unused
           continue; // Skip duplicate
         }
 
@@ -87,15 +80,13 @@ class VoucherIssuanceService {
           'issued_at': DateTime.now().toIso8601String(),
         });
 
-        issuedCount++;
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // issuedCount++;
 
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // Ignore error
       }
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Generate unique voucher code

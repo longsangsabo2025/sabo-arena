@@ -1,0 +1,203 @@
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
+class VideoThumbnailWidget extends StatefulWidget {
+  final String videoUrl;
+  final VoidCallback? onTap;
+  final double width;
+  final double height;
+  
+  const VideoThumbnailWidget({
+    Key? key,
+    required this.videoUrl,
+    this.onTap,
+    this.width = 100,
+    this.height = 100,
+  }) : super(key: key);
+
+  @override
+  State<VideoThumbnailWidget> createState() => _VideoThumbnailWidgetState();
+}
+
+class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
+  VideoPlayerController? _controller;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeController();
+  }
+
+  Future<void> _initializeController() async {
+    try {
+      _controller = VideoPlayerController.network(widget.videoUrl);
+      await _controller!.initialize();
+      if (mounted) {
+
+        if (mounted) {
+
+
+          setState(() {
+        _isLoading = false;
+        });
+
+
+        }
+
+      }
+    } catch (e) {
+      if (mounted) {
+
+        if (mounted) {
+
+
+          setState(() {
+        _isLoading = false;
+        });
+
+
+        }
+
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: Colors.black12,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Stack(
+                children: [
+                  if (_controller != null && _controller!.value.isInitialized)
+                    VideoPlayer(_controller!)
+                  else
+                    Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.video_library,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    ),
+                  // Play button overlay
+                  const Center(
+                    child: Icon(
+                      Icons.play_circle_fill,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class VideoPlayerDialog {
+  static void show(BuildContext context, String videoUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: VideoPlayerFullscreen(videoUrl: videoUrl),
+      ),
+    );
+  }
+}
+
+class VideoPlayerFullscreen extends StatefulWidget {
+  final String videoUrl;
+  
+  const VideoPlayerFullscreen({Key? key, required this.videoUrl}) : super(key: key);
+
+  @override
+  State<VideoPlayerFullscreen> createState() => _VideoPlayerFullscreenState();
+}
+
+class _VideoPlayerFullscreenState extends State<VideoPlayerFullscreen> {
+  VideoPlayerController? _controller;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeController();
+  }
+
+  Future<void> _initializeController() async {
+    try {
+      _controller = VideoPlayerController.network(widget.videoUrl);
+      await _controller!.initialize();
+      if (mounted) {
+
+        if (mounted) {
+
+
+          setState(() {
+        _isLoading = false;
+        });
+
+
+        }
+
+      }
+      _controller!.play();
+    } catch (e) {
+      if (mounted) {
+
+        if (mounted) {
+
+
+          setState(() {
+        _isLoading = false;
+        });
+
+
+        }
+
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.9,
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _controller != null && _controller!.value.isInitialized
+              ? AspectRatio(
+                  aspectRatio: _controller!.value.aspectRatio,
+                  child: VideoPlayer(_controller!),
+                )
+              : const Center(
+                  child: Text('Failed to load video'),
+                ),
+    );
+  }
+}

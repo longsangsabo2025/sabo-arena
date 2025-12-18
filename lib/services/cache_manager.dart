@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'app_cache_service.dart';
 import 'tournament_cache_service.dart';
 import 'redis_cache_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Unified Cache Manager
 /// Provides a single interface for all caching layers
@@ -37,7 +37,6 @@ class CacheManager {
     await TournamentCacheService.initialize();
     RedisCacheService.instance.initialize();
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -200,7 +199,6 @@ class CacheManager {
     List<String>? clubIds,
   }) async {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     // Warm tournament cache
@@ -226,7 +224,6 @@ class CacheManager {
     }
 
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -270,6 +267,12 @@ class CacheManager {
     );
   }
 
+  /// Generic cache remover
+  Future<void> removeCache(String key) async {
+    _lruCache.remove(key);
+    await AppCacheService.instance.clearCache(key);
+  }
+
   /// Get TTL for key based on prefix
   Duration _getTTLForKey(String key) {
     if (key.startsWith('tournament:')) return tournamentTTL;
@@ -285,7 +288,6 @@ class CacheManager {
     await AppCacheService.instance.clearAll();
     await TournamentCacheService.clearAllCache();
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 

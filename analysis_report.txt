@@ -1,0 +1,331 @@
+Analyzing app...                                                
+
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:55:7 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:56:7 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:255:7 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\core\design_system\components\ds_radio.dart:256:7 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\features\privacy\privacy_settings.dart:140:7 - use_build_context_synchronously
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:280:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:281:15 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:291:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:292:15 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:302:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\privacy\privacy_settings.dart:303:15 - deprecated_member_use
+   info - Empty catch block - lib\helpers\welcome_voucher_helper.dart:45:17 - empty_catches
+warning - Unused import: '../services/messaging_service.dart' - lib\optimized_main.dart:4:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\activity_history_screen\activity_history_screen.dart:53:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\activity_history_screen\activity_history_screen.dart:59:23 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\activity_history_screen\activity_history_screen.dart:71:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\admin_dashboard_screen\admin_dashboard_screen.dart:158:22 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\admin_dashboard_screen\admin_dashboard_screen.dart:159:22 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\admin_dashboard_screen\admin_dashboard_screen.dart:164:22 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\admin_dashboard_screen\admin_dashboard_screen.dart:167:30 - use_build_context_synchronously
+   info - Empty catch block - lib\presentation\chat_room_screen\chat_room_screen.dart:156:21 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\chat_room_screen\chat_room_screen.dart:277:31 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\chat_room_screen\chat_room_screen.dart:306:31 - use_build_context_synchronously
+warning - The declaration '_startMatch' isn't referenced - lib\presentation\club\club_match_management_screen.dart:87:16 - unused_element
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club\club_match_management_screen.dart:126:7 - use_build_context_synchronously
+warning - The declaration '_completeMatch' isn't referenced - lib\presentation\club\club_match_management_screen.dart:156:16 - unused_element
+warning - The declaration '_toggleLiveStream' isn't referenced - lib\presentation\club\club_match_management_screen.dart:221:16 - unused_element
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club\club_match_management_screen.dart:288:32 - use_build_context_synchronously
+warning - Unused import: '../club_notification_screen/club_notification_screen.dart' - lib\presentation\club_dashboard_screen\club_dashboard_screen.dart:14:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen.dart:619:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen.dart:657:9 - use_build_context_synchronously
+   info - Empty catch block - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:254:21 - empty_catches
+   info - Empty catch block - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:352:17 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:1357:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:1390:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:1397:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:1399:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:1524:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:1556:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_dashboard_screen_simple.dart:1680:9 - use_build_context_synchronously
+warning - Unused import: '../club/club_match_management_screen.dart' - lib\presentation\club_dashboard_screen\club_owner_main_screen.dart:9:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_owner_rank_approval_screen.dart:96:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_owner_rank_approval_screen.dart:106:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_dashboard_screen\club_owner_rank_approval_screen.dart:114:28 - use_build_context_synchronously
+warning - 'scale' is deprecated and shouldn't be used. Use scaleByVector3, scaleByVector4, or scaleByDouble instead - lib\presentation\club_dashboard_screen\widgets\quick_action_card_simple.dart:40:40 - deprecated_member_use
+warning - Unused import: '../../models/club.dart' - lib\presentation\club_main_screen\club_main_screen.dart:4:8 - unused_import
+warning - Unused import: '../../services/club_service.dart' - lib\presentation\club_main_screen\club_main_screen.dart:5:8 - unused_import
+warning - Unused import: 'dialogs/club_verification_agreement_dialog.dart' - lib\presentation\club_main_screen\club_main_screen.dart:15:8 - unused_import
+warning - Unused import: '../optimized_messaging_screen.dart' - lib\presentation\club_main_screen\club_main_screen.dart:18:8 - unused_import
+warning - Unused import: '../../services/optimized_realtime_service.dart' - lib\presentation\club_main_screen\club_main_screen.dart:19:8 - unused_import
+   info - Empty catch block - lib\presentation\club_main_screen\widgets\club_card_ios.dart:325:17 - empty_catches
+warning - Unused import: '../../../core/app_export.dart' - lib\presentation\club_main_screen\widgets\horizontal_club_list.dart:3:8 - unused_import
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_management\widgets\grant_permission_dialog.dart:150:13 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_management\widgets\grant_permission_dialog.dart:151:13 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_notification_screen\club_notification_screen.dart:154:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_notification_screen\club_notification_screen.dart:155:15 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_notification_screen\club_notification_screen_simple.dart:154:15 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_notification_screen\club_notification_screen_simple.dart:155:15 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_profile_edit_screen\club_profile_edit_screen.dart:973:20 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_profile_edit_screen\club_profile_edit_screen.dart:991:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_profile_screen\club_profile_screen.dart:487:30 - use_build_context_synchronously
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:297:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:298:21 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:310:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\club_promotion_screen\create_promotion_screen.dart:311:21 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_promotion_screen\create_promotion_screen.dart:575:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club_selection_screen\club_selection_screen.dart:70:23 - use_build_context_synchronously
+warning - 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:584:16 - deprecated_member_use
+warning - 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:585:16 - deprecated_member_use
+warning - 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:586:16 - deprecated_member_use
+warning - 'red' is deprecated and shouldn't be used. Use (*.r * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:590:21 - deprecated_member_use
+warning - 'green' is deprecated and shouldn't be used. Use (*.g * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:591:21 - deprecated_member_use
+warning - 'blue' is deprecated and shouldn't be used. Use (*.b * 255.0).round() & 0xff - lib\presentation\club_settings_screen\color_settings_screen.dart:592:21 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:623:46 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:626:42 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:746:46 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:749:42 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:859:46 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:862:42 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\direct_messages_screen\direct_messages_screen.dart:279:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\email_verification_screen\email_verification_screen.dart:122:13 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\email_verification_screen\email_verification_screen.dart:134:15 - use_build_context_synchronously
+   info - Empty catch block - lib\presentation\email_verification_screen\email_verification_screen.dart:416:19 - empty_catches
+   info - The private field _isSearching could be 'final' - lib\presentation\find_opponents_list_screen\find_opponents_list_screen.dart:29:8 - prefer_final_fields
+warning - The value of the field '_isSearching' isn't used - lib\presentation\find_opponents_list_screen\find_opponents_list_screen.dart:29:8 - unused_field
+warning - The declaration '_showFollowSuccessSnackbar' isn't referenced - lib\presentation\find_opponents_list_screen\widgets\opponent_user_card.dart:156:8 - unused_element
+warning - The declaration '_buildDefaultAvatar' isn't referenced - lib\presentation\find_opponents_list_screen\widgets\opponent_user_card.dart:436:10 - unused_element
+warning - The declaration '_handleNavigation' isn't referenced - lib\presentation\find_opponents_screen\find_opponents_screen.dart:34:8 - unused_element
+warning - The value of the field '_currentSubTab' isn't used - lib\presentation\find_opponents_screen\widgets\competitive_challenges_tab.dart:31:7 - unused_field
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\find_opponents_screen\widgets\create_social_challenge_modal.dart:1013:17 - use_build_context_synchronously
+warning - The value of the field '_isLoadingSpaBalance' isn't used - lib\presentation\find_opponents_screen\widgets\create_spa_challenge_modal.dart:36:8 - unused_field
+warning - The value of the field '_currentSubTab' isn't used - lib\presentation\find_opponents_screen\widgets\my_challenges_tab.dart:31:7 - unused_field
+   info - Empty catch block - lib\presentation\find_opponents_screen\widgets\my_challenges_tab.dart:134:21 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\find_opponents_screen\widgets\player_card_widget.dart:551:41 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\find_opponents_screen\widgets\player_card_widget.dart:556:56 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\find_opponents_screen\widgets\player_card_widget.dart:563:7 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\find_opponents_screen\widgets\player_card_widget.dart:586:41 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\find_opponents_screen\widgets\player_card_widget.dart:592:7 - use_build_context_synchronously
+warning - The value of the field '_currentSubTab' isn't used - lib\presentation\find_opponents_screen\widgets\social_invites_tab.dart:31:7 - unused_field
+   info - Empty catch block - lib\presentation\find_opponents_screen\widgets\social_invites_tab.dart:298:19 - empty_catches
+warning - The value of the field '_isPlayer' isn't used - lib\presentation\home_feed_screen\home_feed_screen.dart:46:8 - unused_field
+warning - The declaration '_handleNavigation' isn't referenced - lib\presentation\home_feed_screen\home_feed_screen.dart:775:8 - unused_element
+   info - Empty catch block - lib\presentation\home_feed_screen\home_feed_screen.dart:1158:17 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\home_feed_screen.dart:1175:17 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\home_feed_screen.dart:1191:17 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\home_feed_screen.dart:1215:17 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\widgets\create_post_modal_widget.dart:90:17 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\widgets\create_post_modal_widget.dart:194:17 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\widgets\create_post_modal_widget.dart:203:17 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\widgets\create_post_modal_widget.dart:209:19 - empty_catches
+   info - Empty catch block - lib\presentation\home_feed_screen\widgets\create_post_modal_widget.dart:1666:17 - empty_catches
+warning - 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\presentation\home_feed_screen\widgets\create_post_modal_widget.dart:1690:9 - deprecated_member_use
+   info - Empty catch block - lib\presentation\leaderboard_screen\leaderboard_screen.dart:80:17 - empty_catches
+warning - The value of the field '_fullPhoneNumber' isn't used - lib\presentation\login_screen\login_screen_ios.dart:25:10 - unused_field
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:229:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:235:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:291:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:297:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_communication_screen\member_communication_screen.dart:859:28 - use_build_context_synchronously
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\member_detail_screen\widgets\member_settings_tab.dart:657:13 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\member_detail_screen\widgets\member_settings_tab.dart:658:13 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\member_management_screen.dart:897:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\member_management_screen.dart:899:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\member_management_screen.dart:904:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\member_management_screen.dart:949:31 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\member_management_screen.dart:951:31 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\member_management_screen.dart:953:19 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\member_management_screen.dart:958:19 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\widgets\add_member_dialog.dart:579:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\widgets\add_member_dialog.dart:581:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_management_screen\widgets\add_member_dialog.dart:588:28 - use_build_context_synchronously
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\presentation\member_profile_edit_screen\member_profile_edit_screen.dart:128:12 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_profile_edit_screen\member_profile_edit_screen.dart:898:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_profile_edit_screen\member_profile_edit_screen.dart:909:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\member_profile_edit_screen\member_profile_edit_screen.dart:911:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\membership_request_screen\membership_request_screen.dart:569:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\membership_request_screen\membership_request_screen.dart:608:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\membership_request_screen\membership_request_screen.dart:636:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\messaging_screen\messaging_screen.dart:162:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\messaging_screen\messaging_screen.dart:201:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\messaging_screen\messaging_screen.dart:226:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\notification_list_screen.dart:274:13 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\other_user_profile_screen\other_user_profile_screen.dart:202:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\other_user_profile_screen\other_user_profile_screen.dart:217:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\other_user_profile_screen\other_user_profile_screen.dart:223:9 - use_build_context_synchronously
+warning - The value of the local variable 'cardData' isn't used - lib\presentation\other_user_profile_screen\other_user_profile_screen.dart:378:15 - unused_local_variable
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\phone_otp_verification\phone_otp_verification_screen.dart:95:13 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\phone_otp_verification\phone_otp_verification_screen.dart:120:13 - use_build_context_synchronously
+   info - Empty catch block - lib\presentation\post_detail_screen\post_detail_screen.dart:75:17 - empty_catches
+   info - Empty catch block - lib\presentation\post_detail_screen\post_detail_screen.dart:131:17 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\profile_setup_screen\profile_setup_screen.dart:220:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\profile_setup_screen\profile_setup_screen.dart:225:23 - use_build_context_synchronously
+warning - The value of the field '_isLoading' isn't used - lib\presentation\promotion_screen\user_promotion_screen.dart:23:8 - unused_field
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:104:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:128:28 - use_build_context_synchronously
+   info - Empty catch block - lib\presentation\rank_registration_screen\rank_registration_screen.dart:380:23 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:415:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:429:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:552:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:612:28 - use_build_context_synchronously
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:989:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:990:21 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1054:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1055:21 - deprecated_member_use
+warning - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1068:21 - deprecated_member_use
+warning - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\presentation\rank_registration_screen\rank_registration_screen.dart:1069:21 - deprecated_member_use
+   info - Empty catch block - lib\presentation\referral_history\referral_history_screen.dart:305:19 - empty_catches
+warning - The value of the field '_fullPhoneNumber' isn't used - lib\presentation\register_screen\register_screen_ios.dart:24:10 - unused_field
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\register_screen\register_screen_ios.dart:341:22 - use_build_context_synchronously
+warning - The value of the field '_allReservations' isn't used - lib\presentation\reservation_management_screen\reservation_management_screen.dart:31:17 - unused_field
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\reservation_management_screen\reservation_management_screen.dart:104:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\reservation_management_screen\reservation_management_screen.dart:113:28 - use_build_context_synchronously
+   info - Empty catch block - lib\presentation\settings\post_background_settings_screen_enhanced.dart:78:17 - empty_catches
+warning - 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion - lib\presentation\settings\post_background_settings_screen_enhanced.dart:106:65 - deprecated_member_use
+warning - The '!' will have no effect because the receiver can't be null - lib\presentation\shared\widgets\tournament_card_widget.dart:329:44 - unnecessary_non_null_assertion
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\admin_spa_management_screen.dart:128:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\admin_spa_management_screen.dart:137:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\club_spa_management_screen.dart:196:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\club_spa_management_screen.dart:203:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\spa_reward_screen.dart:183:7 - use_build_context_synchronously
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\presentation\spa_management\spa_reward_screen.dart:185:29 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\spa_reward_screen.dart:266:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\spa_reward_screen.dart:271:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\spa_reward_screen.dart:340:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\spa_reward_screen.dart:387:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\spa_reward_screen.dart:391:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\club_voucher_notifications_screen.dart:352:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\club_voucher_notifications_screen.dart:361:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\club_voucher_notifications_screen.dart:379:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\club_voucher_notifications_screen.dart:388:21 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\staff_dashboard_screen.dart:66:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\staff_dashboard_screen.dart:441:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\staff_dashboard_screen.dart:449:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\staff_dashboard_screen.dart:457:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\staff_redemption_screen.dart:128:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\staff_voucher_dashboard_screen.dart:68:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\staff\staff_voucher_verification_screen.dart:160:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\test_screens\rich_share_test_screen.dart:225:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\test_screens\rich_share_test_screen.dart:242:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\test_screens\rich_share_test_screen.dart:264:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\test_screens\rich_share_test_screen.dart:273:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\tournament_creation_wizard\widgets\enhanced_schedule_step.dart:520:9 - use_build_context_synchronously
+   info - Empty catch block - lib\presentation\tournament_creation_wizard\widgets\rules_checklist_widget.dart:184:17 - empty_catches
+   info - Empty catch block - lib\presentation\tournament_creation_wizard\widgets\rules_checklist_widget.dart:218:17 - empty_catches
+warning - The value of the field '_fileName' isn't used - lib\presentation\tournament_creation_wizard\widgets\tournament_cover_upload_widget.dart:27:11 - unused_field
+   info - Empty catch block - lib\presentation\tournament_creation_wizard\widgets\venue_autocomplete_field.dart:68:17 - empty_catches
+   info - Empty catch block - lib\presentation\tournament_creation_wizard\widgets\venue_autocomplete_field.dart:76:17 - empty_catches
+   info - Empty catch block - lib\presentation\tournament_creation_wizard\widgets\venue_autocomplete_field.dart:108:17 - empty_catches
+warning - The declaration '_buildRankContent' isn't referenced - lib\presentation\user_profile_screen\widgets\profile_header_widget.dart:710:10 - unused_element
+warning - The declaration '_buildSpaAndPrizeSection' isn't referenced - lib\presentation\user_profile_screen\widgets\profile_header_widget.dart:857:10 - unused_element
+warning - The declaration '_buildPlayerViewItem' isn't referenced - lib\presentation\user_profile_screen\widgets\settings_menu_widget.dart:258:10 - unused_element
+  error - A value of type 'UserStats' can't be assigned to a variable of type 'Map<String, int>' - lib\presentation\user_profile_screen\widgets\statistics_cards_widget.dart:46:22 - invalid_assignment
+warning - Unused import: '../../../../core/app_export.dart' - lib\presentation\user_profile_screen\widgets\tabs\user_profile_tournaments_tab.dart:2:8 - unused_import
+   info - Empty catch block - lib\presentation\user_profile_screen\widgets\user_posts_widget.dart:76:17 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\widgets\basic_referral_card.dart:77:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\widgets\basic_referral_card.dart:92:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\widgets\basic_referral_card.dart:105:28 - use_build_context_synchronously
+  error - Undefined name 'ProductionLogger' - lib\services\admin_guide_service.dart:116:7 - undefined_identifier
+warning - The declaration '_buildBracketSection' isn't referenced - lib\services\bracket_visualization_service.dart:404:10 - unused_element
+   info - Empty catch block - lib\services\challenge_list_service.dart:321:21 - empty_catches
+   info - Empty catch block - lib\services\challenge_list_service.dart:687:21 - empty_catches
+   info - Empty catch block - lib\services\chat_service.dart:195:17 - empty_catches
+warning - The value of the local variable 'breakdown' isn't used - lib\services\cost_monitoring_service.dart:232:13 - unused_local_variable
+warning - The value of the local variable 'entry' isn't used - lib\services\database_monitoring_service.dart:200:20 - unused_local_variable
+   info - Don't use 'BuildContext's across async gaps - lib\services\deep_link_handler.dart:86:35 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\services\deep_link_handler.dart:90:40 - use_build_context_synchronously
+warning - The value of the local variable 'bonusAmount' isn't used - lib\services\first_match_bonus_service.dart:88:15 - unused_local_variable
+warning - The value of the local variable 'compressionRatio' isn't used - lib\services\image_optimization_service.dart:75:13 - unused_local_variable
+warning - 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings - lib\services\location_service.dart:51:7 - deprecated_member_use
+   info - Empty catch block - lib\services\notification_analytics_service.dart:127:17 - empty_catches
+   info - Empty catch block - lib\services\notification_analytics_service.dart:139:17 - empty_catches
+   info - Empty catch block - lib\services\notification_analytics_service.dart:156:17 - empty_catches
+   info - Empty catch block - lib\services\notification_preferences_service.dart:261:17 - empty_catches
+   info - Empty catch block - lib\services\notification_preferences_service.dart:329:25 - empty_catches
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\notification_service.dart:129:13 - unused_local_variable
+warning - The value of the local variable 'errorInfo' isn't used - lib\services\notification_service.dart:164:13 - unused_local_variable
+warning - The value of the local variable 'successCount' isn't used - lib\services\notification_service.dart:522:11 - unused_local_variable
+   info - Empty catch block - lib\services\notification_service.dart:540:21 - empty_catches
+   info - Empty catch block - lib\services\notification_service.dart:675:17 - empty_catches
+   info - Empty catch block - lib\services\notification_service.dart:686:17 - empty_catches
+warning - The value of the local variable 'matchesSchema' isn't used - lib\services\opponent_tab_backend_service.dart:130:13 - unused_local_variable
+warning - The value of the local variable 'usersSchema' isn't used - lib\services\opponent_tab_backend_service.dart:136:13 - unused_local_variable
+warning - The value of the local variable 'challengesExists' isn't used - lib\services\opponent_tab_backend_service.dart:142:13 - unused_local_variable
+   info - Empty catch block - lib\services\opponent_tab_backend_service.dart:146:17 - empty_catches
+   info - Empty catch block - lib\services\opponent_tab_backend_service.dart:168:17 - empty_catches
+warning - The value of the local variable 'nearbyPlayers' isn't used - lib\services\opponent_tab_backend_service.dart:182:13 - unused_local_variable
+warning - The value of the local variable 'nearbyPlayers' isn't used - lib\services\opponent_tab_backend_service.dart:188:13 - unused_local_variable
+warning - The value of the local variable 'userChallenges' isn't used - lib\services\opponent_tab_backend_service.dart:196:11 - unused_local_variable
+   info - Empty catch block - lib\services\payment_method_service.dart:212:23 - empty_catches
+   info - Empty catch block - lib\services\payment_method_service.dart:266:21 - empty_catches
+warning - The value of the local variable 'userId' isn't used - lib\services\payment_method_service.dart:359:13 - unused_local_variable
+warning - The value of the local variable 'entry' isn't used - lib\services\performance_monitor.dart:194:18 - unused_local_variable
+   info - Empty catch block - lib\services\permission_service.dart:148:17 - empty_catches
+   info - Empty catch block - lib\services\permission_service.dart:157:17 - empty_catches
+   info - Empty catch block - lib\services\permission_service.dart:189:17 - empty_catches
+   info - Empty catch block - lib\services\push_service.dart:60:17 - empty_catches
+   info - Empty catch block - lib\services\push_service.dart:126:17 - empty_catches
+   info - Empty catch block - lib\services\push_service.dart:140:19 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:139:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:161:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:205:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:252:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:273:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:311:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:331:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:348:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:379:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_bracket_service.dart:388:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:108:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:117:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:125:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:142:17 - empty_catches
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:158:17 - empty_catches
+warning - The declaration '_detectChanges' isn't referenced - lib\services\realtime_tournament_service.dart:165:37 - unused_element
+   info - Empty catch block - lib\services\realtime_tournament_service.dart:206:17 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\services\rich_share_service.dart:81:9 - use_build_context_synchronously
+   info - Empty catch block - lib\services\rich_share_service.dart:136:21 - empty_catches
+warning - The value of the local variable 'deleted' isn't used - lib\services\rich_share_service.dart:185:11 - unused_local_variable
+   info - Empty catch block - lib\services\rich_share_service.dart:193:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:54:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:77:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:100:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:121:17 - empty_catches
+   info - Empty catch block - lib\services\share_analytics_service.dart:246:17 - empty_catches
+warning - The value of the local variable 'challengedUserResponse' isn't used - lib\services\simple_challenge_service.dart:49:29 - unused_local_variable
+warning - The value of the local variable 's' isn't used - lib\services\tournament\ranking_service.dart:399:13 - unused_local_variable
+warning - The value of the local variable 'successCount' isn't used - lib\services\tournament\reward_execution_service.dart:33:11 - unused_local_variable
+warning - The value of the local variable 'participantName' isn't used - lib\services\tournament\reward_execution_service.dart:39:17 - unused_local_variable
+warning - The value of the local variable 'oldBalance' isn't used - lib\services\tournament\reward_execution_service.dart:128:15 - unused_local_variable
+warning - The value of the local variable 'newBalance' isn't used - lib\services\tournament\reward_execution_service.dart:129:15 - unused_local_variable
+   info - Empty catch block - lib\services\tournament\statistics_update_service.dart:78:17 - empty_catches
+   info - Empty catch block - lib\services\tournament\statistics_update_service.dart:101:17 - empty_catches
+warning - The value of the local variable 'issuedCount' isn't used - lib\services\tournament\voucher_issuance_service.dart:39:9 - unused_local_variable
+warning - The value of the local variable 'userName' isn't used - lib\services\tournament\voucher_issuance_service.dart:49:13 - unused_local_variable
+warning - The value of the local variable 'voucherCode' isn't used - lib\services\tournament\voucher_issuance_service.dart:61:17 - unused_local_variable
+   info - Empty catch block - lib\services\tournament\voucher_issuance_service.dart:85:19 - empty_catches
+   info - Empty catch block - lib\services\tournament_completion_voucher_service.dart:290:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:41:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:80:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:144:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:167:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:229:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:263:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_draft_service.dart:281:17 - empty_catches
+   info - Empty catch block - lib\services\tournament_elo_service.dart:263:21 - empty_catches
+warning - The declaration '_generateLoserBracket' isn't referenced - lib\services\tournament_service.dart:1711:24 - unused_element
+warning - The value of the local variable 'winnerBracketRounds' isn't used - lib\services\tournament_service.dart:1997:11 - unused_local_variable
+warning - The declaration '_processGenericMatchResult' isn't referenced - lib\services\unified_bracket_service.dart:264:32 - unused_element
+warning - The value of the local variable 'bracketFormat' isn't used - lib\services\universal_match_progression_service.dart:49:15 - unused_local_variable
+warning - The declaration '_executeImmediateAdvancement' isn't referenced - lib\services\universal_match_progression_service.dart:120:32 - unused_element
+   info - Empty catch block - lib\services\user_journey_analytics.dart:370:17 - empty_catches
+   info - Empty catch block - lib\services\user_journey_analytics.dart:381:17 - empty_catches
+warning - The value of the local variable 'currentWinStreak' isn't used - lib\services\user_stats_update_service.dart:59:13 - unused_local_variable
+   info - Empty catch block - lib\services\user_stats_update_service.dart:84:19 - empty_catches
+   info - Empty catch block - lib\services\user_stats_update_service.dart:102:17 - empty_catches
+warning - The value of the local variable 'response' isn't used - lib\services\voucher_reward_service.dart:217:13 - unused_local_variable
+warning - The value of the local variable 'allPassed' isn't used - lib\utils\admin_navigation_validator.dart:33:13 - unused_local_variable
+warning - The value of the local variable 'authService' isn't used - lib\utils\admin_navigation_validator.dart:54:13 - unused_local_variable
+warning - The value of the local variable 'migratedCount' isn't used - lib\utils\like_count_debugger.dart:91:11 - unused_local_variable
+warning - The value of the local variable 'fixedCount' isn't used - lib\utils\like_count_debugger.dart:143:11 - unused_local_variable
+warning - The value of the local variable 'totalPosts' isn't used - lib\utils\like_count_debugger.dart:144:11 - unused_local_variable
+   info - Empty catch block - lib\utils\like_count_debugger.dart:172:17 - empty_catches
+warning - The value of the local variable 'userLiked' isn't used - lib\utils\quick_like_debug.dart:29:12 - unused_local_variable
+   info - Empty catch block - lib\utils\quick_like_debug.dart:49:17 - empty_catches
+   info - Don't use 'BuildContext's across async gaps - lib\widgets\comments_modal.dart:322:9 - use_build_context_synchronously
+warning - The value of the local variable 'isDisabled' isn't used - lib\widgets\common\app_button.dart:90:11 - unused_local_variable
+warning - The value of the local variable 'effectiveOnPressed' isn't used - lib\widgets\common\app_button.dart:91:11 - unused_local_variable
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\widgets\persistent_tab_scaffold.dart:205:12 - deprecated_member_use
+

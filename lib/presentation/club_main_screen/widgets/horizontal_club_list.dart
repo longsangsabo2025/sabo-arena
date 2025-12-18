@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/app_export.dart';
+import '../../../core/design_system/design_system.dart';
 import '../../../models/club.dart';
 
 class HorizontalClubList extends StatelessWidget {
   final List<Club> clubs;
   final Club? selectedClub;
   final Function(Club) onClubSelected;
+  final VoidCallback? onLoadMore;
 
   const HorizontalClubList({
     super.key,
     required this.clubs,
     required this.selectedClub,
     required this.onClubSelected,
+    this.onLoadMore,
   });
 
   @override
@@ -33,14 +35,15 @@ class HorizontalClubList extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Chưa có câu lạc bộ nào',
-              style: AppTypography.bodyLarge(
+              style: AppTypography.bodyLarge.copyWith(
                 color: colorScheme.onSurface.withValues(alpha: 0.6),
-              ).copyWith(fontWeight: FontWeight.w500),
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Hãy tham gia hoặc tạo câu lạc bộ đầu tiên của bạn',
-              style: AppTypography.bodyMedium(
+              style: AppTypography.bodyMedium.copyWith(
                 color: colorScheme.onSurface.withValues(alpha: 0.4),
               ),
               textAlign: TextAlign.center,
@@ -55,32 +58,40 @@ class HorizontalClubList extends StatelessWidget {
       children: [
         // Horizontal club list (no header to avoid duplication)
         Expanded(
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            itemCount: clubs.length,
-            itemBuilder: (context, index) {
-              final club = clubs[index];
-              final isSelected = selectedClub?.id == club.id;
-
-              return Semantics(
-                label:
-                    'Club ${club.name}, rating ${club.rating.toStringAsFixed(1)} stars, ${club.totalTables} tables',
-                button: true,
-                child: GestureDetector(
-                  onTap: () => onClubSelected(club),
-                  child: Container(
-                    width: _getCardWidth(context),
-                    height: 220, // Height for iOS Facebook style cards
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
-                    ),
-                    child: _buildClubCard(club, isSelected, colorScheme),
-                  ),
-                ),
-              );
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+                onLoadMore?.call();
+              }
+              return false;
             },
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              itemCount: clubs.length,
+              itemBuilder: (context, index) {
+                final club = clubs[index];
+                final isSelected = selectedClub?.id == club.id;
+
+                return Semantics(
+                  label:
+                      'Club ${club.name}, rating ${club.rating.toStringAsFixed(1)} stars, ${club.totalTables} tables',
+                  button: true,
+                  child: GestureDetector(
+                    onTap: () => onClubSelected(club),
+                    child: Container(
+                      width: _getCardWidth(context),
+                      height: 220, // Height for iOS Facebook style cards
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      child: _buildClubCard(club, isSelected, colorScheme),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -93,7 +104,7 @@ class HorizontalClubList extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isSelected
-              ? const Color(0xFF1877F2) // Facebook blue
+              ? AppColors.primary
               : Colors.grey.withValues(alpha: 0.2),
           width: isSelected ? 2 : 1,
         ),
@@ -106,7 +117,7 @@ class HorizontalClubList extends StatelessWidget {
           ),
           if (isSelected) // Extra glow when selected
             BoxShadow(
-              color: const Color(0xFF1877F2).withValues(alpha: 0.15),
+              color: AppColors.primary.withValues(alpha: 0.15),
               blurRadius: 20,
               offset: const Offset(0, 0),
               spreadRadius: 2,
@@ -124,9 +135,9 @@ class HorizontalClubList extends StatelessWidget {
                     club.coverImageUrl!,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFF1877F2), Color(0xFF42A5F5)],
+                          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.7)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -134,9 +145,9 @@ class HorizontalClubList extends StatelessWidget {
                     ),
                   )
                 : Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF1877F2), Color(0xFF42A5F5)],
+                        colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.7)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -216,7 +227,7 @@ class HorizontalClubList extends StatelessWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1877F2),
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.white, width: 2),
                       ),
@@ -247,7 +258,7 @@ class HorizontalClubList extends StatelessWidget {
         imageUrl,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) => Container(
-          color: const Color(0xFF1877F2),
+          color: AppColors.primary,
           child: const Icon(Icons.business, color: Colors.white, size: 20),
         ),
       );
@@ -255,7 +266,7 @@ class HorizontalClubList extends StatelessWidget {
 
     // Fallback: hiển thị icon mặc định
     return Container(
-      color: const Color(0xFF1877F2),
+      color: AppColors.primary,
       child: const Icon(Icons.business, color: Colors.white, size: 20),
     );
   }

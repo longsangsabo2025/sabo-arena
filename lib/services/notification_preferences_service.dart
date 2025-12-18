@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/auth_service.dart';
 import '../models/notification_models.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class NotificationPreferencesService {
   static final NotificationPreferencesService _instance =
@@ -34,7 +34,6 @@ class NotificationPreferencesService {
       // Create default preferences if none exist
       return await _createDefaultPreferences(currentUser.id);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -55,7 +54,6 @@ class NotificationPreferencesService {
 
       return NotificationPreferences.fromJson(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -74,7 +72,6 @@ class NotificationPreferencesService {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -110,7 +107,6 @@ class NotificationPreferencesService {
       );
       return await updatePreferences(updatedPreferences);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -133,7 +129,6 @@ class NotificationPreferencesService {
 
       return await updatePreferences(updatedPreferences);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -149,7 +144,6 @@ class NotificationPreferencesService {
       );
       return await updatePreferences(updatedPreferences);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -165,7 +159,6 @@ class NotificationPreferencesService {
       );
       return await updatePreferences(updatedPreferences);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -179,7 +172,6 @@ class NotificationPreferencesService {
       final updatedPreferences = preferences.copyWith(ledEnabled: enabled);
       return await updatePreferences(updatedPreferences);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -222,7 +214,6 @@ class NotificationPreferencesService {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true; // Default to allowing notifications
     }
   }
@@ -259,7 +250,6 @@ class NotificationPreferencesService {
       // Return the enum values since NotificationSound is an enum
       return NotificationSound.values;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return NotificationSound.values;
     }
   }
@@ -268,9 +258,8 @@ class NotificationPreferencesService {
   Future<void> testNotificationSound(String soundId) async {
     try {
       // TODO: Implement sound playing logic based on platform
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore errors during sound test
     }
   }
 
@@ -288,7 +277,6 @@ class NotificationPreferencesService {
       await _createDefaultPreferences(currentUser.id);
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -299,7 +287,6 @@ class NotificationPreferencesService {
       final preferences = await getUserPreferences();
       return preferences?.toJson();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -310,7 +297,6 @@ class NotificationPreferencesService {
       final preferences = NotificationPreferences.fromJson(prefsData);
       return await updatePreferences(preferences);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -342,7 +328,7 @@ class NotificationPreferencesService {
               );
               onChanged(preferences);
             } catch (e) {
-              ProductionLogger.debug('Debug log', tag: 'AutoFix');
+              // Ignore parsing errors
             }
           },
         )
@@ -377,7 +363,6 @@ class NotificationPreferencesService {
       }
       return prefs.toJson();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return _getDefaultPreferencesMap();
     }
   }
@@ -449,7 +434,6 @@ class NotificationPreferencesService {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -476,7 +460,6 @@ class NotificationPreferencesService {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     }
   }
@@ -487,7 +470,6 @@ class NotificationPreferencesService {
     try {
       return NotificationType.fromString(type);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -534,7 +516,6 @@ class NotificationPreferencesService {
 
       return await updatePreferences(prefs);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }

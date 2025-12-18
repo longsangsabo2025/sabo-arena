@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Web-only implementation. This file uses `dart:html` and the
 // platform view registry to embed an iframe into the Flutter web page.
 import 'dart:ui_web' as ui_web;
+// ignore: deprecated_member_use
 import 'dart:html' as html;
 
 class FullTournamentIframeView extends StatefulWidget {

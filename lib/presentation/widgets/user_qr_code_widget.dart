@@ -139,7 +139,8 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
                     version: QrVersions.auto,
                     size: widget.size,
                     backgroundColor: colorScheme.surface,
-                    foregroundColor: colorScheme.onSurface,
+                    eyeStyle: QrEyeStyle(color: colorScheme.onSurface),
+                    dataModuleStyle: QrDataModuleStyle(color: colorScheme.onSurface),
                   ),
                 ),
 

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Enterprise-grade user journey analytics system
 /// Tracks user behavior, conversion funnels, and engagement metrics
@@ -70,7 +70,6 @@ class UserJourneyAnalytics {
     await _loadUserProperties();
     _startPeriodicFlush();
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Track user event with comprehensive metadata
@@ -104,7 +103,6 @@ class UserJourneyAnalytics {
     // Track funnel progression
     await _trackFunnelProgression(eventName);
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Flush if queue is getting large
     if (_eventQueue.length >= 10) {
@@ -286,7 +284,6 @@ class UserJourneyAnalytics {
 
       return _analyzeFunnelData(response, funnelType);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }
@@ -307,7 +304,6 @@ class UserJourneyAnalytics {
 
       return _calculateEngagementMetrics(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }
@@ -320,10 +316,8 @@ class UserJourneyAnalytics {
       // Batch insert events
       await _supabase.from('user_journey_events').insert(_eventQueue);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _eventQueue.clear();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Keep events in queue for retry
     }
   }
@@ -374,7 +368,7 @@ class UserJourneyAnalytics {
         _userProperties = Map<String, dynamic>.from({});
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
@@ -386,7 +380,7 @@ class UserJourneyAnalytics {
         _userProperties.toString(),
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 

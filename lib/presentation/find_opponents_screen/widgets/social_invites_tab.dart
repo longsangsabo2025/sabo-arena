@@ -11,7 +11,10 @@ import '../../../core/design_system/design_system.dart';
 import './challenge_card_widget_redesign.dart'; // Use redesigned card
 import './challenge_detail_modal.dart';
 import './create_social_challenge_modal.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import './schedule_match_modal.dart';
+import '../../user_profile_screen/widgets/match_card_widget.dart';
+import '../../../utils/challenge_to_match_converter.dart';
+// ELON_MODE_AUTO_FIX
 
 /// Tab to display social invites (giao lưu) - both open and user's challenges
 /// Sub-tabs: Ready (pending/accepted) và Complete (completed)
@@ -28,7 +31,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
   final OpponentTabBackendService _opponentService =
       OpponentTabBackendService();
   List<Map<String, dynamic>> _invites = [];
-  int _currentSubTab = 0;
+  // int _currentSubTab = 0;
   Map<String, dynamic>? _currentUser;
   List<Map<String, dynamic>> _opponents = [];
   bool _isLoading = true;
@@ -44,7 +47,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
     _subTabController.addListener(() {
       if (_subTabController.indexIsChanging) {
         setState(() {
-          _currentSubTab = _subTabController.index;
+          // _currentSubTab = _subTabController.index;
         });
       }
     });
@@ -95,7 +98,8 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
               club:clubs(
                 id,
                 name,
-                address
+                address,
+                logo_url
               )
             ''')
             .eq('challenge_type', 'giao_luu')
@@ -139,7 +143,6 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
 
       return opponents;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -165,7 +168,40 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
     // Complete: completed (đã hoàn thành)
     final readyInvites = _invites.where((invite) {
       final status = invite['status'] as String?;
-      return status == 'pending' || status == 'accepted' || status == 'in_progress';
+      
+      // Basic status check
+      final isStatusReady = status == 'pending' || status == 'accepted' || status == 'in_progress';
+      if (!isStatusReady) return false;
+
+      // ✅ Filter out past matches (older than 24h)
+      if (status != 'in_progress') {
+        final scheduledTimeStr = invite['scheduled_time'] as String? ?? 
+                                (invite['match_conditions'] is Map ? invite['match_conditions']['scheduled_time'] : null) as String?;
+        
+        if (scheduledTimeStr != null) {
+          final scheduledTime = DateTime.tryParse(scheduledTimeStr);
+          if (scheduledTime != null) {
+            // If scheduled time is older than 24 hours, hide it
+            if (scheduledTime.isBefore(DateTime.now().subtract(const Duration(hours: 24)))) {
+              return false;
+            }
+          }
+        }
+        
+        // Also check created_at for pending invites that are too old (e.g. > 30 days)
+        // to prevent cluttering with stale invites
+        if (status == 'pending') {
+           final createdAtStr = invite['created_at'] as String?;
+           if (createdAtStr != null) {
+             final createdAt = DateTime.tryParse(createdAtStr);
+             if (createdAt != null && createdAt.isBefore(DateTime.now().subtract(const Duration(days: 30)))) {
+               return false;
+             }
+           }
+        }
+      }
+      
+      return true;
     }).toList();
 
     final completedInvites = _invites.where((invite) {
@@ -188,7 +224,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
                     children: [
                       const Icon(Icons.schedule, size: 18),
                       const SizedBox(width: 8),
-                      Text('Ready (${readyInvites.length})'),
+                      Text('Sắp diễn ra (${readyInvites.length})'),
                     ],
                   ),
                 ),
@@ -198,7 +234,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
                     children: [
                       const Icon(Icons.check_circle, size: 18),
                       const SizedBox(width: 8),
-                      Text('Complete (${completedInvites.length})'),
+                      Text('Hoàn thành (${completedInvites.length})'),
                     ],
                   ),
                 ),
@@ -280,14 +316,112 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
         itemCount: invites.length,
         itemBuilder: (context, index) {
           final invite = invites[index];
-          return ChallengeCardWidgetRedesign(
-            challenge: invite,
-            isCompetitive: false,
+          
+          // Convert to match data for MatchCardWidget
+          final matchData = ChallengeToMatchConverter.convert(
+            invite,
+            currentUserId: Supabase.instance.client.auth.currentUser?.id,
+          );
+
+          return MatchCardWidget(
+            matchMap: matchData,
             onTap: () => _showInviteDetail(invite),
+            bottomAction: _buildActionButtons(invite),
           );
         },
       ),
     );
+  }
+
+  Widget? _buildActionButtons(Map<String, dynamic> challenge) {
+    final status = challenge['status'] as String? ?? 'pending';
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final challengedId = challenge['challenged_id'] as String?;
+    
+    // Only show buttons for pending challenges where I am the challenged user
+    if (status == 'pending' && currentUserId == challengedId) {
+      return Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () => _acceptChallenge(challenge),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF7B1FA2), // Purple for social
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Text(
+                'Nhận giao lưu',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () {
+                final challenger = challenge['challenger'] as Map<String, dynamic>?;
+                if (challenger != null) {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => ScheduleMatchModal(
+                      targetUserId: challenger['id'],
+                      targetUserName: challenger['display_name'] ?? 'Đối thủ',
+                    ),
+                  );
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF7B1FA2),
+                side: const BorderSide(color: Color(0xFF7B1FA2)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Text(
+                'Hẹn lịch',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    return null;
+  }
+
+  Future<void> _acceptChallenge(Map<String, dynamic> challenge) async {
+    try {
+      // Show loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      await _challengeService.acceptChallenge(challenge['id']);
+      
+      if (mounted) {
+        Navigator.pop(context); // Hide loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Đã chấp nhận giao lưu!')),
+        );
+        _loadInvites();
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Hide loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
+    }
   }
 
   void _showCreateSocialModal() {
@@ -297,7 +431,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
       try {
         currentUserProfile = UserProfile.fromJson(_currentUser!);
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // Ignore error
       }
     }
 
@@ -307,7 +441,6 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
           try {
             return UserProfile.fromJson(opponentMap);
           } catch (e) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
             return null;
           }
         })

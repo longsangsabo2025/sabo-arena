@@ -3,7 +3,7 @@ import '../../services/match_management_service.dart';
 import '../../services/club_permission_service.dart';
 import '../user_profile_screen/widgets/score_input_dialog.dart';
 import '../user_profile_screen/widgets/match_card_widget.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// 🎯 CLUB MATCH MANAGEMENT SCREEN
 /// Screen for club owners to manage matches at their club
@@ -84,23 +84,23 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
     }
   }
 
-  Future<void> _startMatch(String matchId) async {
-    try {
-      await _matchService.startMatch(matchId);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Đã bắt đầu trận đấu')),
-        );
-      }
-      _loadMatches();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Lỗi: $e')),
-        );
-      }
-    }
-  }
+  // Future<void> _startMatch(String matchId) async {
+  //   try {
+  //     await _matchService.startMatch(matchId);
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('✅ Đã bắt đầu trận đấu')),
+  //       );
+  //     }
+  //     _loadMatches();
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('❌ Lỗi: $e')),
+  //       );
+  //     }
+  //   }
+  // }
 
   Future<void> _showScoreDialog(Map<String, dynamic> match) async {
     // 🔐 PERMISSION CHECK: Verify user can input scores
@@ -108,6 +108,8 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
       clubId: widget.clubId,
       permissionKey: 'input_score',
     );
+
+    if (!mounted) return;
     
     if (!canInputScore) {
       if (mounted) {
@@ -129,9 +131,6 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
 
     if (result != null) {
       try {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         await _matchService.updateMatchScore(
           matchId: match['id'],
@@ -146,7 +145,6 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
         }
         _loadMatches();
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('❌ Lỗi: $e')),
@@ -154,169 +152,168 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
         }
       }
     } else {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
-  Future<void> _completeMatch(Map<String, dynamic> match) async {
-    final player1Score = match['player1_score'] ?? 0;
-    final player2Score = match['player2_score'] ?? 0;
+  // Future<void> _completeMatch(Map<String, dynamic> match) async {
+  //   final player1Score = match['player1_score'] ?? 0;
+  //   final player2Score = match['player2_score'] ?? 0;
+  //
+  //   if (player1Score == player2Score) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('⚠️ Tỷ số hòa, vui lòng cập nhật tỷ số')),
+  //     );
+  //     return;
+  //   }
+  //
+  //   final winnerId = player1Score > player2Score
+  //       ? match['player1_id']
+  //       : match['player2_id'];
+  //
+  //   final winnerName = player1Score > player2Score
+  //       ? (match['player1']?['full_name'] ?? 'Player 1')
+  //       : (match['player2']?['full_name'] ?? 'Player 2');
+  //
+  //   final confirmed = await showDialog<bool>(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('Kết thúc trận đấu'),
+  //       content: Text('Xác nhận người thắng: $winnerName?'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context, false),
+  //           child: const Text('Hủy'),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () => Navigator.pop(context, true),
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: Colors.green,
+  //           ),
+  //           child: const Text('Xác nhận'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  //
+  //   if (confirmed == true) {
+  //     try {
+  //       await _matchService.completeMatch(
+  //         matchId: match['id'],
+  //         winnerId: winnerId,
+  //         finalPlayer1Score: player1Score,
+  //         finalPlayer2Score: player2Score,
+  //       );
+  //
+  //       if (mounted) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('✅ Đã kết thúc trận đấu')),
+  //         );
+  //       }
+  //       _loadMatches();
+  //     } catch (e) {
+  //       if (mounted) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('❌ Lỗi: $e')),
+  //         );
+  //       }
+  //     }
+  //   }
+  // }
 
-    if (player1Score == player2Score) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('⚠️ Tỷ số hòa, vui lòng cập nhật tỷ số')),
-      );
-      return;
-    }
-
-    final winnerId = player1Score > player2Score
-        ? match['player1_id']
-        : match['player2_id'];
-
-    final winnerName = player1Score > player2Score
-        ? (match['player1']?['full_name'] ?? 'Player 1')
-        : (match['player2']?['full_name'] ?? 'Player 2');
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Kết thúc trận đấu'),
-        content: Text('Xác nhận người thắng: $winnerName?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-            ),
-            child: const Text('Xác nhận'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await _matchService.completeMatch(
-          matchId: match['id'],
-          winnerId: winnerId,
-          finalPlayer1Score: player1Score,
-          finalPlayer2Score: player2Score,
-        );
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('✅ Đã kết thúc trận đấu')),
-          );
-        }
-        _loadMatches();
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('❌ Lỗi: $e')),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _toggleLiveStream(Map<String, dynamic> match) async {
-    final isLive = match['is_live'] == true;
-    
-    if (isLive) {
-      // Disable live stream
-      try {
-        await _matchService.disableLiveStream(match['id']);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('✅ Đã tắt phát trực tiếp')),
-          );
-        }
-        _loadMatches();
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('❌ Lỗi: $e')),
-          );
-        }
-      }
-    } else {
-      // Enable live stream - show dialog to input video URL
-      final videoUrlController = TextEditingController();
-      
-      final result = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Bật phát trực tiếp'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Nhập link video trực tiếp (YouTube Live, Facebook Live):',
-                style: TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: videoUrlController,
-                keyboardType: TextInputType.url,
-                decoration: const InputDecoration(
-                  labelText: 'Video URL',
-                  hintText: 'https://youtube.com/watch?v=...',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.link),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Hủy'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context, true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-              ),
-              child: const Text('Bật phát trực tiếp'),
-            ),
-          ],
-        ),
-      );
-
-      if (result == true) {
-        final videoUrl = videoUrlController.text.trim();
-        if (videoUrl.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('⚠️ Vui lòng nhập link video')),
-          );
-          return;
-        }
-
-        try {
-          await _matchService.enableLiveStream(
-            matchId: match['id'],
-            videoUrl: videoUrl,
-          );
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('✅ Đã bật phát trực tiếp')),
-            );
-          }
-          _loadMatches();
-        } catch (e) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('❌ Lỗi: $e')),
-            );
-          }
-        }
-      }
-    }
-  }
+  // Future<void> _toggleLiveStream(Map<String, dynamic> match) async {
+  //   final isLive = match['is_live'] == true;
+  //   
+  //   if (isLive) {
+  //     // Disable live stream
+  //     try {
+  //       await _matchService.disableLiveStream(match['id']);
+  //       if (mounted) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('✅ Đã tắt phát trực tiếp')),
+  //         );
+  //       }
+  //       _loadMatches();
+  //     } catch (e) {
+  //       if (mounted) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('❌ Lỗi: $e')),
+  //         );
+  //       }
+  //     }
+  //   } else {
+  //     // Enable live stream - show dialog to input video URL
+  //     final videoUrlController = TextEditingController();
+  //     
+  //     final result = await showDialog<bool>(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //         title: const Text('Bật phát trực tiếp'),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             const Text(
+  //               'Nhập link video trực tiếp (YouTube Live, Facebook Live):',
+  //               style: TextStyle(fontSize: 14),
+  //             ),
+  //             const SizedBox(height: 16),
+  //             TextField(
+  //               controller: videoUrlController,
+  //               keyboardType: TextInputType.url,
+  //               decoration: const InputDecoration(
+  //                 labelText: 'Video URL',
+  //                 hintText: 'https://youtube.com/watch?v=...',
+  //                 border: OutlineInputBorder(),
+  //                 prefixIcon: Icon(Icons.link),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.pop(context, false),
+  //             child: const Text('Hủy'),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: () => Navigator.pop(context, true),
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.orange,
+  //             ),
+  //             child: const Text('Bật phát trực tiếp'),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //
+  //     if (result == true) {
+  //       final videoUrl = videoUrlController.text.trim();
+  //       if (videoUrl.isEmpty) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('⚠️ Vui lòng nhập link video')),
+  //         );
+  //         return;
+  //       }
+  //
+  //       try {
+  //         await _matchService.enableLiveStream(
+  //           matchId: match['id'],
+  //           videoUrl: videoUrl,
+  //         );
+  //         if (mounted) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(content: Text('✅ Đã bật phát trực tiếp')),
+  //           );
+  //         }
+  //         _loadMatches();
+  //       } catch (e) {
+  //         if (mounted) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(content: Text('❌ Lỗi: $e')),
+  //           );
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   /// Convert challenge data from DB format to MatchCardWidget format
   Map<String, dynamic> _convertMatchForCard(Map<String, dynamic> challenge) {
@@ -495,7 +492,7 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
             child: MatchCardWidget(
-              match: convertedMatch,
+              matchMap: convertedMatch,
               onInputScore: () => _showScoreDialog(originalMatch),
               onTap: () {
                 // TODO: Navigate to match detail screen

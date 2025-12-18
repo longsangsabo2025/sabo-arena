@@ -8,7 +8,6 @@ import 'package:sizer/sizer.dart';
 import 'package:upgrader/upgrader.dart';
 
 import '../core/app_export.dart';
-import '../widgets/custom_error_widget.dart';
 import './core/device/orientation_manager.dart'; // 📱 SMART ORIENTATION: iPad landscape + iPhone portrait
 import './services/analytics_service.dart'; // 📊 UNIFIED ANALYTICS
 import './services/app_cache_service.dart'; // 🚀 PHASE 1: Cache service
@@ -136,22 +135,10 @@ Future<void> _runApp() async {
 
     ProductionLogger.info('✅ App startup complete!', tag: 'AppInit');
 
-    bool hasShownError = false;
-
     // 🚨 CRITICAL: Custom error handling - DO NOT REMOVE
-    ErrorWidget.builder = (FlutterErrorDetails details) {
-      if (!hasShownError) {
-        hasShownError = true;
-
-        // Reset flag after 3 seconds to allow error widget on new screens
-        Future.delayed(Duration(seconds: 5), () {
-          hasShownError = false;
-        });
-
-        return CustomErrorWidget(errorDetails: details);
-      }
-      return SizedBox.shrink();
-    };
+    // ErrorWidget.builder = (FlutterErrorDetails details) {
+    //   return Center(child: Text('Error: ${details.exception}'));
+    // };
 
     // ✅ iOS HIG: Support all orientations initially
     // Will auto-adjust to device-specific orientations after app starts

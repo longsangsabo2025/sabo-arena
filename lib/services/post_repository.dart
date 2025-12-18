@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/post_model.dart';
 import 'auto_notification_hooks.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class PostRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -84,7 +84,6 @@ class PostRepository {
 
       return posts;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -109,13 +108,6 @@ class PostRepository {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not logged in');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Prepare image URLs array
       List<String>? finalImageUrls;
@@ -141,7 +133,6 @@ class PostRepository {
             : null,
       };
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase.from('posts').insert(postData).select('''
         id,
@@ -163,7 +154,6 @@ class PostRepository {
         share_count
       ''').single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final userInfo = response['users'];
       final responseImageUrls = response['image_urls'] as List?;
@@ -188,11 +178,8 @@ class PostRepository {
         tags: responseHashtags?.cast<String>(),
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return postModel;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -216,7 +203,6 @@ class PostRepository {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -261,7 +247,6 @@ class PostRepository {
         tags: hashtags?.cast<String>(),
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -280,7 +265,6 @@ class PostRepository {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -333,7 +317,6 @@ class PostRepository {
 
       return posts;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -344,7 +327,6 @@ class PostRepository {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get post owner ID for notification (before insert)
       final currentPost = await _supabase
@@ -361,7 +343,6 @@ class PostRepository {
         'interaction_type': 'like',
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 🔔 Gửi thông báo cho post owner (không gửi cho chính mình)
       final postOwnerId = currentPost['user_id'] as String?;
@@ -381,7 +362,6 @@ class PostRepository {
         );
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -392,7 +372,6 @@ class PostRepository {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Delete like record from post_interactions table
       // ✅ Database trigger will automatically decrement like_count
@@ -403,9 +382,7 @@ class PostRepository {
           .eq('user_id', user.id)
           .eq('interaction_type', 'like');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -415,7 +392,6 @@ class PostRepository {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return false;
       }
 
@@ -428,10 +404,8 @@ class PostRepository {
           .maybeSingle();
 
       final isLiked = response != null;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return isLiked;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -451,10 +425,8 @@ class PostRepository {
         'user_id': user.id,
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -471,10 +443,8 @@ class PostRepository {
           .eq('post_id', postId)
           .eq('user_id', user.id);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -494,7 +464,6 @@ class PostRepository {
 
       return response != null;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -512,7 +481,6 @@ class PostRepository {
       // ✅ FIX: Check if already saved to prevent duplicate error
       final alreadySaved = await isPostSaved(postId);
       if (alreadySaved) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return true; // Return success since it's already saved
       }
 
@@ -521,10 +489,8 @@ class PostRepository {
         'user_id': user.id,
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -538,7 +504,6 @@ class PostRepository {
       // ✅ FIX: Check if actually saved before delete
       final isSaved = await isPostSaved(postId);
       if (!isSaved) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return true; // Return success since it's already unsaved
       }
 
@@ -548,10 +513,8 @@ class PostRepository {
           .eq('post_id', postId)
           .eq('user_id', user.id);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -571,7 +534,6 @@ class PostRepository {
 
       return response != null;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -639,7 +601,6 @@ class PostRepository {
 
       return posts;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -662,7 +623,6 @@ class PostRepository {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -683,7 +643,6 @@ class PostRepository {
         response,
       ).map((item) => item['hashtag'] as String).toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -743,7 +702,6 @@ class PostRepository {
 
       return posts;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -793,7 +751,6 @@ class PostRepository {
 
       return posts;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -809,10 +766,8 @@ class PostRepository {
         'following_id': userId,
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -829,10 +784,8 @@ class PostRepository {
           .eq('follower_id', user.id)
           .eq('following_id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -852,7 +805,6 @@ class PostRepository {
 
       return response != null;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -925,7 +877,6 @@ class PostRepository {
 
       return posts;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -937,7 +888,6 @@ class PostRepository {
     int offset = 0,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Query posts WITHOUT JOIN (FK doesn't exist!)
       final response = await _supabase
@@ -959,10 +909,8 @@ class PostRepository {
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (response.isEmpty) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return [];
       }
 
@@ -974,7 +922,6 @@ class PostRepository {
           .maybeSingle();
 
       final user = userResponse;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final List<PostModel> posts = [];
       for (final item in response) {
@@ -1006,12 +953,8 @@ class PostRepository {
         );
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return posts;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }

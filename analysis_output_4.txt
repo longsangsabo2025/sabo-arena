@@ -1,0 +1,50 @@
+Analyzing app...                                                
+
+  error - The argument type 'void Function(T?)?' can't be assigned to the parameter type 'ValueChanged<T?>'.  - lib\core\design_system\components\ds_radio.dart:55:18 - argument_type_not_assignable
+  error - The argument type 'void Function(T?)?' can't be assigned to the parameter type 'ValueChanged<T?>'.  - lib\core\design_system\components\ds_radio.dart:257:18 - argument_type_not_assignable
+   info - Empty catch block - lib\helpers\welcome_voucher_helper.dart:45:17 - empty_catches
+warning - The value of the local variable 'hasShownError' isn't used - lib\main.dart:138:10 - unused_local_variable
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\club\club_match_management_screen.dart:126:7 - use_build_context_synchronously
+  error - The argument type 'void Function(ClubRole?)?' can't be assigned to the parameter type 'ValueChanged<ClubRole?>'.  - lib\presentation\club_management\widgets\grant_permission_dialog.dart:129:24 - argument_type_not_assignable
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:623:46 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\club_settings_screen\pricing_settings_screen.dart:626:42 - use_build_context_synchronously
+  error - The method 'buildDebugPanel' isn't defined for the type 'LikeCountDebugger' - lib\presentation\home_feed_screen\widgets\feed_post_card_widget.dart:160:33 - undefined_method
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:229:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:235:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:291:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\login_screen\login_screen_ios.dart:297:11 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\presentation\notification_list_screen.dart:274:13 - use_build_context_synchronously
+warning - The declaration '_formatEntryFee' isn't referenced - lib\presentation\other_user_profile_screen\other_user_profile_screen.dart:464:10 - unused_element
+warning - The declaration '_generateIconNumber' isn't referenced - lib\presentation\other_user_profile_screen\other_user_profile_screen.dart:475:10 - unused_element
+warning - The declaration '_formatRankRange' isn't referenced - lib\presentation\other_user_profile_screen\other_user_profile_screen.dart:480:10 - unused_element
+  error - The method 'trif' isn't defined for the type '_RankRegistrationScreenState' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:558:5 - undefined_method
+  error - Expected to find ';' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:558:19 - expected_token
+warning - Dead code - lib\presentation\rank_registration_screen\rank_registration_screen.dart:560:7 - dead_code
+  error - Expected to find ';' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:560:7 - expected_token
+  error - Undefined name 'y' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:560:7 - undefined_identifier
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:564:9 - use_build_context_synchronously
+  error - 'catch' can't be used as an identifier because it's a keyword - lib\presentation\rank_registration_screen\rank_registration_screen.dart:623:7 - expected_identifier_but_got_keyword
+  error - The method 'catch' isn't defined for the type '_RankRegistrationScreenState' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:623:7 - undefined_method
+  error - Undefined name 'e' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:623:14 - undefined_identifier
+  error - Expected to find ';' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:623:15 - expected_token
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\rank_registration_screen\rank_registration_screen.dart:624:28 - use_build_context_synchronously
+  error - Undefined name 'e' - lib\presentation\rank_registration_screen\rank_registration_screen.dart:626:48 - undefined_identifier
+warning - 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion - lib\presentation\settings\post_background_settings_screen_enhanced.dart:107:65 - deprecated_member_use
+warning - The '!' will have no effect because the receiver can't be null - lib\presentation\shared\widgets\tournament_card_widget.dart:329:44 - unnecessary_non_null_assertion
+   info - Don't use 'BuildContext's across async gaps - lib\presentation\spa_management\spa_reward_screen.dart:183:7 - use_build_context_synchronously
+  error - The method '_getStatus' isn't defined for the type 'LikeCountDebugger' - lib\utils\like_count_debugger.dart:66:19 - undefined_method
+  error - A try block must be followed by an 'on', 'catch', or 'finally' clause - lib\utils\like_count_debugger.dart:134:5 - missing_catch_or_finally
+warning - The value of the local variable 'fixedCount' isn't used - lib\utils\like_count_debugger.dart:141:11 - unused_local_variable
+  error - Undefined name 'i' - lib\utils\like_count_debugger.dart:142:28 - undefined_identifier
+  error - Undefined name 'i' - lib\utils\like_count_debugger.dart:146:13 - undefined_identifier
+  error - Expected a method, getter, setter or operator declaration - lib\utils\like_count_debugger.dart:169:5 - expected_executable
+  error - 'catch' can't be used as an identifier because it's a keyword - lib\utils\like_count_debugger.dart:169:7 - expected_identifier_but_got_keyword
+  error - Can't have modifier 'static' here - lib\utils\like_count_debugger.dart:171:3 - extraneous_modifier
+warning - The declaration '_getStatus' isn't referenced - lib\utils\like_count_debugger.dart:171:17 - unused_element
+  error - Can't have modifier 'static' here - lib\utils\like_count_debugger.dart:184:3 - extraneous_modifier
+warning - The declaration 'buildDebugPanel' isn't referenced - lib\utils\like_count_debugger.dart:184:17 - unused_element
+  error - The function 'debugPostLikes' isn't defined - lib\utils\like_count_debugger.dart:207:34 - undefined_function
+  error - The function 'fixPostLikeCount' isn't defined - lib\utils\like_count_debugger.dart:212:34 - undefined_function
+warning - The value of the local variable 'effectiveOnPressed' isn't used - lib\widgets\common\app_button.dart:90:11 - unused_local_variable
+warning - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\widgets\persistent_tab_scaffold.dart:205:12 - deprecated_member_use
+

@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import '../models/notification_models.dart';
+// ELON_MODE_AUTO_FIX
 
 /// State management for Member Management System
 /// Using a simple state management pattern similar to Redux
 class MemberState {
   final List<Map<String, dynamic>> members;
   final List<Map<String, dynamic>> requests;
-  final List<Map<String, dynamic>> notifications;
+  final List<NotificationModel> notifications;
   final List<Map<String, dynamic>> activities;
   final List<Map<String, dynamic>> chatMessages;
   final Map<String, dynamic> analytics;
@@ -31,7 +32,7 @@ class MemberState {
   MemberState copyWith({
     List<Map<String, dynamic>>? members,
     List<Map<String, dynamic>>? requests,
-    List<Map<String, dynamic>>? notifications,
+    List<NotificationModel>? notifications,
     List<Map<String, dynamic>>? activities,
     List<Map<String, dynamic>>? chatMessages,
     Map<String, dynamic>? analytics,
@@ -175,12 +176,12 @@ class LoadNotificationsAction extends MemberAction {
 }
 
 class SetNotificationsAction extends MemberAction {
-  final List<Map<String, dynamic>> notifications;
+  final List<NotificationModel> notifications;
   const SetNotificationsAction(this.notifications);
 }
 
 class AddNotificationAction extends MemberAction {
-  final Map<String, dynamic> notification;
+  final NotificationModel notification;
   const AddNotificationAction(this.notification);
 }
 
@@ -286,7 +287,6 @@ class ClearErrorAction extends MemberAction {
 /// Reducer function to handle state changes
 MemberState memberReducer(MemberState state, MemberAction action) {
   if (kDebugMode) {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   switch (action.runtimeType) {
@@ -364,7 +364,7 @@ MemberState memberReducer(MemberState state, MemberAction action) {
 
     case AddNotificationAction:
       final addNotificationAction = action as AddNotificationAction;
-      final newNotifications = List<Map<String, dynamic>>.from(
+      final newNotifications = List<NotificationModel>.from(
         state.notifications,
       )..insert(0, addNotificationAction.notification); // Add to beginning
       return state.copyWith(notifications: newNotifications);
@@ -372,12 +372,11 @@ MemberState memberReducer(MemberState state, MemberAction action) {
     case MarkNotificationReadAction:
       final markReadAction = action as MarkNotificationReadAction;
       final updatedNotifications = state.notifications.map((notification) {
-        if (notification['id'] == markReadAction.notificationId) {
-          return {
-            ...notification,
-            'is_read': true,
-            'read_at': DateTime.now().toIso8601String(),
-          };
+        if (notification.id == markReadAction.notificationId) {
+          return notification.copyWith(
+            isRead: true,
+            readAt: DateTime.now(),
+          );
         }
         return notification;
       }).toList();
@@ -385,11 +384,10 @@ MemberState memberReducer(MemberState state, MemberAction action) {
 
     case MarkAllNotificationsReadAction:
       final allReadNotifications = state.notifications.map((notification) {
-        return {
-          ...notification,
-          'is_read': true,
-          'read_at': DateTime.now().toIso8601String(),
-        };
+        return notification.copyWith(
+          isRead: true,
+          readAt: DateTime.now(),
+        );
       }).toList();
       return state.copyWith(notifications: allReadNotifications);
 
@@ -480,7 +478,6 @@ MemberState memberReducer(MemberState state, MemberAction action) {
 
     default:
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return state;
   }
@@ -503,9 +500,9 @@ class MemberSelectors {
   }
 
   /// Get unread notifications
-  static List<Map<String, dynamic>> getUnreadNotifications(MemberState state) {
+  static List<NotificationModel> getUnreadNotifications(MemberState state) {
     return state.notifications
-        .where((notification) => notification['is_read'] != true)
+        .where((notification) => !notification.isRead)
         .toList();
   }
 
@@ -593,7 +590,7 @@ class MemberSelectors {
   static Map<String, int> getNotificationCountByType(MemberState state) {
     final counts = <String, int>{};
     for (final notification in getUnreadNotifications(state)) {
-      final type = notification['type'] ?? 'unknown';
+      final type = notification.type.name;
       counts[type] = (counts[type] ?? 0) + 1;
     }
     return counts;

@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Real-time Subscription Manager
 /// Manages and limits concurrent real-time subscriptions per user
@@ -44,7 +44,6 @@ class RealtimeSubscriptionManager {
     // Check if already subscribed
     if (_activeChannels.containsKey(key)) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return _activeChannels[key];
     }
@@ -84,13 +83,11 @@ class RealtimeSubscriptionManager {
       _totalSubscriptions++;
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       return channel;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }
@@ -140,13 +137,11 @@ class RealtimeSubscriptionManager {
       _totalSubscriptions++;
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       return channel;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }
@@ -173,7 +168,7 @@ class RealtimeSubscriptionManager {
           .onPostgresChanges(
             event: PostgresChangeEvent.all,
             schema: 'public',
-            table: 'profiles',
+            table: 'users',
             filter: PostgresChangeFilter(
               type: PostgresChangeFilterType.eq,
               column: 'id',
@@ -198,7 +193,6 @@ class RealtimeSubscriptionManager {
       return channel;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }
@@ -250,7 +244,6 @@ class RealtimeSubscriptionManager {
       return channel;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }
@@ -266,7 +259,6 @@ class RealtimeSubscriptionManager {
       _subscriptionTypes.remove(key);
       
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -308,7 +300,6 @@ class RealtimeSubscriptionManager {
       _subscriptionsCleaned++;
       
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -330,7 +321,6 @@ class RealtimeSubscriptionManager {
     }
 
     if (expiredKeys.isNotEmpty && kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -342,7 +332,6 @@ class RealtimeSubscriptionManager {
     }
     
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 

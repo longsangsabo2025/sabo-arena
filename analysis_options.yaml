@@ -1,21 +1,21 @@
 include: package:flutter_lints/flutter.yaml
 
-# 🚀 ELON MODE V2: RE-ENABLED CRITICAL RULES
-# Date: December 16, 2025
-# Goal: 10/10 Code Quality Score
+# 🚀 ELON MODE V3: HARDCORE
+# Date: December 18, 2025
+# Goal: ZERO BLOAT. ZERO ERRORS.
 
 analyzer:
   errors:
-    # ✅ RE-ENABLED: Critical errors that must be fixed
-    deprecated_member_use: warning
-    unused_import: warning
-    unused_local_variable: warning
-    dead_code: warning
+    # 🔴 ERRORS: If it's broken, it's broken. Fix it.
+    deprecated_member_use: error
+    unused_import: error
+    unused_local_variable: error
+    dead_code: error
     undefined_getter: error
+    unused_element: error
+    override_on_non_overriding_member: error
     
-    # 🟡 WARNINGS: Should fix but not blocking
-    unused_element: warning
-    override_on_non_overriding_member: warning
+    # 🟡 WARNINGS: You have 24 hours to fix these.
     body_might_complete_normally_nullable: warning
     unnecessary_null_comparison: warning
     unnecessary_cast: warning

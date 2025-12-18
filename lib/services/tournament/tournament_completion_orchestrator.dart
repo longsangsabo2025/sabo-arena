@@ -7,7 +7,7 @@ import 'chat_integration_service.dart';
 import 'tournament_result_history_service.dart';
 import '../tournament_result_service.dart';
 import 'ui_data_capture.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX // Simple UI data capture
+// ELON_MODE_AUTO_FIX // Simple UI data capture
 
 /// Orchestrator for tournament completion workflow (CLEAN v4.0)
 /// 
@@ -55,12 +55,6 @@ class TournamentCompletionOrchestrator {
     bool sendNotifications = true,
     bool executeRewards = false, // 🆕 NEW PARAMETER: Disable reward execution by default
   }) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       // STEP 1: Validate tournament readiness (10%)
@@ -93,8 +87,6 @@ class TournamentCompletionOrchestrator {
         };
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // RECORD: Write ONCE to tournament_results (SOURCE OF TRUTH) (40%)
       _updateProgress('Lưu kết quả vào bảng tournament_results...', 0.4);
@@ -102,7 +94,6 @@ class TournamentCompletionOrchestrator {
         tournamentId: tournamentId,
         standings: standings,
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 🎯 CONDITIONAL EXECUTION: Only execute rewards if explicitly requested
       bool executionSuccess = true;
@@ -114,13 +105,9 @@ class TournamentCompletionOrchestrator {
         );
         
         if (!executionSuccess) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } else {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // ═══════════════════════════════════════════════════════════════
@@ -183,7 +170,6 @@ class TournamentCompletionOrchestrator {
       if (sendNotifications) {
         _updateProgress('Gửi thông báo...', 0.98);
         // TODO: Implement notification service
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // STEP: Record completion history for audit trail (99%)
@@ -215,14 +201,6 @@ class TournamentCompletionOrchestrator {
       // DONE (100%)
       _updateProgress('Hoàn thành!', 1.0);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       return {
         'success': true,
@@ -232,12 +210,6 @@ class TournamentCompletionOrchestrator {
       };
 
     } catch (e, stackTrace) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       return {
         'success': false,
@@ -258,7 +230,6 @@ class TournamentCompletionOrchestrator {
 
   /// Update progress callback
   void _updateProgress(String step, double progress) {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     onProgress?.call(step, progress);
   }
 
@@ -290,9 +261,7 @@ class TournamentCompletionOrchestrator {
         prizeDistribution: prizeDistribution.isNotEmpty ? prizeDistribution : null,
         options: options,
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Don't fail completion if history recording fails
     }
   }

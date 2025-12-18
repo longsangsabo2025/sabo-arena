@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
+// ignore_for_file: avoid_print
 
 /// 🔍 Production-Safe Logger
 ///
@@ -10,6 +11,9 @@ import 'dart:developer' as developer;
 /// - Helps diagnose production issues
 class ProductionLogger {
   static const String _tag = 'SABO';
+  
+  /// Set to true to enable console logs in debug mode
+  static bool enableConsoleLogs = false;
 
   /// Log information (always visible, even in production)
   static void info(String message, {String? tag}) {
@@ -21,7 +25,7 @@ class ProductionLogger {
     );
 
     // Also print in debug mode for convenience
-    if (kDebugMode) {
+    if (kDebugMode && enableConsoleLogs) {
       print('ℹ️ [$logTag] $message');
     }
   }
@@ -43,7 +47,7 @@ class ProductionLogger {
     );
 
     // Also print in debug mode for convenience
-    if (kDebugMode) {
+    if (kDebugMode && enableConsoleLogs) {
       print('❌ [$logTag] $message');
       if (error != null) print('   Error: $error');
       if (stackTrace != null) print('   Stack: $stackTrace');
@@ -61,7 +65,7 @@ class ProductionLogger {
     );
 
     // Also print in debug mode for convenience
-    if (kDebugMode) {
+    if (kDebugMode && enableConsoleLogs) {
       print('⚠️ [$logTag] $message');
       if (error != null) print('   Error: $error');
     }
@@ -77,8 +81,10 @@ class ProductionLogger {
       name: logTag,
       level: 700, // DEBUG level
     );
-    // ignore: avoid_print
-    print('🐛 [$logTag] $message');
+    
+    if (enableConsoleLogs) {
+      print('🐛 [$logTag] $message');
+    }
   }
 
   /// Log network requests (critical for debugging production issues)
@@ -98,7 +104,7 @@ class ProductionLogger {
       level: error != null ? 1000 : 800,
     );
 
-    if (kDebugMode) {
+    if (kDebugMode && enableConsoleLogs) {
       print(error != null ? '🌐❌ $message' : '🌐 $message');
     }
   }
@@ -109,7 +115,7 @@ class ProductionLogger {
 
     developer.log(message, name: 'SABO.Auth', level: isError ? 1000 : 800);
 
-    if (kDebugMode) {
+    if (kDebugMode && enableConsoleLogs) {
       print(isError ? '🔐❌ $message' : '🔐 $message');
     }
   }

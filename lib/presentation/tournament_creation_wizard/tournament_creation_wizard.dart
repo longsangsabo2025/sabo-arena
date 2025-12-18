@@ -3,6 +3,7 @@ import 'package:sabo_arena/utils/size_extensions.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/keyboard/keyboard_shortcuts.dart';
 import '../../services/tournament_service.dart';
+import '../../services/club_service.dart';
 import '../../services/tournament_prize_voucher_service.dart';
 import 'widgets/enhanced_basic_info_step.dart';
 import 'widgets/enhanced_schedule_step.dart';
@@ -114,9 +115,25 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
   }
 
   void _loadClubData() async {
-    // TODO: Load club data from service
-    // _tournamentData['venue'] = club.address;
-    // _tournamentData['contactInfo'] = club.phone;
+    if (widget.clubId == null) return;
+
+    try {
+      final club = await ClubService.instance.getClubById(widget.clubId!);
+      setState(() {
+        if (_tournamentData['venue'] == null || _tournamentData['venue'].isEmpty) {
+          _tournamentData['venue'] = club.address;
+        }
+        if (_tournamentData['venueContact'] == null || _tournamentData['venueContact'].isEmpty) {
+          _tournamentData['venueContact'] = club.name; // Default contact is club name
+        }
+        if (_tournamentData['venuePhone'] == null || _tournamentData['venuePhone'].isEmpty) {
+          _tournamentData['venuePhone'] = club.phone;
+        }
+      });
+      ProductionLogger.info('✅ Auto-filled club data: ${club.name}', tag: 'tournament_creation_wizard');
+    } catch (e) {
+      ProductionLogger.info('⚠️ Failed to load club data: $e', tag: 'tournament_creation_wizard');
+    }
   }
 
   @override
@@ -369,10 +386,8 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
   }
 
   void _validateAndPublish() async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // First sync final data from controllers to ensure _tournamentData is up to date
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     // Note: Controllers might be empty if using enhanced steps,
     // so only sync if controllers have data
     if (_nameController.text.isNotEmpty) {
@@ -391,16 +406,10 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
 
     // Validate current step form
     if (!_validateCurrentStep()) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       isValid = false;
     }
 
     // Manual validation of required fields - check from tournamentData
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     final name = _tournamentData['name'] ?? '';
     final venue = _tournamentData['venue'] ?? '';
@@ -408,13 +417,11 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
     if (name.isEmpty) {
       _errors['name'] = 'Vui lòng nhập tên giải đấu';
       isValid = false;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     if (venue.isEmpty) {
       _errors['venue'] = 'Vui lòng nhập địa chỉ tổ chức';
       isValid = false;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     // Validate participant count matches format requirements
@@ -425,21 +432,18 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
       _errors['maxParticipants'] =
           'SABO DE16 yêu cầu đúng 16 người tham gia (hiện tại: $maxParticipants)';
       isValid = false;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     if (format == 'sabo_de32' && maxParticipants != 32) {
       _errors['maxParticipants'] =
           'SABO DE32 yêu cầu đúng 32 người tham gia (hiện tại: $maxParticipants)';
       isValid = false;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     if (format == 'double_elimination' && maxParticipants != 16) {
       _errors['maxParticipants'] =
           'Double Elimination yêu cầu 16 người tham gia (hiện tại: $maxParticipants)';
       isValid = false;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     if (_tournamentData['registrationStartDate'] == null) {
@@ -453,17 +457,10 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
     }
 
     if (!isValid) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _showValidationErrors();
       return;
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     /// Setup prize vouchers for tournament
     Future<void> setupPrizeVouchers(String tournamentId) async {
@@ -547,12 +544,24 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
           _tournamentData['coverImageFileName'] != null) {
         try {
           ProductionLogger.info('📤 Pre-uploading tournament cover image...', tag: 'tournament_creation_wizard');
-          final tempPath = 'temp_covers/${DateTime.now().millisecondsSinceEpoch}_${_tournamentData['coverImageFileName']}';
+          final fileName = _tournamentData['coverImageFileName'] as String;
+          final tempPath = 'temp_covers/${DateTime.now().millisecondsSinceEpoch}_$fileName';
+          
+          // Determine content type
+          String contentType = 'image/jpeg';
+          final ext = fileName.split('.').last.toLowerCase();
+          if (ext == 'png') contentType = 'image/png';
+          else if (ext == 'webp') contentType = 'image/webp';
+
           await _supabase.storage
               .from('tournament-covers')
               .uploadBinary(
                 tempPath,
                 _tournamentData['coverImageBytes'],
+                fileOptions: FileOptions(
+                  contentType: contentType,
+                  upsert: true,
+                ),
               );
           uploadedCoverUrl = _supabase.storage
               .from('tournament-covers')

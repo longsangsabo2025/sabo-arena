@@ -53,7 +53,7 @@ class AutoCompleteMigration {
     print('=' * 70);
 
     final ranks = await _query(
-      'SELECT rank_code, rank_name_vi, elo_min, elo_max FROM public.rank_system ORDER BY rank_value;',
+      'SELECT rank_code, rank_name_vi, elo_min, elo_max FROM public.rank_system ORDER BY rank_order;',
     );
     print('📊 Rank System (${ranks.length} ranks):');
     for (var rank in ranks) {

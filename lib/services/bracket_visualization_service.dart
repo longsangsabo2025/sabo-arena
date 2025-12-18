@@ -33,7 +33,6 @@ class BracketVisualizationService {
     try {
       final format = bracketData['format'] ?? 'single_elimination';
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       switch (format.toLowerCase()) {
         case 'single_elimination':
@@ -82,7 +81,6 @@ class BracketVisualizationService {
           return _buildUnsupportedFormatWidget(format);
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return _buildErrorWidget(e.toString());
     }
   }
@@ -199,14 +197,8 @@ class BracketVisualizationService {
     final matchList = matches.map((m) => m as Map<String, dynamic>).toList();
 
     // Debug: Check if matches have required fields
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     if (matchList.isNotEmpty) {
       // firstMatch variable removed - was only used in debug log
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     return SaboDE32Bracket(matches: matchList, onMatchTap: onMatchTap);
@@ -242,6 +234,7 @@ class BracketVisualizationService {
   // ==================== BRACKET HEADER ====================
 
   /// Compact header for maximum bracket space (1 line only)
+  // ignore: unused_element
   Widget _buildCompactBracketHeader(Map<String, dynamic> bracketData) {
     // Safely parse participant count
     final participantCountData = bracketData['participantCount'];
@@ -384,7 +377,6 @@ class BracketVisualizationService {
       return type == 'FINAL' || type == 'GRAND_FINAL' || type == 'SABO';
     }).toList();
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Build bracket tree directly without section headers (tab handles filtering)
     final allMatches = [...wbMatches, ...lbMatches, ...finalMatches];
@@ -409,6 +401,7 @@ class BracketVisualizationService {
   }
 
   /// Build a bracket section (WB/LB/Final) with title and matches
+  // ignore: unused_element
   Widget _buildBracketSection(
     String title,
     List<dynamic> matches,
@@ -529,7 +522,6 @@ class BracketVisualizationService {
     // Calculate standings from matches
     final standings = _calculateRoundRobinStandings(matches);
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1027,7 +1019,6 @@ class BracketVisualizationService {
       totalExpectedRounds = _calculateTotalRounds(firstRoundMatches);
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     for (int round in sortedRounds) {
       final roundData = roundMatches[round]!;
@@ -1053,7 +1044,6 @@ class BracketVisualizationService {
 
         // For Round 1 matches without players (shouldn't happen in new system)
         if (round == 1 && (player1Data == null || player2Data == null)) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
 
         matchCards.add({

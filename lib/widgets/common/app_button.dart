@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// 🎯 **AppButton** - Unified Button Component
+/// 
+/// **iOS Support**: Automatically applies iOS-style (flat buttons, 12px radius) on iOS devices
+/// **Brand Color**: Uses brand teal green #1E8A6F for primary actions
 ///
 /// **Purpose**: Replace 100+ inconsistent button implementations with a single,
 /// consistent, and accessible button component across the entire app.
@@ -87,9 +92,6 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDisabled = onPressed == null && !isLoading;
-    final effectiveOnPressed = isLoading ? null : onPressed;
-
     Widget buttonChild = _buildButtonContent(context);
 
     if (fullWidth) {
@@ -115,19 +117,50 @@ class AppButton extends StatelessWidget {
     }
   }
 
-  // 🎨 Primary Button (ElevatedButton)
+  // 🎨 Primary Button (iOS-style flat on iOS, Material elevated on Android)
   Widget _buildPrimaryButton(BuildContext context) {
+    final isIOS = !kIsWeb && Platform.isIOS;
+    final brandColor = customColor ?? const Color(0xFF1E8A6F); // Brand teal green
+    final borderRadius = isIOS ? 12.0 : 8.0; // iOS: 12px, Android: 8px
+    final elevation = isIOS ? 0.0 : 2.0; // iOS: flat, Android: elevated
+    
+    if (isIOS) {
+      // iOS-style flat button với brand color
+      return Container(
+        height: _getHeight(),
+        decoration: BoxDecoration(
+          color: isLoading ? Colors.grey[300] : brandColor,
+          borderRadius: BorderRadius.circular(borderRadius),
+          // No elevation - iOS flat style
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(borderRadius),
+            onTap: isLoading ? null : onPressed,
+            child: Padding(
+              padding: _getPadding(),
+              child: Center(
+                child: _buildLabel(context),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    
+    // Android Material style
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: customColor ?? const Color(0xFF0866FF),
+        backgroundColor: brandColor,
         foregroundColor: customTextColor ?? Colors.white,
         padding: _getPadding(),
         minimumSize: Size(_getMinWidth(), _getHeight()),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
-        elevation: 2,
+        elevation: elevation,
         disabledBackgroundColor: Colors.grey[300],
         disabledForegroundColor: Colors.grey[600],
       ),
@@ -135,19 +168,49 @@ class AppButton extends StatelessWidget {
     );
   }
 
-  // 🎨 Secondary Button (Gray ElevatedButton)
+  // 🎨 Secondary Button (iOS-style flat on iOS, Material elevated on Android)
   Widget _buildSecondaryButton(BuildContext context) {
+    final isIOS = !kIsWeb && Platform.isIOS;
+    final bgColor = customColor ?? Colors.grey[300];
+    final borderRadius = isIOS ? 12.0 : 8.0;
+    final elevation = isIOS ? 0.0 : 1.0;
+    
+    if (isIOS) {
+      // iOS-style flat secondary button
+      return Container(
+        height: _getHeight(),
+        decoration: BoxDecoration(
+          color: isLoading ? Colors.grey[200] : bgColor,
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(borderRadius),
+            onTap: isLoading ? null : onPressed,
+            child: Padding(
+              padding: _getPadding(),
+              child: Center(
+                child: _buildLabel(context),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    
+    // Android Material style
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: customColor ?? Colors.grey[300],
+        backgroundColor: bgColor,
         foregroundColor: customTextColor ?? Colors.black87,
         padding: _getPadding(),
         minimumSize: Size(_getMinWidth(), _getHeight()),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
-        elevation: 1,
+        elevation: elevation,
         disabledBackgroundColor: Colors.grey[200],
         disabledForegroundColor: Colors.grey[500],
       ),
@@ -155,20 +218,24 @@ class AppButton extends StatelessWidget {
     );
   }
 
-  // 🎨 Outline Button (OutlinedButton)
+  // 🎨 Outline Button (iOS-style với brand color)
   Widget _buildOutlineButton(BuildContext context) {
+    final isIOS = !kIsWeb && Platform.isIOS;
+    final brandColor = customColor ?? const Color(0xFF1E8A6F); // Brand teal green
+    final borderRadius = isIOS ? 12.0 : 8.0;
+    
     return OutlinedButton(
       onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: customColor ?? const Color(0xFF0866FF),
+        foregroundColor: brandColor,
         padding: _getPadding(),
         minimumSize: Size(_getMinWidth(), _getHeight()),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
         side: BorderSide(
-          color: customColor ?? const Color(0xFF0866FF),
-          width: 1.5,
+          color: brandColor,
+          width: isIOS ? 1.0 : 1.5, // iOS: thinner border
         ),
         disabledForegroundColor: Colors.grey[400],
       ),
@@ -176,16 +243,23 @@ class AppButton extends StatelessWidget {
     );
   }
 
-  // 🎨 Text Button (TextButton)
+  // 🎨 Text Button (iOS-style với brand color hoặc iOS blue cho links)
   Widget _buildTextButton(BuildContext context) {
+    final isIOS = !kIsWeb && Platform.isIOS;
+    // Text buttons: dùng brand color cho primary, iOS blue cho secondary links
+    final textColor = customColor ?? (type == AppButtonType.text 
+        ? const Color(0xFF007AFF) // iOS blue cho links
+        : const Color(0xFF1E8A6F)); // Brand color cho primary text buttons
+    final borderRadius = isIOS ? 12.0 : 8.0;
+    
     return TextButton(
       onPressed: isLoading ? null : onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: customColor ?? const Color(0xFF0866FF),
+        foregroundColor: textColor,
         padding: _getPadding(),
         minimumSize: Size(_getMinWidth(), _getHeight()),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
         disabledForegroundColor: Colors.grey[400],
       ),
@@ -208,7 +282,7 @@ class AppButton extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation<Color>(
                 type == AppButtonType.primary
                     ? Colors.white
-                    : customColor ?? const Color(0xFF0866FF),
+                    : customColor ?? const Color(0xFF1E8A6F), // Brand color
               ),
             ),
           ),
@@ -304,29 +378,35 @@ class AppButton extends StatelessWidget {
   }
 
   TextStyle _getTextStyle(BuildContext context) {
+    final isIOS = !kIsWeb && Platform.isIOS;
     final baseStyle = Theme.of(context).textTheme.labelLarge ?? TextStyle();
 
     double fontSize;
     FontWeight fontWeight;
+    double letterSpacing;
 
     switch (size) {
       case AppButtonSize.small:
-        fontSize = 12;
+        fontSize = isIOS ? 13 : 12;
         fontWeight = FontWeight.w500;
+        letterSpacing = isIOS ? -0.2 : 0.1;
         break;
       case AppButtonSize.medium:
-        fontSize = 14;
+        fontSize = isIOS ? 15 : 14;
         fontWeight = FontWeight.w600;
+        letterSpacing = isIOS ? -0.3 : 0.1;
         break;
       case AppButtonSize.large:
-        fontSize = 16;
+        fontSize = isIOS ? 17 : 16; // iOS standard button text size
         fontWeight = FontWeight.w600;
+        letterSpacing = isIOS ? -0.3 : 0.1;
         break;
     }
 
     return baseStyle.copyWith(
       fontSize: fontSize,
       fontWeight: fontWeight,
+      letterSpacing: letterSpacing,
     );
   }
 }

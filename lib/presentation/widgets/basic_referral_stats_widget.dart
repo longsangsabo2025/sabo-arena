@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/design_system/typography.dart';
 import '../../core/design_system/app_colors.dart';
 import '../../services/basic_referral_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Basic Referral Stats Widget
 /// Simple dashboard showing referral statistics and SPA earned
@@ -43,7 +43,6 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../services/tournament_prize_voucher_service.dart';
 import '../../theme/app_theme.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Screen quản lý Prize Voucher cho CLB
 /// Prize Voucher = Voucher tiền mặt VNĐ dùng cho giải đấu
@@ -38,7 +38,6 @@ class _ClubPrizeVoucherScreenState extends State<ClubPrizeVoucherScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }

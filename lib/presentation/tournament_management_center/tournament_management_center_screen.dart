@@ -11,7 +11,7 @@ import '../tournament_detail_screen/widgets/participant_management_tab.dart';
 import '../tournament_detail_screen/widgets/tournament_rankings_widget.dart';
 import 'widgets/bracket_management_tab.dart';
 import '../tournament_creation_wizard/tournament_creation_wizard.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class TournamentManagementCenterScreen extends StatefulWidget {
   final String clubId;
@@ -52,7 +52,6 @@ class _TournamentManagementCenterScreenState
           clubId: widget.clubId,
         );
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         // Try alternative approach if direct query fails
         tournaments = [];
       }
@@ -75,7 +74,6 @@ class _TournamentManagementCenterScreenState
         }
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() {
         _isLoading = false;
       });
@@ -217,7 +215,7 @@ class _TournamentManagementCenterScreenState
             ),
             SizedBox(width: 8),
             Text(
-              'Loading tournaments...', overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
+              'Đang tải giải đấu...', overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
                 // 13px - iOS secondary text
                 color: AppColors.textSecondary,
               ),
@@ -242,7 +240,7 @@ class _TournamentManagementCenterScreenState
             Icon(Icons.info_outline, size: 16, color: AppColors.textSecondary),
             SizedBox(width: 8),
             Text(
-              'No tournaments available', overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
+              'Chưa có giải đấu nào', overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
                 // 13px - iOS secondary text
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
@@ -287,7 +285,7 @@ class _TournamentManagementCenterScreenState
                         color: AppColors.textSecondary,
                       ),
                       hint: Text(
-                        'Select...', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
+                        'Chọn giải đấu...', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
                           // 15px - iOS standard
                           color: AppColors.textSecondary,
                         ),
@@ -358,7 +356,7 @@ class _TournamentManagementCenterScreenState
                 size: 16,
               ),
               label: Text(
-                hasBracket ? 'Created' : 'Create', overflow: TextOverflow.ellipsis, style: AppTypography
+                hasBracket ? 'Đã tạo' : 'Tạo', overflow: TextOverflow.ellipsis, style: AppTypography
                     .labelMedium, // 14px, SemiBold - iOS button standard
               ),
               style: ElevatedButton.styleFrom(
@@ -419,25 +417,25 @@ class _TournamentManagementCenterScreenState
                   height: 48, // Slightly reduced height
                   icon: Icon(Icons.people_outline, size: 18),
                   iconMargin: EdgeInsets.only(bottom: 2),
-                  text: 'Members',
+                  text: 'Thành viên',
                 ),
                 Tab(
                   height: 48,
                   icon: Icon(Icons.sports_outlined, size: 18),
                   iconMargin: EdgeInsets.only(bottom: 2),
-                  text: 'Matches',
+                  text: 'Trận đấu',
                 ),
                 Tab(
                   height: 48,
                   icon: Icon(Icons.account_tree_outlined, size: 18),
                   iconMargin: EdgeInsets.only(bottom: 2),
-                  text: 'Bracket',
+                  text: 'Nhánh đấu',
                 ),
                 Tab(
                   height: 48,
                   icon: Icon(Icons.emoji_events_outlined, size: 18),
                   iconMargin: EdgeInsets.only(bottom: 2),
-                  text: 'Results',
+                  text: 'Kết quả',
                 ),
               ],
             ),
@@ -494,14 +492,14 @@ class _TournamentManagementCenterScreenState
 
               // Title
               Text(
-                'No Tournament Selected', overflow: TextOverflow.ellipsis, style: AppTypography
+                'Chưa chọn giải đấu', overflow: TextOverflow.ellipsis, style: AppTypography
                     .headingSmall, // 20px, SemiBold - iOS empty state title
               ),
               SizedBox(height: 8.sp),
 
               // Description
               Text(
-                'Select a tournament from the dropdown above\nto manage participants, matches, and brackets',
+                'Chọn một giải đấu từ danh sách trên\nđể quản lý thành viên, trận đấu và nhánh đấu',
                 textAlign: TextAlign.center, style: AppTypography.bodySmall.copyWith(
                   // 13px - iOS secondary text
                   color: AppColors.textSecondary,
@@ -519,7 +517,7 @@ class _TournamentManagementCenterScreenState
                     },
                     icon: Icon(Icons.add_outlined, size: 20),
                     label: Text(
-                      'Create New Tournament', overflow: TextOverflow.ellipsis, style: AppTypography
+                      'Tạo giải đấu mới', overflow: TextOverflow.ellipsis, style: AppTypography
                           .labelMedium, // 14px, SemiBold - iOS button
                     ),
                     style: OutlinedButton.styleFrom(
@@ -547,7 +545,6 @@ class _TournamentManagementCenterScreenState
     if (_selectedTournament == null) return;
 
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       showDialog(
         context: context,
@@ -582,14 +579,14 @@ class _TournamentManagementCenterScreenState
                 ),
                 SizedBox(height: 16.sp),
                 Text(
-                  'Creating Tournament Bracket...', overflow: TextOverflow.ellipsis, style: AppTypography.headingSmall.copyWith(
+                  'Đang tạo nhánh đấu...', overflow: TextOverflow.ellipsis, style: AppTypography.headingSmall.copyWith(
                     // 20px - iOS dialog title
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 SizedBox(height: 6.sp),
                 Text(
-                  'Please wait while we generate matches', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
+                  'Vui lòng chờ trong khi tạo các trận đấu', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
                     // 15px - iOS body text
                     color: AppColors.textSecondary,
                   ),
@@ -602,7 +599,6 @@ class _TournamentManagementCenterScreenState
 
       // Create bracket with error handling
       try {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         // First check if bracket already exists
         final existingMatches = await _supabase
@@ -620,7 +616,6 @@ class _TournamentManagementCenterScreenState
         // Get tournament participants first
         final participantProfiles = await _tournamentService
             .getTournamentParticipants(_selectedTournament!.id);
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         if (participantProfiles.isEmpty) {
           throw Exception('Không có thành viên tham gia giải đấu');
@@ -645,9 +640,6 @@ class _TournamentManagementCenterScreenState
         // 🔧 DETECT TOURNAMENT FORMAT AND USE APPROPRIATE SERVICE
         // Use bracketFormat (which maps to tournamentType) for bracket creation
         final tournamentFormat = _selectedTournament!.bracketFormat;
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         Map<String, dynamic> result;
 
@@ -663,8 +655,6 @@ class _TournamentManagementCenterScreenState
           participantIds: participantIds,
         );
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         if (!result.containsKey('success')) {
           // Convert bracket result to success format
@@ -678,9 +668,7 @@ class _TournamentManagementCenterScreenState
             result['message'] ?? 'Lỗi không xác định khi tạo bảng đấu',
           );
         }
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         throw Exception('Không thể tạo bảng đấu: ${e.toString()}');
       }
 
@@ -720,7 +708,6 @@ class _TournamentManagementCenterScreenState
           ),
         );
       }
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 

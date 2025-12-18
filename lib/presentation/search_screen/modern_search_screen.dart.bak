@@ -1,0 +1,491 @@
+import 'package:flutter/material.dart';
+import '../../services/post_repository.dart';
+import 'dart:async';
+
+/// 🚀 MUSK MODERN SOCIAL SEARCH
+/// Beautiful search experience giống Instagram/Facebook
+class ModernSearchScreen extends StatefulWidget {
+  const ModernSearchScreen({super.key});
+
+  @override
+  State<ModernSearchScreen> createState() => _ModernSearchScreenState();
+}
+
+class _ModernSearchScreenState extends State<ModernSearchScreen>
+    with SingleTickerProviderStateMixin {
+  
+  // Services  
+  final PostRepository _postRepository = PostRepository();
+  
+  // Search state
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  Timer? _debounceTimer;
+  
+  // Results state
+  List<dynamic> _searchResults = [];
+  List<dynamic> _postResults = [];
+  bool _isLoading = false;
+  bool _showResults = false;
+  String _currentQuery = '';
+  
+  // Recent searches (simple implementation)
+  List<String> _recentSearches = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+    _searchFocusNode.requestFocus();
+    _loadRecentSearches();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+  
+  void _loadRecentSearches() {
+    // TODO: Load from SharedPreferences
+    setState(() {
+      _recentSearches = ['billiards', 'tournament', 'challenge'];
+    });
+  }
+  
+  void _saveRecentSearch(String query) {
+    if (!_recentSearches.contains(query)) {
+      setState(() {
+        _recentSearches.insert(0, query);
+        if (_recentSearches.length > 10) {
+          _recentSearches = _recentSearches.take(10).toList();
+        }
+      });
+    }
+    // TODO: Save to SharedPreferences
+  }
+
+  /// 🚀 MUSK: Debounced search với smart categories
+  void _onSearchChanged() {
+    final query = _searchController.text.trim();
+    
+    if (query.isEmpty) {
+      _debounceTimer?.cancel();
+      if (mounted) {
+        setState(() {
+          _showResults = false;
+          _searchResults = [];
+          _userResults = [];
+          _postResults = [];
+        });
+      }
+      return;
+    }
+    
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(query);
+    });
+  }
+
+  /// Perform comprehensive search
+  Future<void> _performSearch(String query) async {
+    if (query.isEmpty || !mounted) return;
+    
+    setState(() {
+      _isLoading = true;
+      _currentQuery = query;
+    });
+    
+    try {
+      // Save to recent searches
+      _saveRecentSearch(query);
+      
+      // Search posts và users simultaneously
+      final futures = await Future.wait([
+        _postRepository.searchPosts(query),
+        _userService.searchUsers(query),
+      ]);
+      
+      final posts = futures[0] as List<dynamic>;
+      final users = futures[1] as List<UserProfile>;
+      
+      if (mounted) {
+        setState(() {
+          _postResults = posts;
+          _userResults = users;
+          _searchResults = [...users, ...posts]; // Combined for "All" tab
+          _showResults = true;
+          _isLoading = false;
+        });
+      }
+      
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi tìm kiếm: ${e.toString()}')),
+        );
+      }
+    }
+  }
+  
+  void _clearSearch() {
+    _searchController.clear();
+    if (mounted) {
+      setState(() {
+        _showResults = false;
+        _searchResults = [];
+        _userResults = [];
+        _postResults = [];
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: _buildModernSearchAppBar(),
+      body: _showResults ? _buildSearchResults() : _buildSearchHome(),
+    );
+  }
+  
+  /// 🚀 MUSK: Modern search AppBar giống Instagram
+  PreferredSizeWidget _buildModernSearchAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.black87),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5F5F5),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: TextField(
+          controller: _searchController,
+          focusNode: _searchFocusNode,
+          decoration: InputDecoration(
+            hintText: 'Tìm kiếm người dùng, bài viết...',
+            hintStyle: const TextStyle(
+              color: Color(0xFF8E8E93),
+              fontSize: 16,
+            ),
+            prefixIcon: const Icon(
+              Icons.search,
+              color: Color(0xFF8E8E93),
+              size: 20,
+            ),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Color(0xFF8E8E93),
+                      size: 18,
+                    ),
+                    onPressed: _clearSearch,
+                  )
+                : null,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 10,
+            ),
+          ),
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+          ),
+        ),
+      ),
+      bottom: _showResults
+          ? TabBar(
+              controller: _tabController,
+              labelColor: Colors.black87,
+              unselectedLabelColor: Colors.grey[600],
+              indicatorColor: Colors.blue[600],
+              tabs: [
+                Tab(text: 'Tất cả (${_searchResults.length})'),
+                Tab(text: 'Người dùng (${_userResults.length})'),
+                Tab(text: 'Bài viết (${_postResults.length})'),
+              ],
+            )
+          : null,
+    );
+  }
+  
+  /// Search home khi chưa search
+  Widget _buildSearchHome() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Recent searches
+          if (_recentSearches.isNotEmpty) ...[
+            const Text(
+              'Tìm kiếm gần đây',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _recentSearches.map((search) {
+                return GestureDetector(
+                  onTap: () {
+                    _searchController.text = search;
+                    _performSearch(search);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey[300]!),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.history, size: 16, color: Colors.grey[600]),
+                        const SizedBox(width: 8),
+                        Text(
+                          search,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 32),
+          ],
+          
+          // Search suggestions
+          const Text(
+            'Gợi ý tìm kiếm',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...['Giải đấu', 'Thách đấu', 'Billiards', 'Pool', 'Tournament'].map((suggestion) {
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.trending_up, color: Colors.blue[600]),
+              title: Text(suggestion),
+              onTap: () {
+                _searchController.text = suggestion;
+                _performSearch(suggestion);
+              },
+            );
+          }),
+        ],
+      ),
+    );
+  }
+  
+  /// Search results với tabs
+  Widget _buildSearchResults() {
+    if (_isLoading) {
+      return const LoadingStateWidget(message: 'Đang tìm kiếm...');
+    }
+    
+    if (_searchResults.isEmpty) {
+      return _buildEmptyResults();
+    }
+    
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        _buildAllResults(),
+        _buildUserResults(),
+        _buildPostResults(),
+      ],
+    );
+  }
+  
+  Widget _buildEmptyResults() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off,
+            size: 80,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Không tìm thấy kết quả cho "$_currentQuery"',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Thử từ khóa khác hoặc kiểm tra chính tả',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildAllResults() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: _searchResults.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      itemBuilder: (context, index) {
+        final item = _searchResults[index];
+        if (item is UserProfile) {
+          return _buildUserTile(item);
+        } else {
+          return _buildPostTile(item);
+        }
+      },
+    );
+  }
+  
+  Widget _buildUserResults() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: _userResults.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) => _buildUserTile(_userResults[index]),
+    );
+  }
+  
+  Widget _buildPostResults() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: _postResults.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      itemBuilder: (context, index) => _buildPostTile(_postResults[index]),
+    );
+  }
+  
+  Widget _buildUserTile(UserProfile user) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          UserAvatarWidget(
+            avatarUrl: user.avatarUrl,
+            userName: user.displayName,
+            size: 50,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.displayName,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    UserRankBadgeWidget(
+                      rankCode: user.rank,
+                      style: RankBadgeStyle.compact,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'ELO: ${user.eloRating}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            onPressed: () {
+              // TODO: Follow user
+            },
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildPostTile(dynamic post) {
+    // Use existing FeedPostCardWidget
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: FeedPostCardWidget(post: post),
+    );
+  }
+  
+  String _getSystemFont() {
+    try {
+      if (Platform.isIOS) {
+        return '.SF Pro Display';
+      } else {
+        return 'Roboto';
+      }
+    } catch (e) {
+      return 'Roboto';
+    }
+  }
+}

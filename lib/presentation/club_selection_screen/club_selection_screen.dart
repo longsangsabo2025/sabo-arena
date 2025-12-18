@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sabo_arena/models/club.dart';
 import 'package:sabo_arena/services/club_service.dart';
 import 'package:sabo_arena/presentation/rank_registration_screen/rank_registration_screen.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 import 'package:sabo_arena/widgets/club/club_logo_widget.dart';
 
 class ClubSelectionScreen extends StatefulWidget {
@@ -35,7 +35,6 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
       });
       return clubs;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -66,6 +65,7 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
         builder: (context) => RankRegistrationScreen(clubId: club.id),
       ),
     ).then((result) {
+      if (!mounted) return;
       if (result == true) {
         // Request was submitted successfully, go back to previous screen
         Navigator.pop(context, true);

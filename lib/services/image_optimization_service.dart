@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 import 'package:path/path.dart' as path;
 
 /// Image Optimization Service
@@ -38,14 +38,12 @@ class ImageOptimizationService {
   }) async {
     try {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Check file size
       final fileSize = await imageFile.length();
       if (fileSize > maxFileSizeBytes) {
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
 
@@ -67,24 +65,21 @@ class ImageOptimizationService {
 
       if (compressedFile == null) {
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
         return null;
       }
 
       // Convert XFile to File
       final compressedFileObj = File(compressedFile.path);
-      final compressedSize = await compressedFileObj.length();
-      final compressionRatio = (1 - compressedSize / fileSize) * 100;
+      // final compressedSize = await compressedFileObj.length(); // Unused
+      // final compressionRatio = (1 - compressedSize / fileSize) * 100;
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       return compressedFileObj;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }
@@ -178,7 +173,6 @@ class ImageOptimizationService {
       return true;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return false;
     }
@@ -197,7 +191,6 @@ class ImageOptimizationService {
       };
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return null;
     }

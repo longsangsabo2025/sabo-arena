@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../chat_service.dart';
 import '../../utils/number_formatter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for sending congratulatory chat messages
 class ChatIntegrationService {
@@ -14,14 +14,12 @@ class ChatIntegrationService {
     required List<Map<String, dynamic>> prizeRecipients,
     required Map<String, dynamic> tournament,
   }) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       final tournamentTitle = tournament['title'] as String? ?? 'Tournament';
       final clubId = tournament['club_id'] as String?;
 
       if (clubId == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -33,7 +31,6 @@ class ChatIntegrationService {
       );
 
       if (chatRoom == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -129,9 +126,7 @@ Cảm ơn tất cả các vận động viên đã tham gia! 🙏
         messageType: 'tournament_summary',
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Don't rethrow - chat messages are not critical
     }
   }
@@ -167,7 +162,6 @@ Cảm ơn tất cả các vận động viên đã tham gia! 🙏
 
       return newRoom;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }

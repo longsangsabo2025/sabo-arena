@@ -22,7 +22,7 @@ class LoginScreenIOS extends StatefulWidget {
 
 class _LoginScreenIOSState extends State<LoginScreenIOS> {
   final _formKey = GlobalKey<FormState>();
-  String _fullPhoneNumber = '';
+  // String _fullPhoneNumber = '';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -224,6 +224,8 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
         // Save credentials if "Remember Me" is checked
         await _saveCredentials();
 
+        if (!mounted) return;
+
         // � Check for welcome voucher
         await WelcomeVoucherHelper.checkAndShowWelcomeVoucher(
           context,
@@ -231,6 +233,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
         );
 
         // �🎯 Use AuthNavigationController for proper post-login flow
+        if (!mounted) return;
         await AuthNavigationController.navigateAfterLogin(
           context,
           userId: response.user!.id,
@@ -286,6 +289,8 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
           role: 'player',
         );
 
+        if (!mounted) return;
+
         // � Check for welcome voucher
         await WelcomeVoucherHelper.checkAndShowWelcomeVoucher(
           context,
@@ -293,6 +298,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
         );
 
         // �🎯 Use AuthNavigationController for proper post-social-login flow
+        if (!mounted) return;
         await AuthNavigationController.navigateAfterLogin(
           context,
           userId: response.user!.id,
@@ -660,7 +666,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                                 }
                               }
 
-                              _fullPhoneNumber = normalized;
+                              // _fullPhoneNumber = normalized;
                               if (kDebugMode)
                                 ProductionLogger.info('📱 Normalized phone: $normalized', tag: 'login_screen_ios');
                             },

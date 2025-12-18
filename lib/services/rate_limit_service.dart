@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'dart:collection';
 import 'dart:async';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Rate Limit Service
 /// Prevents abuse by limiting API calls, tournament creation, and image uploads
@@ -50,7 +50,6 @@ class RateLimitService {
     });
 
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -118,7 +117,6 @@ class RateLimitService {
     // Check if limit exceeded
     if (queue.length >= maxActions) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return false;
     }
@@ -252,7 +250,6 @@ class RateLimitService {
     // Check if limit exceeded
     if (queue.length >= maxActions) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return false;
     }

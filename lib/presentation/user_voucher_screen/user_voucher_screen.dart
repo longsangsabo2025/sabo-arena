@@ -8,7 +8,7 @@ import 'widgets/voucher_card_widget.dart';
 import 'widgets/achievement_card_widget.dart';
 import 'voucher_detail_screen.dart';
 import 'voucher_table_payment_screen.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class UserVoucherScreen extends StatefulWidget {
   final String userId;
@@ -76,7 +76,6 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
   /// Chuyển đổi lỗi kỹ thuật thành thông báo thân thiện
   String _getFriendlyErrorMessage(String technicalError) {
     // Log lỗi kỹ thuật cho dev (có thể gửi lên crash analytics)
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Phân tích lỗi và trả về thông báo thân thiện
     if (technicalError.contains('Failed to load user achievements')) {

@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Database Connection Manager
 /// Manages connection pooling, health checks, and retry logic for Supabase
@@ -24,7 +24,6 @@ class DatabaseConnectionManager {
   void initialize() {
     _startHealthChecks();
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -46,7 +45,6 @@ class DatabaseConnectionManager {
 
       if (duration.inMilliseconds > 1000) {
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
 
@@ -58,12 +56,10 @@ class DatabaseConnectionManager {
       _isHealthy = false;
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       if (_consecutiveFailures >= _maxFailures) {
         if (kDebugMode) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
 

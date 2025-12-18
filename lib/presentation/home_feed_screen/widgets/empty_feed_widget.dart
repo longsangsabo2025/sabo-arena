@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:math' as math;
+import '../../../widgets/common/app_button.dart';
 
 class EmptyFeedWidget extends StatefulWidget {
   final bool isNearbyTab;
@@ -39,9 +40,6 @@ class _EmptyFeedWidgetState extends State<EmptyFeedWidget>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Center(
       child: Padding(
         padding: EdgeInsets.all(6.w),
@@ -118,46 +116,28 @@ class _EmptyFeedWidgetState extends State<EmptyFeedWidget>
 
             SizedBox(height: 3.h),
 
-            // Action buttons
+            // Action buttons - iOS style với AppButton
             Column(
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: widget.onCreatePost,
-                    icon: Icon(
-                      Icons.add,
-                      color: colorScheme.onPrimary,
-                      size: 20,
-                    ),
-                    label: const Text('Tạo bài viết đầu tiên'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 1.5.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
+                AppButton(
+                  label: 'Tạo bài viết đầu tiên',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.large,
+                  icon: Icons.add,
+                  iconTrailing: false,
+                  fullWidth: true,
+                  onPressed: widget.onCreatePost,
                 ),
                 if (!widget.isNearbyTab) ...[
                   SizedBox(height: 2.h),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: widget.onFindFriends,
-                      icon: Icon(
-                        Icons.people,
-                        color: colorScheme.primary,
-                        size: 20,
-                      ),
-                      label: const Text('Tìm bạn bè'),
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 1.5.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
+                  AppButton(
+                    label: 'Tìm bạn bè',
+                    type: AppButtonType.outline,
+                    size: AppButtonSize.large,
+                    icon: Icons.people,
+                    iconTrailing: false,
+                    fullWidth: true,
+                    onPressed: widget.onFindFriends,
                   ),
                 ],
               ],

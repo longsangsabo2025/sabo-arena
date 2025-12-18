@@ -5,7 +5,7 @@ import '../../../services/tournament_eligibility_service.dart';
 import '../../../services/user_service.dart';
 import '../../../widgets/tournament/eligibility_status_card.dart';
 import './tournament_card_widget.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Wrapper for TournamentCardWidget with eligibility badge
 class TournamentCardWithEligibility extends StatefulWidget {
@@ -15,6 +15,8 @@ class TournamentCardWithEligibility extends StatefulWidget {
   final VoidCallback? onResultTap;
   final VoidCallback? onDetailTap;
   final VoidCallback? onShareTap;
+  final VoidCallback? onHide;
+  final VoidCallback? onDelete;
 
   const TournamentCardWithEligibility({
     super.key,
@@ -24,6 +26,8 @@ class TournamentCardWithEligibility extends StatefulWidget {
     this.onResultTap,
     this.onDetailTap,
     this.onShareTap,
+    this.onHide,
+    this.onDelete,
   });
 
   @override
@@ -70,7 +74,6 @@ class _TournamentCardWithEligibilityState
         });
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -82,7 +85,7 @@ class _TournamentCardWithEligibilityState
   @override
   Widget build(BuildContext context) {
     return TournamentCardWidget(
-      tournament: widget.tournamentCardData,
+      tournamentMap: widget.tournamentCardData,
       onTap: () {
         // Check eligibility before allowing tap action
         if (!_isLoading && _eligibilityResult != null && !_eligibilityResult!.isEligible) {
@@ -96,6 +99,8 @@ class _TournamentCardWithEligibilityState
       onResultTap: widget.onResultTap,
       onDetailTap: widget.onDetailTap,
       onShareTap: widget.onShareTap,
+      onHide: widget.onHide,
+      onDelete: widget.onDelete,
     );
   }
 

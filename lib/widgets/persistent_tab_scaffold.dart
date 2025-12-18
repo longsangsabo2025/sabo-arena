@@ -202,16 +202,14 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         // If not on Home tab, go to Home tab first
-        if (_currentIndex != 0) {
-          setState(() {
-            _currentIndex = 0;
-          });
-          return false; // Don't exit app
-        }
-        return true; // Exit app
+        setState(() {
+          _currentIndex = 0;
+        });
       },
       child: Scaffold(
         body: IndexedStack(

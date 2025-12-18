@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../core/design_system/design_system.dart';
 import 'animated_sabo_logo.dart';
 import 'notification_badge.dart';
@@ -8,6 +9,7 @@ import 'notification_badge.dart';
 // Helper để lấy font family phù hợp
 String _getSystemFont() {
   try {
+    if (kIsWeb) return 'Roboto';
     if (Platform.isIOS) {
       return '.SF Pro Display'; // SF Pro Display - iOS
     } else {

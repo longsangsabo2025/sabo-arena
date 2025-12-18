@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for managing first match bonus system
 /// Awards 100 SPA to users on their first completed challenge match in a club
@@ -15,7 +15,6 @@ class FirstMatchBonusService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('user_first_match_tracking')
@@ -25,7 +24,6 @@ class FirstMatchBonusService {
           .maybeSingle();
 
       if (response == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {
           'is_eligible': true,
           'is_first_match': true,
@@ -37,7 +35,6 @@ class FirstMatchBonusService {
       final bonusAwarded = response['bonus_awarded'] as bool? ?? false;
       final bonusAmount = response['bonus_amount'] as num? ?? 100.0;
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       return {
         'is_eligible': !bonusAwarded,
@@ -51,7 +48,6 @@ class FirstMatchBonusService {
             : 'Eligible but bonus not yet awarded',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'is_eligible': false,
         'error': e.toString(),
@@ -68,10 +64,6 @@ class FirstMatchBonusService {
     String matchId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase.rpc(
         'check_and_award_first_match_bonus',
@@ -83,7 +75,6 @@ class FirstMatchBonusService {
       );
 
       if (response == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {
           'success': false,
           'message': 'No response from server',
@@ -94,21 +85,15 @@ class FirstMatchBonusService {
       final success = result['success'] as bool? ?? false;
 
       if (success) {
-        final bonusAmount = result['bonus_amount'] as num? ?? 100;
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // Bonus awarded successfully
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         if (result['is_first_match'] == true) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } else {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
 
       return result;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': e.toString(),
@@ -125,7 +110,6 @@ class FirstMatchBonusService {
     String clubId,
     String matchId,
   ) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     final player1Result = await awardFirstMatchBonus(
       player1Id,
@@ -152,7 +136,6 @@ class FirstMatchBonusService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('user_first_match_tracking')
@@ -162,14 +145,11 @@ class FirstMatchBonusService {
           .maybeSingle();
 
       if (response != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -179,7 +159,6 @@ class FirstMatchBonusService {
     String userId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('user_first_match_tracking')
@@ -188,10 +167,8 @@ class FirstMatchBonusService {
           .eq('bonus_awarded', true)
           .order('awarded_at', ascending: false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -199,7 +176,6 @@ class FirstMatchBonusService {
   /// Get first match bonus statistics for a club (Admin only)
   Future<Map<String, dynamic>?> getClubStats(String clubId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('first_match_bonus_stats')
@@ -208,16 +184,11 @@ class FirstMatchBonusService {
           .maybeSingle();
 
       if (response != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -225,17 +196,14 @@ class FirstMatchBonusService {
   /// Get all club statistics (Super Admin only)
   Future<List<Map<String, dynamic>>> getAllClubsStats() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('first_match_bonus_stats')
           .select()
           .order('total_bonus_paid', ascending: false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }

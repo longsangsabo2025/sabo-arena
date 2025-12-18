@@ -5,7 +5,7 @@ import '../../core/app_export.dart';
 import '../../services/admin_service.dart';
 import '../../models/club.dart';
 import '../../widgets/custom_app_bar.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ClubApprovalScreen extends StatefulWidget {
   final String? initialFilter;
@@ -65,7 +65,6 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
         _errorMessage = null;
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Load each status separately to identify which one fails
       List<Club> pendingClubs = [];
@@ -73,33 +72,24 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
       List<Club> rejectedClubs = [];
 
       try {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         pendingClubs = await _adminService.getClubsForAdmin(status: 'pending');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         throw Exception('Failed to load pending clubs: $e');
       }
 
       try {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         approvedClubs = await _adminService.getClubsForAdmin(
           status: 'approved',
         );
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         throw Exception('Failed to load approved clubs: $e');
       }
 
       try {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         rejectedClubs = await _adminService.getClubsForAdmin(
           status: 'rejected',
         );
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         throw Exception('Failed to load rejected clubs: $e');
       }
 
@@ -110,10 +100,7 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
         _isLoading = false;
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _isLoading = false;

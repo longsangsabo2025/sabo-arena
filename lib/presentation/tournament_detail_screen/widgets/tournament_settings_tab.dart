@@ -6,7 +6,8 @@ import 'package:sabo_arena/theme/app_theme.dart';
 import 'package:sabo_arena/services/tournament_service.dart';
 import 'package:sabo_arena/services/unified_bracket_service.dart';
 import 'package:sabo_arena/services/tournament/tournament_completion_orchestrator.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+// ELON_MODE_AUTO_FIX
 
 class TournamentSettingsTab extends StatefulWidget {
   final String tournamentId;
@@ -54,14 +55,11 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
       );
 
       // Debug: Check both methods
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       await _tournamentService
           .getTournamentParticipants(widget.tournamentId);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       _participants = await _tournamentService
           .getTournamentParticipantsWithPaymentStatus(widget.tournamentId);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Debug: Check raw database query
       await _debugDirectDatabaseQuery();
@@ -96,18 +94,15 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
 
   Future<void> _debugDirectDatabaseQuery() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       final response = await Supabase.instance.client
           .from('tournament_participants')
           .select('id, user_id, payment_status, status')
           .eq('tournament_id', widget.tournamentId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       for (int i = 0; i < response.length; i++) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.error('Debug query failed', error: e, tag: 'TournamentSettings');
     }
   }
 
@@ -671,6 +666,8 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
         executeRewards: false, // 🆕 DON'T execute rewards - let admin use "Gửi Quà" button manually
       );
 
+      if (!mounted) return;
+
       if (result['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -699,12 +696,14 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
         throw Exception(result['message'] ?? 'Unknown completion error');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi hoàn thành giải đấu: ${e.toString()}'),
-          backgroundColor: AppTheme.errorLight,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi hoàn thành giải đấu: ${e.toString()}'),
+            backgroundColor: AppTheme.errorLight,
+          ),
+        );
+      }
     } finally {
       setState(() => _isCompleting = false);
     }

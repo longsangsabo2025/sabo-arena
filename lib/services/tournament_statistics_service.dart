@@ -4,7 +4,7 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:math' as math;
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service cung cấp thống kê nâng cao cho tournament system
 class TournamentStatisticsService {
@@ -22,7 +22,6 @@ class TournamentStatisticsService {
     String tournamentId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final results = await Future.wait([
         _getBasicStats(tournamentId),
@@ -42,7 +41,6 @@ class TournamentStatisticsService {
         'generated_at': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to get tournament analytics: $e');
     }
   }
@@ -492,7 +490,6 @@ class TournamentStatisticsService {
         'generated_at': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to get tournament trends: $e');
     }
   }

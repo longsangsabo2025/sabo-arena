@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sabo_arena/widgets/user/user_avatar_widget.dart';
+import 'package:sabo_arena/widgets/user/user_widgets.dart';
 import '../../../models/user_profile.dart';
 import '../../../services/user_service.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
@@ -23,6 +24,11 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   final UserService _userService = UserService.instance;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  
+  // 🚀 MUSK OPTIMIZATIONS
+  Timer? _debounceTimer;
+  final Map<String, List<UserProfile>> _searchCache = {};
+  final List<String> _recentSearches = [];
 
   List<UserProfile> _searchResults = [];
   List<UserProfile> _suggestedUsers = [];
@@ -38,8 +44,100 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
+    _searchCache.clear();
     super.dispose();
+  }
+
+  /// 🚀 MUSK DEBOUNCED SEARCH - No spam, intelligent caching
+  void _debouncedSearch(String value) {
+    _debounceTimer?.cancel();
+    
+    if (value.trim().isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _hasSearched = false;
+      });
+      return;
+    }
+    
+    if (value.trim().length < 2) return;
+    
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _performSmartSearch(value.trim());
+    });
+  }
+  
+  /// Smart search với caching và intelligent suggestions
+  Future<void> _performSmartSearch(String query) async {
+    // Check cache first
+    if (_searchCache.containsKey(query.toLowerCase())) {
+      setState(() {
+        _searchResults = _searchCache[query.toLowerCase()]!;
+        _hasSearched = true;
+        _isSearching = false;
+      });
+      return;
+    }
+    
+    setState(() {
+      _isSearching = true;
+    });
+    
+    try {
+      // Multiple search strategies
+      final List<UserProfile> results = [];
+      
+      // 1. Exact username match (highest priority)
+      final exactMatch = await _userService.searchUsersByUsername(query);
+      results.addAll(exactMatch);
+      
+      // 2. Partial name match 
+      if (results.length < 10) {
+        final nameMatches = await _userService.searchUsersByName(query);
+        results.addAll(nameMatches.where((u) => !results.any((r) => r.id == u.id)));
+      }
+      
+      // 3. Similar rank suggestions (if user has rank)
+      if (results.length < 5 && widget.currentUser?.rank != null) {
+        final rankMatches = await _userService.searchUsersBySimilarRank(
+          widget.currentUser!.rank!, 
+          query,
+        );
+        results.addAll(rankMatches.where((u) => !results.any((r) => r.id == u.id)));
+      }
+      
+      // Filter exclusions
+      final filteredResults = results.where((user) {
+        if (user.id == widget.currentUser?.id) return false;
+        if (widget.excludeUserIds?.contains(user.id) ?? false) return false;
+        return true;
+      }).toList();
+      
+      // Cache results
+      _searchCache[query.toLowerCase()] = filteredResults;
+      
+      // Add to recent searches
+      if (!_recentSearches.contains(query)) {
+        _recentSearches.insert(0, query);
+        if (_recentSearches.length > 10) _recentSearches.removeLast();
+      }
+      
+      setState(() {
+        _searchResults = filteredResults;
+        _isSearching = false;
+        _hasSearched = true;
+      });
+      
+    } catch (e) {
+      ProductionLogger.error('🔍 Smart search failed: $e', tag: 'user_search');
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+        _hasSearched = true;
+      });
+    }
   }
 
   /// Load suggested users (nearby players with similar rank)
@@ -208,10 +306,10 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
                 ),
               ),
               onChanged: (value) {
-                setState(() {}); // Update suffix icon visibility
-                if (value.trim().length >= 2) {
-                  _searchUsers(value);
-                }
+                setState(() {
+                  _searchQuery = value;
+                });
+                _debouncedSearch(value);
               },
               onSubmitted: _searchUsers,
             ),
@@ -229,21 +327,30 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   }
 
   Widget _buildSearchResults() {
-    // Loading state
+    // Loading state với smart indicators
     if (_isSearching) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1E88E5)),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'Đang tìm kiếm...',
-              style: TextStyle(
+              '🚀 Tìm kiếm thông minh: "$_searchQuery"',
+              style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Username → Tên → Cùng hạng',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
               ),
             ),
           ],
@@ -363,29 +470,10 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        // Rank Badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF1E88E5).withValues(alpha: 0.1),
-                                const Color(0xFF1976D2).withValues(alpha: 0.1),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            user.rank ?? 'N/A',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF1E88E5),
-                            ),
-                          ),
+                        // Rank Badge with unified component
+                        UserRankBadgeWidget(
+                          rankCode: user.rank,
+                          style: RankBadgeStyle.compact,
                         ),
                         const SizedBox(width: 8),
 

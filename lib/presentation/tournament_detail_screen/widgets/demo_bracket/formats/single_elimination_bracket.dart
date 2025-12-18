@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import '../components/bracket_components.dart';
 import '../shared/tournament_data_generator.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class SingleEliminationBracket extends StatelessWidget {
   final int playerCount;
@@ -21,7 +21,7 @@ class SingleEliminationBracket extends StatelessWidget {
     final rounds = TournamentDataGenerator.calculateSingleEliminationRounds(
       playerCount,
     );
-    ProductionLogger.debug('Debug log', tag: 'AutoFix'); // Debug
+ // Debug
 
     return BracketContainer(
       title: 'Single Elimination',
@@ -39,7 +39,7 @@ class SingleEliminationBracket extends StatelessWidget {
     BuildContext context,
     List<Map<String, dynamic>> rounds,
   ) {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix'); // Debug
+ // Debug
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(

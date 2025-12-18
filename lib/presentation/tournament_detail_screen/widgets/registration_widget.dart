@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../../models/tournament.dart';
 
 class RegistrationWidget extends StatefulWidget {
-  final Map<String, dynamic> tournament;
+  final Tournament tournament;
   final bool isRegistered;
   final VoidCallback? onRegisterTap;
   final Function(String paymentMethod)? onRegisterWithPayment; // NEW: direct payment callback
@@ -23,13 +25,11 @@ class RegistrationWidget extends StatefulWidget {
 class _RegistrationWidgetState extends State<RegistrationWidget> {
   @override
   Widget build(BuildContext context) {
-    final registrationDeadline =
-        widget.tournament["registrationDeadline"] as String;
-    final isDeadlinePassed = _isDeadlinePassed(registrationDeadline);
+    final registrationDeadline = widget.tournament.registrationDeadline;
+    final isDeadlinePassed = DateTime.now().isAfter(registrationDeadline);
     final canRegister =
         !isDeadlinePassed &&
-        (widget.tournament["currentParticipants"] as int) <
-            (widget.tournament["maxParticipants"] as int);
+        widget.tournament.currentParticipants < widget.tournament.maxParticipants;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -118,14 +118,34 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
                 Expanded(
                   child: _buildCompactInfo(
                     Icons.calendar_today,
-                    registrationDeadline.split(' ')[0],
+                    DateFormat('dd/MM/yyyy').format(registrationDeadline),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildCompactInfo(
+                    Icons.people,
+                    '${widget.tournament.currentParticipants}/${widget.tournament.maxParticipants} người',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildCompactInfo(
+                    Icons.payment,
+                    widget.tournament.entryFee == 0 
+                        ? 'Miễn phí' 
+                        : '${NumberFormat("#,###").format(widget.tournament.entryFee)} VND',
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildCompactInfo(
                     Icons.military_tech,
-                    widget.tournament["rankRequirement"] as String,
+                    widget.tournament.skillLevelRequired ?? 'Tất cả trình độ',
                   ),
                 ),
               ],
@@ -171,13 +191,10 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
     );
   }
 
-  String _getCompactTimeRemaining(String deadline) {
+  String _getCompactTimeRemaining(DateTime deadline) {
     try {
-      final deadlineDate = DateTime.parse(
-        deadline.split(' ')[0].split('/').reversed.join('-'),
-      );
       final now = DateTime.now();
-      final difference = deadlineDate.difference(now);
+      final difference = deadline.difference(now);
 
       if (difference.inDays > 0) {
         return 'Còn ${difference.inDays}d';
@@ -290,14 +307,5 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
     );
   }
 
-  bool _isDeadlinePassed(String deadline) {
-    try {
-      final deadlineDate = DateTime.parse(
-        deadline.split(' ')[0].split('/').reversed.join('-'),
-      );
-      return DateTime.now().isAfter(deadlineDate);
-    } catch (e) {
-      return false;
-    }
-  }
+
 }

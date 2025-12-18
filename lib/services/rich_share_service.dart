@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'share_analytics_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// 🎨 Rich Content Share Service
 /// Capture widgets as images and share with text like TikTok/Facebook
@@ -19,7 +19,6 @@ class RichShareService {
     double pixelRatio = 3.0,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       final imageBytes = await _screenshotController.captureFromWidget(
         widget,
@@ -28,10 +27,8 @@ class RichShareService {
         delay: const Duration(milliseconds: 100), // Wait for rendering
       );
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return imageBytes;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -47,11 +44,9 @@ class RichShareService {
       final file = File('${directory.path}/${filename}_$timestamp.png');
       
       await file.writeAsBytes(imageBytes);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       return file;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -80,6 +75,8 @@ class RichShareService {
         );
       }
 
+      if (context != null && !context.mounted) return null;
+
       // 1. Capture widget
       final imageBytes = await captureWidget(
         widget: widget,
@@ -88,17 +85,16 @@ class RichShareService {
       );
       
       if (imageBytes == null) {
-        throw Exception('Failed to capture widget');
+        throw Exception('Không thể chụp ảnh widget');
       }
 
       // 2. Save to temp file
       final file = await saveImageToTemp(imageBytes, filename);
       if (file == null) {
-        throw Exception('Failed to save image');
+        throw Exception('Không thể lưu ảnh');
       }
 
       // 3. Share with text
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       final result = await Share.shareXFiles(
         [XFile(file.path)],
         text: text,
@@ -138,17 +134,14 @@ class RichShareService {
         try {
           if (await file.exists()) {
             await file.delete();
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // Ignore file deletion error
         }
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return result;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // Track error
       if (contentType != null && contentId != null) {
@@ -180,10 +173,8 @@ class RichShareService {
         subject: subject ?? 'Từ SABO ARENA',
       );
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return result;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -193,18 +184,16 @@ class RichShareService {
     try {
       final directory = await getTemporaryDirectory();
       final files = directory.listSync();
-      
-      int deleted = 0;
+      // int deleted = 0;
       for (var file in files) {
         if (file.path.contains('share_') && file.path.endsWith('.png')) {
           await file.delete();
-          deleted++;
+          // deleted++;
         }
       }
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore cleanup errors
     }
   }
 }

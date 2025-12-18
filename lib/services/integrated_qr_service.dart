@@ -2,7 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/models/user_profile.dart';
 import 'package:sabo_arena/services/user_code_service.dart';
 import 'basic_referral_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class IntegratedQRService {
   static final SupabaseClient _supabase = Supabase.instance.client;
@@ -49,7 +49,6 @@ class IntegratedQRService {
         'rank': user.rank,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -73,10 +72,8 @@ class IntegratedQRService {
         code: referralCode,
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return referralCode;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Fallback to basic format
       return 'SABO-${user.id.substring(0, 6).toUpperCase()}';
     }
@@ -108,13 +105,9 @@ class IntegratedQRService {
           })
           .eq('id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -122,7 +115,6 @@ class IntegratedQRService {
   /// Scan integrated QR code and return profile + referral info
   static Future<Map<String, dynamic>?> scanIntegratedQR(String qrData) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Parse URL: https://saboarena.com/user/SABO123456?ref=SABO-USERNAME
       final uri = Uri.tryParse(qrData);
@@ -133,8 +125,6 @@ class IntegratedQRService {
         final userCode = uri.pathSegments[1]; // SABO123456
         final referralCode = uri.queryParameters['ref']; // SABO-USERNAME
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         // Find user by user_code
         final userProfile = await _findUserByCode(userCode);
@@ -192,7 +182,6 @@ class IntegratedQRService {
 
       return null;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -208,7 +197,6 @@ class IntegratedQRService {
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -227,7 +215,6 @@ class IntegratedQRService {
       final user = UserProfile.fromJson(userResponse);
       return await generateQRDataWithReferral(user);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -271,7 +258,6 @@ class IntegratedQRService {
         };
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'success': false, 'message': 'Error applying referral: $e'};
     }
   }

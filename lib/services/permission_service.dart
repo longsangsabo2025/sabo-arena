@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class PermissionService {
   static const String _cameraPermissionKey = 'camera_permission_granted';
@@ -10,6 +11,9 @@ class PermissionService {
 
   /// Check camera permission status and request if needed
   static Future<bool> checkCameraPermission() async {
+    // 🚀 MUSK_FIX: Web always delegates permissions to the browser
+    if (kIsWeb) return true;
+
     try {
       final status = await Permission.camera.status;
 
@@ -26,19 +30,20 @@ class PermissionService {
       }
 
       if (status.isPermanentlyDenied) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return false;
       }
 
       return false;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
 
   /// Check photos/gallery permission status and request if needed
   static Future<bool> checkPhotosPermission() async {
+    // 🚀 MUSK_FIX: Web always delegates permissions to the browser
+    if (kIsWeb) return true;
+
     try {
       PermissionStatus status;
 
@@ -82,19 +87,20 @@ class PermissionService {
       }
 
       if (status.isPermanentlyDenied) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return false;
       }
 
       return false;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
 
   /// Check if camera permission was previously granted
   static Future<bool> isCameraPermissionGranted() async {
+    // 🚀 MUSK_FIX: Web always delegates permissions to the browser
+    if (kIsWeb) return true;
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedStatus = prefs.getBool(_cameraPermissionKey) ?? false;
@@ -110,13 +116,15 @@ class PermissionService {
 
       return actuallyGranted;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
 
   /// Check if photos permission was previously granted
   static Future<bool> isPhotosPermissionGranted() async {
+    // 🚀 MUSK_FIX: Web always delegates permissions to the browser
+    if (kIsWeb) return true;
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedStatus = prefs.getBool(_photosPermissionKey) ?? false;
@@ -141,7 +149,6 @@ class PermissionService {
 
       return actuallyGranted;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -151,9 +158,8 @@ class PermissionService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_cameraPermissionKey, granted);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore shared prefs error
     }
   }
 
@@ -162,9 +168,8 @@ class PermissionService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_photosPermissionKey, granted);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore shared prefs error
     }
   }
 
@@ -176,7 +181,6 @@ class PermissionService {
 
       return {'camera': cameraGranted, 'photos': photosGranted};
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'camera': false, 'photos': false};
     }
   }
@@ -186,7 +190,6 @@ class PermissionService {
     try {
       return await openAppSettings();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -198,9 +201,9 @@ class PermissionService {
       await prefs.remove(_cameraPermissionKey);
       await prefs.remove(_photosPermissionKey);
       await prefs.remove(_storagePermissionKey);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore shared prefs error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 }

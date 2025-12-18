@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_navigation_controller.dart';
@@ -30,7 +31,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   final _bioController = TextEditingController();
 
   // Form data
-  File? _selectedAvatar;
+  XFile? _selectedAvatar;
   String _selectedRole = 'player';
   final List<String> _selectedGames = [];
   String _skillLevel = 'beginner';
@@ -172,7 +173,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
 
       if (pickedFile != null) {
         setState(() {
-          _selectedAvatar = File(pickedFile.path);
+          _selectedAvatar = pickedFile;
         });
       }
     } catch (e) {
@@ -212,6 +213,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
         );
       }
 
+      if (!mounted) return;
       _showMessage('✅ Hồ sơ đã được cập nhật thành công!', false);
 
       // Navigate to next step in user journey
@@ -511,7 +513,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                 ),
                 child: _selectedAvatar != null
                     ? ClipOval(
-                        child: Image.file(_selectedAvatar!, fit: BoxFit.cover),
+                        child: kIsWeb
+                            ? Image.network(_selectedAvatar!.path, fit: BoxFit.cover)
+                            : Image.file(File(_selectedAvatar!.path), fit: BoxFit.cover),
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -714,10 +718,15 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                       ),
                       child: _selectedAvatar != null
                           ? ClipOval(
-                              child: Image.file(
-                                _selectedAvatar!,
-                                fit: BoxFit.cover,
-                              ),
+                              child: kIsWeb
+                                  ? Image.network(
+                                      _selectedAvatar!.path,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.file(
+                                      File(_selectedAvatar!.path),
+                                      fit: BoxFit.cover,
+                                    ),
                             )
                           : Icon(
                               Icons.person,

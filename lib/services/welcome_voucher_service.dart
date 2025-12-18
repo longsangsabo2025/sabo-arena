@@ -32,10 +32,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getAllCampaigns',
-          context: 'Error getting campaigns',
+          context: 'Lỗi khi lấy danh sách chiến dịch',
         ),
       );
-      ProductionLogger.error('Error getting campaigns', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -78,10 +78,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'createCampaign',
-          context: 'Error creating campaign',
+          context: 'Lỗi khi tạo chiến dịch',
         ),
       );
-      ProductionLogger.error('Error creating campaign', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi tạo chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -104,10 +104,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'updateCampaignStatus',
-          context: 'Error updating campaign',
+          context: 'Lỗi khi cập nhật chiến dịch',
         ),
       );
-      ProductionLogger.error('Error updating campaign', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi cập nhật chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -160,10 +160,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getCampaignStats',
-          context: 'Error getting campaign stats',
+          context: 'Lỗi khi lấy thống kê chiến dịch',
         ),
       );
-      ProductionLogger.error('Error getting campaign stats', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy thống kê chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -197,10 +197,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getCampaignClubRegistrations',
-          context: 'Error getting registrations',
+          context: 'Lỗi khi lấy danh sách đăng ký',
         ),
       );
-      ProductionLogger.error('Error getting registrations', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -225,10 +225,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'approveClubRegistration',
-          context: 'Error approving registration',
+          context: 'Lỗi khi duyệt đăng ký',
         ),
       );
-      ProductionLogger.error('Error approving registration', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi duyệt đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -255,10 +255,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'rejectClubRegistration',
-          context: 'Error rejecting registration',
+          context: 'Lỗi khi từ chối đăng ký',
         ),
       );
-      ProductionLogger.error('Error rejecting registration', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi từ chối đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -285,10 +285,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getAvailableCampaigns',
-          context: 'Error getting available campaigns',
+          context: 'Lỗi khi lấy danh sách chiến dịch khả dụng',
         ),
       );
-      ProductionLogger.error('Error getting available campaigns', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách chiến dịch khả dụng', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -319,10 +319,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'registerClubForCampaign',
-          context: 'Error registering club',
+          context: 'Lỗi khi đăng ký quán',
         ),
       );
-      ProductionLogger.error('Error registering club', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi đăng ký quán', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -351,10 +351,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getClubCampaignRegistrations',
-          context: 'Error getting club registrations',
+          context: 'Lỗi khi lấy danh sách đăng ký của quán',
         ),
       );
-      ProductionLogger.error('Error getting club registrations', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách đăng ký của quán', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -376,10 +376,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'isClubRegistered',
-          context: 'Error checking registration',
+          context: 'Lỗi khi kiểm tra đăng ký',
         ),
       );
-      ProductionLogger.error('Error checking registration', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi kiểm tra đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       return false;
     }
   }
@@ -402,10 +402,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'checkUserEligibility',
-          context: 'Error checking eligibility',
+          context: 'Lỗi khi kiểm tra điều kiện',
         ),
       );
-      ProductionLogger.error('Error checking eligibility', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi kiểm tra điều kiện', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -434,10 +434,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getUserWelcomeVoucher',
-          context: 'Error getting welcome voucher',
+          context: 'Lỗi khi lấy voucher chào mừng',
         ),
       );
-      ProductionLogger.error('Error getting welcome voucher', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy voucher chào mừng', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       return null;
     }
   }
@@ -458,10 +458,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'manuallyIssueWelcomeVoucher',
-          context: 'Error manually issuing voucher',
+          context: 'Lỗi khi cấp voucher thủ công',
         ),
       );
-      ProductionLogger.error('Error manually issuing voucher', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi cấp voucher thủ công', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -511,10 +511,10 @@ class WelcomeVoucherService {
         context: ErrorContext(
           category: ErrorCategory.database,
           operation: 'getOverallStats',
-          context: 'Error getting overall stats',
+          context: 'Lỗi khi lấy thống kê tổng quan',
         ),
       );
-      ProductionLogger.error('Error getting overall stats', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy thống kê tổng quan', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }

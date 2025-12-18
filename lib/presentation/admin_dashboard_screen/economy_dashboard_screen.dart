@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/economy_monitoring_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Admin dashboard for monitoring SPA economy health
 class EconomyDashboardScreen extends StatefulWidget {
@@ -39,7 +39,6 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }

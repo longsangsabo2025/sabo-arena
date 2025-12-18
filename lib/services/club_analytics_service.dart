@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service to provide analytics for club owners
 class ClubAnalyticsService {
@@ -13,7 +13,6 @@ class ClubAnalyticsService {
   /// Get comprehensive analytics for a club
   Future<Map<String, dynamic>> getClubAnalytics(String clubId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final memberStats = await _getMemberStatistics(clubId);
       final tournamentStats = await _getTournamentStatistics(clubId);
@@ -30,7 +29,6 @@ class ClubAnalyticsService {
         'last_updated': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }

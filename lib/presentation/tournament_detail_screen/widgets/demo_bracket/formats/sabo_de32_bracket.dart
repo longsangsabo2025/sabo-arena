@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 // 🎯 SABO DE32 Tournament Bracket - 2 Groups (A + B) + Cross Finals
 class SaboDE32Bracket extends StatefulWidget {
@@ -70,9 +70,7 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
       return bracketGroup == group;
     }).toList();
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     if (filtered.isEmpty && widget.matches.isNotEmpty) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     return filtered;

@@ -5,7 +5,7 @@ import 'package:sabo_arena/core/design_system/design_system.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 import 'dart:async';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 enum ImageType { profile, cover, logo }
 
@@ -155,7 +155,6 @@ class _ClubProfileEditScreenSimpleState
       });
 
       // Silent fail - don't interrupt user
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 

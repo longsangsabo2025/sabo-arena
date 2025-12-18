@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../../core/design_system/typography.dart';
 import '../../core/design_system/app_colors.dart';
 import '../../services/referral_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Referral History Screen
 /// Shows list of people referred by the user and total rewards earned
@@ -46,7 +46,6 @@ class _ReferralHistoryScreenState extends State<ReferralHistoryScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }
@@ -304,7 +303,7 @@ class _ReferralHistoryScreenState extends State<ReferralHistoryScreen> {
       try {
         date = DateTime.parse(joinedAt);
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // Ignore error
       }
     }
 

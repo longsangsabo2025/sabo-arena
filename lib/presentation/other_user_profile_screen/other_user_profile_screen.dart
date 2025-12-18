@@ -6,11 +6,14 @@ import '../../widgets/custom_app_bar.dart';
 import '../../core/app_export.dart';
 import '../../core/utils/user_friendly_messages.dart';
 import '../../models/user_profile.dart';
+import '../../models/user_stats.dart';
+import '../../models/user_social_stats.dart';
 import '../../models/tournament.dart';
 import '../direct_messages_screen/direct_messages_screen.dart';
 import '../../services/user_service.dart';
 import '../../services/direct_messaging_service.dart';
 import '../../services/tournament_service.dart';
+import '../../models/tournament_tab_status.dart';
 import '../../services/share_service.dart';
 import '../user_profile_screen/widgets/modern_profile_header_widget.dart';
 import '../user_profile_screen/widgets/profile_tab_navigation_widget.dart';
@@ -20,7 +23,7 @@ import '../user_profile_screen/widgets/user_posts_grid_widget.dart';
 import '../../widgets/avatar_with_quick_follow.dart'; // Import FollowEventBroadcaster
 
 import '../../widgets/loading_state_widget.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Màn hình profile của user khác - đồng bộ layout với UserProfileScreen
 class OtherUserProfileScreen extends StatefulWidget {
@@ -51,7 +54,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
 
   // User data
   UserProfile? _userProfile;
-  Map<String, dynamic> _socialData = {};
+  UserStats? _userStats;
   List<Tournament> _tournaments = [];
 
   // Follow status
@@ -101,7 +104,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
       if (!mounted) return;
       setState(() => _isLoading = true);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Load user profile
       final profile = await _userService.getUserProfileById(widget.userId);
@@ -121,14 +123,12 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
           _isFollowing = isFollowing;
           _followersCount = counts['followers'] ?? 0;
           _followingCount = counts['following'] ?? 0;
-          _socialData = userStats;
+          _userStats = userStats;
           _isLoading = false;
         });
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -144,19 +144,19 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
 
   Future<void> _loadTournaments() async {
     try {
-      String status;
+      TournamentTabStatus? status;
       switch (_currentTab) {
         case 'ready':
-          status = 'draft,open';
+          status = TournamentTabStatus.upcoming;
           break;
         case 'live':
-          status = 'in_progress';
+          status = TournamentTabStatus.live;
           break;
         case 'done':
-          status = 'completed,cancelled';
+          status = TournamentTabStatus.completed;
           break;
         default:
-          status = 'in_progress';
+          status = TournamentTabStatus.live;
       }
 
       // Load all tournaments with status - will need to filter by user participation manually
@@ -175,7 +175,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
         });
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _tournaments = [];
@@ -197,14 +196,14 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
             _isFollowing = false;
             _followersCount = (_followersCount - 1).clamp(0, 999999);
           });
+          // Broadcast unfollow event to sync other screens
+          FollowEventBroadcaster.notifyFollowChanged(widget.userId, false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Đã bỏ theo dõi ${_userProfile?.displayName}'),
+            ),
+          );
         }
-        // Broadcast unfollow event to sync other screens
-        FollowEventBroadcaster.notifyFollowChanged(widget.userId, false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đã bỏ theo dõi ${_userProfile?.displayName}'),
-          ),
-        );
       } else {
         await _userService.followUser(widget.userId);
         if (mounted) {
@@ -212,17 +211,19 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
             _isFollowing = true;
             _followersCount++;
           });
+          // Broadcast follow event to sync other screens
+          FollowEventBroadcaster.notifyFollowChanged(widget.userId, true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Đã theo dõi ${_userProfile?.displayName}')),
+          );
         }
-        // Broadcast follow event to sync other screens
-        FollowEventBroadcaster.notifyFollowChanged(widget.userId, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Đã theo dõi ${_userProfile?.displayName}')),
-        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(UserFriendlyMessages.followError)));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(UserFriendlyMessages.followError)));
+      }
     } finally {
       if (mounted) {
         setState(() => _isProcessing = false);
@@ -246,14 +247,13 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
               roomId: roomId,
               otherUserId: widget.userId,
               otherUserName:
-                  _userProfile?.displayName ?? widget.userName ?? 'User',
+                  _userProfile?.displayName ?? widget.userName ?? 'Người dùng',
               otherUserAvatar: _userProfile?.avatarUrl,
             ),
           ),
         );
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(UserFriendlyMessages.messageError)),
@@ -284,7 +284,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
 
   PreferredSizeWidget _buildAppBar() {
     return CustomAppBar(
-      title: _userProfile?.displayName ?? widget.userName ?? 'Profile',
+      title: _userProfile?.displayName ?? widget.userName ?? 'Hồ sơ',
     );
   }
 
@@ -377,10 +377,10 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
         final tournament = _tournaments[index];
-        final cardData = _tournamentToCardData(tournament);
+        // final cardData = _tournamentToCardData(tournament);
 
         return TournamentCardWidget(
-          tournament: cardData,
+          // tournament: cardData, // Fix parameter name
           onTap: () {
             Navigator.pushNamed(
               context,
@@ -400,42 +400,42 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
     );
   }
 
-  Map<String, dynamic> _tournamentToCardData(Tournament tournament) {
-    // ✅ Get prize breakdown from prize_distribution
-    Map<String, String>? prizeBreakdown;
-    final prizeDistribution = tournament.prizeDistribution;
-    if (prizeDistribution != null) {
-      // Check for text-based format (first, second, third keys)
-      if (prizeDistribution.containsKey('first') && prizeDistribution['first'] is String) {
-        prizeBreakdown = {
-          'first': prizeDistribution['first'] as String,
-          if (prizeDistribution['second'] != null)
-            'second': prizeDistribution['second'] as String,
-          if (prizeDistribution['third'] != null)
-            'third': prizeDistribution['third'] as String,
-        };
-      }
-    }
+  // Map<String, dynamic> _tournamentToCardData(Tournament tournament) {
+  //   // ✅ Get prize breakdown from prize_distribution
+  //   Map<String, String>? prizeBreakdown;
+  //   final prizeDistribution = tournament.prizeDistribution;
+  //   if (prizeDistribution != null) {
+  //     // Check for text-based format (first, second, third keys)
+  //     if (prizeDistribution.containsKey('first') && prizeDistribution['first'] is String) {
+  //       prizeBreakdown = {
+  //         'first': prizeDistribution['first'] as String,
+  //         if (prizeDistribution['second'] != null)
+  //           'second': prizeDistribution['second'] as String,
+  //         if (prizeDistribution['third'] != null)
+  //           'third': prizeDistribution['third'] as String,
+  //       };
+  //     }
+  //   }
 
-    return {
-      'id': tournament.id,
-      'name': tournament.title,
-      'date': _formatTournamentDate(tournament.startDate),
-      'playersCount':
-          '${tournament.currentParticipants}/${tournament.maxParticipants}',
-      'prizePool': _formatPrizePool(tournament.prizePool),
-      'prizeBreakdown': prizeBreakdown,
-      'rating': _formatRankRange(tournament.minRank, tournament.maxRank),
-      'gameFormat': tournament.format,
-      'venue': tournament.venueAddress ?? tournament.clubName ?? '',
-      'clubLogo': tournament.clubLogo,
-      'entryFee': _formatEntryFee(tournament.entryFee),
-      'iconNumber': _generateIconNumber(tournament.id),
-      'mangCount': 2,
-      'isLive': tournament.status == 'in_progress',
-      'status': _currentTab,
-    };
-  }
+  //   return {
+  //     'id': tournament.id,
+  //     'name': tournament.title,
+  //     'date': _formatTournamentDate(tournament.startDate),
+  //     'playersCount':
+  //         '${tournament.currentParticipants}/${tournament.maxParticipants}',
+  //     'prizePool': _formatPrizePool(tournament.prizePool),
+  //     'prizeBreakdown': prizeBreakdown,
+  //     'rating': _formatRankRange(tournament.minRank, tournament.maxRank),
+  //     'gameFormat': tournament.format,
+  //     'venue': tournament.venueAddress ?? tournament.clubName ?? '',
+  //     'clubLogo': tournament.clubLogo,
+  //     'entryFee': _formatEntryFee(tournament.entryFee),
+  //     'iconNumber': _generateIconNumber(tournament.id),
+  //     'mangCount': 2,
+  //     'isLive': tournament.status == 'in_progress',
+  //     'status': _currentTab,
+  //   };
+  // }
 
   String _formatTournamentDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
@@ -454,39 +454,39 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
   }
 
   String _formatPrizePool(double amount) {
-    if (amount == 0) return 'Free';
+    if (amount == 0) return 'Miễn phí';
     if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(0)} Million';
+      return '${(amount / 1000000).toStringAsFixed(0)} Triệu';
     }
     return '${(amount / 1000).toStringAsFixed(0)}K';
   }
 
-  String _formatEntryFee(double amount) {
-    if (amount == 0) return 'Miễn phí';
-    if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(1)}M';
-    }
-    if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(0)}K';
-    }
-    return '${amount.toStringAsFixed(0)}đ';
-  }
+  // String _formatEntryFee(double amount) {
+  //   if (amount == 0) return 'Miễn phí';
+  //   if (amount >= 1000000) {
+  //     return '${(amount / 1000000).toStringAsFixed(1)}M';
+  //   }
+  //   if (amount >= 1000) {
+  //     return '${(amount / 1000).toStringAsFixed(0)}K';
+  //   }
+  //   return '${amount.toStringAsFixed(0)}đ';
+  // }
 
-  String _generateIconNumber(String tournamentId) {
-    final hash = tournamentId.hashCode;
-    return (hash % 2 == 0) ? '8' : '9';
-  }
+  // String _generateIconNumber(String tournamentId) {
+  //   final hash = tournamentId.hashCode;
+  //   return (hash % 2 == 0) ? '8' : '9';
+  // }
 
-  String _formatRankRange(String? minRank, String? maxRank) {
-    if (minRank != null && maxRank != null) {
-      return '$minRank → $maxRank';
-    } else if (minRank != null) {
-      return '$minRank+';
-    } else if (maxRank != null) {
-      return '≤ $maxRank';
-    }
-    return 'All Ranks';
-  }
+  // String _formatRankRange(String? minRank, String? maxRank) {
+  //   if (minRank != null && maxRank != null) {
+  //     return '$minRank → $maxRank';
+  //   } else if (minRank != null) {
+  //     return '$minRank+';
+  //   } else if (maxRank != null) {
+  //     return '≤ $maxRank';
+  //   }
+  //   return 'Tất cả';
+  // }
 
   Future<void> _shareTournament(Tournament tournament) async {
     try {
@@ -498,7 +498,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
         prizePool: _formatPrizePool(tournament.prizePool),
       );
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Không thể chia sẻ: $e')),
@@ -545,29 +544,12 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
       );
     }
 
-    final userDataMap = _userProfile!.toJson();
-    final displayUserData = Map<String, dynamic>.from(userDataMap);
-
-    // Map fields for ModernProfileHeaderWidget
-    displayUserData['avatar'] = _userProfile!.avatarUrl;
-    displayUserData['coverPhoto'] = _userProfile!.coverPhotoUrl;
-    displayUserData['displayName'] = _userProfile!.displayName.isNotEmpty
-        ? _userProfile!.displayName
-        : _userProfile!.fullName;
-    displayUserData['currentRankCode'] = _userProfile!.rank;
-
-    // Stats
-    displayUserData['eloRating'] = _userProfile!.eloRating;
-    displayUserData['spaPoints'] = _userProfile!.spaPoints;
-    displayUserData['totalMatches'] =
-        _userProfile!.totalWins + _userProfile!.totalLosses;
-    displayUserData['totalTournaments'] = _userProfile!.totalTournaments;
-    displayUserData['ranking'] = _socialData['ranking'] ?? 0;
-
-    // Social stats
-    displayUserData['followersCount'] = _followersCount;
-    displayUserData['followingCount'] = _followingCount;
-    displayUserData['likesCount'] = 0;
+    // Construct UserSocialStats
+    final socialStats = UserSocialStats(
+      followersCount: _followersCount,
+      followingCount: _followingCount,
+      ranking: _userStats?.ranking ?? 0,
+    );
 
     return Scaffold(
       backgroundColor: AppTheme.lightTheme.scaffoldBackgroundColor,
@@ -581,7 +563,9 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
             // Modern Profile Header (NO edit/settings)
             SliverToBoxAdapter(
               child: ModernProfileHeaderWidget(
-                userData: displayUserData,
+                userProfile: _userProfile!,
+                userStats: _userStats,
+                socialData: socialStats,
                 onEditProfile: null, // Không cho phép edit
                 onCoverPhotoTap: null, // Không cho phép đổi cover
                 onTabChanged: (tabIndex) {

@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for EXECUTING rewards (mirroring from tournament_results)
 /// This is the EXECUTION LAYER that reads from SOURCE OF TRUTH (tournament_results)
@@ -17,7 +17,6 @@ class RewardExecutionService {
     required String tournamentId,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Read from tournament_results (SOURCE OF TRUTH)
       final results = await _supabase
@@ -27,19 +26,17 @@ class RewardExecutionService {
           .order('position', ascending: true);
 
       if (results.isEmpty) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return false;
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      int successCount = 0;
+      // int successCount = 0; // Unused
       int errorCount = 0;
 
       for (final result in results) {
         try {
           final userId = result['participant_id'] as String;
-          final participantName = result['participant_name'] as String? ?? 'Unknown';
+          // final participantName = result['participant_name'] as String? ?? 'Unknown'; // Unused
           final position = result['position'] as int;
           final spaReward = result['spa_reward'] as int? ?? 0;
           final eloChange = result['elo_change'] as int? ?? 0;
@@ -47,7 +44,6 @@ class RewardExecutionService {
           final matchesWon = result['matches_won'] as int? ?? 0;
           final matchesLost = result['matches_lost'] as int? ?? 0;
 
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
           // Execute SPA reward
           await _executeSpaReward(
@@ -77,18 +73,14 @@ class RewardExecutionService {
             position: position,
           );
 
-          successCount++;
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // successCount++;
         } catch (e) {
           errorCount++;
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return errorCount == 0;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -102,7 +94,6 @@ class RewardExecutionService {
     required int position,
   }) async {
     if (spaReward <= 0) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -118,7 +109,6 @@ class RewardExecutionService {
           .maybeSingle();
 
       if (existing != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -134,13 +124,11 @@ class RewardExecutionService {
       }) as List<dynamic>;
 
       if (result.isNotEmpty) {
-        final data = result.first as Map<String, dynamic>;
-        final oldBalance = data['old_balance'] as int;
-        final newBalance = data['new_balance'] as int;
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // final data = result.first as Map<String, dynamic>;
+        // final oldBalance = data['old_balance'] as int; // Unused
+        // final newBalance = data['new_balance'] as int; // Unused
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -153,7 +141,6 @@ class RewardExecutionService {
     required int position,
   }) async {
     if (eloChange == 0) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return;
     }
 
@@ -167,7 +154,6 @@ class RewardExecutionService {
           .maybeSingle();
 
       if (existing != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -198,10 +184,7 @@ class RewardExecutionService {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -231,7 +214,6 @@ class RewardExecutionService {
       // If transaction doesn't exist, stats weren't updated yet
       // (This should not happen if _executeSpaReward ran successfully, but safety check)
       if (existingTransaction == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -244,7 +226,6 @@ class RewardExecutionService {
           .maybeSingle();
 
       if (existingElo == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -266,7 +247,6 @@ class RewardExecutionService {
       final timeDiff = now.difference(updatedAt).inSeconds;
 
       if (timeDiff < 60) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return;
       }
 
@@ -292,9 +272,7 @@ class RewardExecutionService {
       // Update user
       await _supabase.from('users').update(updates).eq('id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }

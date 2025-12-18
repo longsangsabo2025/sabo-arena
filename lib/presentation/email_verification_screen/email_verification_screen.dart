@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_navigation_controller.dart';
 import '../../helpers/welcome_voucher_helper.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class EmailVerificationScreen extends StatefulWidget {
   final String email;
@@ -117,11 +117,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
           // Show success animation
           await _showSuccessAnimation();
 
-          // � Check for welcome voucher (trigger đã auto-issue rồi)
+          if (!mounted) return;
+
+          //  Check for welcome voucher (trigger đã auto-issue rồi)
           await WelcomeVoucherHelper.checkAndShowWelcomeVoucher(
             context,
             widget.userId,
           );
+
+          if (!mounted) return;
 
           // �🎯 CHECK IF USER IS CLUB OWNER - Show CLB dialog AFTER verification
           final userRole = user?.userMetadata?['role'];
@@ -413,9 +417,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
       try {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('pending_club_registration', true);
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // Ignore error
       }
 
       // Navigate to home

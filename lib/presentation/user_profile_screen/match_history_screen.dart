@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/match_management_service.dart';
 import '../../widgets/user/user_widgets.dart';
-import 'widgets/score_input_dialog.dart';
 
 /// Screen hiển thị lịch sử tất cả trận đấu của user
 class MatchHistoryScreen extends StatefulWidget {
@@ -23,6 +22,7 @@ class MatchHistoryScreen extends StatefulWidget {
 class _MatchHistoryScreenState extends State<MatchHistoryScreen>
     with SingleTickerProviderStateMixin {
   final _supabase = Supabase.instance.client;
+  // ignore: unused_field
   final _matchManagementService = MatchManagementService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _matches = [];

@@ -52,7 +52,10 @@ class AnalyticsService {
       _browser = 'Web Browser';
       _os = 'Web';
       _deviceType = 'desktop';
-    } else if (Platform.isAndroid) {
+      return;
+    }
+    
+    if (Platform.isAndroid) {
       _deviceType = 'mobile';
       _os = 'Android';
       _browser = 'Native App';

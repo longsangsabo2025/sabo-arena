@@ -50,7 +50,9 @@ class AuthNavigationController {
       );
       ProductionLogger.error('Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Fallback to login on any error
-      _safeNavigate(context, AppRoutes.loginScreen);
+      if (context.mounted) {
+        _safeNavigate(context, AppRoutes.loginScreen);
+      }
     }
   }
 
@@ -76,10 +78,10 @@ class AuthNavigationController {
 
       if (needsEmailVerification) {
         // Show email verification screen (to be implemented)
-        await _showEmailVerificationScreen(context, email);
+        if (context.mounted) await _showEmailVerificationScreen(context, email);
       } else {
         // Proceed to onboarding or main app
-        await _handleNewUserOnboarding(context);
+        if (context.mounted) await _handleNewUserOnboarding(context);
       }
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -92,7 +94,7 @@ class AuthNavigationController {
       );
       ProductionLogger.error('Post-Registration Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Fallback to login
-      _safeNavigate(context, AppRoutes.loginScreen);
+      if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     }
   }
 
@@ -116,7 +118,7 @@ class AuthNavigationController {
       if (isAdmin) {
         // Admin users go directly to admin dashboard
         ProductionLogger.info('Redirecting admin to dashboard', tag: 'AuthNav');
-        _safeNavigate(context, AppRoutes.adminDashboardScreen);
+        if (context.mounted) _safeNavigate(context, AppRoutes.adminDashboardScreen);
         return; // Exit early for admin
       }
 
@@ -181,11 +183,11 @@ class AuthNavigationController {
       
       if (needsInitialization) {
         ProductionLogger.info('User needs initialization - triggering onboarding completion', tag: 'AuthNav');
-        await _handleNewUserOnboarding(context);
+        if (context.mounted) await _handleNewUserOnboarding(context);
       } else if (isFirstLogin) {
-        await _handleNewUserOnboarding(context);
+        if (context.mounted) await _handleNewUserOnboarding(context);
       } else {
-        await _handleReturningUser(context);
+        if (context.mounted) await _handleReturningUser(context);
       }
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -198,7 +200,7 @@ class AuthNavigationController {
       );
       ProductionLogger.error('CRITICAL Post-Login Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Only fallback to login for CRITICAL errors
-      _safeNavigate(context, AppRoutes.loginScreen);
+      if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     }
   }
 
@@ -208,7 +210,7 @@ class AuthNavigationController {
     ProductionLogger.debug('Navigation: isAdmin = $isAdmin', tag: 'AuthNav');
 
     if (isAdmin) {
-      _safeNavigate(context, AppRoutes.adminDashboardScreen);
+      if (context.mounted) _safeNavigate(context, AppRoutes.adminDashboardScreen);
     } else {
       final uid = AuthService.instance.currentUser?.id;
       if (uid != null) {
@@ -216,6 +218,14 @@ class AuthNavigationController {
           await MemberRealtimeService().initializeForUser(uid);
         } catch (e) {
           ProductionLogger.warning('Failed to initialize realtime service', error: e, tag: 'AuthNav');
+        }
+
+        // ✨ NEW: Subscribe to real-time notifications (Fix for missing unread count)
+        try {
+          await NotificationService.instance.subscribeToNotifications(uid);
+          ProductionLogger.info('Subscribed to real-time notifications (Auto-login)', tag: 'AuthNav');
+        } catch (e) {
+          ProductionLogger.warning('Failed to subscribe to notifications', error: e, tag: 'AuthNav');
         }
 
         // Register for push notifications (skip on web)
@@ -231,26 +241,26 @@ class AuthNavigationController {
       final needsOnboarding = await _checkIfNeedsOnboarding();
 
       if (needsOnboarding) {
-        await _handleNewUserOnboarding(context);
+        if (context.mounted) await _handleNewUserOnboarding(context);
       } else {
         // 🚀 PHASE 1: Navigate to main screen with persistent tabs
-        _safeNavigate(context, AppRoutes.mainScreen);
+        if (context.mounted) _safeNavigate(context, AppRoutes.mainScreen);
       }
     }
   }
 
   /// 🚫 **UNAUTHENTICATED USER HANDLING**
   static Future<void> _handleUnauthenticatedUser(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    // final prefs = await SharedPreferences.getInstance();
+    // ELON_MODE: Force onboarding for review
+    // final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+    // ProductionLogger.debug('Navigation: hasSeenOnboarding = $hasSeenOnboarding', tag: 'AuthNav');
 
-    ProductionLogger.debug('Navigation: hasSeenOnboarding = $hasSeenOnboarding', tag: 'AuthNav');
-
-    if (hasSeenOnboarding) {
-      _safeNavigate(context, AppRoutes.loginScreen);
-    } else {
-      _safeNavigate(context, AppRoutes.onboardingScreen);
-    }
+    // if (hasSeenOnboarding) {
+    //   if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
+    // } else {
+      if (context.mounted) _safeNavigate(context, AppRoutes.onboardingScreen);
+    // }
   }
 
   /// 🆕 **NEW USER ONBOARDING**
@@ -262,7 +272,7 @@ class AuthNavigationController {
       final currentUser = AuthService.instance.currentUser;
       if (currentUser == null) {
         ProductionLogger.warning('No current user found', tag: 'AuthNav');
-        _safeNavigate(context, AppRoutes.loginScreen);
+        if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
         return;
       }
 
@@ -283,7 +293,7 @@ class AuthNavigationController {
 
       // Navigate to main screen with persistent tabs
       ProductionLogger.info('Directing user to main screen', tag: 'AuthNav');
-      _safeNavigate(context, AppRoutes.mainScreen);
+      if (context.mounted) _safeNavigate(context, AppRoutes.mainScreen);
 
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -296,7 +306,7 @@ class AuthNavigationController {
       );
       ProductionLogger.error('Error during user onboarding', error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Still navigate to main screen - initialization failures are non-critical
-      _safeNavigate(context, AppRoutes.mainScreen);
+      if (context.mounted) _safeNavigate(context, AppRoutes.mainScreen);
     }
   }
 
@@ -361,7 +371,7 @@ class AuthNavigationController {
       ProductionLogger.info('Logout: All session data cleared', tag: 'AuthNav');
 
       // Navigate to login
-      _safeNavigate(context, AppRoutes.loginScreen);
+      if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -372,7 +382,7 @@ class AuthNavigationController {
         ),
       );
       ProductionLogger.error('Logout Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
-      _safeNavigate(context, AppRoutes.loginScreen);
+      if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/design_system/design_system.dart';
 
 /// Tab Navigation Widget - Ready, Live, Done
 /// Design: Gray inactive, Red dot for active Live tab, underline indicator
@@ -35,7 +36,7 @@ class ProfileTabNavigationWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: _buildTab(              context,              label: 'Done',
+            child: _buildTab(              context,              label: 'Hoàn thành',
               value: 'done',
               isActive: currentTab == 'done',
             ),
@@ -76,7 +77,7 @@ class ProfileTabNavigationWidget extends StatelessWidget {
                     width: 8,
                     height: 8,
                     decoration: const BoxDecoration(
-                      color: Color(0xFFE53935),
+                      color: AppColors.error,
                       shape: BoxShape.circle,
                     ),
                   ),

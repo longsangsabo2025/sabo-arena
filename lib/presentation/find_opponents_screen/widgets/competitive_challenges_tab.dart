@@ -10,7 +10,10 @@ import '../../../core/design_system/design_system.dart';
 import './challenge_card_widget_redesign.dart';
 import './challenge_detail_modal.dart';
 import './create_spa_challenge_modal.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import './schedule_match_modal.dart';
+import '../../user_profile_screen/widgets/match_card_widget.dart';
+import '../../../utils/challenge_to_match_converter.dart';
+// ELON_MODE_AUTO_FIX
 
 /// Tab to display competitive challenges (thách đấu) sent TO current user
 /// Sub-tabs: Ready (pending/accepted) và Complete (completed)
@@ -28,7 +31,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
   List<Map<String, dynamic>> _challenges = [];
   bool _isLoading = true;
   String? _errorMessage;
-  int _currentSubTab = 0;
+  // int _currentSubTab = 0;
   bool _showTooltip = false;
   Timer? _tooltipTimer;
   
@@ -42,7 +45,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     _subTabController.addListener(() {
       if (_subTabController.indexIsChanging) {
         setState(() {
-          _currentSubTab = _subTabController.index;
+          // _currentSubTab = _subTabController.index;
         });
       }
     });
@@ -67,7 +70,6 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
 
   Future<void> _loadChallenges() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() {
         _isLoading = true;
         _errorMessage = null;
@@ -103,7 +105,8 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
             club:clubs(
               id,
               name,
-              address
+              address,
+              logo_url
             )
           ''')
           .eq('challenge_type', 'thach_dau')
@@ -112,24 +115,17 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
           .then((response) => response as List<dynamic>)
           .then((list) => list.cast<Map<String, dynamic>>());
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       for (var i = 0; i < challenges.length && i < 3; i++) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (mounted) {
         setState(() {
           _challenges = challenges;
           _isLoading = false;
         });
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -162,7 +158,37 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
       final status = challenge['status'] as String?;
       // ✅ CHỈ hiển thị pending (chờ accept) và in_progress (đang thi đấu)
       // ❌ KHÔNG hiển thị accepted (đã hẹn rồi, không cần hiển thị nữa)
-      return status == 'pending' || status == 'in_progress';
+      final isStatusReady = status == 'pending' || status == 'in_progress';
+      if (!isStatusReady) return false;
+
+      // ✅ Filter out past matches (older than 24h)
+      if (status != 'in_progress') {
+        final scheduledTimeStr = challenge['scheduled_time'] as String? ?? 
+                                (challenge['match_conditions'] is Map ? challenge['match_conditions']['scheduled_time'] : null) as String?;
+        
+        if (scheduledTimeStr != null) {
+          final scheduledTime = DateTime.tryParse(scheduledTimeStr);
+          if (scheduledTime != null) {
+            // If scheduled time is older than 24 hours, hide it
+            if (scheduledTime.isBefore(DateTime.now().subtract(const Duration(hours: 24)))) {
+              return false;
+            }
+          }
+        }
+        
+        // Also check created_at for pending challenges that are too old (e.g. > 30 days)
+        if (status == 'pending') {
+           final createdAtStr = challenge['created_at'] as String?;
+           if (createdAtStr != null) {
+             final createdAt = DateTime.tryParse(createdAtStr);
+             if (createdAt != null && createdAt.isBefore(DateTime.now().subtract(const Duration(days: 30)))) {
+               return false;
+             }
+           }
+        }
+      }
+
+      return true;
     }).toList();
 
     final completedChallenges = _challenges.where((challenge) {
@@ -186,7 +212,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
                     children: [
                       const Icon(Icons.schedule, size: 18),
                       const SizedBox(width: 8),
-                      Text('Ready (${readyChallenges.length})'),
+                      Text('Sắp diễn ra (${readyChallenges.length})'),
                     ],
                   ),
                 ),
@@ -196,7 +222,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
                     children: [
                       const Icon(Icons.check_circle, size: 18),
                       const SizedBox(width: 8),
-                      Text('Complete (${completedChallenges.length})'),
+                      Text('Hoàn thành (${completedChallenges.length})'),
                     ],
                   ),
                 ),
@@ -248,14 +274,12 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
   }
 
   Widget _buildChallengesList(List<Map<String, dynamic>> challenges, String tabName) {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     if (_isLoading) {
       return const LoadingStateWidget(message: 'Đang tải thách đấu...');
     }
 
     if (_errorMessage != null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return ErrorStateWidget(
         errorMessage: _errorMessage!,
         onRetry: _loadChallenges,
@@ -263,7 +287,6 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     }
 
     if (challenges.isEmpty) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return EmptyStateWidget(
         icon: tabName == 'Ready' ? Icons.schedule : Icons.check_circle,
         message: tabName == 'Ready' 
@@ -277,7 +300,6 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
       );
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     
     return RefreshIndicator(
       onRefresh: _loadChallenges,
@@ -286,14 +308,112 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
         itemCount: challenges.length,
         itemBuilder: (context, index) {
           final challenge = challenges[index];
-          return ChallengeCardWidgetRedesign(
-            challenge: challenge,
-            isCompetitive: true,
+          
+          // Convert to match data for MatchCardWidget
+          final matchData = ChallengeToMatchConverter.convert(
+            challenge,
+            currentUserId: Supabase.instance.client.auth.currentUser?.id,
+          );
+
+          return MatchCardWidget(
+            matchMap: matchData,
             onTap: () => _showChallengeDetail(challenge),
+            bottomAction: _buildActionButtons(challenge),
           );
         },
       ),
     );
+  }
+
+  Widget? _buildActionButtons(Map<String, dynamic> challenge) {
+    final status = challenge['status'] as String? ?? 'pending';
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final challengedId = challenge['challenged_id'] as String?;
+    
+    // Only show buttons for pending challenges where I am the challenged user
+    if (status == 'pending' && currentUserId == challengedId) {
+      return Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () => _acceptChallenge(challenge),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00695C),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Text(
+                'Nhận thách đấu',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () {
+                final challenger = challenge['challenger'] as Map<String, dynamic>?;
+                if (challenger != null) {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => ScheduleMatchModal(
+                      targetUserId: challenger['id'],
+                      targetUserName: challenger['display_name'] ?? 'Đối thủ',
+                    ),
+                  );
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF00695C),
+                side: const BorderSide(color: Color(0xFF00695C)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Text(
+                'Hẹn lịch',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    return null;
+  }
+
+  Future<void> _acceptChallenge(Map<String, dynamic> challenge) async {
+    try {
+      // Show loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      await _challengeService.acceptChallenge(challenge['id']);
+      
+      if (mounted) {
+        Navigator.pop(context); // Hide loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Đã chấp nhận thách đấu!')),
+        );
+        _loadChallenges();
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Hide loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _showCreateChallengeModal() async {

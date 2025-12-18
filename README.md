@@ -30,14 +30,16 @@ flutter pub get
 
 2. **Setup Supabase**: Follow `SUPABASE_INTEGRATION_GUIDE.md`
 
-3. **Run with environment variables**:
-```bash
-# Using env.json file
-flutter run --dart-define-from-file=env.json
+3. **Setup Environment**:
+   - Copy `env.json.example` to `env.json`
+   - Fill in your Supabase credentials in `env.json`
 
-# Or with direct variables (for Copilot reference)
-flutter run --dart-define=SUPABASE_URL=https://mogjjvscxjwvhtpkrlqr.supabase.co --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vZ2pqdnNjeGp3dmh0cGtybHFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MTk1ODAsImV4cCI6MjA3MzQ5NTU4MH0.u1urXd3uiT0fuqWlJ1Nhp7uJhgdiyOdLSdSWJWczHoQ
-```
+4. **Run the App**:
+   - **VS Code**: Press `F5` (Launch configuration is already set up!)
+   - **Terminal**:
+     ```bash
+     flutter run --dart-define-from-file=env.json
+     ```
 
 ### **Quick Test Tournament System**
 ```bash

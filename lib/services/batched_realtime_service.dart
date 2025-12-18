@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Batched Real-Time Service
 /// Batches all real-time updates into single subscription
@@ -53,7 +53,6 @@ class BatchedRealtimeService {
     _startBatchTimer();
     
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -128,7 +127,6 @@ class BatchedRealtimeService {
     }
     
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -139,7 +137,6 @@ class BatchedRealtimeService {
   ) {
     _callbacks[table] = callback;
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -150,7 +147,6 @@ class BatchedRealtimeService {
   ) {
     _callbacks[key] = callback;
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -158,7 +154,6 @@ class BatchedRealtimeService {
   void unsubscribeFromTable(String table) {
     _callbacks.remove(table);
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -166,7 +161,6 @@ class BatchedRealtimeService {
   void unsubscribeFromEntity(String key) {
     _callbacks.remove(key);
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -181,7 +175,6 @@ class BatchedRealtimeService {
     _isSubscribed = false;
     
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 }

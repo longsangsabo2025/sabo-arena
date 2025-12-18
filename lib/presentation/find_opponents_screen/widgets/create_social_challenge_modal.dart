@@ -1008,6 +1008,7 @@ class _CreateSocialChallengeModalState
                 );
               },
             );
+            if (!mounted) return;
             if (date != null) {
               final time = await showTimePicker(
                 context: context,

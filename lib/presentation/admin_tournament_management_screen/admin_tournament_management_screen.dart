@@ -313,7 +313,7 @@ class _AdminTournamentManagementScreenState
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Hủy', overflow: TextOverflow.ellipsis, style: TextStyle(
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),

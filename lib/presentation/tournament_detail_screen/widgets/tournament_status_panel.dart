@@ -103,7 +103,7 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
     return Column(
       children: [
         Row(
-          children: steps.asMap().entries.map((entry) {
+          children: steps.asMap().entries.map<Widget>((entry) {
             final index = entry.key;
             final isActive = index <= currentStep;
             final isCurrent = index == currentStep;
@@ -158,7 +158,7 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
         ),
         SizedBox(height: 8.sp),
         Row(
-          children: steps.asMap().entries.map((entry) {
+          children: steps.asMap().entries.map<Widget>((entry) {
             final index = entry.key;
             final step = entry.value;
             final isActive = index <= currentStep;

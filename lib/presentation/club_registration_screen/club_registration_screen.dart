@@ -1,10 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../services/club_service.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../routes/app_routes.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'controllers/club_registration_controller.dart';
+// ELON_MODE_AUTO_FIX
 
 class ClubRegistrationScreen extends StatefulWidget {
   const ClubRegistrationScreen({super.key});
@@ -14,58 +14,18 @@ class ClubRegistrationScreen extends StatefulWidget {
 }
 
 class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
-  final _formKey = GlobalKey<FormState>();
+  late final ClubRegistrationController _controller;
   final _scrollController = ScrollController();
 
-  // Controllers cho các field
-  final _clubNameController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _websiteController = TextEditingController();
-
-  // State variables
-  bool _isLoading = false;
-  String? _selectedCity;
-  final List<String> _selectedAmenities = [];
-  final Map<String, String> _operatingHours = {
-    'Thứ 2 - Thứ 6': '08:00 - 22:00',
-    'Thứ 7 - Chủ nhật': '07:00 - 23:00',
-  };
-
-  // Mock data
-  final List<String> _cities = [
-    'Hồ Chí Minh',
-    'Hà Nội',
-    'Đà Nẵng',
-    'Cần Thơ',
-    'Hải Phòng',
-    'Bình Dương',
-    'Đồng Nai',
-  ];
-
-  final List<String> _amenities = [
-    'WiFi miễn phí',
-    'Bãi đỗ xe',
-    'Quầy bar',
-    'Phòng VIP',
-    'Điều hòa',
-    'Camera an ninh',
-    'Nhà vệ sinh',
-    'Khu vực hút thuốc',
-    'Dịch vụ đồ ăn',
-    'Máy lạnh',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _controller = ClubRegistrationController();
+  }
 
   @override
   void dispose() {
-    _clubNameController.dispose();
-    _addressController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    _descriptionController.dispose();
-    _websiteController.dispose();
+    _controller.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -75,27 +35,30 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-        ),
-        title: Text(
-          'Đăng ký câu lạc bộ', overflow: TextOverflow.ellipsis, style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: colorScheme.onSurface,
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, child) {
+        return Scaffold(
+          backgroundColor: colorScheme.surface,
+          appBar: AppBar(
+            backgroundColor: colorScheme.surface,
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+            ),
+            title: Text(
+              'Đăng ký câu lạc bộ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            centerTitle: true,
           ),
-        ),
-        centerTitle: true,
-      ),
-      body: Form(
-        key: _formKey,
-        child: Column(
+          body: Form(
+            key: _controller.formKey,
+            child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
@@ -115,7 +78,7 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
 
                     // Tên câu lạc bộ
                     _buildTextField(
-                      controller: _clubNameController,
+                      controller: _controller.clubNameController,
                       label: 'Tên câu lạc bộ',
                       hint: 'VD: Billiards Club Sài Gòn',
                       icon: Icons.store,
@@ -135,13 +98,9 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
                     // Thành phố
                     _buildDropdownField(
                       label: 'Thành phố',
-                      value: _selectedCity,
-                      items: _cities,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedCity = value;
-                        });
-                      },
+                      value: _controller.selectedCity,
+                      items: _controller.cities,
+                      onChanged: _controller.setCity,
                       icon: Icons.location_city,
                       validator: (value) {
                         if (value == null) {
@@ -155,7 +114,7 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
 
                     // Địa chỉ chi tiết
                     _buildTextField(
-                      controller: _addressController,
+                      controller: _controller.addressController,
                       label: 'Địa chỉ chi tiết',
                       hint: 'VD: 123 Nguyễn Huệ, Phường Bến Nghé, Quận 1',
                       icon: Icons.location_on,
@@ -181,7 +140,7 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
 
                     // Số điện thoại
                     _buildTextField(
-                      controller: _phoneController,
+                      controller: _controller.phoneController,
                       label: 'Số điện thoại',
                       hint: 'VD: 0901234567',
                       icon: Icons.phone,
@@ -202,7 +161,7 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
 
                     // Email
                     _buildTextField(
-                      controller: _emailController,
+                      controller: _controller.emailController,
                       label: 'Email',
                       hint: 'VD: contact@billiards.com',
                       icon: Icons.email,
@@ -224,11 +183,38 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
 
                     // Website (optional)
                     _buildTextField(
-                      controller: _websiteController,
+                      controller: _controller.websiteController,
                       label: 'Website (tùy chọn)',
                       hint: 'VD: https://billiards.com',
                       icon: Icons.language,
                       keyboardType: TextInputType.url,
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Xác thực quyền sở hữu
+                    _buildSectionHeader(
+                      'Xác thực quyền sở hữu',
+                      'Cung cấp hình ảnh để xác minh bạn là chủ sở hữu',
+                      Icons.verified_user,
+                      colorScheme,
+                    ),
+                    const SizedBox(height: 16),
+
+                    _buildImageUploadField(
+                      label: 'Giấy phép kinh doanh',
+                      file: _controller.businessLicenseImage,
+                      onTap: _controller.pickBusinessLicenseImage,
+                      colorScheme: colorScheme,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _buildImageUploadField(
+                      label: 'CCCD/CMND (Mặt trước)',
+                      file: _controller.identityCardImage,
+                      onTap: _controller.pickIdentityCardImage,
+                      colorScheme: colorScheme,
                     ),
 
                     const SizedBox(height: 24),
@@ -243,7 +229,7 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
                     const SizedBox(height: 16),
 
                     _buildTextField(
-                      controller: _descriptionController,
+                      controller: _controller.descriptionController,
                       label: 'Mô tả',
                       hint:
                           'Giới thiệu về câu lạc bộ, lịch sử, dịch vụ và những điều đặc biệt...',
@@ -307,7 +293,7 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _isLoading
+                      onPressed: _controller.isLoading
                           ? null
                           : () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
@@ -326,13 +312,13 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _submitForm,
+                      onPressed: _controller.isLoading ? null : _submitForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
                         foregroundColor: colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: _isLoading
+                      child: _controller.isLoading
                           ? SizedBox(
                               height: 20,
                               width: 20,
@@ -357,6 +343,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
           ],
         ),
       ),
+      );
+      },
     );
   }
 
@@ -490,19 +478,13 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: _amenities.map((amenity) {
-        final isSelected = _selectedAmenities.contains(amenity);
+      children: _controller.allAmenities.map((amenity) {
+        final isSelected = _controller.selectedAmenities.contains(amenity);
         return FilterChip(
           label: Text(amenity),
           selected: isSelected,
           onSelected: (selected) {
-            setState(() {
-              if (selected) {
-                _selectedAmenities.add(amenity);
-              } else {
-                _selectedAmenities.remove(amenity);
-              }
-            });
+            _controller.toggleAmenity(amenity);
           },
           backgroundColor: colorScheme.surface,
           selectedColor: colorScheme.primaryContainer,
@@ -519,7 +501,7 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
 
   Widget _buildOperatingHours(ColorScheme colorScheme) {
     return Column(
-      children: _operatingHours.entries.map((entry) {
+      children: _controller.operatingHours.entries.map((entry) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Row(
@@ -575,92 +557,101 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
     );
   }
 
-  void _showTimePicker(String day, String currentTime) {
-    // For now, just show a simple dialog
-    // In a real app, you'd implement a proper time range picker
-    showDialog(
+  void _showTimePicker(String day, String currentTime) async {
+    // Parse current time range (e.g., "08:00 - 22:00")
+    final parts = currentTime.split(' - ');
+    TimeOfDay startTime = const TimeOfDay(hour: 8, minute: 0);
+    TimeOfDay endTime = const TimeOfDay(hour: 22, minute: 0);
+
+    if (parts.length == 2) {
+      final startParts = parts[0].split(':');
+      final endParts = parts[1].split(':');
+      if (startParts.length == 2) {
+        startTime = TimeOfDay(hour: int.parse(startParts[0]), minute: int.parse(startParts[1]));
+      }
+      if (endParts.length == 2) {
+        endTime = TimeOfDay(hour: int.parse(endParts[0]), minute: int.parse(endParts[1]));
+      }
+    }
+
+    final TimeOfDay? newStartTime = await showTimePicker(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Giờ hoạt động - $day'),
-        content: Text(
-          'Chức năng chọn giờ sẽ được phát triển sớm.\nHiện tại: $currentTime',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Đóng'),
+      initialTime: startTime,
+      helpText: 'CHỌN GIỜ MỞ CỬA ($day)',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerThemeData(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              hourMinuteTextColor: Theme.of(context).colorScheme.primary,
+              dayPeriodTextColor: Theme.of(context).colorScheme.primary,
+              dialHandColor: Theme.of(context).colorScheme.primary,
+              dialBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
           ),
-        ],
-      ),
+          child: child!,
+        );
+      },
     );
+
+    if (newStartTime == null) return;
+
+    if (!mounted) return;
+
+    final TimeOfDay? newEndTime = await showTimePicker(
+      context: context,
+      initialTime: endTime,
+      helpText: 'CHỌN GIỜ ĐÓNG CỬA ($day)',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerThemeData(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              hourMinuteTextColor: Theme.of(context).colorScheme.primary,
+              dayPeriodTextColor: Theme.of(context).colorScheme.primary,
+              dialHandColor: Theme.of(context).colorScheme.primary,
+              dialBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (newEndTime == null) return;
+
+    // Format time to HH:mm
+    String formatTime(TimeOfDay time) {
+      final hour = time.hour.toString().padLeft(2, '0');
+      final minute = time.minute.toString().padLeft(2, '0');
+      return '$hour:$minute';
+    }
+
+    final newTimeRange = '${formatTime(newStartTime)} - ${formatTime(newEndTime)}';
+    _controller.updateOperatingHours(day, newTimeRange);
   }
 
   void _submitForm() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (_selectedAmenities.isEmpty) {
-      _showErrorSnackBar('Vui lòng chọn ít nhất một tiện ích');
-      return;
-    }
-
-    // 🔐 Check authentication before submitting
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    if (currentUser == null) {
-      _showErrorSnackBar(
-        'Bạn chưa đăng nhập. Vui lòng đăng nhập để đăng ký CLB.',
-      );
-      // Navigate to login screen
-      if (mounted) {
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil(AppRoutes.loginScreen, (route) => false);
-      }
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // Call ClubService to create club
-      final clubService = ClubService.instance;
-
-      await clubService.createClub(
-        name: _clubNameController.text.trim(),
-        description: _descriptionController.text.trim(),
-        address: _addressController.text.trim(),
-        phone: _phoneController.text.trim().isNotEmpty
-            ? _phoneController.text.trim()
-            : null,
-        email: _emailController.text.trim().isNotEmpty
-            ? _emailController.text.trim()
-            : null,
-        totalTables: 1, // Default value, can be made configurable
-      );
-
-      // 🎯 Clear pending club registration flag on success
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('pending_club_registration', false);
-      await prefs.setBool('dismissed_club_reminder', false);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-
-      if (mounted) {
-        _showSuccessDialog();
-      }
-    } catch (error) {
-      if (mounted) {
-        _showErrorSnackBar('Có lỗi xảy ra: ${error.toString()}');
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    await _controller.submitForm(
+      onError: (message) {
+        if (message.contains('chưa đăng nhập')) {
+          // Navigate to login screen
+          if (mounted) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.loginScreen,
+              (route) => false,
+            );
+          }
+        } else {
+          _showErrorSnackBar(message);
+        }
+      },
+      onSuccess: () {
+        if (mounted) {
+          _showSuccessDialog();
+        }
+      },
+    );
   }
 
   void _showSuccessDialog() {
@@ -726,9 +717,9 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop(); // Close dialog
-              // Navigate to home feed screen using AppRoutes constant
+              // Navigate to main screen (PersistentTabScaffold)
               Navigator.of(context).pushNamedAndRemoveUntil(
-                AppRoutes.homeFeedScreen,
+                AppRoutes.mainScreen,
                 (route) => false,
               );
             },
@@ -740,6 +731,87 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImageUploadField({
+    required String label,
+    required XFile? file,
+    required VoidCallback onTap,
+    required ColorScheme colorScheme,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label, style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: colorScheme.onSurface.withValues(alpha: 0.8),
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            height: 150,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colorScheme.outline.withValues(alpha: 0.3),
+                style: BorderStyle.solid,
+              ),
+            ),
+            child: file != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: kIsWeb
+                        ? Image.network(
+                            file.path,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(child: Icon(Icons.error));
+                            },
+                          )
+                        : FutureBuilder<Uint8List>(
+                            future: file.readAsBytes(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Image.memory(
+                                  snapshot.data!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                );
+                              }
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                          ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 40,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Nhấn để tải ảnh lên', style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
     );
   }
 

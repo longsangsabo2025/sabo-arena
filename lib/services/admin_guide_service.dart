@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/admin_guide_models.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+// ELON_MODE_AUTO_FIX
 
 /// Service for managing admin guides with auto-update capability
 class AdminGuideService {
@@ -45,7 +46,6 @@ class AdminGuideService {
         // Merge hardcoded and database guides
         guides.addAll(dbGuides);
       } catch (e) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         // Continue with hardcoded guides only
       }
 
@@ -54,7 +54,6 @@ class AdminGuideService {
 
       return guides;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return _getHardcodedGuides(); // Fallback to hardcoded
     }
   }
@@ -92,7 +91,6 @@ class AdminGuideService {
       if (response == null) return null;
       return GuideProgress.fromJson(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -116,7 +114,7 @@ class AdminGuideService {
 
       await _supabase.from('admin_guide_progress').upsert(progress.toJson());
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.error('Failed to update guide progress', error: e, tag: 'AdminGuideService');
     }
   }
 

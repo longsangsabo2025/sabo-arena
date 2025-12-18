@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Performance Monitor
 /// Tracks app performance metrics for monitoring and optimization
@@ -40,7 +40,6 @@ class PerformanceMonitor {
     final startTime = _startTimes[key];
     if (startTime == null) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       return;
     }
@@ -55,14 +54,12 @@ class PerformanceMonitor {
     if (key.contains('query') && durationMs > _slowQueryThresholdMs) {
       _slowQueriesDetected++;
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
 
     if (key.contains('api') && durationMs > _slowApiThresholdMs) {
       _slowApisDetected++;
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -180,7 +177,6 @@ class PerformanceMonitor {
     _slowApisDetected = 0;
 
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -193,28 +189,11 @@ class PerformanceMonitor {
   /// Print performance report
   void printReport() {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      final summary = getMetricsSummary();
-      for (final entry in summary.entries) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      }
+      // final summary = getMetricsSummary(); // Unused
+      // for (final entry in summary.entries) {
+      // }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 }

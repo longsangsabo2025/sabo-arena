@@ -1,73 +1,168 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../core/design_system/design_system.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import '../../../models/tournament.dart';
+// ELON_MODE_AUTO_FIX
 
 /// Tournament Card Widget - Shared component for both Tournament List and User Profile
 /// Design: Large ball icon left, club logo + tournament name, info rows, action buttons
 class TournamentCardWidget extends StatelessWidget {
-  final Map<String, dynamic> tournament;
+  final Map<String, dynamic>? tournamentMap;
+  final Tournament? tournamentObj;
   final VoidCallback? onTap;
   final VoidCallback? onResultTap;
   final VoidCallback? onDetailTap;
   final VoidCallback? onShareTap;
+  final VoidCallback? onDelete;
+  final VoidCallback? onHide;
 
   const TournamentCardWidget({
     super.key,
-    required this.tournament,
+    this.tournamentMap,
+    this.tournamentObj,
     this.onTap,
     this.onResultTap,
     this.onDetailTap,
     this.onShareTap,
-  });
+    this.onDelete,
+    this.onHide,
+  }) : assert(tournamentMap != null || tournamentObj != null, 'Either tournamentMap or tournamentObj must be provided');
 
   @override
   Widget build(BuildContext context) {
-    final name = tournament['name'] as String? ?? 'Tournament';
-    final date = tournament['date'] as String? ?? '06/09 - Thứ 7';
-    final startTime = tournament['startTime'] as String? ?? '9AM';
-    final playersCount = tournament['playersCount'] as String? ?? '16/16';
-    final prizePool = tournament['prizePool'] as String? ?? '10 Million';
-    final rating = tournament['rating'] as String? ?? 'I → H+';
-    final iconNumber = tournament['iconNumber'] as String? ?? '9';
-    final clubLogo = tournament['clubLogo'] as String?;
-    final clubName = tournament['clubName'] as String? ?? 'Sabo';
-    final mangCount = tournament['mangCount'] as int? ?? 2;
-    final isLive = tournament['isLive'] as bool? ?? false;
-    final status = tournament['status'] as String? ?? 'ready';
+    // ELON AUDIT: Prefer strong-typed object over Map
+    final name = tournamentObj?.title ?? tournamentMap?['name'] as String? ?? 'Tournament';
+    
+    String date;
+    if (tournamentObj != null) {
+      date = DateFormat('dd/MM').format(tournamentObj!.startDate);
+    } else {
+      date = tournamentMap?['date'] as String? ?? '06/09 - Thứ 7';
+    }
+
+    final startTime = tournamentObj != null 
+        ? DateFormat('h a').format(tournamentObj!.startDate)
+        : tournamentMap?['startTime'] as String? ?? '9AM';
+        
+    final playersCount = tournamentObj != null
+        ? '${tournamentObj!.currentParticipants}/${tournamentObj!.maxParticipants}'
+        : tournamentMap?['playersCount'] as String? ?? '16/16';
+        
+    final prizePool = tournamentObj != null
+        ? NumberFormat.compact().format(tournamentObj!.prizePool)
+        : tournamentMap?['prizePool'] as String? ?? '10 Million';
+        
+    final rating = tournamentObj != null
+        ? tournamentObj!.rankRange
+        : tournamentMap?['rating'] as String? ?? 'I → H+';
+        
+    final iconNumber = tournamentObj?.iconNumber ?? tournamentMap?['iconNumber'] as String? ?? '9';
+    final clubLogo = tournamentObj?.clubLogo ?? tournamentMap?['clubLogo'] as String?;
+    final clubName = tournamentObj?.clubName ?? tournamentMap?['clubName'] as String? ?? 'Sabo';
+    
+    final isLive = tournamentObj != null
+        ? tournamentObj!.status == 'active' || tournamentObj!.status == 'live'
+        : tournamentMap?['isLive'] as bool? ?? false;
+        
+    final status = tournamentObj?.status ?? tournamentMap?['status'] as String? ?? 'ready';
+    final tournamentType = tournamentObj?.tournamentType ?? tournamentMap?['tournamentType'] as String?;
     
     // NEW: Extract enhancement data
-    final entryFee = tournament['entryFee'] as String?;
-    final registrationDeadline = tournament['registrationDeadline'] as String?;
-    final prizeBreakdown = tournament['prizeBreakdown'] as Map<String, dynamic>?;
-    final venue = tournament['venue'] as String?;
+    final entryFee = tournamentObj != null
+        ? (tournamentObj!.entryFee > 0 ? NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(tournamentObj!.entryFee) : 'Free')
+        : tournamentMap?['entryFee'] as String?;
+        
+    final registrationDeadline = tournamentObj?.registrationDeadline.toIso8601String() 
+        ?? tournamentMap?['registrationDeadline'] as String?;
+        
+    final prizeBreakdown = tournamentObj?.prizeDistribution 
+        ?? tournamentMap?['prizeBreakdown'] as Map<String, dynamic>?;
+        
+    final venue = tournamentObj?.venueAddress ?? tournamentMap?['venue'] as String?;
+
+    // Logic Mạng (Lives)
+    int mangCount = 1;
+    if (tournamentObj != null) {
+      mangCount = tournamentObj!.mangCount;
+    } else if (tournamentType != null) {
+      if (tournamentType.toLowerCase().contains('double') || tournamentType.toLowerCase().contains('de')) {
+        mangCount = 2;
+      } else if (tournamentType.toLowerCase().contains('single') || tournamentType.toLowerCase().contains('se')) {
+        mangCount = 1;
+      } else {
+        mangCount = tournamentMap?['mangCount'] as int? ?? 1;
+      }
+    } else {
+      // Fallback if tournamentType is missing (e.g. Club Detail tab)
+      mangCount = tournamentMap?['mangCount'] as int? ?? 1;
+    }
     
     // Calculate registration progress
-    final registrationParts = playersCount.split('/');
-    final currentPlayers = int.tryParse(registrationParts[0]) ?? 0;
-    final maxPlayers = int.tryParse(registrationParts[1]) ?? 64;
+    final int currentPlayers;
+    final int maxPlayers;
+    
+    if (tournamentObj != null) {
+      currentPlayers = tournamentObj!.currentParticipants;
+      maxPlayers = tournamentObj!.maxParticipants;
+    } else {
+      final registrationParts = playersCount.split('/');
+      currentPlayers = int.tryParse(registrationParts[0]) ?? 0;
+      maxPlayers = (registrationParts.length > 1) ? (int.tryParse(registrationParts[1]) ?? 64) : 64;
+    }
+    
     final registrationProgress = maxPlayers > 0 ? currentPlayers / maxPlayers : 0.0;
     
-    // Calculate days until deadline
-    int? daysUntilDeadline;
+    // 🚀 ELON STYLE: Smart Status Logic (Fixed)
+    // Calculate time difference accurately
+    Duration? timeUntilDeadline;
+    bool isPastDeadline = false;
+    
     if (registrationDeadline != null) {
       try {
         final deadline = DateTime.parse(registrationDeadline);
         final now = DateTime.now();
-        daysUntilDeadline = deadline.difference(now).inDays;
+        timeUntilDeadline = deadline.difference(now);
+        isPastDeadline = timeUntilDeadline.isNegative;
       } catch (e) {
-        daysUntilDeadline = null;
+        // ignore
       }
     }
 
-    // Debug log
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
+    // Determine badge state
+    // Priority: Completed > Live > Full > Past Deadline > Today > Urgent
+    String? badgeText;
+    Color badgeColor = AppColors.error;
+    String badgeEmoji = '🔥';
+    
+    if (status == 'completed' || status == 'done' || status == 'cancelled') {
+       badgeText = null; // Clean look for completed
+    } else if (isLive) {
+       badgeText = 'LIVE';
+       badgeColor = AppColors.error;
+       badgeEmoji = '🔴';
+    } else if (currentPlayers >= maxPlayers && maxPlayers > 0) {
+       badgeText = 'FULL';
+       badgeColor = AppColors.textSecondary;
+       badgeEmoji = '⛔';
+    } else if (isPastDeadline) {
+       badgeText = 'CLOSED'; // Show closed if past deadline
+       badgeColor = AppColors.textSecondary;
+       badgeEmoji = '🔒';
+    } else if (timeUntilDeadline != null) {
+       if (timeUntilDeadline.inHours <= 24) {
+          badgeText = 'HÔM NAY';
+          badgeColor = AppColors.error;
+          badgeEmoji = '🔥';
+       } else if (timeUntilDeadline.inDays <= 2) {
+          badgeText = 'GẤP';
+          badgeColor = AppColors.warning;
+          badgeEmoji = '⚠️';
+       }
+    }
 
-    // 🚀 ELON STYLE: Calculate urgency level
-    final bool isUrgent = daysUntilDeadline != null && daysUntilDeadline <= 1;
+    final bool showBadge = badgeText != null;
     final bool isAlmostFull = registrationProgress >= 0.8;
-    final bool shouldHighlight = isUrgent || isAlmostFull;
+    final bool shouldHighlight = showBadge || isAlmostFull;
     
     // 💰 Calculate TOTAL prize value (cash + vouchers)
     final totalPrizeDisplay = _calculateTotalPrize(prizeBreakdown, prizePool);
@@ -79,13 +174,13 @@ class TournamentCardWidget extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: shouldHighlight ? AppColors.warning : Colors.transparent,
+            color: shouldHighlight ? badgeColor : Colors.transparent,
             width: shouldHighlight ? 2.5 : 0,
           ),
           boxShadow: [
             BoxShadow(
               color: shouldHighlight 
-                  ? AppColors.warning.withValues(alpha: 0.25)
+                  ? badgeColor.withValues(alpha: 0.25)
                   : AppColors.shadowDark,
               blurRadius: shouldHighlight ? 16 : 12,
               offset: const Offset(0, 6),
@@ -217,22 +312,22 @@ class TournamentCardWidget extends StatelessWidget {
                             ],
                           ),
                         ),
-                        // Urgent Badge
-                        if (isUrgent)
+                        // Smart Status Badge
+                        if (showBadge)
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppColors.error,
+                              color: badgeColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('🔥', style: TextStyle(fontSize: 10)),
-                                SizedBox(width: 2),
+                                Text(badgeEmoji, style: const TextStyle(fontSize: 10)),
+                                const SizedBox(width: 2),
                                 Text(
-                                  'HÔM NAY',
-                                  style: TextStyle(
+                                  badgeText,
+                                  style: const TextStyle(
                                     fontSize: 9,
                                     fontWeight: FontWeight.w800,
                                     color: AppColors.textOnPrimary,
@@ -242,6 +337,10 @@ class TournamentCardWidget extends StatelessWidget {
                               ],
                             ),
                           ),
+                        
+                        // 🚀 ELON STYLE: Menu Button
+                        const SizedBox(width: 8),
+                        _buildMenuButton(context),
                       ],
                     ),
                   ),
@@ -249,129 +348,189 @@ class TournamentCardWidget extends StatelessWidget {
                   // 🎯 MAIN CONTENT AREA
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Column(
                       children: [
-                        // Ball Icon
-                        _buildTournamentIconCompact(iconNumber),
+                        // 1. TOP SECTION: Icon + Name + Date
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Ball Icon
+                            _buildTournamentIconCompact(iconNumber),
 
-                        const SizedBox(width: 14),
+                            const SizedBox(width: 14),
 
-                        // Info Column
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Tournament Name
-                              Text(
-                                name,
-                                style: const TextStyle(
-                                  fontFamily: '.SF Pro Display',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.textOnPrimary,
-                                  letterSpacing: -0.5,
-                                  height: 1.2,
-                                  shadows: [
-                                    Shadow(
-                                      color: AppColors.shadow,
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
+                            // Info Column
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Tournament Name
+                                  Text(
+                                    name,
+                                    style: const TextStyle(
+                                      fontFamily: '.SF Pro Display',
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.textOnPrimary,
+                                      letterSpacing: -0.5,
+                                      height: 1.2,
+                                      shadows: [
+                                        Shadow(
+                                          color: AppColors.shadow,
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
 
-                              const SizedBox(height: 10),
+                                  const SizedBox(height: 10),
 
-                              // Date + Time Badge
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: AppColors.white.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: AppColors.white.withValues(alpha: 0.3)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(Icons.calendar_today, size: 14, color: AppColors.textOnPrimary),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '$date · $startTime',
-                                      style: const TextStyle(
-                                        fontFamily: '.SF Pro Text',
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textOnPrimary,
+                                  // Date + Time Badge
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [Colors.blue.shade700, Colors.blue.shade900],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
                                       ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.blue.withValues(alpha: 0.3),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(height: 14),
-
-                              // 💰 TOTAL PRIZE - HERO SECTION
-                              Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-                                // Removed background decoration as requested
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(Icons.emoji_events, size: 14, color: AppColors.warning),
+                                        const Icon(Icons.calendar_month_rounded, size: 14, color: Colors.white),
                                         const SizedBox(width: 6),
                                         Text(
-                                          'TỔNG GIẢI THƯỞNG',
-                                          style: TextStyle(
+                                          '$date · $startTime',
+                                          style: const TextStyle(
                                             fontFamily: '.SF Pro Text',
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w800,
-                                            color: AppColors.warning.withValues(alpha: 0.9),
-                                            letterSpacing: 1.2,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      totalPrizeDisplay,
-                                      style: const TextStyle(
-                                        fontFamily: '.SF Pro Display',
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w900,
-                                        color: AppColors.warning,
-                                        letterSpacing: -0.5,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.black26,
-                                            offset: Offset(0, 2),
-                                            blurRadius: 4,
-                                          ),
-                                        ],
-                                      ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // 2. MIDDLE SECTION: Prize Pool (Full Width Center)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.emoji_events, size: 14, color: AppColors.warning),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'TỔNG GIẢI THƯỞNG',
+                                    style: TextStyle(
+                                      fontFamily: '.SF Pro Text',
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.warning.withValues(alpha: 0.9),
+                                      letterSpacing: 1.2,
                                     ),
-                                    const SizedBox(height: 6),
-                                    // Bonus indicators
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        if (_hasVoucher(prizeBreakdown))
-                                          _buildPrizeTag('🎁 Voucher', AppColors.success),
-                                        if (_hasHonorBoard(prizeBreakdown)) ...[
-                                          const SizedBox(width: 6),
-                                          _buildPrizeTag('📜 Vinh danh', AppColors.warning),
-                                        ],
-                                      ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                totalPrizeDisplay,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontFamily: '.SF Pro Display',
+                                  fontSize: 38, // Increased size
+                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.warning,
+                                  letterSpacing: -1.0,
+                                  height: 1.1,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black38,
+                                      offset: Offset(0, 4),
+                                      blurRadius: 8,
+                                    ),
+                                    Shadow(
+                                      color: AppColors.warning,
+                                      blurRadius: 16,
+                                      offset: Offset(0, 0),
                                     ),
                                   ],
                                 ),
                               ),
+                              const SizedBox(height: 8),
+                              // Bonus indicators
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (_hasVoucher(prizeBreakdown))
+                                    _buildPrizeTag('🎁 Voucher', AppColors.success),
+                                  if (_hasHonorBoard(prizeBreakdown)) ...[
+                                    const SizedBox(width: 6),
+                                    _buildPrizeTag('📜 Vinh danh', AppColors.warning),
+                                  ],
+                                ],
+                              ),
                             ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // 3. BOTTOM SECTION: Lives Badge
+                        Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade800.withValues(alpha: 0.9),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.orange.shade300.withValues(alpha: 0.5)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.favorite, size: 14, color: Colors.white),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '$mangCount Mạng',
+                                  style: const TextStyle(
+                                    fontFamily: '.SF Pro Text',
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -399,12 +558,9 @@ class TournamentCardWidget extends StatelessWidget {
                         // Entry Fee
                         _buildStatChip(
                           entryFee?.toLowerCase() == 'free' || entryFee == '0' ? '🆓' : '💵',
-                          entryFee?.toLowerCase() == 'free' || entryFee == '0' ? 'FREE' : (entryFee ?? '100K'),
+                          entryFee?.toLowerCase() == 'free' || entryFee == '0' ? 'FREE' : 'Lệ phí ${entryFee ?? '100K'}',
                           entryFee?.toLowerCase() == 'free' || entryFee == '0' ? AppColors.success : AppColors.textTertiary,
                         ),
-                        const SizedBox(width: 8),
-                        // Mạng
-                        if (mangCount > 0) _buildStatChip('❤️', '$mangCount Mạng', AppColors.error),
                         
                         const Spacer(),
                         
@@ -545,8 +701,8 @@ class TournamentCardWidget extends StatelessWidget {
     String text;
     IconData icon;
     
-    if (status == 'done') {
-      bgColor = AppColors.textSecondary;
+    if (status == 'done' || status == 'completed') {
+      bgColor = AppColors.primary; // Highlighted color for results
       text = 'Kết quả';
       icon = Icons.emoji_events;
     } else if (isLive) {
@@ -561,7 +717,7 @@ class TournamentCardWidget extends StatelessWidget {
     
     return GestureDetector(
       onTap: () {
-        if (status == 'done') {
+        if (status == 'done' || status == 'completed') {
           onResultTap?.call();
         } else {
           // Prefer onDetailTap, fallback to onTap
@@ -717,6 +873,73 @@ class TournamentCardWidget extends StatelessWidget {
       }
     }
     return false;
+  }
+
+  Widget _buildMenuButton(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        popupMenuTheme: PopupMenuThemeData(
+          color: AppColors.surface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      child: PopupMenuButton<String>(
+        icon: const Icon(Icons.more_vert, color: AppColors.textOnPrimary, size: 20),
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(minWidth: 160),
+        offset: const Offset(0, 40),
+        onSelected: (value) {
+          switch (value) {
+            case 'share':
+              onShareTap?.call();
+              break;
+            case 'hide':
+              onHide?.call();
+              break;
+            case 'delete':
+              onDelete?.call();
+              break;
+          }
+        },
+        itemBuilder: (context) => [
+          const PopupMenuItem(
+            value: 'share',
+            height: 40,
+            child: Row(
+              children: [
+                Icon(Icons.share_outlined, size: 18, color: AppColors.textPrimary),
+                SizedBox(width: 12),
+                Text('Chia sẻ', style: TextStyle(fontSize: 14, color: AppColors.textPrimary)),
+              ],
+            ),
+          ),
+          if (onHide != null)
+            const PopupMenuItem(
+              value: 'hide',
+              height: 40,
+              child: Row(
+                children: [
+                  Icon(Icons.visibility_off_outlined, size: 18, color: AppColors.textPrimary),
+                  SizedBox(width: 12),
+                  Text('Ẩn giải đấu', style: TextStyle(fontSize: 14, color: AppColors.textPrimary)),
+                ],
+              ),
+            ),
+          if (onDelete != null)
+            const PopupMenuItem(
+              value: 'delete',
+              height: 40,
+              child: Row(
+                children: [
+                  Icon(Icons.delete_outline, size: 18, color: AppColors.error),
+                  SizedBox(width: 12),
+                  Text('Xóa giải đấu', style: TextStyle(fontSize: 14, color: AppColors.error)),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 

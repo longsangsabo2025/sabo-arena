@@ -71,7 +71,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Welcome Campaigns'),
+            const Text('Chiến Dịch Chào Mừng'),
             Text(
               widget.clubName, style: const TextStyle(
                 fontSize: 14,
@@ -101,7 +101,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
         children: [
           Expanded(
             child: _buildTabButton(
-              'Available',
+              'Khả Dụng',
               0,
               Icons.campaign,
               _availableCampaigns.length,
@@ -109,7 +109,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
           ),
           Expanded(
             child: _buildTabButton(
-              'My Registrations',
+              'Đăng Ký Của Tôi',
               1,
               Icons.how_to_reg,
               _myRegistrations.length,
@@ -194,11 +194,11 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
             Icon(Icons.campaign_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'No active campaigns', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              'Không có chiến dịch nào đang hoạt động', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             Text(
-              'Check back later for new campaigns', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[500]),
+              'Vui lòng quay lại sau để xem các chiến dịch mới', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[500]),
             ),
           ],
         ),
@@ -248,7 +248,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        campaign['name'] ?? 'Unnamed Campaign', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        campaign['name'] ?? 'Chiến dịch chưa đặt tên', overflow: TextOverflow.ellipsis, style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -279,7 +279,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Voucher Details', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Chi tiết Voucher', overflow: TextOverflow.ellipsis, style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
                             fontWeight: FontWeight.w500,
@@ -287,7 +287,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          template['name'] ?? 'Welcome Voucher', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                          template['name'] ?? 'Voucher Chào Mừng', overflow: TextOverflow.ellipsis, style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -313,7 +313,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
               children: [
                 _buildInfoChip(
                   icon: Icons.calendar_today,
-                  label: 'Started',
+                  label: 'Bắt đầu',
                   value: _formatDate(campaign['start_date']),
                   color: Colors.blue,
                 ),
@@ -321,7 +321,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                 if (campaign['max_redemptions'] != null)
                   _buildInfoChip(
                     icon: Icons.people,
-                    label: 'Limit',
+                    label: 'Giới hạn',
                     value:
                         '${campaign['current_redemptions']}/${campaign['max_redemptions']}',
                     color: Colors.orange,
@@ -336,12 +336,12 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                   ? OutlinedButton.icon(
                       onPressed: null,
                       icon: const Icon(Icons.check_circle),
-                      label: const Text('Already Registered'),
+                      label: const Text('Đã Đăng Ký'),
                     )
                   : ElevatedButton.icon(
                       onPressed: () => _registerForCampaign(campaign),
                       icon: const Icon(Icons.how_to_reg),
-                      label: const Text('Register Club'),
+                      label: const Text('Đăng Ký CLB'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
@@ -397,11 +397,11 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
             Icon(Icons.inbox_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'No registrations yet', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              'Chưa có đăng ký nào', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             Text(
-              'Register for campaigns in the Available tab', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[500]),
+              'Đăng ký tham gia chiến dịch ở tab Khả Dụng', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[500]),
             ),
           ],
         ),
@@ -433,17 +433,17 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
       case 'approved':
         statusColor = Colors.green;
         statusIcon = Icons.check_circle;
-        statusText = 'Approved';
+        statusText = 'Đã Duyệt';
         break;
       case 'rejected':
         statusColor = Colors.red;
         statusIcon = Icons.cancel;
-        statusText = 'Rejected';
+        statusText = 'Từ Chối';
         break;
       default:
         statusColor = Colors.orange;
         statusIcon = Icons.pending;
-        statusText = 'Pending Approval';
+        statusText = 'Chờ Duyệt';
     }
 
     return Card(
@@ -457,7 +457,7 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    campaign['name'] ?? 'Campaign', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                    campaign['name'] ?? 'Chiến Dịch', overflow: TextOverflow.ellipsis, style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -491,14 +491,14 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Registered: ${_formatDate(registration['registered_at'])}',
+              'Đã đăng ký: ${_formatDate(registration['registered_at'])}',
               style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
             if (status == 'approved' &&
                 registration['approved_at'] != null) ...[
               const SizedBox(height: 4),
               Text(
-                'Approved: ${_formatDate(registration['approved_at'])}',
+                'Đã duyệt: ${_formatDate(registration['approved_at'])}',
                 style: TextStyle(color: Colors.green[700], fontSize: 14),
               ),
             ],
@@ -538,19 +538,19 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Register for Campaign'),
+        title: const Text('Đăng Ký Tham Gia Chiến Dịch'),
         content: Text(
-          'Do you want to register ${widget.clubName} for "${campaign['name']}"?\n\n'
-          'Your registration will be sent to admin for approval.',
+          'Bạn có muốn đăng ký ${widget.clubName} tham gia "${campaign['name']}" không?\n\n'
+          'Đăng ký của bạn sẽ được gửi đến admin để phê duyệt.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Register'),
+            child: const Text('Đăng Ký'),
           ),
         ],
       ),
@@ -565,10 +565,10 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
         clubId: widget.clubId,
       );
 
-      _showSuccess('Registration submitted! Waiting for admin approval.');
+      _showSuccess('Đã gửi đăng ký! Đang chờ admin phê duyệt.');
       _loadData();
     } catch (e) {
-      _showError('Failed to register: $e');
+      _showError('Đăng ký thất bại: $e');
     }
   }
 

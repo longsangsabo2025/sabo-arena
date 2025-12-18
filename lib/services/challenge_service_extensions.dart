@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'challenge_service.dart';
 import 'challenge_rules_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Enhanced Challenge Service methods for validation and handicap calculations
 extension ChallengeValidationExtension on ChallengeService {
@@ -37,7 +37,6 @@ extension ChallengeValidationExtension on ChallengeService {
 
       return _rulesService.canChallenge(challengerRank, challengedRank);
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -79,7 +78,6 @@ extension ChallengeValidationExtension on ChallengeService {
         spaBetAmount: spaBetAmount,
       );
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }

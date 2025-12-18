@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/constants/tournament_constants.dart';
 import '../models/tournament.dart';
 import 'tournament_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service quản lý tournament templates và presets
 class TournamentTemplateService {
@@ -59,7 +59,6 @@ class TournamentTemplateService {
 
       return [...builtInTemplates, ...templates];
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to get tournament templates: $e');
     }
   }
@@ -74,7 +73,6 @@ class TournamentTemplateService {
     Map<String, dynamic>? customizations,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get template configuration
       Map<String, dynamic> templateConfig;
@@ -142,10 +140,8 @@ class TournamentTemplateService {
             .eq('id', templateId);
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return tournamentId;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to create tournament from template: $e');
     }
   }
@@ -160,7 +156,6 @@ class TournamentTemplateService {
     bool isPublic = false,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get tournament data
       final tournament = await _tournamentService.getTournamentById(
@@ -189,10 +184,8 @@ class TournamentTemplateService {
           .select()
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return template['id'];
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to save tournament as template: $e');
     }
   }
@@ -486,7 +479,6 @@ class TournamentTemplateService {
     // - Setting up automated tasks
     // - Applying custom rules or scoring systems
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Example: Set up automated notifications
     if (config['auto_notifications'] == true) {
@@ -555,7 +547,6 @@ class TournamentTemplateService {
           )
           .toList();
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to get template categories: $e');
     }
   }
@@ -621,9 +612,7 @@ class TournamentTemplateService {
           .update(updates!)
           .eq('id', templateId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to update template: $e');
     }
   }
@@ -640,9 +629,7 @@ class TournamentTemplateService {
           .delete()
           .eq('id', templateId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to delete template: $e');
     }
   }
@@ -680,7 +667,6 @@ class TournamentTemplateService {
         'success_rate': _calculateTemplateSuccessRate(recentTournaments),
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to get template usage stats: $e');
     }
   }

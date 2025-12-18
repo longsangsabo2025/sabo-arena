@@ -308,6 +308,7 @@ class _CommentsModalState extends State<CommentsModal> {
   Future<void> _deleteComment(String commentId, int index) async {
     try {
       final canDelete = await _commentRepository.canDeleteComment(commentId);
+      if (!mounted) return;
       if (!canDelete) {
         if (mounted) {
           AppSnackbar.warning(

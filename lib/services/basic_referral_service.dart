@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+// ELON_MODE_AUTO_FIX
 
 class BasicReferralService {
   static final _supabase = Supabase.instance.client;
@@ -32,7 +33,6 @@ class BasicReferralService {
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -50,7 +50,6 @@ class BasicReferralService {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -68,7 +67,6 @@ class BasicReferralService {
 
       return response['code'] as String?;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -128,7 +126,6 @@ class BasicReferralService {
         'message': 'Referral applied successfully!',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'success': false, 'message': 'Error applying referral code'};
     }
   }
@@ -152,9 +149,8 @@ class BasicReferralService {
           .update({'spa_balance': newSpa})
           .eq('id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.error('Failed to add SPA reward', error: e, tag: 'BasicReferralService');
     }
   }
 
@@ -172,7 +168,6 @@ class BasicReferralService {
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -210,7 +205,6 @@ class BasicReferralService {
         'active_codes': codesResponse.length,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'total_referrals': 0, 'total_spa_earned': 0, 'active_codes': 0};
     }
   }
@@ -238,7 +232,6 @@ class BasicReferralService {
 
       return result?['code'] as String?;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }

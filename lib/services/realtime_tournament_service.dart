@@ -5,7 +5,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'realtime_subscription_manager.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service quản lý real-time updates cho tournament system
 class RealTimeTournamentService {
@@ -47,7 +47,6 @@ class RealTimeTournamentService {
   /// Uses RealtimeSubscriptionManager for limit management
   Future<void> subscribeTournament(String tournamentId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Use subscription manager (handles limits and cleanup)
       await _subscriptionManager.subscribeTournament(
@@ -64,9 +63,7 @@ class RealTimeTournamentService {
         },
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to subscribe to real-time updates: $e');
     }
   }
@@ -108,9 +105,8 @@ class RealTimeTournamentService {
       // Broadcast to tournament updates stream
       _tournamentUpdatesController.add(updateData);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore broadcast errors
     }
   }
 
@@ -119,9 +115,8 @@ class RealTimeTournamentService {
     try {
       // Use subscription manager for cleanup
       await _subscriptionManager.unsubscribeTournament(tournamentId);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore unsubscribe errors
     }
   }
 
@@ -129,9 +124,8 @@ class RealTimeTournamentService {
   Future<void> unsubscribeAll() async {
     try {
       await _subscriptionManager.cleanupAll();
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore cleanup errors
     }
   }
 
@@ -149,7 +143,7 @@ class RealTimeTournamentService {
 
       _tournamentUpdatesController.add(updateData);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore update handling errors
     }
   }
 
@@ -165,28 +159,13 @@ class RealTimeTournamentService {
       };
 
       _matchUpdatesController.add(updateData);
+      // Ignore update handling errors
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 
-  // ==================== HELPER METHODS ====================
-
-  /// Detect specific changes between old and new records
-  Map<String, Map<String, dynamic>> _detectChanges(
-    Map<String, dynamic> oldRecord,
-    Map<String, dynamic> newRecord,
-  ) {
-    final changes = <String, Map<String, dynamic>>{};
-
-    for (final key in newRecord.keys) {
-      if (oldRecord[key] != newRecord[key]) {
-        changes[key] = {'old': oldRecord[key], 'new': newRecord[key]};
-      }
-    }
-
-    return changes;
-  }
+  // =
 
   /// Check if tournament has active real-time subscriptions
   bool isSubscribed(String tournamentId) {
@@ -214,10 +193,11 @@ class RealTimeTournamentService {
       await _matchUpdatesController.close();
       await _participantUpdatesController.close();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
   }
 }
 
+  // Ignore dispose errors
+    

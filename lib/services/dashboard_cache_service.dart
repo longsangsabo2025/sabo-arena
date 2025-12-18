@@ -4,7 +4,7 @@
 /// Implements TTL (Time To Live) for automatic cache invalidation
 
 import 'dart:async';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class CacheEntry<T> {
   final T data;
@@ -39,7 +39,6 @@ class DashboardCacheService {
     final expiry = DateTime.now().add(ttl ?? defaultTTL);
     _cache[key] = CacheEntry<T>(data, expiry);
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Get data from cache if not expired
@@ -47,17 +46,14 @@ class DashboardCacheService {
     final entry = _cache[key];
 
     if (entry == null) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
 
     if (entry.isExpired) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _cache.remove(key);
       return null;
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     return entry.data as T?;
   }
 
@@ -77,13 +73,11 @@ class DashboardCacheService {
   /// Remove specific key from cache
   void remove(String key) {
     _cache.remove(key);
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Clear all cache
   void clear() {
     _cache.clear();
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Clear cache for specific club
@@ -96,7 +90,6 @@ class DashboardCacheService {
       _cache.remove(key);
     }
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Get or fetch data with caching
@@ -112,7 +105,6 @@ class DashboardCacheService {
     }
 
     // Fetch fresh data
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     final data = await fetchFunction();
 
     // Store in cache
@@ -133,7 +125,6 @@ class DashboardCacheService {
     }
 
     if (expiredKeys.isNotEmpty) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -163,7 +154,6 @@ class DashboardCacheService {
   void dispose() {
     _cleanupTimer?.cancel();
     _cache.clear();
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 }
 

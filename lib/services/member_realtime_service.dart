@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class MemberRealtimeService {
   static final MemberRealtimeService _instance =
@@ -30,8 +30,9 @@ class MemberRealtimeService {
   RealtimeChannel? _notificationsSubscription;
   RealtimeChannel? _activitiesSubscription;
 
-  // Current data cache
+  // Current data cache with size limit (SpaceX-grade memory management)
   final Map<String, List<Map<String, dynamic>>> _dataCache = {};
+  static const int _maxCacheSize = 1000; // Limit cache entries
 
   // Connection status
   bool _isConnected = false;
@@ -71,7 +72,6 @@ class MemberRealtimeService {
   Future<void> initializeForClub(String clubId) async {
     try {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Disconnect existing connections
@@ -90,11 +90,9 @@ class MemberRealtimeService {
       _connectionController.add(true);
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       _connectionController.add(false);
       rethrow;
@@ -105,18 +103,15 @@ class MemberRealtimeService {
   Future<void> initializeForUser(String userId) async {
     try {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Subscribe to user notifications
       await _subscribeToNotifications(userId);
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       rethrow;
     }
@@ -126,17 +121,14 @@ class MemberRealtimeService {
   Future<void> initializeForChatRoom(String roomId) async {
     try {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       await _subscribeToChatMessages(roomId);
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       rethrow;
     }
@@ -146,7 +138,6 @@ class MemberRealtimeService {
   Future<void> disconnect() async {
     try {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Unsubscribe from all channels
@@ -167,11 +158,9 @@ class MemberRealtimeService {
       _connectionController.add(false);
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -180,9 +169,12 @@ class MemberRealtimeService {
   // SUBSCRIPTION METHODS
   // ====================================
 
-  /// Subscribe to club members changes
+  /// Subscribe to club members changes - TESLA FIX: Load data first
   Future<void> _subscribeToMembers(String clubId) async {
     try {
+      // 🚀 SPACEX FIX: Load initial data FIRST to prevent race conditions
+      await _loadInitialMembers(clubId);
+      
       _membersSubscription = _supabase
           .channel('club_memberships_$clubId')
           .onPostgresChanges(
@@ -198,15 +190,12 @@ class MemberRealtimeService {
           )
           .subscribe();
 
-      // Load initial data
-      await _loadInitialMembers(clubId);
-
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // REMOVED: print('✅ Members subscription active for club: $clubId');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // REMOVED: print('❌ Failed to subscribe to members: $e');
       }
       rethrow;
     }
@@ -215,6 +204,9 @@ class MemberRealtimeService {
   /// Subscribe to membership requests changes
   Future<void> _subscribeToRequests(String clubId) async {
     try {
+      // 🚀 TESLA FIX: Load initial data FIRST
+      await _loadInitialRequests(clubId);
+      
       _requestsSubscription = _supabase
           .channel('membership_requests_$clubId')
           .onPostgresChanges(
@@ -230,15 +222,12 @@ class MemberRealtimeService {
           )
           .subscribe();
 
-      // Load initial data
-      await _loadInitialRequests(clubId);
-
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // REMOVED: print('✅ [MemberRealtimeService] Requests subscription active for club: $clubId');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        // REMOVED: print('❌ [MemberRealtimeService] Failed to subscribe to requests: $e');
       }
       rethrow;
     }
@@ -266,11 +255,9 @@ class MemberRealtimeService {
       await _loadInitialChatMessages(roomId);
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       rethrow;
     }
@@ -298,11 +285,9 @@ class MemberRealtimeService {
       await _loadInitialNotifications(userId);
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       rethrow;
     }
@@ -330,11 +315,9 @@ class MemberRealtimeService {
       await _loadInitialActivities(clubId);
 
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
       rethrow;
     }
@@ -346,7 +329,7 @@ class MemberRealtimeService {
 
   void _handleMembersChange(PostgresChangePayload payload, String clubId) {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // REMOVED: print('🔄 [MemberRealtimeService] Members change: ${payload.eventType}');
     }
 
     final cacheKey = 'members_$clubId';
@@ -377,12 +360,17 @@ class MemberRealtimeService {
     }
 
     _dataCache[cacheKey] = currentData;
-    _membersController.add(currentData);
+    
+    // 🚀 TESLA OPTIMIZATION: Limit cache size
+    _cleanupCacheIfNeeded();
+    
+    if (!_membersController.isClosed) {
+      _membersController.add(currentData);
+    }
   }
 
   void _handleRequestsChange(PostgresChangePayload payload, String clubId) {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     final cacheKey = 'requests_$clubId';
@@ -416,12 +404,17 @@ class MemberRealtimeService {
     }
 
     _dataCache[cacheKey] = currentData;
-    _requestsController.add(currentData);
+    
+    // 🚀 TESLA OPTIMIZATION: Limit cache size
+    _cleanupCacheIfNeeded();
+    
+    if (!_membersController.isClosed) {
+      _membersController.add(currentData);
+    }
   }
 
   void _handleChatMessagesChange(PostgresChangePayload payload, String roomId) {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     final cacheKey = 'messages_$roomId';
@@ -460,7 +453,6 @@ class MemberRealtimeService {
     String userId,
   ) {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     final cacheKey = 'notifications_$userId';
@@ -498,7 +490,6 @@ class MemberRealtimeService {
 
   void _handleActivitiesChange(PostgresChangePayload payload, String clubId) {
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
 
     final cacheKey = 'activities_$clubId';
@@ -549,7 +540,6 @@ class MemberRealtimeService {
       _membersController.add(_dataCache[cacheKey]!);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -567,7 +557,6 @@ class MemberRealtimeService {
       _requestsController.add(_dataCache[cacheKey]!);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -587,7 +576,6 @@ class MemberRealtimeService {
       _chatMessagesController.add(_dataCache[cacheKey]!);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -606,7 +594,6 @@ class MemberRealtimeService {
       _notificationsController.add(_dataCache[cacheKey]!);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -625,7 +612,6 @@ class MemberRealtimeService {
       _activitiesController.add(_dataCache[cacheKey]!);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     }
   }
@@ -639,7 +625,6 @@ class MemberRealtimeService {
     // This would integrate with flutter_local_notifications
     // For now, just log it
     if (kDebugMode) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -656,6 +641,20 @@ class MemberRealtimeService {
   /// Get connection status
   bool getConnectionStatus() {
     return _isConnected;
+  }
+
+  /// 🚀 SPACEX METHOD: Clean cache when it grows too large  
+  void _cleanupCacheIfNeeded() {
+    if (_dataCache.length > _maxCacheSize) {
+      // Remove oldest entries (simple LRU)
+      final keys = _dataCache.keys.take(_dataCache.length - _maxCacheSize ~/ 2);
+      for (final key in keys) {
+        _dataCache.remove(key);
+      }
+      if (kDebugMode) {
+        // REMOVED: print('🧹 Cache cleaned, entries: ${_dataCache.length}');
+      }
+    }
   }
 
   /// Force refresh data for a specific subscription
@@ -682,12 +681,17 @@ class MemberRealtimeService {
   /// Dispose all resources
   void dispose() {
     disconnect();
-    _membersController.close();
-    _requestsController.close();
-    _chatMessagesController.close();
-    _notificationsController.close();
-    _activitiesController.close();
-    _connectionController.close();
+    
+    // Close controllers with null checks to prevent multiple disposal
+    if (!_membersController.isClosed) _membersController.close();
+    if (!_requestsController.isClosed) _requestsController.close();
+    if (!_chatMessagesController.isClosed) _chatMessagesController.close();
+    if (!_notificationsController.isClosed) _notificationsController.close();
+    if (!_activitiesController.isClosed) _activitiesController.close();
+    if (!_connectionController.isClosed) _connectionController.close();
+    
+    // Clear cache to prevent memory leaks
+    _dataCache.clear();
   }
 }
 

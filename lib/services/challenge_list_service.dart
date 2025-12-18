@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'notification_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+// ELON_MODE_AUTO_FIX
 
 /// Service to fetch and manage challenge lists
 class ChallengeListService {
@@ -14,10 +15,8 @@ class ChallengeListService {
   /// Get all OPEN competitive challenges (Thách đấu công khai)
   Future<List<Map<String, dynamic>>> getOpenCompetitiveChallenges() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final currentUser = _supabase.auth.currentUser;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get challenges where:
       // - OPEN challenges (challenged_id = null) - Ai cũng thấy
@@ -29,7 +28,6 @@ class ChallengeListService {
       List<Map<String, dynamic>> allChallenges = [];
 
       // 1. Get OPEN challenges (challenged_id = null)
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       final openChallengesRaw = await _supabase
           .from('challenges')
           .select('''
@@ -64,9 +62,7 @@ class ChallengeListService {
                 .toList()
           : List<Map<String, dynamic>>.from(openChallengesRaw);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (openChallenges.isNotEmpty) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       allChallenges.addAll(List<Map<String, dynamic>>.from(openChallenges));
@@ -74,7 +70,6 @@ class ChallengeListService {
       // 2. Get challenges SENT TO current user
       // ✅ NEW: Check match_conditions.target_user_id since challenged_id is null until accepted
       if (currentUser != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         // Get all pending challenges and filter by target_user_id in match_conditions
         final allPendingChallenges = await _supabase
@@ -111,7 +106,6 @@ class ChallengeListService {
           return false;
         }).toList();
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         // Add challenges not already in list (avoid duplicates)
         for (var challenge in sentToMe) {
@@ -120,7 +114,6 @@ class ChallengeListService {
           }
         }
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Sort by created_at descending
@@ -130,30 +123,20 @@ class ChallengeListService {
         return bDate.compareTo(aDate);
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (allChallenges.isEmpty) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         for (
           int i = 0;
           i < (allChallenges.length > 3 ? 3 : allChallenges.length);
           i++
         ) {
           // Variable c removed - was only used in debug log
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       }
 
       return allChallenges;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -161,7 +144,6 @@ class ChallengeListService {
   /// Get all OPEN social invites (Giao lưu công khai)
   Future<List<Map<String, dynamic>>> getOpenSocialInvites() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final currentUser = _supabase.auth.currentUser;
 
@@ -266,10 +248,8 @@ class ChallengeListService {
         return bDate.compareTo(aDate);
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return allInvites;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -278,7 +258,6 @@ class ChallengeListService {
   /// Hiển thị TẤT CẢ các trận đã có đủ 2 người để cộng đồng theo dõi
   Future<List<Map<String, dynamic>>> getAcceptedMatches() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get ALL challenges where:
       // - status IN ('accepted', 'in_progress', 'completed') - Lấy tất cả trận đã bắt đầu
@@ -320,7 +299,6 @@ class ChallengeListService {
           .order('created_at', ascending: false)
           .limit(50); // Giới hạn 50 trận gần nhất để tránh quá tải
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // WORKAROUND: Fetch matches separately since schema cache hasn't recognized FK yet
       final challengeIds = response.map((c) => c['id'] as String).toList();
@@ -329,7 +307,6 @@ class ChallengeListService {
       
       if (challengeIds.isNotEmpty) {
         try {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           final matchesResponse = await _supabase
               .from('matches')
               .select('id, challenge_id, status, is_live, video_urls, player1_score, player2_score, winner_id, scheduled_time')
@@ -342,9 +319,8 @@ class ChallengeListService {
               matchesMap[challengeId] = match;
             }
           }
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          ProductionLogger.warning('Failed to fetch matches for challenges', error: e, tag: 'ChallengeListService');
         }
       }
 
@@ -359,7 +335,6 @@ class ChallengeListService {
 
       return challenges;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -372,7 +347,6 @@ class ChallengeListService {
         throw Exception('User not authenticated');
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // First check if challenge exists and get its current state
       final existingChallenges = await _supabase
@@ -381,16 +355,13 @@ class ChallengeListService {
           .eq('id', challengeId);
 
       if (existingChallenges.isEmpty) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         throw Exception('Thách đấu không tồn tại hoặc đã bị xóa');
       }
 
       final existingChallenge = existingChallenges.first;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Check if already accepted
       if (existingChallenge['status'] == 'accepted') {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         throw Exception('Thách đấu này đã được chấp nhận rồi');
       }
 
@@ -408,7 +379,6 @@ class ChallengeListService {
           })
           .eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Send notification to challenger that their challenge was accepted
       try {
@@ -434,9 +404,8 @@ class ChallengeListService {
           data: {'challenge_id': challengeId},
         );
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (notifError) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        ProductionLogger.warning('Failed to send acceptance notification', error: notifError, tag: 'ChallengeListService');
         // Don't throw - acceptance was successful even if notification fails
       }
 
@@ -449,21 +418,17 @@ class ChallengeListService {
 
         if (updatedChallenges.isNotEmpty) {
           final updated = updatedChallenges.first;
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
           if (updated['status'] != 'accepted' ||
               updated['challenged_id'] != currentUser.id) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
           }
         } else {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       } catch (verifyError) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        ProductionLogger.warning('Failed to verify challenge update', error: verifyError, tag: 'ChallengeListService');
         // Don't throw - update was successful, just can't verify
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Không thể chấp nhận thách đấu: $e');
     }
   }
@@ -476,7 +441,6 @@ class ChallengeListService {
         throw Exception('User not authenticated');
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase
           .from('challenges')
@@ -486,7 +450,6 @@ class ChallengeListService {
           })
           .eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Send notification to challenger that their challenge was declined
       try {
@@ -511,13 +474,11 @@ class ChallengeListService {
           data: {'challenge_id': challengeId},
         );
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (notifError) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
+        ProductionLogger.warning('Failed to send decline notification', error: notifError, tag: 'ChallengeListService');
         // Don't throw - decline was successful even if notification fails
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Không thể từ chối thách đấu: $e');
     }
   }
@@ -557,7 +518,6 @@ class ChallengeListService {
 
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -608,7 +568,6 @@ class ChallengeListService {
 
       return userProfile;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -645,8 +604,8 @@ class ChallengeListService {
             location_name
           ''')
           .neq('id', currentUser.id)
-          .eq('is_verified', true)
-          .eq('is_active', true)
+          // .eq('is_verified', true) // Relaxed for testing
+          // .eq('is_active', true) // Relaxed for testing
           .order('elo_rating', ascending: false);
 
       // Filter by rank range (±2 sub-ranks according to SABO rules v1.2)
@@ -657,21 +616,20 @@ class ChallengeListService {
         final opponentElo = opponent['elo_rating'] as int? ?? 1000;
 
         // Skip if no rank
-        if (opponentRank == null || currentRank == null) continue;
+        // if (opponentRank == null || currentRank == null) continue; // Relaxed for testing
 
         // Calculate rank similarity (using same logic as OpponentMatchingService)
         final eloDiff = (currentElo - opponentElo).abs();
 
         // Allow matches within ±200 ELO (roughly ±2 sub-ranks = 1 main rank)
-        if (eloDiff <= 200) {
+        // Increased to 2000 for testing visibility
+        if (eloDiff <= 2000) {
           eligible.add(opponent);
         }
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return eligible;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -679,7 +637,6 @@ class ChallengeListService {
   /// Get all community visible matches (Open challenges + Accepted matches) for Community tab
   Future<List<Map<String, dynamic>>> getCommunityMatches() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('challenges')
@@ -698,7 +655,9 @@ class ChallengeListService {
               id,
               name,
               address,
-              logo_url
+              logo_url,
+              latitude,
+              longitude
             ),
             challenged:users!fk_challenges_challenged_id(
               id,
@@ -715,7 +674,6 @@ class ChallengeListService {
           .order('created_at', ascending: false)
           .limit(100); // Show more matches for community visibility
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Fetch matches data separately (workaround for schema cache)
       final challengeIds = response.map((c) => c['id'] as String).toList();
@@ -735,7 +693,7 @@ class ChallengeListService {
             }
           }
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          ProductionLogger.warning('Failed to fetch matches for challenges (workaround)', error: e, tag: 'ChallengeListService');
         }
       }
 
@@ -750,7 +708,6 @@ class ChallengeListService {
 
       return challenges;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }

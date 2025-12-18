@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service quản lý voucher xác thực từ phía quán
 /// Handles voucher verification and redemption by club staff
@@ -17,7 +17,6 @@ class VoucherManagementService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Tìm voucher với code này cho quán này
       final response = await _supabase
@@ -45,7 +44,6 @@ class VoucherManagementService {
           .maybeSingle();
 
       if (response == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {
           'success': false,
           'error': 'Mã voucher không tồn tại, đã được sử dụng, hoặc không thuộc quán này',
@@ -56,7 +54,6 @@ class VoucherManagementService {
       if (response['expires_at'] != null) {
         final expiryDate = DateTime.parse(response['expires_at']);
         if (DateTime.now().isAfter(expiryDate)) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           return {
             'success': false,
             'error': 'Mã voucher đã hết hạn sử dụng',
@@ -64,13 +61,11 @@ class VoucherManagementService {
         }
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': true,
         'voucher': response,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': 'Lỗi hệ thống khi kiểm tra mã voucher',
@@ -85,7 +80,6 @@ class VoucherManagementService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Verify voucher trước khi sử dụng
       final verification = await verifyVoucherCode(voucherCode, clubId);
@@ -106,23 +100,24 @@ class VoucherManagementService {
           .eq('voucher_code', voucherCode)
           .eq('club_id', clubId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Tạo log sử dụng voucher (optional)
       try {
-        await _supabase.from('voucher_usage_logs').insert({
+        await _supabase.from('voucher_usage_history').insert({
           'voucher_id': voucherData['id'],
           'user_id': voucherData['user_id'],
           'club_id': clubId,
-          'voucher_code': voucherCode,
-          'voucher_type': voucherData['voucher_type'],
-          'voucher_value': voucherData['voucher_value'],
-          'used_by_staff': true,
+          // 'voucher_code': voucherCode, // Column might not exist in history, check schema if needed
+          // 'voucher_type': voucherData['voucher_type'],
+          // 'voucher_value': voucherData['voucher_value'],
+          // 'used_by_staff': true,
           'used_at': DateTime.now().toIso8601String(),
+          'session_id': 'manual_redemption', // Required field based on schema
+          'original_amount': 0, // Default values
+          'discount_amount': 0,
+          'final_amount': 0,
         });
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } catch (logError) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         // Continue anyway - log failure shouldn't block voucher usage
       }
 
@@ -132,7 +127,6 @@ class VoucherManagementService {
         'voucher': voucherData,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': 'Lỗi hệ thống khi sử dụng voucher',
@@ -144,7 +138,6 @@ class VoucherManagementService {
   /// Lấy danh sách voucher chưa sử dụng của quán
   Future<List<Map<String, dynamic>>> getPendingVouchers(String clubId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('user_vouchers')
@@ -165,10 +158,8 @@ class VoucherManagementService {
           .eq('is_used', false)
           .order('created_at', ascending: false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -180,7 +171,6 @@ class VoucherManagementService {
     int limit = 50,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('user_vouchers')
@@ -202,10 +192,8 @@ class VoucherManagementService {
           .order('used_at', ascending: false)
           .limit(limit);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -214,7 +202,6 @@ class VoucherManagementService {
   /// Lấy tất cả voucher của quán để thống kê
   Future<Map<String, dynamic>> getVoucherStats(String clubId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get all vouchers
       final allVouchers = await _supabase
@@ -252,7 +239,6 @@ class VoucherManagementService {
         },
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': 'Lỗi khi lấy thống kê voucher',

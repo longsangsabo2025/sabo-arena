@@ -37,7 +37,7 @@ class _NotificationSettingsScreenState
       setState(() {
         _isLoading = false;
       });
-      _showErrorSnackBar('Failed to load notification preferences');
+      _showErrorSnackBar('Không thể tải cài đặt thông báo');
     }
   }
 
@@ -64,10 +64,10 @@ class _NotificationSettingsScreenState
       await _prefsService.savePreferences(updatedPrefs);
       _preferences = updatedPrefs;
       setState(() => _isSaving = false);
-      _showSuccessSnackBar('Notification settings updated');
+      _showSuccessSnackBar('Đã cập nhật cài đặt thông báo');
     } catch (e) {
       setState(() => _isSaving = false);
-      _showErrorSnackBar('Failed to update settings');
+      _showErrorSnackBar('Cập nhật cài đặt thất bại');
     }
   }
 
@@ -81,10 +81,10 @@ class _NotificationSettingsScreenState
       );
       await _loadPreferences(); // Refresh
       setState(() => _isSaving = false);
-      _showSuccessSnackBar('${type.displayName} updated');
+      _showSuccessSnackBar('Đã cập nhật ${type.displayName}');
     } catch (e) {
       setState(() => _isSaving = false);
-      _showErrorSnackBar('Failed to update ${type.displayName}');
+      _showErrorSnackBar('Cập nhật ${type.displayName} thất bại');
     }
   }
 
@@ -97,7 +97,7 @@ class _NotificationSettingsScreenState
       setState(() => _isSaving = false);
     } catch (e) {
       setState(() => _isSaving = false);
-      _showErrorSnackBar('Failed to update push settings');
+      _showErrorSnackBar('Cập nhật cài đặt push thất bại');
     }
   }
 
@@ -127,7 +127,7 @@ class _NotificationSettingsScreenState
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
-          'Notification Settings', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          'Cài đặt thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
         backgroundColor: Colors.green[700],
         elevation: 0,
@@ -171,7 +171,7 @@ class _NotificationSettingsScreenState
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'General Settings', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Cài đặt chung', overflow: TextOverflow.ellipsis, style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -182,9 +182,9 @@ class _NotificationSettingsScreenState
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text(
-                'Enable Notifications', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                'Bật thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
               ),
-              subtitle: const Text('Turn all notifications on or off'),
+              subtitle: const Text('Bật hoặc tắt tất cả thông báo'),
               value: _preferences?.globalEnabled ?? true,
               onChanged: _isSaving ? null : _updateGlobalSetting,
               activeThumbColor: Colors.green[700],
@@ -211,7 +211,7 @@ class _NotificationSettingsScreenState
                 Icon(Icons.category, color: Colors.green[700], size: 24),
                 const SizedBox(width: 12),
                 Text(
-                  'Notification Types', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Loại thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -256,9 +256,9 @@ class _NotificationSettingsScreenState
             child: Column(
               children: [
                 CheckboxListTile(
-                  title: const Text('Push Notifications'),
+                  title: const Text('Thông báo đẩy'),
                   subtitle: const Text(
-                    'Show notifications even when app is closed',
+                    'Hiển thị thông báo ngay cả khi ứng dụng đã đóng',
                   ),
                   value: setting.enabled,
                   onChanged: _isSaving
@@ -267,8 +267,8 @@ class _NotificationSettingsScreenState
                   activeColor: Colors.green[700],
                 ),
                 CheckboxListTile(
-                  title: const Text('Sound'),
-                  subtitle: const Text('Play sound for notifications'),
+                  title: const Text('Âm thanh'),
+                  subtitle: const Text('Phát âm thanh khi có thông báo'),
                   value:
                       setting.customSound != null &&
                       setting.customSound != NotificationSound.none,
@@ -281,8 +281,8 @@ class _NotificationSettingsScreenState
                   activeColor: Colors.green[700],
                 ),
                 CheckboxListTile(
-                  title: const Text('Vibration'),
-                  subtitle: const Text('Vibrate device for notifications'),
+                  title: const Text('Rung'),
+                  subtitle: const Text('Rung khi có thông báo'),
                   value: setting.useVibration,
                   onChanged: _isSaving
                       ? null
@@ -315,7 +315,7 @@ class _NotificationSettingsScreenState
                 Icon(Icons.bedtime, color: Colors.green[700], size: 24),
                 const SizedBox(width: 12),
                 Text(
-                  'Quiet Hours', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Giờ yên tĩnh', overflow: TextOverflow.ellipsis, style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -326,10 +326,10 @@ class _NotificationSettingsScreenState
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text(
-                'Enable Quiet Hours', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                'Bật giờ yên tĩnh', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
               ),
               subtitle: const Text(
-                'Disable notifications during specified hours',
+                'Tắt thông báo trong khoảng thời gian đã chọn',
               ),
               value: _preferences!.quietHours.enabled,
               onChanged: _isSaving
@@ -341,13 +341,13 @@ class _NotificationSettingsScreenState
             ),
             if (_preferences!.quietHours.enabled) ...[
               ListTile(
-                title: const Text('Start Time'),
+                title: const Text('Thời gian bắt đầu'),
                 subtitle: Text(_preferences!.quietHours.startTime.toString()),
                 trailing: const Icon(Icons.access_time),
                 onTap: () => _selectTime(isStartTime: true),
               ),
               ListTile(
-                title: const Text('End Time'),
+                title: const Text('Thời gian kết thúc'),
                 subtitle: Text(_preferences!.quietHours.endTime.toString()),
                 trailing: const Icon(Icons.access_time),
                 onTap: () => _selectTime(isStartTime: false),
@@ -377,7 +377,7 @@ class _NotificationSettingsScreenState
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Advanced', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Nâng cao', overflow: TextOverflow.ellipsis, style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -387,16 +387,16 @@ class _NotificationSettingsScreenState
             ),
             const SizedBox(height: 16),
             ListTile(
-              title: const Text('Reset to Defaults'),
+              title: const Text('Khôi phục mặc định'),
               subtitle: const Text(
-                'Restore all notification settings to default',
+                'Khôi phục tất cả cài đặt thông báo về mặc định',
               ),
               leading: const Icon(Icons.restore, color: Colors.orange),
               onTap: _showResetDialog,
             ),
             ListTile(
-              title: const Text('Test Notification'),
-              subtitle: const Text('Send a test notification'),
+              title: const Text('Thông báo thử nghiệm'),
+              subtitle: const Text('Gửi một thông báo thử nghiệm'),
               leading: const Icon(Icons.notifications, color: Colors.blue),
               onTap: _sendTestNotification,
             ),
@@ -476,9 +476,9 @@ class _NotificationSettingsScreenState
         }
 
         await _loadPreferences();
-        _showSuccessSnackBar('Quiet hours updated');
+        _showSuccessSnackBar('Đã cập nhật giờ yên tĩnh');
       } catch (e) {
-        _showErrorSnackBar('Failed to update quiet hours');
+        _showErrorSnackBar('Cập nhật giờ yên tĩnh thất bại');
       }
     }
   }
@@ -487,21 +487,21 @@ class _NotificationSettingsScreenState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset Settings'),
+        title: const Text('Khôi phục cài đặt'),
         content: const Text(
-          'Are you sure you want to reset all notification settings to default? This action cannot be undone.',
+          'Bạn có chắc chắn muốn khôi phục tất cả cài đặt thông báo về mặc định? Hành động này không thể hoàn tác.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await _resetToDefaults();
             },
-            child: const Text('Reset', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+            child: const Text('Khôi phục', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -514,7 +514,7 @@ class _NotificationSettingsScreenState
     try {
       final userId = _preferences?.userId ?? '';
       if (userId.isEmpty) {
-        _showErrorSnackBar('User not found');
+        _showErrorSnackBar('Không tìm thấy người dùng');
         setState(() => _isSaving = false);
         return;
       }
@@ -523,15 +523,15 @@ class _NotificationSettingsScreenState
       await _prefsService.savePreferences(defaultPrefs);
       await _loadPreferences();
       setState(() => _isSaving = false);
-      _showSuccessSnackBar('Settings reset to default');
+      _showSuccessSnackBar('Đã khôi phục cài đặt về mặc định');
     } catch (e) {
       setState(() => _isSaving = false);
-      _showErrorSnackBar('Failed to reset settings');
+      _showErrorSnackBar('Khôi phục cài đặt thất bại');
     }
   }
 
   void _sendTestNotification() {
     // TODO: Implement test notification
-    _showSuccessSnackBar('Test notification sent!');
+    _showSuccessSnackBar('Đã gửi thông báo thử nghiệm!');
   }
 }

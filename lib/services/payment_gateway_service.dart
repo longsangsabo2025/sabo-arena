@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import '../config/payment_config.dart';
 import '../core/error_handling/standardized_error_handler.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Payment Gateway Service
 /// Integrates with MoMo, ZaloPay, VNPay for automatic payments
@@ -86,7 +86,7 @@ class PaymentGatewayService {
         throw 'MoMo API error: ${response.statusCode}';
       }
     } catch (e) {
-      final errorInfo = StandardizedErrorHandler.handleError(
+      StandardizedErrorHandler.handleError(
         e,
         context: ErrorContext(
           category: ErrorCategory.api,
@@ -94,7 +94,6 @@ class PaymentGatewayService {
           context: 'Failed to create MoMo payment',
         ),
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -126,7 +125,7 @@ class PaymentGatewayService {
 
       return receivedSignature == expectedSignature;
     } catch (e) {
-      final errorInfo = StandardizedErrorHandler.handleError(
+      StandardizedErrorHandler.handleError(
         e,
         context: ErrorContext(
           category: ErrorCategory.validation,
@@ -134,7 +133,6 @@ class PaymentGatewayService {
           context: 'Failed to verify MoMo callback',
         ),
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -198,7 +196,7 @@ class PaymentGatewayService {
         throw 'ZaloPay API error: ${response.statusCode}';
       }
     } catch (e) {
-      final errorInfo = StandardizedErrorHandler.handleError(
+      StandardizedErrorHandler.handleError(
         e,
         context: ErrorContext(
           category: ErrorCategory.api,
@@ -206,7 +204,6 @@ class PaymentGatewayService {
           context: 'Failed to create ZaloPay payment',
         ),
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -224,7 +221,7 @@ class PaymentGatewayService {
 
       return receivedMac == expectedMac;
     } catch (e) {
-      final errorInfo = StandardizedErrorHandler.handleError(
+      StandardizedErrorHandler.handleError(
         e,
         context: ErrorContext(
           category: ErrorCategory.validation,
@@ -232,7 +229,6 @@ class PaymentGatewayService {
           context: 'Failed to verify ZaloPay callback',
         ),
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -289,7 +285,7 @@ class PaymentGatewayService {
 
       return paymentUrl;
     } catch (e) {
-      final errorInfo = StandardizedErrorHandler.handleError(
+      StandardizedErrorHandler.handleError(
         e,
         context: ErrorContext(
           category: ErrorCategory.api,
@@ -297,7 +293,6 @@ class PaymentGatewayService {
           context: 'Failed to create VNPay payment',
         ),
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -331,7 +326,7 @@ class PaymentGatewayService {
 
       return receivedHash == expectedHash;
     } catch (e) {
-      final errorInfo = StandardizedErrorHandler.handleError(
+      StandardizedErrorHandler.handleError(
         e,
         context: ErrorContext(
           category: ErrorCategory.validation,
@@ -339,7 +334,6 @@ class PaymentGatewayService {
           context: 'Failed to verify VNPay callback',
         ),
       );
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }

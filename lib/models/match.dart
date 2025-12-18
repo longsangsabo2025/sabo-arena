@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'user_profile.dart';
+import 'club.dart';
 
 class Match {
   final String id;
@@ -35,6 +37,12 @@ class Match {
   final Map<String, dynamic>? metadata;
   final DateTime createdAt;
   final DateTime updatedAt;
+  
+  // Expanded fields for UI
+  final UserProfile? player1Profile;
+  final UserProfile? player2Profile;
+  final Club? club;
+  final String? tournamentTitle; // Added for compatibility
 
   const Match({
     required this.id,
@@ -69,6 +77,10 @@ class Match {
     this.metadata,
     required this.createdAt,
     required this.updatedAt,
+    this.player1Profile,
+    this.player2Profile,
+    this.club,
+    this.tournamentTitle,
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
@@ -89,7 +101,7 @@ class Match {
       matchNumber: json['match_number'],
       scheduledAt: json['scheduled_time'] != null
           ? DateTime.parse(json['scheduled_time'])
-          : null,
+          : (json['scheduled_at'] != null ? DateTime.parse(json['scheduled_at']) : null),
       startedAt: json['started_at'] != null
           ? DateTime.parse(json['started_at'])
           : null,
@@ -119,6 +131,10 @@ class Match {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : DateTime.now(),
+      player1Profile: json['player1'] != null ? UserProfile.fromJson(json['player1']) : null,
+      player2Profile: json['player2'] != null ? UserProfile.fromJson(json['player2']) : null,
+      club: json['club'] != null ? Club.fromJson(json['club']) : null,
+      tournamentTitle: json['tournament']?['title'],
     );
   }
 
@@ -210,6 +226,10 @@ class Match {
     Map<String, dynamic>? metadata,
     DateTime? createdAt,
     DateTime? updatedAt,
+    UserProfile? player1Profile,
+    UserProfile? player2Profile,
+    Club? club,
+    String? tournamentTitle,
   }) {
     return Match(
       id: id ?? this.id,
@@ -240,6 +260,10 @@ class Match {
       metadata: metadata ?? this.metadata,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      player1Profile: player1Profile ?? this.player1Profile,
+      player2Profile: player2Profile ?? this.player2Profile,
+      club: club ?? this.club,
+      tournamentTitle: tournamentTitle ?? this.tournamentTitle,
     );
   }
 
@@ -258,6 +282,21 @@ class Match {
   }
 
   // Computed properties for UI
+  String? get player1Rank => player1Profile?.rank;
+  String? get player2Rank => player2Profile?.rank;
+  String? get player1Avatar => player1Profile?.avatarUrl;
+  String? get player2Avatar => player2Profile?.avatarUrl;
+  String? get clubName => club?.name;
+  String? get clubLogo => club?.logoUrl;
+  String? get clubAddress => club?.address;
+  String? get clubId => club?.id;
+
+  // Compatibility aliases
+  int get roundNumber => round;
+  DateTime? get scheduledTime => scheduledAt;
+  DateTime? get startTime => startedAt;
+  DateTime? get endTime => completedAt;
+
   bool get isScheduled => status == 'scheduled';
   bool get isInProgress => status == 'in_progress';
   bool get isCompleted => status == 'completed';

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../services/tournament_prize_voucher_service.dart';
+import '../../../models/tournament.dart';
+// import '../../../services/tournament_prize_voucher_service.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
 class PrizePoolWidget extends StatefulWidget {
-  final Map<String, dynamic> tournament;
+  final Tournament tournament;
 
   const PrizePoolWidget({super.key, required this.tournament});
 
@@ -12,19 +13,19 @@ class PrizePoolWidget extends StatefulWidget {
 }
 
 class _PrizePoolWidgetState extends State<PrizePoolWidget> {
-  final _prizeVoucherService = TournamentPrizeVoucherService();
-  List<Map<String, dynamic>> _prizeVouchers = [];
-  bool _loadingVouchers = false;
+  // final _prizeVoucherService = TournamentPrizeVoucherService();
+  // List<Map<String, dynamic>> _prizeVouchers = [];
+  // bool _loadingVouchers = false;
 
   @override
   void initState() {
     super.initState();
-    _loadPrizeVouchers();
+    // _loadPrizeVouchers();
   }
 
-  Future<void> _loadPrizeVouchers() async {
-    final tournamentId = widget.tournament['id'] as String?;
-    if (tournamentId == null) {
+  /* Future<void> _loadPrizeVouchers() async {
+    final tournamentId = widget.tournament.id;
+    if (tournamentId.isEmpty) {
       setState(() => _loadingVouchers = false);
       return;
     }
@@ -43,7 +44,7 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
         setState(() => _loadingVouchers = false);
       }
     }
-  }
+  } */
 
   // Format amount as string with VND suffix
   String _formatAmount(int amount) {
@@ -66,7 +67,7 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
   @override
   Widget build(BuildContext context) {
     // ✅ NEW: Get prize distribution from tournament data
-    final prizeDistribution = widget.tournament["prize_distribution"] as Map<String, dynamic>?;
+    final prizeDistribution = widget.tournament.prizeDistribution;
     final customDistribution = prizeDistribution?['distribution'] as List?;
     
     // Build prize data from custom distribution or fallback to old prizePool
@@ -93,22 +94,17 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
       ProductionLogger.info('✅ [PRIZE POOL WIDGET] Using prize_distribution text: $prizePool', tag: 'prize_pool_widget');
     } else {
       // Fallback to old prizePool structure or calculate from prize_pool
-      final oldPrizePool = widget.tournament["prizePool"] as Map<String, dynamic>?;
+      // Note: In the new model, we don't have a separate 'prizePool' map field, only int prizePool.
+      // If the old map structure was stored in prizeDistribution, it's handled above.
+      // If not, we calculate from the total int amount.
       
-      if (oldPrizePool != null && oldPrizePool.containsKey('first')) {
-        // Old structure has first, second, third already formatted
-        prizePool = oldPrizePool;
-        ProductionLogger.info('⚠️ [PRIZE POOL WIDGET] Using old prizePool structure with prizes', tag: 'prize_pool_widget');
-      } else {
-        // Calculate from raw prize_pool value
-        final totalPrizePool = (widget.tournament["prize_pool"] as num?)?.toInt() ?? 0;
-        prizePool = {
-          'first': _formatAmount((totalPrizePool * 0.5).toInt()),
-          'second': _formatAmount((totalPrizePool * 0.3).toInt()),
-          'third': _formatAmount((totalPrizePool * 0.2).toInt()),
-        };
-        ProductionLogger.info('⚠️ [PRIZE POOL WIDGET] Calculating from prize_pool: $totalPrizePool', tag: 'prize_pool_widget');
-      }
+      final totalPrizePool = widget.tournament.prizePool;
+      prizePool = {
+        'first': _formatAmount((totalPrizePool * 0.5).toInt()),
+        'second': _formatAmount((totalPrizePool * 0.3).toInt()),
+        'third': _formatAmount((totalPrizePool * 0.2).toInt()),
+      };
+      ProductionLogger.info('⚠️ [PRIZE POOL WIDGET] Calculating from prize_pool: $totalPrizePool', tag: 'prize_pool_widget');
     }
 
     return Container(

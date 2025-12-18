@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service to monitor SPA economy health and prevent inflation/deflation
 class EconomyMonitoringService {
@@ -13,7 +13,6 @@ class EconomyMonitoringService {
   /// Get comprehensive economy statistics
   Future<Map<String, dynamic>> getEconomyStats() async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get total SPA in circulation
       final spaCirculation = await _getTotalSPACirculation();
@@ -43,7 +42,6 @@ class EconomyMonitoringService {
         'last_updated': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }

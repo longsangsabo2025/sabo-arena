@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
 import '../../services/chat_service.dart';
 import '../member_communication_screen/member_communication_screen.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ChatRoomScreen extends StatefulWidget {
   final ChatRoom room;
@@ -154,7 +154,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             ChatService.updateLastReadTime(widget.room.id);
           }
         } catch (e) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
+          // Ignore error
         }
       },
     );
@@ -270,16 +270,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
+              final navigator = Navigator.of(context);
               try {
                 await ChatService.editMessage(
                   message['id'],
                   controller.text.trim(),
                 );
-                Navigator.pop(context);
+                if (!mounted) return;
+                navigator.pop();
                 _showSuccessSnackBar('Đã cập nhật tin nhắn');
                 _loadMessages(); // Reload to show edited message
               } catch (e) {
-                _showErrorSnackBar('Không thể cập nhật tin nhắn: $e');
+                if (mounted) _showErrorSnackBar('Không thể cập nhật tin nhắn: $e');
               }
             },
             child: const Text('Cập nhật'),
@@ -302,13 +304,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
+              final navigator = Navigator.of(context);
               try {
                 await ChatService.deleteMessage(message['id']);
-                Navigator.pop(context);
+                if (!mounted) return;
+                navigator.pop();
                 _showSuccessSnackBar('Đã xóa tin nhắn');
                 _loadMessages(); // Reload to remove deleted message
               } catch (e) {
-                _showErrorSnackBar('Không thể xóa tin nhắn: $e');
+                if (mounted) _showErrorSnackBar('Không thể xóa tin nhắn: $e');
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

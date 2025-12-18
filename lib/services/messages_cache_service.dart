@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 
 /// Local database cache for messages
 /// Implements caching strategy similar to WhatsApp/Messenger:
@@ -12,8 +12,17 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class MessagesCacheService {
   static Database? _database;
   
-  /// Check if caching is available (disabled on web)
-  static bool get isAvailable => !kIsWeb;
+  /// Check if caching is available (disabled on web and desktop)
+  static bool get isAvailable {
+    if (kIsWeb) return false;
+    // Disable on desktop platforms as sqflite requires ffi setup which might be missing
+    if (defaultTargetPlatform == TargetPlatform.windows || 
+        defaultTargetPlatform == TargetPlatform.linux || 
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      return false;
+    }
+    return true;
+  }
 
   /// Get database instance (singleton)
   static Future<Database?> get database async {

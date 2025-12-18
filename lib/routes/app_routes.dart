@@ -51,7 +51,6 @@ import '../presentation/cache_management_screen/cache_management_screen.dart';
 // import '../presentation/admin_dashboard_screen/admin_guide_main_screen.dart'; // TODO: Fix this import
 // Test Screens
 // import '../test_screens/cross_platform_auth_test.dart'; // ARCHIVED
-import '../presentation/test_screens/rich_share_test_screen.dart';
 import '../presentation/admin_dashboard_screen/admin_guide_viewer_screen.dart';
 // AI Image Generator
 import '../presentation/ai_image_generator/ai_image_generator_screen.dart';
@@ -60,6 +59,8 @@ import '../presentation/admin_welcome_campaign_screen/admin_welcome_campaign_scr
 import '../presentation/club_welcome_campaign_screen/club_welcome_campaign_screen.dart';
 // User Promotion Screen
 import '../presentation/promotion_screen/user_promotion_screen.dart';
+import '../presentation/post_detail_screen/post_detail_screen.dart';
+import '../presentation/user_voucher_screen/user_voucher_screen.dart';
 // 🚀 PHASE 1: Persistent Tabs
 import '../widgets/persistent_tab_scaffold.dart';
 
@@ -107,10 +108,11 @@ class AppRoutes {
   static const String postBackgroundSettingsScreen =
       '/post_background_settings';
   static const String notificationListScreen = '/notification_list';
+  static const String postDetailScreen = '/post_detail';
+  static const String userVoucherScreen = '/user_voucher';
   
   // 🧪 TEST SCREENS
   static const String crossPlatformAuthTest = '/cross_platform_auth_test';
-  static const String richShareTestScreen = '/rich_share_test';
 
   // Voucher Management System
   static const String voucherManagementMainScreen = '/voucher_management_main';
@@ -214,6 +216,27 @@ class AppRoutes {
     termsOfServiceScreen: (context) => const TermsOfServiceScreen(),
     privacyPolicyScreen: (context) => const PrivacyPolicyScreen(),
     notificationListScreen: (context) => const NotificationListScreen(),
+    postDetailScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Map<String, dynamic>) {
+        return PostDetailScreen(
+          post: args['post'],
+          postId: args['postId'],
+          userId: args['userId'],
+          initialIndex: args['initialIndex'] ?? 0,
+        );
+      }
+      // Fallback if args are missing or incorrect type
+      return const Scaffold(body: Center(child: Text('Invalid arguments')));
+    },
+    userVoucherScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is String) {
+        return UserVoucherScreen(userId: args);
+      }
+      // Fallback
+      return const Scaffold(body: Center(child: Text('Invalid arguments')));
+    },
 
     // Voucher Management System
     voucherManagementMainScreen: (context) {
@@ -262,6 +285,5 @@ class AppRoutes {
     
     // 🧪 TEST SCREENS
     // crossPlatformAuthTest: (context) => const CrossPlatformAuthTest(), // ARCHIVED
-    richShareTestScreen: (context) => const RichShareTestScreen(),
   };
 }

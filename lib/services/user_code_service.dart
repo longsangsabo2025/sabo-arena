@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/models/user_profile.dart';
 import 'package:sabo_arena/services/share_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class UserCodeService {
   static final SupabaseClient _supabase = Supabase.instance.client;
@@ -27,7 +27,6 @@ class UserCodeService {
 
       return baseCode;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Fallback: use timestamp-based code
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       return 'SABO${timestamp.toString().substring(7)}';
@@ -69,10 +68,8 @@ class UserCodeService {
           })
           .eq('id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -88,7 +85,6 @@ class UserCodeService {
 
       return result['user_code'] as String?;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -108,7 +104,6 @@ class UserCodeService {
 
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -124,7 +119,6 @@ class UserCodeService {
 
       return UserProfile.fromJson(result);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -144,7 +138,6 @@ class UserCodeService {
 
       return newCode;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -160,7 +153,6 @@ class UserCodeService {
 
       return result == null; // Available if no user found
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }

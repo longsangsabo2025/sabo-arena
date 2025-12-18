@@ -4,7 +4,7 @@ import 'package:sabo_arena/theme/theme_extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/club_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Autocomplete field for venue with suggestions from:
 /// 1. User's clubs
@@ -66,7 +66,7 @@ class _VenueAutocompleteFieldState extends State<VenueAutocompleteField> {
         }
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // Ignore error
     }
 
     // 2. Get previously used venues from SharedPreferences
@@ -74,8 +74,9 @@ class _VenueAutocompleteFieldState extends State<VenueAutocompleteField> {
       final prefs = await SharedPreferences.getInstance();
       final previousVenues = prefs.getStringList('previous_venues') ?? [];
       suggestions.addAll(previousVenues);
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // REMOVED: debugPrint('Error loading venues: $e');
     }
 
     // Remove duplicates and sort
@@ -107,8 +108,9 @@ class _VenueAutocompleteFieldState extends State<VenueAutocompleteField> {
 
         await prefs.setStringList('previous_venues', previousVenues);
       }
+      // Ignore error
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      // REMOVED: debugPrint('Error saving venue: $e');
     }
   }
 

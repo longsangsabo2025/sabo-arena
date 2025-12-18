@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'notification_service.dart';
 import 'challenge_rules_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ChallengeService {
   static ChallengeService? _instance;
@@ -132,7 +132,6 @@ class ChallengeService {
 
       return challengeResponse;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Không thể gửi thách đấu: $error');
     }
   }
@@ -191,7 +190,6 @@ class ChallengeService {
 
       return scheduleResponse;
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Không thể gửi lời mời hẹn lịch: $error');
     }
   }
@@ -215,7 +213,6 @@ class ChallengeService {
           })
           .eq('id', challengeId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get challenge details to send notification back to challenger
       final challenge = await _supabase
@@ -236,7 +233,6 @@ class ChallengeService {
         data: {'challenge_id': challengeId},
       );
     } catch (error) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Không thể chấp nhận thách đấu: $error');
     }
   }

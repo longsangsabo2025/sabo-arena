@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/club_spa_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Screen for club owners to manage SPA rewards and monitor usage
 class ClubSpaManagementScreen extends StatefulWidget {
@@ -57,7 +57,6 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
         _clubTransactions = results[2] as List<Map<String, dynamic>>;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -192,6 +191,8 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                   rewardValue: rewardValue,
                   quantityAvailable: quantityAvailable,
                 );
+
+                if (!context.mounted) return;
 
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(

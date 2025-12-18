@@ -61,7 +61,7 @@ class _OperatingHoursEditorState extends State<OperatingHoursEditor> {
             border: Border.all(color: Colors.grey[300]!),
           ),
           child: Column(
-            children: _daysOfWeek.map((day) => _buildDayRow(day)).toList(),
+            children: _daysOfWeek.map<Widget>((day) => _buildDayRow(day)).toList(),
           ),
         ),
       ],

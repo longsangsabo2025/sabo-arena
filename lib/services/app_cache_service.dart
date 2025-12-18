@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
+// ELON_MODE_AUTO_FIX
 
 /// 🎯 FACEBOOK/INSTAGRAM APPROACH: Multi-layer Cache System
 /// 
@@ -56,7 +57,6 @@ class AppCacheService {
   /// Initialize disk cache
   Future<void> initialize() async {
     _prefs ??= await SharedPreferences.getInstance();
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Save data to cache (both memory and disk)
@@ -80,9 +80,8 @@ class AppCacheService {
       });
       await _prefs!.setString('$_cachePrefix$key', jsonData);
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.warning('Failed to set cache for key: $key', error: e, tag: 'AppCacheService');
     }
   }
 
@@ -94,7 +93,6 @@ class AppCacheService {
       if (memoryEntry != null && !memoryEntry.isExpired) {
         _cacheHits++;
         _memoryCacheHits++;
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return memoryEntry.data;
       }
       
@@ -111,7 +109,6 @@ class AppCacheService {
           _memoryCache[key] = _CacheEntry(data: data, expiry: expiry);
           _cacheHits++;
           _diskCacheHits++;
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           return data;
         } else {
           // Expired, remove it
@@ -120,11 +117,9 @@ class AppCacheService {
       }
       
       _cacheMisses++;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     } catch (e) {
       _cacheMisses++;
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -134,7 +129,6 @@ class AppCacheService {
     _memoryCache.remove(key);
     if (_prefs == null) await initialize();
     await _prefs!.remove('$_cachePrefix$key');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Clear specific cache entry (alias for removeCache)
@@ -153,7 +147,6 @@ class AppCacheService {
         await _prefs!.remove(key);
       }
     }
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 
   /// Check if cache exists and is valid
@@ -173,7 +166,7 @@ class AppCacheService {
         return expiry.difference(DateTime.now());
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.warning('Failed to get cache age for key: $key', error: e, tag: 'AppCacheService');
     }
     return null;
   }
@@ -240,19 +233,14 @@ class AppCacheService {
   /// Print cache statistics for debugging and optimization
   void printCacheStats() {
     final totalRequests = _cacheHits + _cacheMisses;
-    // hitRate calculation removed - was only used in debug log
+    if (totalRequests == 0) {
+      ProductionLogger.info('📊 Cache Stats: No requests yet', tag: 'AppCacheService');
+      return;
+    }
     
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
+    final hitRate = (_cacheHits / totalRequests * 100).toStringAsFixed(1);
+    ProductionLogger.info('📊 Cache Stats: Hits: $_cacheHits ($hitRate%), Misses: $_cacheMisses', tag: 'AppCacheService');
+    ProductionLogger.info('   Memory Hits: $_memoryCacheHits, Disk Hits: $_diskCacheHits', tag: 'AppCacheService');
   }
   
   /// Reset cache statistics
@@ -261,7 +249,6 @@ class AppCacheService {
     _cacheMisses = 0;
     _memoryCacheHits = 0;
     _diskCacheHits = 0;
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
   }
 }
 

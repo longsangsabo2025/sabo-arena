@@ -338,7 +338,7 @@ class _DemoBracketTabState extends State<DemoBracketTab> {
     );
   }
 
-  Widget _buildModernFormatSelector() {
+  /* Widget _buildModernFormatSelector() {
     final Map<String, String> selectedFormat = _formats[_selectedFormat]!;
 
     return GestureDetector(
@@ -443,7 +443,7 @@ class _DemoBracketTabState extends State<DemoBracketTab> {
         ),
       ),
     );
-  }
+  } */
 
   void _showFormatPicker() {
     showModalBottomSheet(

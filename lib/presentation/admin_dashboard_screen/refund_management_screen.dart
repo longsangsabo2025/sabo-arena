@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/payment_refund_service.dart';
 import 'package:intl/intl.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Admin screen for managing refund requests
 class RefundManagementScreen extends StatefulWidget {
@@ -38,7 +38,6 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }
@@ -399,17 +398,17 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Approve Refund'),
         content: const Text(
-          'Are you sure you want to approve this refund request?',
+          'Bạn có chắc chắn muốn duyệt yêu cầu hoàn tiền này?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Approve'),
+            child: const Text('Duyệt'),
           ),
         ],
       ),
@@ -422,7 +421,7 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Refund approved successfully')),
+          const SnackBar(content: Text('Đã duyệt hoàn tiền thành công')),
         );
         _loadData();
       }
@@ -430,7 +429,7 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
       }
     }
   }
@@ -441,16 +440,16 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reject Refund'),
+        title: const Text('Từ chối hoàn tiền'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Please provide a reason for rejection:'),
+            const Text('Vui lòng nhập lý do từ chối:'),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
               decoration: const InputDecoration(
-                hintText: 'Rejection reason',
+                hintText: 'Lý do từ chối',
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
@@ -460,12 +459,12 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Reject'),
+            child: const Text('Từ chối'),
           ),
         ],
       ),

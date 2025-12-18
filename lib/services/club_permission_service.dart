@@ -21,8 +21,11 @@ class ClubPermissionService {
             users:user_id (
               id,
               full_name,
+              email,
               avatar_url,
-              rank
+              rank,
+              elo_rating,
+              skill_level
             )
           ''')
           .eq('club_id', clubId)
@@ -35,9 +38,14 @@ class ClubPermissionService {
           id: json['id'] as String,
           clubId: json['club_id'] as String,
           userId: json['user_id'] as String,
-          userName: user?['display_name'] as String? ?? user?['full_name'] as String? ?? 'Unknown',
+          userName: user?['display_name'] as String? ?? 
+                   user?['full_name'] as String? ?? 
+                   (user?['email'] as String?)?.split('@')[0] ?? 
+                   'Thành viên',
           userAvatar: user?['avatar_url'] as String?,
           userRank: user?['rank'] as String?,
+          eloRating: user?['elo_rating'] as int?,
+          skillLevel: user?['skill_level'] as String?,
           role: ClubRole.fromString(json['role'] as String? ?? 'member'),
           joinedAt: DateTime.parse(json['joined_at'] as String),
         );

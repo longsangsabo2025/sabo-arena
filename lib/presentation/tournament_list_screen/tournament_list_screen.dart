@@ -7,6 +7,7 @@ import 'package:sabo_arena/core/performance/performance_widgets.dart';
 import 'package:sabo_arena/core/keyboard/keyboard_shortcuts.dart';
 import '../../theme/app_bar_theme.dart' as app_theme;
 import 'package:sabo_arena/models/tournament.dart';
+import 'package:sabo_arena/models/tournament_tab_status.dart';
 import 'package:sabo_arena/models/club.dart';
 import 'package:sabo_arena/presentation/shared/widgets/tournament_card_widget.dart';
 import 'package:sabo_arena/presentation/shared/widgets/tournament_card_with_eligibility.dart';
@@ -43,7 +44,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
   final TournamentService _tournamentService = TournamentService.instance;
   final ClubPermissionService _permissionService = ClubPermissionService();
   bool _isLoading = true;
-  String _selectedTab = 'upcoming';
+  TournamentTabStatus _selectedTab = TournamentTabStatus.upcoming;
   Map<String, dynamic> _currentFilters = {
     'locationRadius': 10.0,
     'entryFeeRange': <String>[],
@@ -59,6 +60,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
   
   // 📱 iPad Master-Detail Layout State
   Tournament? _selectedTournament;
+  
+  // ⚡ Realtime Subscription
+  RealtimeChannel? _subscription;
 
   @override
   void initState() {
@@ -66,6 +70,23 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_onTabChanged);
     _loadTournaments();
+    _subscribeToRealtime();
+  }
+  
+  void _subscribeToRealtime() {
+    _subscription = Supabase.instance.client
+        .channel('public:tournaments')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'tournaments',
+          callback: (payload) {
+            ProductionLogger.info('🏆 Tournament update received: ${payload.eventType}');
+            // Debounce reload to avoid spam
+            _loadTournaments();
+          },
+        )
+        .subscribe();
   }
 
   Future<void> _loadTournaments() async {
@@ -76,46 +97,27 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     });
 
     try {
+      // 🚀 ELON MUSK AUDIT: Server-side sorting & filtering
       final tournaments = await _tournamentService.getTournaments(
         status: _selectedTab,
       );
 
-      // Apply sorting logic: newest created first, then by start date
+      // Client-side sorting to ensure "Nearest/Newest" is top
       tournaments.sort((a, b) {
-        // First priority: creation time (newest first)
-        final aCreated = a.createdAt;
-        final bCreated = b.createdAt;
-
-        // If created within 24 hours of each other, sort by start date (closest first)
-        final timeDiff = aCreated.difference(bCreated).inHours.abs();
-        if (timeDiff < 24) {
-          final aStart = a.startDate;
-          final bStart = b.startDate;
-
-          // For upcoming tournaments, show earliest start date first
-          if (_selectedTab == 'upcoming') {
-            return aStart.compareTo(bStart);
-          }
-          // For ongoing tournaments, show earliest start date first
-          else if (_selectedTab == 'live') {
-            return aStart.compareTo(bStart);
-          }
-          // For completed tournaments, show latest end date first
-          else if (_selectedTab == 'completed') {
-            final aEnd = a.endDate ?? a.startDate;
-            final bEnd = b.endDate ?? b.startDate;
-            return bEnd.compareTo(aEnd);
-          }
+        if (_selectedTab == TournamentTabStatus.upcoming) {
+           // ELON FIX: Sort by start date Descending (Newest/Furthest first) as requested
+           return b.startDate.compareTo(a.startDate);
+        } else if (_selectedTab == TournamentTabStatus.live) {
+           // Most recently started first (Descending)
+           return b.startDate.compareTo(a.startDate);
+        } else {
+           // Completed: Most recently ended first (Descending)
+           // Fallback to startDate if endDate is null
+           final endA = a.endDate ?? a.startDate;
+           final endB = b.endDate ?? b.startDate;
+           return endB.compareTo(endA);
         }
-
-        // Otherwise, newest created first
-        return bCreated.compareTo(aCreated);
       });
-
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      for (int i = 0; i < tournaments.take(3).length; i++) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      }
 
       if (mounted) {
         setState(() {
@@ -137,6 +139,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
 
   @override
   void dispose() {
+    _subscription?.unsubscribe();
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
@@ -146,7 +149,12 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     if (_tabController.indexIsChanging) {
       return;
     }
-    final newTab = ['upcoming', 'live', 'completed'][_tabController.index];
+    final newTab = [
+      TournamentTabStatus.upcoming, 
+      TournamentTabStatus.live, 
+      TournamentTabStatus.completed
+    ][_tabController.index];
+    
     if (newTab != _selectedTab) {
       setState(() {
         _selectedTab = newTab;
@@ -155,11 +163,8 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     }
   }
 
-  void _handleNavigation(String route) {
-    if (route != AppRoutes.tournamentListScreen) {
-      Navigator.pushReplacementNamed(context, route);
-    }
-  }
+  // _handleNavigation removed as it was unused
+
 
   List<Tournament> get _filteredTournaments {
     // Temporarily simplified to fix dead_null_aware_expression warnings
@@ -348,8 +353,16 @@ class _TournamentListScreenState extends State<TournamentListScreen>
           // Highlight selected tournament on iPad landscape
           final isSelected = showMasterDetail && _selectedTournament?.id == tournament.id;
           
+          // Check ownership
+          final currentUserId = AuthService.instance.currentUser?.id;
+          final isOwner = currentUserId != null && currentUserId == tournament.clubOwnerId;
+
+          // Define callbacks if owner
+          final VoidCallback? onHide = isOwner ? () => _handleHideTournament(tournament) : null;
+          final VoidCallback? onDelete = isOwner ? () => _handleDeleteTournament(tournament) : null;
+
           // Use eligibility-enabled card for upcoming tournaments only
-          if (_selectedTab == 'upcoming') {
+          if (_selectedTab == TournamentTabStatus.upcoming) {
             return Container(
               color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : null,
               child: TournamentCardWithEligibility(
@@ -357,7 +370,10 @@ class _TournamentListScreenState extends State<TournamentListScreen>
                 tournamentCardData: _convertTournamentToCardData(tournament),
                 onTap: () => _handleTournamentTap(tournament),
                 onDetailTap: () => _handleTournamentTap(tournament),
+                onResultTap: () => _handleTournamentResultTap(tournament),
                 onShareTap: () => _shareTournament(tournament),
+                onHide: onHide,
+                onDelete: onDelete,
               ),
             );
           }
@@ -366,10 +382,13 @@ class _TournamentListScreenState extends State<TournamentListScreen>
           return Container(
             color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : null,
             child: TournamentCardWidget(
-              tournament: _convertTournamentToCardData(tournament),
+              // tournament: _convertTournamentToCardData(tournament), // Fix parameter
               onTap: () => _handleTournamentTap(tournament),
               onDetailTap: () => _handleTournamentTap(tournament),
+              onResultTap: () => _handleTournamentResultTap(tournament),
               onShareTap: () => _shareTournament(tournament),
+              onHide: onHide,
+              onDelete: onDelete,
             ),
           );
         },
@@ -510,6 +529,23 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     }
   }
 
+  void _handleTournamentResultTap(Tournament tournament) {
+    final isIPad = DeviceInfo.isIPad(context);
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final showMasterDetail = isIPad && isLandscape;
+    
+    if (showMasterDetail) {
+      // iPad landscape: Update detail panel and maybe switch tab in detail panel?
+      // For now just select it
+      setState(() {
+        _selectedTournament = tournament;
+      });
+    } else {
+      // Portrait: Navigate to detail screen with results tab
+      _navigateToDetail(tournament, showResults: true);
+    }
+  }
+
   /// Convert Tournament object to Map format for TournamentCardWidget
   Map<String, dynamic> _convertTournamentToCardData(Tournament tournament) {
     // Determine game type icon number (8, 9, or 10) based on gameFormat
@@ -526,9 +562,6 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     }
     
     // Debug log to verify icon number
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     // Format date
     String dateStr = '';
@@ -591,17 +624,18 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       'playersCount':
           '${tournament.currentParticipants}/${tournament.maxParticipants}',
       'prizePool': _formatPrize(tournament.prizePool),
-      'rating': tournament.skillLevelRequired ?? 'All',
+      'rating': tournament.skillLevelRequired ?? 'Tất cả',
       'iconNumber': iconNumber,
       'clubLogo': tournament.clubLogo,
-      'clubName': tournament.clubName ?? 'Club',
+      'clubName': tournament.clubName ?? 'CLB',
       'mangCount': mangCount,
       'isLive': tournament.status == 'ongoing',
       'status': status,
+      'tournamentType': tournament.tournamentType, // Pass raw type for card logic
       // NEW ENHANCEMENT FIELDS
       'entryFee': tournament.entryFee > 0
           ? _formatPrize(tournament.entryFee)
-          : 'free',
+          : 'Miễn phí',
       'registrationDeadline': tournament.registrationDeadline.toIso8601String(),
       'prizeBreakdown': _getPrizeBreakdown(tournament),
       'venue': tournament.venueAddress ?? tournament.clubAddress ?? '${tournament.clubName}',
@@ -665,11 +699,13 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     return '${prize.toStringAsFixed(0)}đ';
   }
 
-  void _navigateToDetail(Tournament tournament) {
+  void _navigateToDetail(Tournament tournament, {bool showResults = false}) {
     Navigator.pushNamed(
       context,
       AppRoutes.tournamentDetailScreen,
-      arguments: tournament.id,
+      arguments: showResults 
+          ? {'tournamentId': tournament.id, 'showResults': true}
+          : tournament.id,
     );
   }
 
@@ -734,15 +770,15 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     IconData emptyIcon;
 
     switch (_selectedTab) {
-      case 'upcoming':
+      case TournamentTabStatus.upcoming:
         emptyMessage = 'Chưa có giải đấu sắp diễn ra';
         emptyIcon = Icons.event_busy_outlined;
         break;
-      case 'live':
+      case TournamentTabStatus.live:
         emptyMessage = 'Hiện không có giải đấu nào đang diễn ra';
         emptyIcon = Icons.live_tv_outlined;
         break;
-      case 'completed':
+      case TournamentTabStatus.completed:
         emptyMessage = 'Chưa có giải đấu nào kết thúc';
         emptyIcon = Icons.history_outlined;
         break;
@@ -974,6 +1010,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
   }
 
   // Get display name for role
+  // ignore: unused_element
   String _getRoleDisplayName(ClubRole? role) {
     if (role == null) return 'Không có';
     
@@ -1157,6 +1194,82 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         },
       ),
     );
+  }
+
+  Future<void> _handleHideTournament(Tournament tournament) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ẩn giải đấu?'),
+        content: const Text('Giải đấu sẽ bị ẩn khỏi danh sách công khai.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Ẩn', style: TextStyle(color: Colors.orange)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _tournamentService.hideTournament(tournament.id);
+        _loadTournaments(); // Refresh list
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đã ẩn giải đấu')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Lỗi: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handleDeleteTournament(Tournament tournament) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xóa giải đấu?'),
+        content: const Text('Hành động này không thể hoàn tác.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _tournamentService.deleteTournament(tournament.id);
+        _loadTournaments(); // Refresh list
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đã xóa giải đấu')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Lỗi khi xóa: $e')),
+          );
+        }
+      }
+    }
   }
 }
 

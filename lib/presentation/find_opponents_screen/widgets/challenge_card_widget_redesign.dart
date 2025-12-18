@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/challenge_list_service.dart';
 import '../../../services/challenge_service.dart';
+import 'package:sabo_arena/widgets/user/user_widgets.dart';
 
 /// Card widget to display a challenge/invite in list
 /// Redesigned with 2-column layout and teal theme
@@ -93,11 +94,13 @@ class _ChallengeCardWidgetRedesignState
                 // Header: Avatar + Name + Badge
                 Row(
                   children: [
-                    // Avatar với ảnh thật
-                    _buildAvatar(
-                      avatarUrl,
-                      challenger?['display_name'],
-                      isTablet,
+                    // Avatar với unified component
+                    UserAvatarWidget(
+                      avatarUrl: avatarUrl,
+                      userName: challenger?['display_name'],
+                      rankCode: challenger?['rank'],
+                      size: isTablet ? 56.0 : 48.0,
+                      showRankBorder: true,
                     ),
                     SizedBox(width: isTablet ? 14 : 12),
 
@@ -118,26 +121,10 @@ class _ChallengeCardWidgetRedesignState
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
-                          // Rank Badge
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 10 : 8,
-                              vertical: isTablet ? 4 : 3,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [primaryColor, darkPrimary],
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              challenger?['rank'] ?? 'Unranked',
-                              style: TextStyle(
-                                fontSize: isTablet ? 11 : 10,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                          // Rank Badge with unified component
+                          UserRankBadgeWidget(
+                            rankCode: challenger?['rank'],
+                            style: RankBadgeStyle.compact,
                           ),
                         ],
                       ),
@@ -371,66 +358,7 @@ class _ChallengeCardWidgetRedesignState
     );
   }
 
-  /// Build avatar with real image or fallback to initial
-  Widget _buildAvatar(String? avatarUrl, String? displayName, bool isTablet) {
-    final size = isTablet ? 56.0 : 48.0;
-    final initial = (displayName ?? 'U').substring(0, 1).toUpperCase();
-
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF1E88E5).withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: avatarUrl != null && avatarUrl.isNotEmpty
-          ? ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: avatarUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Center(
-                  child: SizedBox(
-                    width: size * 0.5,
-                    height: size * 0.5,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => Center(
-                  child: Text(
-                    initial,
-                    style: TextStyle(
-                      fontSize: isTablet ? 22 : 20,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            )
-          : Center(
-              child: Text(
-                initial,
-                style: TextStyle(
-                  fontSize: isTablet ? 22 : 20,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-    );
-  }
+  // Note: _buildAvatar method removed - now using unified UserAvatarWidget
 
   /// Build 2-column info grid
   Widget _buildInfoGrid(

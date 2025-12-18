@@ -24,7 +24,7 @@ class _TournamentCoverUploadWidgetState
     extends State<TournamentCoverUploadWidget> {
   final ImagePicker _picker = ImagePicker();
   Uint8List? _imageBytes;
-  String? _fileName;
+  // String? _fileName;
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +223,7 @@ class _TournamentCoverUploadWidgetState
         final bytes = await image.readAsBytes();
         setState(() {
           _imageBytes = bytes;
-          _fileName = image.name;
+          // _fileName = image.name;
         });
         widget.onImageSelected(bytes, image.name);
       }
@@ -242,7 +242,7 @@ class _TournamentCoverUploadWidgetState
   void _removeImage() {
     setState(() {
       _imageBytes = null;
-      _fileName = null;
+      // _fileName = null;
     });
     widget.onImageSelected(null, null);
   }

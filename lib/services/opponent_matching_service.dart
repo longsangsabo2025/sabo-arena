@@ -16,8 +16,9 @@ class OpponentMatchingService {
 
   /// Get all available opponents, prioritizing nearby and similar rank
   Future<List<UserProfile>> findMatchedOpponents({
-    double radiusKm = 50.0,
+    double radiusKm = 500.0, // Increased default radius for better results
     String? rankFilter,
+    int limit = 20,
   }) async {
     try {
       final currentUser = _supabase.auth.currentUser;
@@ -25,12 +26,18 @@ class OpponentMatchingService {
         throw Exception('User not authenticated');
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      // Get current user's location
-      final position = await _locationService.getCurrentPosition();
-      final currentLat = position.latitude;
-      final currentLon = position.longitude;
+      // Get current user's location with permission check (fail safe)
+      double? currentLat;
+      double? currentLon;
+      try {
+        final position = await _locationService.getCurrentPosition();
+        currentLat = position.latitude;
+        currentLon = position.longitude;
+      } catch (e) {
+        ProductionLogger.warning('⚠️ Could not get location for matching: $e', tag: 'opponent_matching');
+        // Continue without location
+      }
 
       // Get current user's rank for matching
       final currentUserProfile = await _supabase
@@ -42,8 +49,6 @@ class OpponentMatchingService {
       final currentRank = currentUserProfile['rank'] as String?;
       final currentElo = currentUserProfile['elo_rating'] as int? ?? 1000;
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Fetch all users except current user
       final response = await _supabase
@@ -73,11 +78,11 @@ class OpponentMatchingService {
             location_name
           ''')
           .neq('id', currentUser.id)
-          .eq('is_active', true)
-          .order('elo_rating', ascending: false);
+          // .eq('is_active', true) // Commented out for testing visibility
+          .order('elo_rating', ascending: false)
+          .limit(limit * 2); // Query more for filtering
 
       final users = List<Map<String, dynamic>>.from(response);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Calculate distance and rank similarity for each user
       final List<Map<String, dynamic>> scoredUsers = [];
@@ -90,7 +95,7 @@ class OpponentMatchingService {
 
         // Calculate distance (if location available)
         double? distance;
-        if (userLat != null && userLon != null) {
+        if (userLat != null && userLon != null && currentLat != null && currentLon != null) {
           distance = _calculateDistance(
             currentLat,
             currentLon,
@@ -177,10 +182,17 @@ class OpponentMatchingService {
         );
       }).toList();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      return opponents;
+      // Return limited results with distance info
+      final limitedOpponents = opponents.take(limit).toList();
+      
+      ProductionLogger.info(
+        '⚙️ Found ${opponents.length} potential opponents, returning ${limitedOpponents.length}',
+        tag: 'opponent_matching'
+      );
+      
+      return limitedOpponents;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      ProductionLogger.error('❌ Opponent matching failed: $e', tag: 'opponent_matching');
       rethrow;
     }
   }
@@ -348,7 +360,6 @@ class OpponentMatchingService {
       return rankScore >= 45.0; // At least within 2 main ranks
     }).toList();
 
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     return eligible;
   }
 }

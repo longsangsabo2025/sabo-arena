@@ -893,7 +893,9 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
       }
 
       await RankVerificationService.instance.approveRankRequest(requestId);
+      if (!mounted) return;
       await _loadRankRequests(); // Refresh the list
+      if (!mounted) return;
       Navigator.pop(context); // Close dialog
       AppSnackbar.success(
         context: context,
@@ -946,8 +948,10 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
                   requestId,
                   reasonController.text.trim(),
                 );
+                if (!context.mounted) return;
                 Navigator.pop(context); // Close reason dialog
                 await _loadRankRequests(); // Refresh the list
+                if (!context.mounted) return;
                 Navigator.pop(context); // Close main dialog
                 AppSnackbar.success(
                   context: context,

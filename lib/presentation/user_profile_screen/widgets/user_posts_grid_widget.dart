@@ -9,7 +9,7 @@ import '../../post_detail_screen/post_detail_screen.dart';
 import '../../widgets/custom_video_player.dart'; // Video player widgets
 import '../../home_feed_screen/widgets/create_post_modal_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Filter type cho posts
 enum PostFilterType {
@@ -38,7 +38,6 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
   @override
   void initState() {
     super.initState();
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
     _loadUserPosts();
   }
 
@@ -48,7 +47,6 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
     // Reload khi userId hoặc filterType thay đổi
     if (oldWidget.userId != widget.userId ||
         oldWidget.filterType != widget.filterType) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       _loadUserPosts();
     }
   }
@@ -60,30 +58,24 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
         _errorMessage = null;
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final allPosts = await _postRepository.getUserPostsByUserId(
         widget.userId,
         limit: 100,
       );
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Debug: Print first few posts to see their image data
       if (allPosts.isNotEmpty) {
         for (int i = 0; i < (allPosts.length > 3 ? 3 : allPosts.length); i++) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
         }
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Apply filter based on filterType
       List<PostModel> filteredPosts;
       
       // Debug: Print filter breakdown
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // Count logic removed - variables were unused
       
       switch (widget.filterType ?? PostFilterType.textOnly) {
@@ -96,7 +88,6 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                     (post.videoUrl == null || post.videoUrl!.isEmpty),
               )
               .toList();
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           break;
         case PostFilterType.imagesOnly:
           // Chỉ lấy posts có image_url
@@ -105,7 +96,6 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                 (post) => post.imageUrl != null && post.imageUrl!.isNotEmpty,
               )
               .toList();
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           break;
         case PostFilterType.videosOnly:
           // Chỉ lấy posts có video_url (YouTube link) VÀ KHÔNG có ảnh
@@ -117,11 +107,9 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                     (post.imageUrl == null || post.imageUrl!.isEmpty),
               )
               .toList();
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           break;
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (mounted) {
         setState(() {
@@ -130,7 +118,6 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
         });
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       if (mounted) {
         setState(() {
           _isLoading = false;

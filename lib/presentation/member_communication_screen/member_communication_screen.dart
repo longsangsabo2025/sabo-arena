@@ -852,6 +852,8 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
       // Simulate API calls
       await Future.delayed(Duration(seconds: 1));
 
+      if (!mounted) return;
+
       _chatRooms = _generateMockChatRooms();
       _announcements = _generateMockAnnouncements();
       _notifications = _generateMockNotifications();

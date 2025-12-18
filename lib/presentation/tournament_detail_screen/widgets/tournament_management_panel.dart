@@ -136,7 +136,7 @@ class _TournamentManagementPanelState extends State<TournamentManagementPanel>
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: _tabs.asMap().entries.map((entry) {
+              children: _tabs.asMap().entries.map<Widget>((entry) {
                 final index = entry.key;
                 final tab = entry.value;
                 final isSelected = _selectedTab == index;

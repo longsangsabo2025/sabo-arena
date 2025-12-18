@@ -3,7 +3,7 @@ import 'package:sizer/sizer.dart';
 import 'package:sabo_arena/core/app_export.dart';
 import 'package:sabo_arena/theme/app_theme.dart';
 import 'package:sabo_arena/services/tournament_service.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class TournamentOverviewTab extends StatefulWidget {
   final String tournamentId;
@@ -57,7 +57,6 @@ class _TournamentOverviewTabState extends State<TournamentOverviewTab> {
         'completion': '$completionPercentage%',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {'players': '0 người', 'matches': '0/0', 'completion': '0%'};
     }
   }
@@ -369,20 +368,19 @@ class _TournamentOverviewTabState extends State<TournamentOverviewTab> {
     // Display recent activities from real data
     return Column(
       children: [
-          _buildActivityItem(
-            'Người chơi mới đăng ký',
-            '2 phút trước',
-            Icons.person_add,
-            AppTheme.successLight,
-          ),
-          _buildActivityItem(
-            'Cập nhật thông tin giải đấu',
-            '5 phút trước',
-            Icons.edit,
-            AppTheme.primaryLight,
-          ),
-        ],
-      ),
+        _buildActivityItem(
+          'Người chơi mới đăng ký',
+          '2 phút trước',
+          Icons.person_add,
+          AppTheme.successLight,
+        ),
+        _buildActivityItem(
+          'Cập nhật thông tin giải đấu',
+          '5 phút trước',
+          Icons.edit,
+          AppTheme.primaryLight,
+        ),
+      ],
     );
   }
 

@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service for managing tournament status
 class TournamentStatusService {
@@ -9,7 +9,6 @@ class TournamentStatusService {
   Future<void> markAsCompleted({
     required String tournamentId,
   }) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       // Update tournament status
@@ -21,7 +20,6 @@ class TournamentStatusService {
           })
           .eq('id', tournamentId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Update all matches to completed
       await _supabase
@@ -29,12 +27,9 @@ class TournamentStatusService {
           .update({'status': 'completed'})
           .eq('tournament_id', tournamentId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -43,7 +38,6 @@ class TournamentStatusService {
   Future<Map<String, dynamic>> validateCompletion({
     required String tournamentId,
   }) async {
-    ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
     try {
       // Get tournament
@@ -75,14 +69,12 @@ class TournamentStatusService {
         };
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'canComplete': true,
         'tournament': tournament,
       };
 
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'canComplete': false,
         'reason': 'Validation error: $e',

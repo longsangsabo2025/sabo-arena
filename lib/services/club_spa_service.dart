@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service to manage Club SPA balance and reward system
 /// Handles all SPA-related operations for clubs and users
@@ -13,7 +13,6 @@ class ClubSpaService {
   /// Get SPA balance for a specific club
   Future<Map<String, dynamic>?> getClubSpaBalance(String clubId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('club_spa_balances')
@@ -22,14 +21,11 @@ class ClubSpaService {
           .maybeSingle();
 
       if (response == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return null;
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return response;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -40,7 +36,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Try user_spa_balances first
       final response = await _supabase
@@ -51,7 +46,6 @@ class ClubSpaService {
           .maybeSingle();
 
       if (response != null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {
           'user_id': userId,
           'club_id': clubId,
@@ -62,7 +56,6 @@ class ClubSpaService {
       }
 
       // Fallback: Check users table for spa_points
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       final userResponse = await _supabase
           .from('users')
           .select('spa_points')
@@ -71,7 +64,6 @@ class ClubSpaService {
 
       if (userResponse != null && userResponse['spa_points'] != null) {
         final spaPoints = userResponse['spa_points'] as int;
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {
           'user_id': userId,
           'club_id': clubId,
@@ -82,7 +74,6 @@ class ClubSpaService {
       }
 
       // No balance found anywhere
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'user_id': userId,
         'club_id': clubId,
@@ -91,7 +82,6 @@ class ClubSpaService {
         'total_spent': 0,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return null;
     }
   }
@@ -103,7 +93,6 @@ class ClubSpaService {
     int limit = 50,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('spa_transactions')
@@ -113,10 +102,8 @@ class ClubSpaService {
           .order('created_at', ascending: false)
           .limit(limit);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -130,7 +117,6 @@ class ClubSpaService {
     String? description,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Call the database function to award SPA bonus
       final response = await _supabase.rpc(
@@ -144,14 +130,11 @@ class ClubSpaService {
       );
 
       if (response == true) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return true;
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return false;
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -159,7 +142,6 @@ class ClubSpaService {
   /// Get all available rewards for a club
   Future<List<Map<String, dynamic>>> getClubRewards(String clubId) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('spa_rewards')
@@ -168,10 +150,8 @@ class ClubSpaService {
           .eq('is_active', true)
           .order('spa_cost');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -188,7 +168,6 @@ class ClubSpaService {
     DateTime? validUntil,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       await _supabase.from('spa_rewards').insert({
         'club_id': clubId,
@@ -202,10 +181,8 @@ class ClubSpaService {
         'created_by': _supabase.auth.currentUser?.id,
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return true;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -217,7 +194,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get reward details first
       final reward = await _supabase
@@ -227,7 +203,6 @@ class ClubSpaService {
           .maybeSingle();
 
       if (reward == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {'success': false, 'error': 'Reward not found'};
       }
 
@@ -235,21 +210,18 @@ class ClubSpaService {
       final userBalance = await getUserSpaBalance(userId, clubId);
       if (userBalance == null ||
           userBalance['spa_balance'] < reward['spa_cost']) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {'success': false, 'error': 'Insufficient SPA balance'};
       }
 
       // Check quantity if limited
       if (reward['quantity_available'] != null &&
           reward['quantity_claimed'] >= reward['quantity_available']) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {'success': false, 'error': 'Reward is out of stock'};
       }
 
       // Generate redemption code
       final redemptionCode = _generateRedemptionCode();
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Create redemption record first (before deducting SPA)
       final redemption = await _supabase
@@ -266,7 +238,6 @@ class ClubSpaService {
           .select()
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // 🎯 NEW: Create user_voucher record so user can actually use the voucher
       final userVoucher = await _supabase
@@ -303,7 +274,6 @@ class ClubSpaService {
           .select()
           .single();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Update redemption record with voucher_id link
       await _supabase
@@ -311,7 +281,6 @@ class ClubSpaService {
           .update({'voucher_id': userVoucher['id']})
           .eq('id', redemption['id']);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Now deduct SPA from user balance 
       final currentBalance = userBalance['spa_balance'] ?? userBalance['spa_points'] ?? 0;
@@ -322,7 +291,6 @@ class ClubSpaService {
           .update({'spa_points': newBalance})
           .eq('id', userId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Update reward quantity
       final currentAvailable = (reward['available_quantity'] ?? 0) as int;
@@ -331,7 +299,6 @@ class ClubSpaService {
             .from('spa_rewards')
             .update({'available_quantity': currentAvailable - 1})
             .eq('id', rewardId);
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
 
       // Record transaction
@@ -348,9 +315,7 @@ class ClubSpaService {
         'created_by': userId,
       });
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': true,
         'redemption': redemption,
@@ -363,7 +328,6 @@ class ClubSpaService {
         'message': 'Đã tạo voucher thành công! Bạn có thể sử dụng ngay tại quán.',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       // If there's an error, we should try to rollback any changes made
       // But for now, just return the error
       return {'success': false, 'error': 'Failed to redeem reward: ${e.toString()}'};
@@ -384,7 +348,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('spa_reward_redemptions')
@@ -400,10 +363,8 @@ class ClubSpaService {
           .eq('club_id', clubId)
           .order('redeemed_at', ascending: false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -415,7 +376,6 @@ class ClubSpaService {
     String description,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase.rpc(
         'add_spa_to_club',
@@ -427,14 +387,11 @@ class ClubSpaService {
       );
 
       if (response == true) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return true;
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return false;
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -445,7 +402,6 @@ class ClubSpaService {
     int limit = 100,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('spa_transactions')
@@ -457,10 +413,8 @@ class ClubSpaService {
           .order('created_at', ascending: false)
           .limit(limit);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -506,10 +460,8 @@ class ClubSpaService {
         });
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return enrichedClubs;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -537,10 +489,8 @@ class ClubSpaService {
           )
           .toList();
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(enrichedTransactions);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -612,10 +562,8 @@ class ClubSpaService {
         'active_clubs': results[5],
       };
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return stats;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {};
     }
   }
@@ -637,14 +585,11 @@ class ClubSpaService {
       );
 
       if (response == true) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return true;
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return false;
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return false;
     }
   }
@@ -656,7 +601,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('spa_reward_redemptions')
@@ -685,20 +629,17 @@ class ClubSpaService {
           .maybeSingle();
 
       if (response == null) {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         return {
           'success': false,
           'error': 'Mã không tồn tại hoặc không thuộc về quán này',
         };
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': true,
         'redemption': response,
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': 'Lỗi hệ thống khi kiểm tra mã',
@@ -712,7 +653,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Verify this redemption belongs to the club
       final verification = await _supabase
@@ -756,13 +696,11 @@ class ClubSpaService {
           })
           .eq('id', redemptionId);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': true,
         'message': 'Đã xác nhận giao thưởng thành công',
       };
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return {
         'success': false,
         'error': 'Lỗi hệ thống khi cập nhật trạng thái',
@@ -775,7 +713,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('spa_reward_redemptions')
@@ -803,10 +740,8 @@ class ClubSpaService {
           .eq('spa_rewards.club_id', clubId)
           .order('redeemed_at', ascending: false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -817,7 +752,6 @@ class ClubSpaService {
     int limit = 50,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       final response = await _supabase
           .from('spa_reward_redemptions')
@@ -846,10 +780,8 @@ class ClubSpaService {
           .order('redeemed_at', ascending: false)
           .limit(limit);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }

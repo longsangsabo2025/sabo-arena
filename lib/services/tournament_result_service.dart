@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Service quản lý kết quả tournament
 class TournamentResultService {
@@ -18,8 +18,6 @@ class TournamentResultService {
     required List<Map<String, dynamic>> standings,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       for (final standing in standings) {
         // Extract data from enhanced standing (includes ALL reward data)
@@ -36,12 +34,9 @@ class TournamentResultService {
 
         // Validate required fields
         if (userId.isEmpty) {
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
           continue;
         }
 
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
         // Save to tournament_results (PRIMARY record - source of truth)
         await _saveTournamentResult(
@@ -57,10 +52,7 @@ class TournamentResultService {
         );
       }
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       throw Exception('Failed to save tournament results: $e');
     }
   }
@@ -79,7 +71,6 @@ class TournamentResultService {
     required double prizeMoney,
   }) async {
     try {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       // Get user's current ELO
       final userResponse = await _supabase
@@ -141,26 +132,21 @@ class TournamentResultService {
 
       if (existingResult != null) {
         // Update existing record (idempotent operation)
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         await _supabase
             .from('tournament_results')
             .update(dataToSave)
             .eq('tournament_id', tournamentId)
             .eq('participant_id', userId); // ✅ FIXED: participant_id (not user_id)
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       } else {
         // Create new record
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         
         await _supabase.from('tournament_results').insert({
           'tournament_id': tournamentId,
           'participant_id': userId, // ✅ FIXED: participant_id (not user_id)
           ...dataToSave,
         });
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       rethrow;
     }
   }
@@ -181,7 +167,6 @@ class TournamentResultService {
 
       return results;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }
@@ -202,7 +187,6 @@ class TournamentResultService {
 
       return results;
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       return [];
     }
   }

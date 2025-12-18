@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ClubVoucherRequestsScreen extends StatefulWidget {
   final String clubId;
@@ -43,8 +43,6 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
       setState(() {
         _requests = List<Map<String, dynamic>>.from(data);
       });
-    } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } finally {
       setState(() => _isLoading = false);
     }

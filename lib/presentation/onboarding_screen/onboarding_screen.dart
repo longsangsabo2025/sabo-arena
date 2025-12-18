@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 import '../../core/app_export.dart';
 import '../../utils/size_extensions.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -73,8 +73,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   void _initializeOnboardingData() {
     _onboardingData = [
       OnboardingData(
-        title: "BẠN LÀ AI ???",
-        description: "",
+        title: "BẠN QUAN TÂM ĐIỀU GÌ?",
+        description: "Chọn vai trò để chúng tôi tối ưu trải nghiệm cho bạn",
         imagePath: "assets/images/billiard_ball.svg",
         showRoleSelection: true,
       ),
@@ -173,45 +173,28 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   Future<void> _finishOnboarding() async {
     try {
-      // Mark onboarding as completed and save user role
+      // Save user interest for post-login personalization
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('has_seen_onboarding', true);
-      await prefs.setString('user_role', _selectedRole);
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
+      
+      // Default to 'player' if nothing selected (for the "Skip" case)
+      final roleToSave = _selectedRole.isEmpty ? 'player' : _selectedRole;
+      await prefs.setString('interested_role', roleToSave);
 
-      // Navigate based on role: club_owner -> Register, player -> Login
       if (mounted) {
-        if (_selectedRole == 'club_owner') {
-          // Club owner goes directly to register screen
-          Navigator.of(context).pushReplacementNamed(
-            AppRoutes.registerScreen,
-            arguments: {'userRole': _selectedRole},
-          );
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        } else {
-          // Player goes to login screen
-          Navigator.of(context).pushReplacementNamed(
-            AppRoutes.loginScreen,
-            arguments: {'preselectedRole': _selectedRole},
-          );
-          ProductionLogger.debug('Debug log', tag: 'AutoFix');
-        }
+        // Unified flow: Everyone goes to Login
+        // We pass the interest so Login screen can adapt UI if needed
+        Navigator.of(context).pushReplacementNamed(
+          AppRoutes.loginScreen,
+          arguments: {'preselectedRole': roleToSave},
+        );
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      // Still navigate even if saving fails
       if (mounted) {
-        if (_selectedRole == 'club_owner') {
-          Navigator.of(context).pushReplacementNamed(
-            AppRoutes.registerScreen,
-            arguments: {'userRole': _selectedRole},
-          );
-        } else {
-          Navigator.of(context).pushReplacementNamed(
-            AppRoutes.loginScreen,
-            arguments: {'preselectedRole': _selectedRole},
-          );
-        }
+        Navigator.of(context).pushReplacementNamed(
+          AppRoutes.loginScreen,
+          arguments: {'preselectedRole': 'player'},
+        );
       }
     }
   }
@@ -241,17 +224,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
           ),
           // Animated particles background - DISABLED for web stability
-          // AnimatedBuilder(
-          //   animation: _particleController,
-          //   builder: (context, child) {
-          //     return CustomPaint(
-          //       painter: _ParticlesPainter(
-          //         animationValue: _particleController.value,
-          //       ),
-          //       size: Size.infinite,
-          //     );
-          //   },
-          // ),
           // Content with overlay
           SafeArea(
             child: Container(
@@ -278,6 +250,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         builder: (context, child) {
                           final isLastPage =
                               _currentPage == _onboardingData.length - 1;
+                          final isRoleSelectionPage = _onboardingData[_currentPage].showRoleSelection;
+                          
+                          // Hide button completely if on role selection page (regardless of selection state)
+                          if (isRoleSelectionPage) {
+                            return const SizedBox.shrink();
+                          }
+
                           return Container(
                             decoration: BoxDecoration(
                               gradient: isLastPage
@@ -386,6 +365,55 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       },
                     ),
                   ),
+                  
+                  SizedBox(height: 2.h),
+
+                  // Navigation dots - Premium style
+                  AnimatedBuilder(
+                    animation: _pulseController,
+                    builder: (context, child) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(_onboardingData.length, (index) {
+                          final isActive = _currentPage == index;
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeOutCubic,
+                            width: isActive ? 8.w : 2.w,
+                            height: 1.h,
+                            margin: EdgeInsets.symmetric(horizontal: 1.w),
+                            decoration: BoxDecoration(
+                              gradient: isActive
+                                  ? LinearGradient(
+                                      colors: [
+                                        AppTheme.primaryLight,
+                                        AppTheme.secondaryLight,
+                                      ],
+                                    )
+                                  : null,
+                              color: isActive
+                                  ? null
+                                  : Colors.white.withValues(alpha: 0.35),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: isActive
+                                  ? [
+                                      BoxShadow(
+                                        color: AppTheme.primaryLight.withValues(
+                                          alpha: 0.4 + (_pulseController.value * 0.2),
+                                        ),
+                                        blurRadius: 12 + (_pulseController.value * 5),
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                          );
+                        }),
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: 2.h),
                 ],
               ),
             ),
@@ -399,78 +427,284 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final bool isPlayerSelected = _selectedRole == "player";
     final bool isClubOwnerSelected = _selectedRole == "club_owner";
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Center content vertically
-          children: [
-            // Logo - Animated with rotation and glow (increased size 2x, centered)
-            AnimatedBuilder(
-              animation: _rotateController,
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: _rotateController.value * 2 * math.pi,
-                  child: AnimatedBuilder(
-                    animation: _pulseController,
-                    builder: (context, child) {
-                      return Container(
-                        width: 200, // Increased from 100 to 200 (2x)
-                        height: 200, // Increased from 100 to 200 (2x)
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            // Animated glow effect - stronger for bigger logo
-                            BoxShadow(
-                              color: AppTheme.primaryLight.withValues(
-                                alpha: 0.4 + (_pulseController.value * 0.3),
-                              ),
-                              blurRadius: 50 + (_pulseController.value * 30),
-                              spreadRadius: 5,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        children: [
+          const Spacer(flex: 2),
+          // Logo - Animated with rotation and glow (increased size 2x, centered)
+          AnimatedBuilder(
+            animation: _rotateController,
+            builder: (context, child) {
+              return Transform.rotate(
+                angle: _rotateController.value * 2 * math.pi,
+                child: AnimatedBuilder(
+                  animation: _pulseController,
+                  builder: (context, child) {
+                    return Container(
+                      width: 180, // Slightly reduced for better fit
+                      height: 180,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          // Animated glow effect - stronger for bigger logo
+                          BoxShadow(
+                            color: AppTheme.primaryLight.withValues(
+                              alpha: 0.4 + (_pulseController.value * 0.3),
                             ),
-                            BoxShadow(
-                              color: AppTheme.secondaryLight.withValues(
-                                alpha: 0.3 + (_pulseController.value * 0.2),
-                              ),
-                              blurRadius: 40 + (_pulseController.value * 20),
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/sabo-arena.png',
-                            fit: BoxFit.cover,
+                            blurRadius: 50 + (_pulseController.value * 30),
+                            spreadRadius: 5,
                           ),
+                          BoxShadow(
+                            color: AppTheme.secondaryLight.withValues(
+                              alpha: 0.3 + (_pulseController.value * 0.2),
+                            ),
+                            blurRadius: 40 + (_pulseController.value * 20),
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/sabo-arena.png',
+                          fit: BoxFit.cover,
                         ),
-                      );
-                    },
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+
+          const Spacer(flex: 1),
+
+          // Title - Gradient animated text
+          AnimatedBuilder(
+            animation: _pulseController,
+            builder: (context, child) {
+              return ShaderMask(
+                shaderCallback: (bounds) => LinearGradient(
+                  colors: [
+                    Colors.white,
+                    AppTheme.primaryLight.withValues(
+                      alpha: 0.8 + (_pulseController.value * 0.2),
+                    ),
+                    Colors.white,
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ).createShader(bounds),
+                child: Text(
+                  data.title, style: GoogleFonts.inter(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                    shadows: [
+                      Shadow(
+                        offset: const Offset(0, 3),
+                        blurRadius: 8,
+                        color: Colors.black.withValues(alpha: 0.7),
+                      ),
+                      Shadow(
+                        offset: const Offset(0, 0),
+                        blurRadius: 20,
+                        color: AppTheme.primaryLight.withValues(
+                          alpha: 0.3 + (_pulseController.value * 0.2),
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
+                  textAlign: TextAlign.center,
+                ),
+              );
+            },
+          ),
+
+          SizedBox(height: 1.5.h),
+
+          // Subtitle
+          Text(
+            "Chọn vai trò để bắt đầu", overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(
+              fontSize: 15.sp,
+              color: Colors.white.withValues(alpha: 0.85),
+              fontWeight: FontWeight.w400,
+              letterSpacing: 0.2,
+              shadows: [
+                Shadow(
+                  offset: const Offset(0, 1),
+                  blurRadius: 2,
+                  color: Colors.black.withValues(alpha: 0.5),
+                ),
+              ],
             ),
+            textAlign: TextAlign.center,
+          ),
 
-            SizedBox(height: 3.h),
+          const Spacer(flex: 1),
 
-            // Title - Gradient animated text
+          // Role selection cards
+          Row(
+            children: [
+              Expanded(
+                child: _PremiumRoleCard(
+                  icon: Icons
+                      .sports_golf_rounded, // Metaphor for Cue & Ball
+                  title: 'Người chơi',
+                  subtitle: 'Tìm đối thủ, tham gia giải đấu',
+                  isSelected: isPlayerSelected,
+                  pulseAnimation: _pulseController,
+                  delay: 0,
+                  onTap: () {
+                    setState(() {
+                      _selectedRole = "player";
+                    });
+                  },
+                ),
+              ),
+              SizedBox(width: 6.w),
+              Expanded(
+                child: _PremiumRoleCard(
+                  icon:
+                      Icons.storefront_rounded, // Represents the Billiard Club
+                  title: 'Chủ CLB',
+                  subtitle: 'Quản lý CLB, tổ chức giải đấu',
+                  isSelected: isClubOwnerSelected,
+                  pulseAnimation: _pulseController,
+                  delay: 200,
+                  onTap: () {
+                    setState(() {
+                      _selectedRole = "club_owner";
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+
+          const Spacer(flex: 1),
+
+          // Continue button - Musk Minimalist & Futuristic
+          if (_selectedRole.isNotEmpty)
             AnimatedBuilder(
               animation: _pulseController,
               builder: (context, child) {
-                return ShaderMask(
+                return Transform.scale(
+                  scale: 1.0 + (_pulseController.value * 0.01), // Very subtle scale
+                  child: AnimatedOpacity(
+                    opacity: _selectedRole.isNotEmpty ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Container(
+                      width: double.infinity,
+                      height: 56, // Standard mobile button height
+                      margin: EdgeInsets.symmetric(horizontal: 6.w),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30), // Pill shape
+                        gradient: LinearGradient(
+                          colors: [
+                            AppTheme.primaryLight,
+                            AppTheme.secondaryLight,
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        boxShadow: [
+                          // Neon Glow
+                          BoxShadow(
+                            color: AppTheme.primaryLight.withValues(alpha: 0.4),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                            spreadRadius: -2,
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            _setRoleSpecificData(_selectedRole);
+                            _nextPage();
+                          },
+                          borderRadius: BorderRadius.circular(30),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'TIẾP TỤC', // Uppercase
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  letterSpacing: 1.5, // Wide spacing
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              // Animated Arrow
+                              Transform.translate(
+                                offset: Offset(_pulseController.value * 3, 0),
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            )
+          else
+            SizedBox(height: 8.h), // Placeholder to keep layout stable
+
+          const Spacer(flex: 2),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContentPage(OnboardingData data) {
+    return SafeArea(
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+              children: [
+                // Animated floating illustration - OPTIMIZED SIZE
+                AnimatedBuilder(
+                  animation: _floatingController,
+                  builder: (context, child) {
+                    return Transform.translate(
+                      offset: Offset(0, -10 + (_floatingController.value * 10)),
+                      child: SizedBox(
+                        width: 60.w, // Reduced from 70.w for better proportion
+                        height: 60.w, // Square for icon
+                        child: _buildIllustration(_currentPage),
+                      ),
+                    );
+                  },
+                ),
+
+                SizedBox(height: 5.h),
+
+                // Gradient title
+                ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
                     colors: [
                       Colors.white,
-                      AppTheme.primaryLight.withValues(
-                        alpha: 0.8 + (_pulseController.value * 0.2),
-                      ),
+                      AppTheme.primaryLight.withValues(alpha: 0.9),
                       Colors.white,
                     ],
                     stops: const [0.0, 0.5, 1.0],
                   ).createShader(bounds),
                   child: Text(
                     data.title, style: GoogleFonts.inter(
-                      fontSize: 28,
+                      fontSize: 22.sp, // Slightly smaller
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                       letterSpacing: 1.5,
@@ -480,306 +714,79 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           blurRadius: 8,
                           color: Colors.black.withValues(alpha: 0.7),
                         ),
-                        Shadow(
-                          offset: const Offset(0, 0),
-                          blurRadius: 20,
-                          color: AppTheme.primaryLight.withValues(
-                            alpha: 0.3 + (_pulseController.value * 0.2),
-                          ),
-                        ),
                       ],
                     ),
                     textAlign: TextAlign.center,
                   ),
-                );
-              },
-            ),
-
-            SizedBox(height: 1.5.h),
-
-            // Subtitle
-            Text(
-              "Chọn vai trò để bắt đầu", overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(
-                fontSize: 15.sp,
-                color: Colors.white.withValues(alpha: 0.85),
-                fontWeight: FontWeight.w400,
-                letterSpacing: 0.2,
-                shadows: [
-                  Shadow(
-                    offset: const Offset(0, 1),
-                    blurRadius: 2,
-                    color: Colors.black.withValues(alpha: 0.5),
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
-            ),
-
-            SizedBox(height: 4.h),
-
-            // Role selection cards
-            Row(
-              children: [
-                Expanded(
-                  child: _PremiumRoleCard(
-                    icon: Icons
-                        .sports_esports_rounded, // Icon game controller đẹp hơn
-                    title: 'Người chơi',
-                    subtitle: 'Tìm đối thủ, tham gia giải đấu',
-                    isSelected: isPlayerSelected,
-                    pulseAnimation: _pulseController,
-                    delay: 0,
-                    onTap: () {
-                      setState(() {
-                        _selectedRole = "player";
-                      });
-                    },
-                  ),
                 ),
-                SizedBox(width: 4.w),
-                Expanded(
-                  child: _PremiumRoleCard(
-                    icon:
-                        Icons.business_center_rounded, // Icon briefcase đẹp hơn
-                    title: 'Chủ CLB',
-                    subtitle: 'Quản lý CLB, tổ chức giải đấu',
-                    isSelected: isClubOwnerSelected,
-                    pulseAnimation: _pulseController,
-                    delay: 200,
-                    onTap: () {
-                      setState(() {
-                        _selectedRole = "club_owner";
-                      });
-                    },
+
+                SizedBox(height: 2.5.h),
+
+                // Description text
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w), // More padding
+                  child: Text(
+                    data.description, style: GoogleFonts.inter(
+                      fontSize: 15.sp, // Slightly smaller for balance
+                      color: Colors.white.withValues(alpha: 0.9),
+                      height: 1.6,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.3,
+                      shadows: [
+                        Shadow(
+                          offset: const Offset(0, 1),
+                          blurRadius: 2,
+                          color: Colors.black.withValues(alpha: 0.5),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 5,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
+          ),
 
-            SizedBox(height: 3.h),
-
-            // Continue button - Premium animated
-            if (_selectedRole.isNotEmpty)
-              AnimatedBuilder(
-                animation: _pulseController,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: 1.0 + (_pulseController.value * 0.03),
-                    child: AnimatedOpacity(
-                      opacity: _selectedRole.isNotEmpty ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 300),
-                      child: Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.symmetric(horizontal: 4.w),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppTheme.primaryLight,
-                              AppTheme.secondaryLight,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.primaryLight.withValues(
-                                alpha: 0.4 + (_pulseController.value * 0.2),
-                              ),
-                              blurRadius: 25 + (_pulseController.value * 10),
-                              offset: const Offset(0, 12),
-                            ),
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              _setRoleSpecificData(_selectedRole);
-                              _nextPage();
-                            },
-                            borderRadius: BorderRadius.circular(16),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.h),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Tiếp tục', overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(
-                                      fontSize: 19.sp,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      letterSpacing: 1.0,
-                                      shadows: [
-                                        Shadow(
-                                          offset: const Offset(0, 2),
-                                          blurRadius: 4,
-                                          color: Colors.black.withValues(
-                                            alpha: 0.4,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: Colors.white,
-                                    size: 24,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+          // Next/Finish Button (Bottom Right)
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _nextPage,
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.3),
+                      width: 1.5,
                     ),
-                  );
-                },
-              ),
-
-            SizedBox(height: 2.h),
-
-            // Navigation dots - Premium style
-            AnimatedBuilder(
-              animation: _pulseController,
-              builder: (context, child) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(_onboardingData.length, (index) {
-                    final isActive = _currentPage == index;
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeOutCubic,
-                      width: isActive ? 8.w : 2.w,
-                      height: 1.h,
-                      margin: EdgeInsets.symmetric(horizontal: 1.w),
-                      decoration: BoxDecoration(
-                        gradient: isActive
-                            ? LinearGradient(
-                                colors: [
-                                  AppTheme.primaryLight,
-                                  AppTheme.secondaryLight,
-                                ],
-                              )
-                            : null,
-                        color: isActive
-                            ? null
-                            : Colors.white.withValues(alpha: 0.35),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: isActive
-                            ? [
-                                BoxShadow(
-                                  color: AppTheme.primaryLight.withValues(
-                                    alpha: 0.4 + (_pulseController.value * 0.2),
-                                  ),
-                                  blurRadius: 12 + (_pulseController.value * 5),
-                                  offset: const Offset(0, 4),
-                                ),
-                              ]
-                            : null,
+                    color: Colors.white.withValues(alpha: 0.1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                    );
-                  }),
-                );
-              },
-            ),
-
-            SizedBox(height: 2.h),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContentPage(OnboardingData data) {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-          children: [
-            // Animated floating illustration - OPTIMIZED SIZE
-            AnimatedBuilder(
-              animation: _floatingController,
-              builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(0, -10 + (_floatingController.value * 10)),
-                  child: SizedBox(
-                    width: 60.w, // Reduced from 70.w for better proportion
-                    height: 60.w, // Square for icon
-                    child: _buildIllustration(_currentPage),
+                    ],
                   ),
-                );
-              },
-            ),
-
-            SizedBox(height: 5.h),
-
-            // Gradient title
-            ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
-                colors: [
-                  Colors.white,
-                  AppTheme.primaryLight.withValues(alpha: 0.9),
-                  Colors.white,
-                ],
-                stops: const [0.0, 0.5, 1.0],
-              ).createShader(bounds),
-              child: Text(
-                data.title, style: GoogleFonts.inter(
-                  fontSize: 22.sp, // Slightly smaller
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: 1.5,
-                  shadows: [
-                    Shadow(
-                      offset: const Offset(0, 3),
-                      blurRadius: 8,
-                      color: Colors.black.withValues(alpha: 0.7),
-                    ),
-                  ],
+                  child: Icon(
+                    _currentPage == _onboardingData.length - 1
+                        ? Icons.check_rounded
+                        : Icons.arrow_forward_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
-
-            SizedBox(height: 2.5.h),
-
-            // Description text
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.w), // More padding
-              child: Text(
-                data.description, style: GoogleFonts.inter(
-                  fontSize: 15.sp, // Slightly smaller for balance
-                  color: Colors.white.withValues(alpha: 0.9),
-                  height: 1.6,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: 0.3,
-                  shadows: [
-                    Shadow(
-                      offset: const Offset(0, 1),
-                      blurRadius: 2,
-                      color: Colors.black.withValues(alpha: 0.5),
-                    ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -964,118 +971,95 @@ class _PremiumRoleCardState extends State<_PremiumRoleCard>
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 3.h),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Icon only - NO BORDER, NO BACKGROUND
-                  Icon(
-                    widget.icon,
-                    size: 60.w, // Icon lớn
-                    color: widget.isSelected
-                        ? AppTheme.primaryLight
-                        : Colors.white.withValues(alpha: 0.9),
-                  ),
-                  SizedBox(height: 1.h),
-                  // Title with gradient
-                  ShaderMask(
-                    shaderCallback: (bounds) => widget.isSelected
-                        ? LinearGradient(
-                            colors: [
-                              Colors.white,
-                              AppTheme.primaryLight.withValues(alpha: 0.9),
-                            ],
-                          ).createShader(bounds)
-                        : const LinearGradient(
-                            colors: [Colors.white, Colors.white],
-                          ).createShader(bounds),
-                    child: Text(
-                      widget.title, style: GoogleFonts.inter(
-                        fontSize: 18.sp,
-                        fontWeight: widget.isSelected
-                            ? FontWeight.w800
-                            : FontWeight.w600,
-                        color: Colors.white,
-                        letterSpacing: 0.8,
-                        shadows: [
-                          Shadow(
-                            offset: const Offset(0, 2),
-                            blurRadius: 4,
-                            color: Colors.black.withValues(alpha: 0.5),
-                          ),
-                        ],
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(height: 0.5.h),
-                  // Subtitle
-                  Text(
-                    widget.subtitle, style: GoogleFonts.inter(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white.withValues(alpha: 0.85),
-                      height: 1.4,
-                      letterSpacing: 0.2,
-                      shadows: [
-                        Shadow(
-                          offset: const Offset(0, 1),
-                          blurRadius: 2,
-                          color: Colors.black.withValues(alpha: 0.4),
-                        ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (widget.isSelected) ...[
-                    SizedBox(height: 0.8.h),
-                    // Selected indicator
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 3.w,
-                        vertical: 0.5.h,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppTheme.primaryLight,
-                            AppTheme.secondaryLight,
-                          ],
-                        ),
+              child: Container(
+                decoration: widget.isSelected
+                    ? BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppTheme.primaryLight.withValues(alpha: 0.5),
+                          width: 1.5,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.primaryLight.withValues(alpha: 0.4),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                            color: AppTheme.primaryLight.withValues(alpha: 0.1),
+                            blurRadius: 20,
+                            spreadRadius: 0,
                           ),
                         ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.check_circle,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Đã chọn', overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
+                      )
+                    : null,
+                padding: EdgeInsets.all(2.w),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icon only - NO BORDER, NO BACKGROUND
+                    Icon(
+                      widget.icon,
+                      size: 60.w, // Icon lớn
+                      color: widget.isSelected
+                          ? AppTheme.primaryLight
+                          : Colors.white.withValues(alpha: 0.5),
+                    ),
+                    SizedBox(height: 1.h),
+                    // Title with gradient
+                    ShaderMask(
+                      shaderCallback: (bounds) => widget.isSelected
+                          ? LinearGradient(
+                              colors: [
+                                Colors.white,
+                                AppTheme.primaryLight.withValues(alpha: 0.9),
+                              ],
+                            ).createShader(bounds)
+                          : const LinearGradient(
+                              colors: [Colors.white, Colors.white],
+                            ).createShader(bounds),
+                      child: Text(
+                        widget.title, style: GoogleFonts.inter(
+                          fontSize: 18.sp,
+                          fontWeight: widget.isSelected
+                              ? FontWeight.w800
+                              : FontWeight.w600,
+                          color: Colors.white,
+                          letterSpacing: 0.8,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(0, 2),
+                              blurRadius: 4,
+                              color: Colors.black.withValues(alpha: 0.5),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
                       ),
                     ),
+                    SizedBox(height: 0.5.h),
+                    // Subtitle
+                    Text(
+                      widget.subtitle, style: GoogleFonts.inter(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w400,
+                        color: widget.isSelected
+                            ? Colors.white.withValues(alpha: 0.9)
+                            : Colors.white.withValues(alpha: 0.5),
+                        height: 1.4,
+                        letterSpacing: 0.2,
+                        shadows: [
+                          Shadow(
+                            offset: const Offset(0, 1),
+                            blurRadius: 2,
+                            color: Colors.black.withValues(alpha: 0.4),
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
-                ],
+                ),
               ),
             ),
           ),

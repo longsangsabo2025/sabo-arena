@@ -6,8 +6,8 @@ import '../../../widgets/avatar_with_quick_follow.dart';
 import '../../../widgets/post_background_card.dart';
 import '../../../services/post_background_service.dart';
 import '../../../models/post_background_theme.dart';
-import '../../../utils/like_count_debugger.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// import '../../../utils/like_count_debugger.dart';
+// ELON_MODE_AUTO_FIX
 
 class FeedPostCardWidget extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -70,7 +70,6 @@ class _FeedPostCardWidgetState extends State<FeedPostCardWidget>
         _isLiked = widget.post['isLiked'] == true;
         _likeCount = widget.post['likeCount'] ?? 0;
       });
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 
@@ -119,7 +118,7 @@ class _FeedPostCardWidgetState extends State<FeedPostCardWidget>
   @override
   Widget build(BuildContext context) {
     final userName = widget.post['userName']?.toString() ?? 'Unknown User';
-    final postId = widget.post['id']?.toString() ?? '';
+    // final postId = widget.post['id']?.toString() ?? '';
 
     return Semantics(
       label: 'Bài viết của $userName',
@@ -157,8 +156,8 @@ class _FeedPostCardWidgetState extends State<FeedPostCardWidget>
               _buildLocationAndHashtags(context),
 
             // 🐛 DEBUG: Like Count Debugger (temporary)
-            if (postId.isNotEmpty && const bool.fromEnvironment('DEBUG_LIKES', defaultValue: false))
-              LikeCountDebugger.buildDebugPanel(postId),
+            // if (postId.isNotEmpty && const bool.fromEnvironment('DEBUG_LIKES', defaultValue: false))
+            //   LikeCountDebugger.buildDebugPanel(postId),
           ],
         ),
       ),

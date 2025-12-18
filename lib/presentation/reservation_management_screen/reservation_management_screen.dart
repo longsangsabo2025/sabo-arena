@@ -28,7 +28,7 @@ class _ReservationManagementScreenState
   List<TableReservation> _confirmedReservations = [];
   List<TableReservation> _completedReservations = [];
   List<TableReservation> _cancelledReservations = [];
-  List<dynamic> _allReservations = [];
+  // List<dynamic> _allReservations = [];
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -58,7 +58,7 @@ class _ReservationManagementScreenState
       );
 
       setState(() {
-        _allReservations = reservations;
+        // _allReservations = reservations;
         _pendingReservations = reservations
             .where((r) => r.status == ReservationStatus.pending)
             .toList();
@@ -97,9 +97,11 @@ class _ReservationManagementScreenState
         await _reservationService.cancelReservation(
           reservationId,
           currentUserId,
-          'Cancelled by admin',
+          'Hủy bởi quản trị viên',
         );
       }
+
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

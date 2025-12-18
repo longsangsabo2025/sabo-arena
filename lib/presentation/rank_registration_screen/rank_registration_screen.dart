@@ -6,7 +6,7 @@ import 'package:sabo_arena/core/constants/ranking_constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 import 'package:sabo_arena/widgets/common/universal_image_widget.dart';
 
 class RankRegistrationScreen extends StatefulWidget {
@@ -92,6 +92,8 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
       final userProfile = await _userService.getCurrentUserProfile();
       final currentRank = userProfile?.rank;
 
+      if (!mounted) return;
+
       setState(() {
         _club = club;
         _currentRank = currentRank;
@@ -116,6 +118,8 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
       final List<XFile> pickedFiles = await _imagePicker.pickMultiImage(
         imageQuality: 70,
       );
+
+      if (!mounted) return;
 
       if (pickedFiles.isNotEmpty) {
         setState(() {
@@ -378,12 +382,14 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
               imageUrls.add(result['url']);
             }
           } catch (e) {
-            ProductionLogger.debug('Debug log', tag: 'AutoFix');
+            // Ignore error
           }
         }
 
         setState(() => _isUploadingImages = false);
       }
+
+      if (!mounted) return;
 
       // Combine all info into notes
       final notes =
@@ -404,17 +410,18 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
         evidenceUrls: imageUrls,
       );
 
+      if (!mounted) return;
+
       setState(() => _isLoading = false);
 
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
 
       if (result['success'] == true) {
         // Reload data to update UI state
         await _loadData();
+        if (!mounted) return;
         // Show success dialog
         _showSuccessDialog(result);
       } else {
-        ProductionLogger.debug('Debug log', tag: 'AutoFix');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['message'] ?? 'Có lỗi xảy ra'),
@@ -426,8 +433,6 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
     } catch (e) {
       setState(() => _isLoading = false);
       
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       
       // Show detailed error dialog instead of just SnackBar
       showDialog(
@@ -550,8 +555,12 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
   }
 
   void _showRequestHistory() async {
+    if (!mounted) return;
+
     try {
       final requests = await _userService.getUserRankRequests();
+
+      if (!mounted) return;
 
       showModalBottomSheet(
         context: context,
@@ -614,12 +623,14 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi khi tải lịch sử: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi tải lịch sử: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -965,36 +976,38 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                 children: _rankOptions.map((rank) {
                   final description = _rankDescriptions[rank]!;
                   final parts = description.split('\n');
-                  return RadioListTile<String>(
-                    title: Text(
-                      'Rank $rank', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          parts[0], // ELO range part
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        if (parts.length > 1)
-                          Text(
-                            parts[1], // Skill level part
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.blue[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                      ],
-                    ),
-                    value: rank,
+                  return RadioGroup<String>(
                     groupValue: _selectedRank,
                     onChanged: (value) {
                       setState(() => _selectedRank = value!);
                     },
+                    child: RadioListTile<String>(
+                      title: Text(
+                        'Rank $rank', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            parts[0], // ELO range part
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          if (parts.length > 1)
+                            Text(
+                              parts[1], // Skill level part
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.blue[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                        ],
+                      ),
+                      value: rank,
+                    ),
                   );
                 }).toList(),
               ),
@@ -1048,32 +1061,36 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
               ),
               child: Column(
                 children: [
-                  RadioListTile<String>(
-                    title: Text(
-                      'Upload hình ảnh chứng minh', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    subtitle: Text(
-                      'Tải lên kết quả giải đấu, chứng chỉ, hoặc ảnh chụp thành tích gần đây', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    value: 'evidence',
+                  RadioGroup<String>(
                     groupValue: _verificationMethod,
                     onChanged: (value) {
                       setState(() => _verificationMethod = value!);
                     },
+                    child: RadioListTile<String>(
+                      title: Text(
+                        'Upload hình ảnh chứng minh', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        'Tải lên kết quả giải đấu, chứng chỉ, hoặc ảnh chụp thành tích gần đây', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                      value: 'evidence',
+                    ),
                   ),
                   Divider(height: 1),
-                  RadioListTile<String>(
-                    title: Text(
-                      'Test hạng trực tiếp tại club', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    subtitle: Text(
-                      'Hẹn lịch để test hạng trực tiếp với HLV/Admin tại club', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    value: 'test_at_club',
+                  RadioGroup<String>(
                     groupValue: _verificationMethod,
                     onChanged: (value) {
                       setState(() => _verificationMethod = value!);
                     },
+                    child: RadioListTile<String>(
+                      title: Text(
+                        'Test hạng trực tiếp tại club', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        'Hẹn lịch để test hạng trực tiếp với HLV/Admin tại club', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                      value: 'test_at_club',
+                    ),
                   ),
                 ],
               ),

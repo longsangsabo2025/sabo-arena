@@ -5,7 +5,7 @@ import 'package:sabo_arena/services/club_analytics_service.dart';
 import 'package:sabo_arena/presentation/tournament_history_screen/tournament_history_screen.dart';
 import 'package:sabo_arena/core/device/device_info.dart';
 import 'package:sabo_arena/core/design_system/responsive_grid.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 class ClubReportsScreen extends StatefulWidget {
   final String clubId;
@@ -47,13 +47,11 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
         _analyticsData = data;
         _isLoading = false;
       });
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     } catch (e) {
       setState(() {
         _error = e.toString();
         _isLoading = false;
       });
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
     }
   }
 

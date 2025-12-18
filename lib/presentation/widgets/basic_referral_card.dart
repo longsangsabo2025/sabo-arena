@@ -5,7 +5,7 @@ import '../../core/design_system/typography.dart';
 import '../../core/design_system/app_colors.dart';
 import '../../services/basic_referral_service.dart';
 import '../referral_history/referral_history_screen.dart';
-import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+// ELON_MODE_AUTO_FIX
 
 /// Basic Referral Card Widget
 /// Displays user's referral code with sharing functionality
@@ -53,7 +53,6 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
         await _generateNewCode();
       }
     } catch (e) {
-      ProductionLogger.debug('Debug log', tag: 'AutoFix');
       setState(() => _isLoading = false);
     }
   }
@@ -67,6 +66,7 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
       );
 
       if (newCode != null) {
+        if (!mounted) return;
         setState(() {
           _referralCode = newCode;
           _isGenerating = false;
@@ -90,6 +90,8 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
         _isLoading = false;
       });
 
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('❌ Lỗi tạo mã giới thiệu: $e'),
@@ -102,6 +104,8 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
   Future<void> _copyToClipboard() async {
     if (_referralCode != null) {
       await Clipboard.setData(ClipboardData(text: _referralCode!));
+
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

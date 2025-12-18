@@ -1,16 +1,19 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../../../core/app_export.dart' hide AppColors;
 import '../../../core/design_system/design_system.dart';
-import '../../../core/performance/performance_widgets.dart';
 import '../../../core/utils/sabo_rank_system.dart';
 import '../../../widgets/user/user_widgets.dart';
 import '../../../widgets/common/common_widgets.dart'; // Phase 4: AppButton & AppSnackbar
+import '../../../models/user_profile.dart';
+import '../../../models/user_stats.dart';
+import '../../../models/user_social_stats.dart';
 import '../elo_history_screen.dart';
 import '../match_history_screen.dart';
 import '../rank_history_screen.dart';
 import '../spa_history_screen.dart';
-import 'package:sabo_arena/widgets/common/universal_image_widget.dart';
 
 /// Modern Profile Header Widget - Thiết kế giống ảnh tham khảo
 /// Features:
@@ -18,20 +21,31 @@ import 'package:sabo_arena/widgets/common/universal_image_widget.dart';
 /// - Rank badge shield style
 /// - 4 metric cards (ELO, SPA, XH, TRẬN) trong 1 row
 class ModernProfileHeaderWidget extends StatefulWidget {
-  final Map<String, dynamic> userData;
-  final VoidCallback? onEditProfile;
-  final VoidCallback? onCoverPhotoTap;
-  final Function(int)? onTabChanged; // 0: Giải Đấu, 1: Trận Đấu, 2: Kết quả
+  static const Color primaryGreen = AppColors.primary;
 
-  // Platform primary color - Teal Green (same as splash screen)
-  static const Color primaryGreen = Color(0xFF00695C); // Teal Green
+  final UserProfile userProfile;
+  final UserStats? userStats;
+  final UserSocialStats? socialData;
+  final String? tempAvatar;
+  final String? tempCoverPhoto;
+  final VoidCallback? onEditProfile;
+  final VoidCallback? onAvatarTap;
+  final VoidCallback? onCoverPhotoTap;
+  final Function(int)? onTabChanged; // 0: Bài đăng, 1: Giải Đấu, 2: Trận Đấu, 3: Kết quả
+  final int selectedTabIndex;
 
   const ModernProfileHeaderWidget({
     super.key,
-    required this.userData,
+    required this.userProfile,
+    this.userStats,
+    this.socialData,
+    this.tempAvatar,
+    this.tempCoverPhoto,
     this.onEditProfile,
+    this.onAvatarTap,
     this.onCoverPhotoTap,
     this.onTabChanged,
+    this.selectedTabIndex = 0,
   });
 
   @override
@@ -40,88 +54,175 @@ class ModernProfileHeaderWidget extends StatefulWidget {
 }
 
 class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
-  // Tab state - 0: Giải Đấu, 1: Trận Đấu, 2: Kết quả
-  int _selectedTabIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppColors.surface, // Clean white background like Facebook
+      color: AppColors.surface,
       child: Column(
         children: [
-          const SizedBox(height: 12), // Compact top spacing
-          // Hero Section - Avatar Centered (includes social stats)
-          _buildHeroSection(context),
+          // Cover Photo + Avatar Stack
+          _buildCoverAndAvatar(context),
+          
+          const SizedBox(height: 12),
+          
+          // User Info (Name, Rank, Bio)
+          _buildUserInfo(context),
 
-          const SizedBox(height: 12), // Spacing before buttons
-          // Action Buttons Row
+          const SizedBox(height: 8),
+          
+          // Social Stats
+          _buildSocialStatsRow(context),
+
+          const SizedBox(height: 12),
+          
+          // Action Buttons
           _buildActionButtons(context),
 
-          const SizedBox(height: 12), // Spacing before stats
-          // Stats Row with Icons
+          const SizedBox(height: 12),
+          
+          // Stats Row
           _buildStatsRow(context),
 
-          const SizedBox(height: 8), // Reduced spacing before tabs
-          // Tournament/Match Tabs (moved below stats)
+          const SizedBox(height: 8),
+          
+          // Tabs
           _buildMainTabs(context),
 
-          const SizedBox(height: 4), // Compact bottom spacing
+          const SizedBox(height: 4),
         ],
       ),
     );
   }
 
-  Widget _buildHeroSection(BuildContext context) {
-    final bio =
-        widget.userData["bio"] as String? ?? "🎱 Professional Pool Player";
-    final currentRankCode = widget.userData["currentRankCode"] as String?;
-    final bool hasRank = currentRankCode != null && currentRankCode.isNotEmpty;
+  Widget _buildCoverAndAvatar(BuildContext context) {
+    final coverHeight = 180.0;
+    final avatarSize = 100.0;
+    final overlap = avatarSize / 2;
+    
+    final currentRankCode = widget.userProfile.rank;
+    final bool hasRank = (currentRankCode?.isNotEmpty ?? false) && currentRankCode != 'unranked';
+
+    ImageProvider? coverImage;
+    if (widget.tempCoverPhoto != null) {
+      coverImage = kIsWeb
+          ? NetworkImage(widget.tempCoverPhoto!)
+          : FileImage(File(widget.tempCoverPhoto!)) as ImageProvider;
+    } else if (widget.userProfile.coverPhotoUrl != null && widget.userProfile.coverPhotoUrl!.isNotEmpty) {
+      coverImage = NetworkImage(widget.userProfile.coverPhotoUrl!);
+    }
+
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.bottomCenter,
+      children: [
+        // 1. Cover Photo
+        Container(
+          height: coverHeight,
+          width: double.infinity,
+          margin: EdgeInsets.only(bottom: overlap),
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            image: coverImage != null
+                ? DecorationImage(
+                    image: coverImage,
+                    fit: BoxFit.cover,
+                  )
+                : null,
+          ),
+          child: coverImage == null
+              ? Center(child: Icon(Icons.camera_alt, color: Colors.grey[600]))
+              : null,
+        ),
+        
+        // Cover Photo Tap Area
+        Positioned.fill(
+            child: Material(
+                color: Colors.transparent,
+                child: InkWell(onTap: widget.onCoverPhotoTap),
+            ),
+        ),
+
+        // 2. Avatar
+        Positioned(
+          bottom: 0,
+          child: Stack(
+            children: [
+               GestureDetector(
+                 onTap: widget.onAvatarTap,
+                 child: _buildAvatar(avatarSize, currentRankCode, hasRank),
+               ),
+               // Edit Icon
+               Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: widget.onEditProfile,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.surface, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.shadow.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(Icons.edit, size: 16, color: AppColors.textOnPrimary),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAvatar(double size, String? rankCode, bool showRankBorder) {
+      if (widget.tempAvatar != null) {
+          final rankColor = SaboRankSystem.getRankColor(rankCode ?? '');
+          return Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: showRankBorder ? Border.all(color: rankColor, width: 3) : null,
+              ),
+              child: CircleAvatar(
+                  backgroundImage: kIsWeb
+                      ? NetworkImage(widget.tempAvatar!)
+                      : FileImage(File(widget.tempAvatar!)) as ImageProvider,
+                  radius: size / 2,
+              ),
+          );
+      }
+      
+      return UserAvatarWidget(
+          avatarUrl: widget.userProfile.avatarUrl,
+          rankCode: rankCode,
+          size: size,
+          showRankBorder: showRankBorder,
+      );
+  }
+
+  Widget _buildUserInfo(BuildContext context) {
+    final bio = (widget.userProfile.bio?.isNotEmpty ?? false)
+        ? widget.userProfile.bio!
+        : "🎱 Cơ thủ chuyên nghiệp";
+    final currentRankCode = widget.userProfile.rank;
+    final bool hasRank = (currentRankCode?.isNotEmpty ?? false) && currentRankCode != 'unranked';
 
     return Column(
       children: [
-        // Avatar with gradient border and edit icon
-        Stack(
-          children: [
-            UserAvatarWidget(
-              avatarUrl: widget.userData["avatar"] as String?,
-              rankCode: currentRankCode,
-              size: 90,
-              showRankBorder: hasRank,
-            ),
-            // Edit icon ở góc phải dưới avatar
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: widget.onEditProfile,
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: ModernProfileHeaderWidget.primaryGreen,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.surface, width: 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.shadow.withValues(alpha: 0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(Icons.edit, size: 16, color: AppColors.textOnPrimary),
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 12),
-
         // Name + Verified Badge
         UserDisplayNameText(
-          userData: widget.userData,
+          userProfile: widget.userProfile,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
@@ -141,7 +242,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         ),
 
         // Rank Progress Indicator (only show if user has rank)
-        if (hasRank) _buildRankProgressIndicator(currentRankCode),
+        if (hasRank) _buildRankProgressIndicator(currentRankCode!),
 
         const SizedBox(height: 8),
 
@@ -161,18 +262,14 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-
-        const SizedBox(height: 8), // Compact spacing
-        // Followers, Following, Likes Row (Instagram style)
-        _buildSocialStatsRow(context),
       ],
     );
   }
 
   Widget _buildSocialStatsRow(BuildContext context) {
-    final followersCount = widget.userData["followersCount"] as int? ?? 1245;
-    final followingCount = widget.userData["followingCount"] as int? ?? 328;
-    final likesCount = widget.userData["likesCount"] as int? ?? 8560;
+    final followersCount = widget.socialData?.followersCount ?? 0;
+    final followingCount = widget.socialData?.followingCount ?? 0;
+    final likesCount = widget.socialData?.likesCount ?? 0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -181,7 +278,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         children: [
           _buildSocialStatItem(
             value: _formatNumber(followersCount),
-            label: 'Followers',
+            label: 'Người theo dõi',
             onTap: () {
               // TODO: Navigate to followers list
             },
@@ -193,7 +290,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           ),
           _buildSocialStatItem(
             value: _formatNumber(followingCount),
-            label: 'Following',
+            label: 'Đang theo dõi',
             onTap: () {
               // TODO: Navigate to following list
             },
@@ -205,7 +302,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           ),
           _buildSocialStatItem(
             value: _formatNumber(likesCount),
-            label: 'Likes',
+            label: 'Thích',
             onTap: () {
               // TODO: Navigate to likes list
             },
@@ -261,10 +358,10 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
   }
 
   Widget _buildStatsRow(BuildContext context) {
-    final eloRating = widget.userData["eloRating"] as int?;
-    final spaPoints = widget.userData["spaPoints"] as int? ?? 0;
-    final ranking = widget.userData["ranking"] as int? ?? 0;
-    final totalMatches = widget.userData["totalMatches"] as int? ?? 0;
+    final eloRating = widget.userProfile.eloRating;
+    final spaPoints = widget.userProfile.spaPoints;
+    final ranking = widget.userStats?.ranking ?? 0;
+    final totalMatches = widget.userStats?.totalMatches ?? (widget.userProfile.totalWins + widget.userProfile.totalLosses);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -272,30 +369,30 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         children: [
           _buildStatItem(
             icon: Icons.emoji_events,
-            value: eloRating != null ? eloRating.toString() : 'UnElo',
+            value: (eloRating ?? 0) > 0 ? eloRating.toString() : 'Chưa có ELO',
             label: 'ELO',
-            color: ModernProfileHeaderWidget.primaryGreen, // Platform green
+            color: AppColors.primary, // Platform green
           ),
           _buildDivider(),
           _buildStatItem(
             icon: Icons.star,
             value: spaPoints.toString(),
             label: 'SPA',
-            color: ModernProfileHeaderWidget.primaryGreen, // Platform green
+            color: AppColors.primary, // Platform green
           ),
           _buildDivider(),
           _buildStatItem(
             icon: Icons.trending_up,
             value: '#$ranking',
-            label: 'Rank',
-            color: ModernProfileHeaderWidget.primaryGreen, // Platform green
+            label: 'Hạng',
+            color: AppColors.primary, // Platform green
           ),
           _buildDivider(),
           _buildStatItem(
             icon: Icons.sports_esports,
             value: totalMatches.toString(),
-            label: 'Matches',
-            color: ModernProfileHeaderWidget.primaryGreen, // Platform green
+            label: 'Trận đấu',
+            color: AppColors.primary, // Platform green
           ),
         ],
       ),
@@ -396,9 +493,6 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           Expanded(
             child: InkWell(
               onTap: () {
-                setState(() {
-                  _selectedTabIndex = 0;
-                });
                 widget.onTabChanged?.call(0);
               },
               child: Column(
@@ -408,7 +502,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Icon(
                       Icons.article_outlined,
-                      color: _selectedTabIndex == 0
+                      color: widget.selectedTabIndex == 0
                           ? ModernProfileHeaderWidget.primaryGreen
                           : AppColors.textSecondary,
                       size: 20,
@@ -418,7 +512,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                   Container(
                     height: 3,
                     width: 28, // Vừa với icon 20px + padding
-                    color: _selectedTabIndex == 0
+                    color: widget.selectedTabIndex == 0
                         ? ModernProfileHeaderWidget.primaryGreen
                         : AppColors.border,
                   ),
@@ -433,9 +527,6 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           Expanded(
             child: InkWell(
               onTap: () {
-                setState(() {
-                  _selectedTabIndex = 1;
-                });
                 widget.onTabChanged?.call(1);
               },
               child: Column(
@@ -445,7 +536,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Icon(
                       Icons.emoji_events_outlined,
-                      color: _selectedTabIndex == 1
+                      color: widget.selectedTabIndex == 1
                           ? ModernProfileHeaderWidget.primaryGreen
                           : AppColors.textSecondary,
                       size: 20,
@@ -455,7 +546,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                   Container(
                     height: 3,
                     width: 28,
-                    color: _selectedTabIndex == 1
+                    color: widget.selectedTabIndex == 1
                         ? ModernProfileHeaderWidget.primaryGreen
                         : AppColors.border,
                   ),
@@ -470,9 +561,6 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           Expanded(
             child: InkWell(
               onTap: () {
-                setState(() {
-                  _selectedTabIndex = 2;
-                });
                 widget.onTabChanged?.call(2);
               },
               child: Column(
@@ -482,7 +570,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Icon(
                       Icons.sports_esports_outlined,
-                      color: _selectedTabIndex == 2
+                      color: widget.selectedTabIndex == 2
                           ? ModernProfileHeaderWidget.primaryGreen
                           : AppColors.textSecondary,
                       size: 20,
@@ -492,7 +580,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                   Container(
                     height: 3,
                     width: 28,
-                    color: _selectedTabIndex == 2
+                    color: widget.selectedTabIndex == 2
                         ? ModernProfileHeaderWidget.primaryGreen
                         : AppColors.border,
                   ),
@@ -507,9 +595,6 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           Expanded(
             child: InkWell(
               onTap: () {
-                setState(() {
-                  _selectedTabIndex = 3;
-                });
                 widget.onTabChanged?.call(3);
               },
               child: Column(
@@ -519,7 +604,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Icon(
                       Icons.leaderboard_outlined,
-                      color: _selectedTabIndex == 3
+                      color: widget.selectedTabIndex == 3
                           ? ModernProfileHeaderWidget.primaryGreen
                           : AppColors.textSecondary,
                       size: 20,
@@ -529,7 +614,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                   Container(
                     height: 3,
                     width: 28,
-                    color: _selectedTabIndex == 3
+                    color: widget.selectedTabIndex == 3
                         ? ModernProfileHeaderWidget.primaryGreen
                         : AppColors.border,
                   ),
@@ -549,11 +634,13 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
 
   // Navigate to appropriate history screen based on stat label
   void _navigateToHistoryScreen(BuildContext context, String label) {
-    final userId = widget.userData['id'] as String?;
+    final userId = widget.userProfile.id;
     // Display name is handled consistently by UserDisplayNameText
-    final userName = widget.userData['displayName'] as String? ?? 'Player';
+    final userName = widget.userProfile.displayName.isNotEmpty 
+        ? widget.userProfile.displayName 
+        : widget.userProfile.fullName;
 
-    if (userId == null) {
+    if (userId.isEmpty) {
       AppSnackbar.error(
         context: context,
         message: 'Không tìm thấy thông tin người dùng',
@@ -627,7 +714,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         break;
 
       case 'SPA':
-        title = 'SPA Points System';
+        title = 'Hệ thống điểm SPA';
         icon = Icons.star;
         iconColor = AppColors.warning;
         description =
@@ -635,32 +722,32 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         details = [
           '🎯 Cách kiếm SPA Points:',
           '',
-          '• Referral Code',
+          '• Mã giới thiệu',
           '  → Người giới thiệu: +100 SPA',
           '  → Người được giới thiệu: +50 SPA',
           '',
-          '• Tournament Position Bonus',
-          '  → 1st Place: +1,000 SPA',
-          '  → 2nd Place: +800 SPA',
-          '  → 3rd/4th Place: +550 SPA',
+          '• Thưởng thứ hạng giải đấu',
+          '  → Hạng 1: +1,000 SPA',
+          '  → Hạng 2: +800 SPA',
+          '  → Hạng 3/4: +550 SPA',
           '  → Top 25%: +400 SPA',
           '  → Top 50%: +300 SPA',
           '  → Top 75%: +200 SPA',
-          '  → Bottom 25%: +100 SPA',
+          '  → Top dưới 25%: +100 SPA',
           '',
-          '• Daily challenges & achievements',
+          '• Thử thách & thành tựu hàng ngày',
           '  → Hoàn thành nhiệm vụ hàng ngày',
           '',
           '💰 Sử dụng SPA Points:',
           '',
           '• SPA Shop: Đổi quà tặng và items',
-          '• Premium features & benefits',
-          '• Tournament entry fees (tùy chọn)',
+          '• Tính năng & quyền lợi Premium',
+          '• Phí tham gia giải đấu (tùy chọn)',
         ];
         break;
 
       case 'Rank':
-        title = 'Vietnamese Billiards Ranking';
+        title = 'Bảng xếp hạng Bida Việt Nam';
         icon = Icons.trending_up;
         iconColor = AppColors.info600;
         description = 'Hệ thống rank bida Việt Nam dựa trên điểm ELO.';
@@ -692,7 +779,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         break;
 
       case 'Matches':
-        title = 'Total Tournaments';
+        title = 'Tổng số giải đấu';
         icon = Icons.sports_esports;
         iconColor = AppColors.success;
         description = 'Tổng số tournament bạn đã tham gia trên SABO Arena.';
@@ -1008,7 +1095,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
-            children: ranks.asMap().entries.map((entry) {
+            children: ranks.asMap().entries.map<Widget>((entry) {
               final index = entry.key;
               final rank = entry.value;
               final isLast = index == ranks.length - 1;
@@ -1125,14 +1212,14 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         ),
         const SizedBox(height: 12),
 
-        _buildRewardItem('🥇 1st Place', '+75 ELO', const Color(0xFFFFD700)),
-        _buildRewardItem('🥈 2nd Place', '+60 ELO', const Color(0xFFC0C0C0)),
-        _buildRewardItem('🥉 3rd Place', '+45 ELO', const Color(0xFFCD7F32)),
-        _buildRewardItem('4th Place', '+35 ELO', AppColors.textSecondary),
+        _buildRewardItem('🥇 Hạng 1', '+75 ELO', const Color(0xFFFFD700)),
+        _buildRewardItem('🥈 Hạng 2', '+60 ELO', const Color(0xFFC0C0C0)),
+        _buildRewardItem('🥉 Hạng 3', '+45 ELO', const Color(0xFFCD7F32)),
+        _buildRewardItem('Hạng 4', '+35 ELO', AppColors.textSecondary),
         _buildRewardItem('Top 25%', '+25 ELO', AppColors.textSecondary),
         _buildRewardItem('Top 50%', '+15 ELO', AppColors.textSecondary),
         _buildRewardItem('Top 75%', '+10 ELO', AppColors.textSecondary),
-        _buildRewardItem('Bottom 25%', '-5 ELO', AppColors.error),
+        _buildRewardItem('Top dưới 25%', '-5 ELO', AppColors.error),
       ],
     );
   }
@@ -1481,8 +1568,8 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
     final nextRankCode = nextRank.key;
 
     // Calculate progress using eloRating from userData
-    final userElo = widget.userData['eloRating'] as int? ?? currentElo;
-    final progressInCurrentRank = userElo - currentElo;
+    final userElo = widget.userProfile.eloRating;
+    final progressInCurrentRank = (userElo ?? 0) - currentElo;
     final totalRankRange = nextRankElo - currentElo;
     final progressPercentage = (progressInCurrentRank / totalRankRange).clamp(0.0, 1.0);
 
@@ -1503,7 +1590,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                 ),
               ),
               Text(
-                'Next: $nextRankCode',
+                'Tiếp theo: $nextRankCode',
                 style: TextStyle(
                   fontSize: 11,
                   color: AppColors.textSecondary,
@@ -1520,7 +1607,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           ),
           const SizedBox(height: 2),
           Text(
-            '${(progressPercentage * 100).toInt()}% to next rank',
+            '${(progressPercentage * 100).toInt()}% để lên hạng',
             style: TextStyle(
               fontSize: 10,
               color: AppColors.textSecondary,

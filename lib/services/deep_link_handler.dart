@@ -81,6 +81,8 @@ class DeepLinkHandler {
           return;
         }
         
+        if (!context.mounted) return;
+        
         if (referralCode != null && referralCode.isNotEmpty) {
           // Process QR referral
           await _handleQRReferral(context, userId, referralCode);
