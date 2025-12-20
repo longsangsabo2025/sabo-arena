@@ -32,6 +32,10 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  
+  # Force compatible Facebook SDK version for flutter_facebook_auth
+  pod 'FBSDKCoreKit', '~> 17.0.0'
+  pod 'FBSDKLoginKit', '~> 17.0.0'
 
   target 'RunnerTests' do
     inherit! :search_paths

@@ -71,7 +71,7 @@ dependencies:
   
   # Social Authentication
   google_sign_in: ^6.2.1          # Google OAuth login
-  flutter_facebook_auth: ^7.1.1   # Facebook login
+  flutter_facebook_auth: ^7.1.2   # Facebook login - Latest stable
   sign_in_with_apple: ^6.1.3      # Apple Sign In (iOS only)
   
   # Local Push Notifications (không cần Firebase với Supabase)
