@@ -6,6 +6,7 @@ import 'package:sabo_arena/theme/app_theme.dart';
 import 'package:sabo_arena/services/tournament_service.dart';
 import 'package:sabo_arena/services/unified_bracket_service.dart';
 import 'package:sabo_arena/services/tournament/tournament_completion_orchestrator.dart';
+import '../../../widgets/common/app_button.dart';
 import 'package:sabo_arena/utils/production_logger.dart';
 // ELON_MODE_AUTO_FIX
 
@@ -55,8 +56,7 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
       );
 
       // Debug: Check both methods
-      await _tournamentService
-          .getTournamentParticipants(widget.tournamentId);
+      await _tournamentService.getTournamentParticipants(widget.tournamentId);
 
       _participants = await _tournamentService
           .getTournamentParticipantsWithPaymentStatus(widget.tournamentId);
@@ -99,10 +99,10 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
           .select('id, user_id, payment_status, status')
           .eq('tournament_id', widget.tournamentId);
 
-      for (int i = 0; i < response.length; i++) {
-      }
+      for (int i = 0; i < response.length; i++) {}
     } catch (e) {
-      ProductionLogger.error('Debug query failed', error: e, tag: 'TournamentSettings');
+      ProductionLogger.error('Debug query failed',
+          error: e, tag: 'TournamentSettings');
     }
   }
 
@@ -152,9 +152,11 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
               style: TextStyle(fontSize: 11.sp, color: Colors.grey[600]),
             ),
             SizedBox(height: 12.sp),
-            ElevatedButton(
+            AppButton(
+              label: 'Thử lại',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
               onPressed: _loadTournamentData,
-              child: Text('Thử lại'),
             ),
           ],
         ),
@@ -414,8 +416,8 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
                       color: position == 1
                           ? Colors.amber
                           : position == 2
-                          ? Colors.grey
-                          : Colors.orange,
+                              ? Colors.grey
+                              : Colors.orange,
                       size: 16.sp,
                     ),
                   Text(
@@ -531,24 +533,19 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
                   SizedBox(height: 12.sp),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon(
+                    child: AppButton(
+                      label: _isCompleting
+                          ? 'Đang hoàn thành...'
+                          : 'Hoàn thành giải đấu',
+                      type: AppButtonType.primary,
+                      size: AppButtonSize.large,
+                      icon: Icons.emoji_events,
+                      iconTrailing: false,
+                      customColor: AppTheme.successLight,
+                      customTextColor: Colors.white,
+                      isLoading: _isCompleting,
+                      fullWidth: true,
                       onPressed: _isCompleting ? null : _completeTournament,
-                      icon: _isCompleting
-                          ? SizedBox(
-                              width: 16.sp,
-                              height: 16.sp,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Icon(Icons.emoji_events),
-                      label: Text(
-                        _isCompleting
-                            ? 'Đang hoàn thành...'
-                            : 'Hoàn thành giải đấu',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.successLight,
-                        padding: EdgeInsets.symmetric(vertical: 12.sp),
-                      ),
                     ),
                   ),
                 ],
@@ -640,12 +637,13 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
             onPressed: () => Navigator.of(context).pop(false),
             child: Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Hoàn thành',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            customColor: AppTheme.successLight,
+            customTextColor: Colors.white,
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.successLight,
-            ),
-            child: Text('Hoàn thành'),
           ),
         ],
       ),
@@ -663,12 +661,14 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
         updateElo: true,
         distributePrizes: true,
         issueVouchers: true, // Issue vouchers to top 4
-        executeRewards: false, // 🆕 DON'T execute rewards - let admin use "Gửi Quà" button manually
+        // 🚀 ELON MODE: executeRewards defaults to true (auto-execute)
       );
 
       if (!mounted) return;
 
       if (result['success']) {
+        final standings =
+            result['standings'] as List<Map<String, dynamic>>? ?? [];
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Column(
@@ -676,10 +676,11 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '🎉 Giải đấu đã hoàn thành!',
+                  '✅ Tournament completed successfully!',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text('Dùng nút "Gửi Quà" để phân phối thưởng cho người chơi.'),
+                Text(
+                    '🎁 Rewards distributed automatically to ${standings.length} players.'),
               ],
             ),
             backgroundColor: AppTheme.successLight,
@@ -781,16 +782,17 @@ class _TournamentSettingsTabState extends State<TournamentSettingsTab> {
             onPressed: () => Navigator.of(context).pop(),
             child: Text('Đóng'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Xuất báo cáo',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             onPressed: () {
               Navigator.of(context).pop();
               _exportResults();
             },
-            child: Text('Xuất báo cáo'),
           ),
         ],
       ),
     );
   }
 }
-

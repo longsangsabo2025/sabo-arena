@@ -590,7 +590,8 @@ class _DemoBracketTabState extends State<DemoBracketTab> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                                color: const Color(0xFFFFD700)
+                                    .withValues(alpha: 0.3),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -765,7 +766,7 @@ class _DemoBracketTabState extends State<DemoBracketTab> {
   void _showFullscreenBracket() async {
     // Tạo URL để xem bracket full screen trên web
     String webUrl = _generateBracketWebUrl();
-    
+
     try {
       final Uri url = Uri.parse(webUrl);
       if (await canLaunchUrl(url)) {
@@ -787,7 +788,7 @@ class _DemoBracketTabState extends State<DemoBracketTab> {
     // Tạo URL web cho SABO Arena website
     // Hiện tại dẫn về trang chủ vì chưa có bracket viewer riêng
     const String baseUrl = 'https://saboarena.com';
-    
+
     return '$baseUrl?ref=app_demo_bracket&format=$_selectedFormat&players=$_selectedPlayerCount';
   }
 
@@ -920,16 +921,16 @@ class _DemoBracketTabState extends State<DemoBracketTab> {
     // Use the SAME logic as the main bracket display
     final winnersRounds =
         TournamentDataGenerator.calculateDoubleEliminationWinners(
-          _selectedPlayerCount,
-        );
+      _selectedPlayerCount,
+    );
     final losersRounds =
         TournamentDataGenerator.calculateDoubleEliminationLosers(
-          _selectedPlayerCount,
-        );
+      _selectedPlayerCount,
+    );
     final grandFinalRounds =
         TournamentDataGenerator.calculateDoubleEliminationGrandFinal(
-          _selectedPlayerCount,
-        );
+      _selectedPlayerCount,
+    );
 
     return Dialog.fullscreen(
       child: Scaffold(
@@ -1055,8 +1056,8 @@ class _DemoBracketTabState extends State<DemoBracketTab> {
                                           title: round['title'] ?? 'Round',
                                           matches:
                                               List<Map<String, String>>.from(
-                                                round['matches'] ?? [],
-                                              ),
+                                            round['matches'] ?? [],
+                                          ),
                                           isFullscreen: true,
                                         ),
                                       ),

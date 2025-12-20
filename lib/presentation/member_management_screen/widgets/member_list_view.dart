@@ -130,19 +130,19 @@ class _MemberListViewState extends State<MemberListView>
           Text(
             'Không tìm thấy thành viên',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
           ),
           SizedBox(height: 8),
           Text(
             'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),

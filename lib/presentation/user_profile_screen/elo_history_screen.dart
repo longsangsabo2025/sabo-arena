@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import '../../widgets/common/app_button.dart';
 
 /// Screen hiển thị lịch sử thay đổi ELO của user
 class EloHistoryScreen extends StatefulWidget {
@@ -71,14 +72,17 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Lịch sử ELO', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lịch sử ELO',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
-              widget.userName, style: const TextStyle(
+              widget.userName,
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -101,12 +105,15 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          textAlign: TextAlign.center, style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton(
+                        AppButton(
+                          label: 'Thử lại',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.medium,
                           onPressed: _loadEloHistory,
-                          child: const Text('Thử lại'),
                         ),
                       ],
                     ),
@@ -121,7 +128,9 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                               size: 60, color: Colors.grey[400]),
                           const SizedBox(height: 16),
                           Text(
-                            'Chưa có lịch sử thay đổi ELO', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Chưa có lịch sử thay đổi ELO',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[600],
                             ),
@@ -146,7 +155,8 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
   Widget _buildEloHistoryCard(Map<String, dynamic> record) {
     final oldElo = record['old_elo'] as int? ?? 0;
     final newElo = record['new_elo'] as int? ?? 0;
-    final change = record['elo_change'] as int? ?? 0; // FIX: Use 'elo_change' not 'change'
+    final change =
+        record['elo_change'] as int? ?? 0; // FIX: Use 'elo_change' not 'change'
     final changeReason = record['change_reason'] as String? ?? '';
     final reason = record['reason'] as String? ?? ''; // Also get 'reason' field
     final createdAt = DateTime.parse(record['created_at'] as String);
@@ -161,7 +171,7 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
       builder: (context, snapshot) {
         final reasonText = snapshot.data ?? changeReason.replaceAll('_', ' ');
         final reasonInfo = _getReasonInfo(reason, reasonText);
-        
+
         return _buildHistoryCard(
           changeColor: changeColor,
           changeIcon: changeIcon,
@@ -188,7 +198,6 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
     required int newElo,
     String? tournamentId,
   }) {
-
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -249,7 +258,9 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                       Icon(changeIcon, size: 18, color: Colors.white),
                       const SizedBox(width: 6),
                       Text(
-                        '${isPositive ? '+' : ''}$change điểm', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        '${isPositive ? '+' : ''}$change điểm',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -294,7 +305,8 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                   child: Row(
                     children: [
                       Text(
-                        reasonInfo['emoji'] as String, style: const TextStyle(fontSize: 20),
+                        reasonInfo['emoji'] as String,
+                        style: const TextStyle(fontSize: 20),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -302,7 +314,9 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Lý do', overflow: TextOverflow.ellipsis, style: TextStyle(
+                              'Lý do',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey[600],
                                 fontWeight: FontWeight.w500,
@@ -310,7 +324,8 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              reasonInfo['text'] as String, style: const TextStyle(
+                              reasonInfo['text'] as String,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.black87,
                                 fontWeight: FontWeight.w600,
@@ -340,7 +355,9 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'ELO cũ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                              'ELO cũ',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
                                 fontWeight: FontWeight.w500,
@@ -382,7 +399,9 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${isPositive ? '+' : ''}$change', overflow: TextOverflow.ellipsis, style: TextStyle(
+                              '${isPositive ? '+' : ''}$change',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: changeColor,
@@ -397,7 +416,9 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'ELO mới', overflow: TextOverflow.ellipsis, style: TextStyle(
+                              'ELO mới',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: changeColor,
                                 fontWeight: FontWeight.w600,
@@ -455,7 +476,9 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Từ giải đấu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Từ giải đấu',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[700],
                             fontWeight: FontWeight.w500,
@@ -475,7 +498,7 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
 
   Map<String, String> _getReasonInfo(String reason, String detailedText) {
     String emoji;
-    
+
     switch (reason) {
       case 'tournament_position_1':
         emoji = '🏆';
@@ -512,7 +535,7 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
       default:
         emoji = '📊';
     }
-    
+
     return {'emoji': emoji, 'text': detailedText};
   }
 
@@ -535,7 +558,8 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
           .eq('id', tournamentId)
           .single();
 
-      final tournamentName = tournamentResponse['name'] as String? ?? 'Giải đấu';
+      final tournamentName =
+          tournamentResponse['name'] as String? ?? 'Giải đấu';
       final tournamentFormat = tournamentResponse['format'] as String? ?? '';
 
       // Query participant info to get position and stats
@@ -579,7 +603,8 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
             'swiss': 'Swiss',
             'song_to': 'Song Tô',
           };
-          formatText = formatMap[tournamentFormat] ?? tournamentFormat.toUpperCase();
+          formatText =
+              formatMap[tournamentFormat] ?? tournamentFormat.toUpperCase();
         }
 
         // Build complete description
@@ -587,13 +612,14 @@ class _EloHistoryScreenState extends State<EloHistoryScreen> {
         if (positionText.isNotEmpty) parts.add(positionText);
         if (formatText.isNotEmpty) parts.add(formatText);
         parts.add('$wins-$losses');
-        
+
         return '$tournamentName\n${parts.join(' • ')}';
       }
 
       return tournamentName;
     } catch (e) {
-      ProductionLogger.info('Error loading tournament details: $e', tag: 'elo_history_screen');
+      ProductionLogger.info('Error loading tournament details: $e',
+          tag: 'elo_history_screen');
       return _getBasicReasonText(reason);
     }
   }

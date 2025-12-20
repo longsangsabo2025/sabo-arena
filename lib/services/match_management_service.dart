@@ -27,7 +27,9 @@ class MatchManagementService {
     String? status,
   }) async {
     try {
-      ProductionLogger.debug('Fetching challenges for club: $clubId, status: $status', tag: 'MatchManagement');
+      ProductionLogger.debug(
+          'Fetching challenges for club: $clubId, status: $status',
+          tag: 'MatchManagement');
 
       var query = _supabase
           .from('challenges')
@@ -37,14 +39,16 @@ class MatchManagementService {
             challenged:users!challenged_id(id, display_name, full_name, avatar_url, rank, is_online)
           ''')
           .eq('club_id', clubId)
-          .not('challenged_id', 'is', null); // ✅ Chỉ lấy challenges đã có người chấp nhận (challenged_id NOT NULL)
-      
+          .not('challenged_id', 'is',
+              null); // ✅ Chỉ lấy challenges đã có người chấp nhận (challenged_id NOT NULL)
+
       // Note: Không thể dùng .neq('challenger_id', 'challenged_id') để so sánh 2 cột
       // Sẽ filter self-challenges sau khi lấy dữ liệu nếu cần
 
       // Only show accepted, in_progress, or completed matches (not pending invites)
       if (status == null) {
-        query = query.inFilter('status', ['accepted', 'in_progress', 'completed']);
+        query =
+            query.inFilter('status', ['accepted', 'in_progress', 'completed']);
       } else {
         query = query.eq('status', status);
       }
@@ -58,7 +62,9 @@ class MatchManagementService {
         return challengerId != challengedId;
       }).toList();
 
-      ProductionLogger.info('Found ${filteredResponse.length} challenges (filtered ${response.length - filteredResponse.length} self-challenges)', tag: 'MatchManagement');
+      ProductionLogger.info(
+          'Found ${filteredResponse.length} challenges (filtered ${response.length - filteredResponse.length} self-challenges)',
+          tag: 'MatchManagement');
       return List<Map<String, dynamic>>.from(filteredResponse);
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -69,7 +75,8 @@ class MatchManagementService {
           context: 'Error fetching club challenges',
         ),
       );
-      ProductionLogger.error('Error fetching club challenges', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error fetching club challenges',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
@@ -108,7 +115,8 @@ class MatchManagementService {
           context: 'Error fetching today matches',
         ),
       );
-      ProductionLogger.error('Error fetching today matches', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error fetching today matches',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
@@ -116,14 +124,16 @@ class MatchManagementService {
   /// Start a challenge (change status from accepted/pending to in_progress)
   Future<void> startMatch(String matchId) async {
     try {
-      ProductionLogger.info('Starting challenge: $matchId', tag: 'MatchManagement');
+      ProductionLogger.info('Starting challenge: $matchId',
+          tag: 'MatchManagement');
 
       await _supabase.from('challenges').update({
         'status': 'in_progress',
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', matchId);
 
-      ProductionLogger.info('Challenge started successfully', tag: 'MatchManagement');
+      ProductionLogger.info('Challenge started successfully',
+          tag: 'MatchManagement');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -133,7 +143,8 @@ class MatchManagementService {
           context: 'Error starting challenge',
         ),
       );
-      ProductionLogger.error('Error starting challenge', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error starting challenge',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
@@ -146,7 +157,9 @@ class MatchManagementService {
     required int player2Score,
   }) async {
     try {
-      ProductionLogger.debug('Updating score: $matchId -> $player1Score:$player2Score', tag: 'MatchManagement');
+      ProductionLogger.debug(
+          'Updating score: $matchId -> $player1Score:$player2Score',
+          tag: 'MatchManagement');
 
       // First, get challenge details to check race_to value
       final challengeData = await _supabase
@@ -166,13 +179,16 @@ class MatchManagementService {
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', matchId);
 
-      ProductionLogger.info('Score updated successfully', tag: 'MatchManagement');
+      ProductionLogger.info('Score updated successfully',
+          tag: 'MatchManagement');
 
       // 🎯 AUTO-COMPLETE: Check if either player reached race_to
       if (player1Score >= raceTo || player2Score >= raceTo) {
         final winnerId = player1Score >= raceTo ? challengerId : challengedId;
-        ProductionLogger.info('Challenge complete! Winner: $winnerId (Race to $raceTo reached)', tag: 'MatchManagement');
-        
+        ProductionLogger.info(
+            'Challenge complete! Winner: $winnerId (Race to $raceTo reached)',
+            tag: 'MatchManagement');
+
         // Auto-complete the challenge
         await completeMatch(
           matchId: matchId,
@@ -180,8 +196,10 @@ class MatchManagementService {
           finalPlayer1Score: player1Score,
           finalPlayer2Score: player2Score,
         );
-        
-        ProductionLogger.info('Challenge auto-completed and moved to completed tab', tag: 'MatchManagement');
+
+        ProductionLogger.info(
+            'Challenge auto-completed and moved to completed tab',
+            tag: 'MatchManagement');
       }
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -192,7 +210,8 @@ class MatchManagementService {
           context: 'Error updating score',
         ),
       );
-      ProductionLogger.error('Error updating score', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error updating score',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
@@ -205,7 +224,8 @@ class MatchManagementService {
     int? finalPlayer2Score,
   }) async {
     try {
-      ProductionLogger.info('Completing challenge: $matchId, winner: $winnerId', tag: 'MatchManagement');
+      ProductionLogger.info('Completing challenge: $matchId, winner: $winnerId',
+          tag: 'MatchManagement');
 
       final updates = <String, dynamic>{
         'status': 'completed',
@@ -225,7 +245,8 @@ class MatchManagementService {
       // Update challenge
       await _supabase.from('challenges').update(updates).eq('id', matchId);
 
-      ProductionLogger.info('Challenge completed successfully', tag: 'MatchManagement');
+      ProductionLogger.info('Challenge completed successfully',
+          tag: 'MatchManagement');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -235,7 +256,8 @@ class MatchManagementService {
           context: 'Error completing challenge',
         ),
       );
-      ProductionLogger.error('Error completing challenge', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error completing challenge',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
@@ -246,7 +268,8 @@ class MatchManagementService {
     required String videoUrl,
   }) async {
     try {
-      ProductionLogger.info('Enabling live stream for match: $matchId', tag: 'MatchManagement');
+      ProductionLogger.info('Enabling live stream for match: $matchId',
+          tag: 'MatchManagement');
 
       await _supabase.from('matches').update({
         'is_live': true,
@@ -264,7 +287,8 @@ class MatchManagementService {
           context: 'Error enabling live stream',
         ),
       );
-      ProductionLogger.error('Error enabling live stream', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error enabling live stream',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
@@ -272,7 +296,8 @@ class MatchManagementService {
   /// Disable live streaming for a match
   Future<void> disableLiveStream(String matchId) async {
     try {
-      ProductionLogger.info('Disabling live stream for match: $matchId', tag: 'MatchManagement');
+      ProductionLogger.info('Disabling live stream for match: $matchId',
+          tag: 'MatchManagement');
 
       await _supabase.from('matches').update({
         'is_live': false,
@@ -289,7 +314,8 @@ class MatchManagementService {
           context: 'Error disabling live stream',
         ),
       );
-      ProductionLogger.error('Error disabling live stream', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error disabling live stream',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
@@ -298,18 +324,20 @@ class MatchManagementService {
   /// Returns a stream of match updates
   /// TODO: Implement real-time subscription
   Stream<Map<String, dynamic>> subscribeToClubMatches(String clubId) {
-    ProductionLogger.debug('Subscribing to matches for club: $clubId', tag: 'MatchManagement');
-    
+    ProductionLogger.debug('Subscribing to matches for club: $clubId',
+        tag: 'MatchManagement');
+
     // TODO: Implement Supabase Realtime subscription
     // For now, return empty stream
     return const Stream.empty();
   }
 
   /// Subscribe to real-time score updates for a specific match
-  /// TODO: Implement real-time subscription  
+  /// TODO: Implement real-time subscription
   Stream<Map<String, dynamic>> subscribeToMatchScore(String matchId) {
-    ProductionLogger.debug('Subscribing to score updates for match: $matchId', tag: 'MatchManagement');
-    
+    ProductionLogger.debug('Subscribing to score updates for match: $matchId',
+        tag: 'MatchManagement');
+
     // TODO: Implement Supabase Realtime subscription
     // For now, return empty stream
     return const Stream.empty();
@@ -318,7 +346,8 @@ class MatchManagementService {
   /// Unsubscribe from real-time updates
   Future<void> unsubscribe() async {
     if (_matchChannel != null) {
-      ProductionLogger.debug('Unsubscribing from match updates', tag: 'MatchManagement');
+      ProductionLogger.debug('Unsubscribing from match updates',
+          tag: 'MatchManagement');
       await _supabase.removeChannel(_matchChannel!);
       _matchChannel = null;
     }
@@ -327,11 +356,10 @@ class MatchManagementService {
   /// Get match details by ID
   Future<Map<String, dynamic>?> getMatchById(String matchId) async {
     try {
-      ProductionLogger.debug('Fetching match details: $matchId', tag: 'MatchManagement');
+      ProductionLogger.debug('Fetching match details: $matchId',
+          tag: 'MatchManagement');
 
-      final response = await _supabase
-          .from('matches')
-          .select('''
+      final response = await _supabase.from('matches').select('''
             *,
             player1:users!matches_player1_id_fkey(id, full_name, avatar_url, username),
             player2:users!matches_player2_id_fkey(id, full_name, avatar_url, username),
@@ -344,9 +372,7 @@ class MatchManagementService {
               price_per_hour,
               total_price
             )
-          ''')
-          .eq('id', matchId)
-          .single();
+          ''').eq('id', matchId).single();
 
       return response;
     } catch (e, stackTrace) {
@@ -358,7 +384,8 @@ class MatchManagementService {
           context: 'Error fetching match details',
         ),
       );
-      ProductionLogger.error('Error fetching match details', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error fetching match details',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       return null;
     }
   }
@@ -366,7 +393,8 @@ class MatchManagementService {
   /// Get statistics for club owner dashboard
   Future<Map<String, dynamic>> getClubMatchStats(String clubId) async {
     try {
-      ProductionLogger.debug('Fetching match statistics for club: $clubId', tag: 'MatchManagement');
+      ProductionLogger.debug('Fetching match statistics for club: $clubId',
+          tag: 'MatchManagement');
 
       // Get all matches
       final allMatches = await _supabase
@@ -375,8 +403,7 @@ class MatchManagementService {
           .eq('club_id', clubId);
 
       final total = allMatches.length;
-      final pending =
-          allMatches.where((m) => m['status'] == 'pending').length;
+      final pending = allMatches.where((m) => m['status'] == 'pending').length;
       final inProgress =
           allMatches.where((m) => m['status'] == 'in_progress').length;
       final completed =
@@ -402,7 +429,8 @@ class MatchManagementService {
         'today_matches': todayMatches.length,
       };
     } catch (e) {
-      ProductionLogger.warning('Error fetching match stats', error: e, tag: 'MatchManagement');
+      ProductionLogger.warning('Error fetching match stats',
+          error: e, tag: 'MatchManagement');
       return {
         'total_matches': 0,
         'pending': 0,
@@ -416,7 +444,8 @@ class MatchManagementService {
   /// Cancel a match (for club owner)
   Future<void> cancelMatch(String matchId, String reason) async {
     try {
-      ProductionLogger.info('Cancelling match: $matchId', tag: 'MatchManagement');
+      ProductionLogger.info('Cancelling match: $matchId',
+          tag: 'MatchManagement');
 
       // Update match status
       await _supabase.from('matches').update({
@@ -433,7 +462,8 @@ class MatchManagementService {
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('match_id', matchId);
 
-      ProductionLogger.info('Match cancelled successfully', tag: 'MatchManagement');
+      ProductionLogger.info('Match cancelled successfully',
+          tag: 'MatchManagement');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -443,9 +473,9 @@ class MatchManagementService {
           context: 'Error cancelling match',
         ),
       );
-      ProductionLogger.error('Error cancelling match', error: e, stackTrace: stackTrace, tag: 'MatchManagement');
+      ProductionLogger.error('Error cancelling match',
+          error: e, stackTrace: stackTrace, tag: 'MatchManagement');
       rethrow;
     }
   }
 }
-

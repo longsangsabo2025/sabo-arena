@@ -21,10 +21,8 @@ class CommentRepository {
         log('⚠️ No authenticated user, checking existing users...');
 
         // Try to get the first available user from database
-        final existingUsers = await _supabase
-            .from('users')
-            .select('id')
-            .limit(1);
+        final existingUsers =
+            await _supabase.from('users').select('id').limit(1);
 
         if (existingUsers.isNotEmpty) {
           effectiveUserId = existingUsers.first['id'];

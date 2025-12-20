@@ -103,7 +103,9 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '🚨 Alerts', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          '🚨 Alerts',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         ..._alerts!.map((alert) => _buildAlertCard(alert)),
@@ -143,7 +145,9 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              alert['message'] ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(color: color.withValues(alpha: 0.9)),
+              alert['message'] ?? '',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: color.withValues(alpha: 0.9)),
             ),
           ),
         ],
@@ -183,7 +187,9 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
             Row(
               children: [
                 const Text(
-                  '📊 Economy Health', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  '📊 Economy Health',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 Icon(statusIcon, color: statusColor, size: 32),
@@ -199,7 +205,9 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
             ),
             const Divider(height: 24),
             Text(
-              health['recommendation'] ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(
+              health['recommendation'] ?? '',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.grey[700],
                 fontStyle: FontStyle.italic,
               ),
@@ -223,7 +231,9 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '💰 SPA Circulation', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '💰 SPA Circulation',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildMetricRow(
@@ -260,7 +270,9 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '📈 Transaction Activity', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '📈 Transaction Activity',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildMetricRow(
@@ -297,7 +309,9 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '👥 Wealth Distribution', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '👥 Wealth Distribution',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildMetricRow('Total Users', '${wealth['total_users'] ?? 0}'),
@@ -366,7 +380,8 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
         children: [
           Text(label, style: TextStyle(color: Colors.grey[600])),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
               color: valueColor ?? Colors.black87,
@@ -386,4 +401,3 @@ class _EconomyDashboardScreenState extends State<EconomyDashboardScreen> {
     return number.toString();
   }
 }
-

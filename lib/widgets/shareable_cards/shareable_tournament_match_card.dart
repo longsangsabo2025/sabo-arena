@@ -50,7 +50,7 @@ class ShareableMatchCard extends StatelessWidget {
           children: [
             // Background Pattern
             _buildBackgroundPattern(),
-            
+
             // Content
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
@@ -58,19 +58,19 @@ class ShareableMatchCard extends StatelessWidget {
                 children: [
                   // Header
                   _buildHeader(),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Match Type Badge
                   _buildMatchTypeBadge(),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Players VS
                   _buildPlayersSection(),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Score or Status
                   if (player1Score != null && player2Score != null)
                     _buildScoreSection()
@@ -78,15 +78,15 @@ class ShareableMatchCard extends StatelessWidget {
                     _buildLiveIndicator()
                   else
                     _buildUpcomingStatus(),
-                  
+
                   const Spacer(),
-                  
+
                   // Footer
                   _buildFooter(),
                 ],
               ),
             ),
-            
+
             // Live Badge
             if (isLive) _buildLiveBadge(),
           ],
@@ -181,7 +181,7 @@ class ShareableMatchCard extends StatelessWidget {
   Widget _buildMatchTypeBadge() {
     String label;
     IconData icon;
-    
+
     switch (matchType) {
       case 'final':
         label = 'CHUNG KẾT';
@@ -195,7 +195,7 @@ class ShareableMatchCard extends StatelessWidget {
         label = 'TRẬN ĐẤU';
         icon = Icons.sports;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
@@ -234,7 +234,8 @@ class ShareableMatchCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
       ),
       child: Column(
         children: [
@@ -244,7 +245,7 @@ class ShareableMatchCard extends StatelessWidget {
             avatar: player1Avatar,
             isTop: true,
           ),
-          
+
           // VS Divider
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -291,7 +292,7 @@ class ShareableMatchCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Player 2
           _buildPlayerInfo(
             name: player2Name,
@@ -321,9 +322,9 @@ class ShareableMatchCard extends StatelessWidget {
             size: 70,
           ),
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // Name
         Expanded(
           child: Text(
@@ -344,7 +345,7 @@ class ShareableMatchCard extends StatelessWidget {
   Widget _buildScoreSection() {
     final hasWinner = player1Score != player2Score;
     final player1Won = (player1Score ?? 0) > (player2Score ?? 0);
-    
+
     return Container(
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
@@ -380,9 +381,7 @@ class ShareableMatchCard extends StatelessWidget {
                       : Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
-                    color: player1Won && hasWinner
-                        ? Colors.green
-                        : Colors.grey,
+                    color: player1Won && hasWinner ? Colors.green : Colors.grey,
                     width: 2,
                   ),
                 ),
@@ -397,7 +396,7 @@ class ShareableMatchCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
@@ -409,7 +408,7 @@ class ShareableMatchCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Player 2 Score
               Container(
                 padding: const EdgeInsets.all(20),
@@ -419,9 +418,8 @@ class ShareableMatchCard extends StatelessWidget {
                       : Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
-                    color: !player1Won && hasWinner
-                        ? Colors.green
-                        : Colors.grey,
+                    color:
+                        !player1Won && hasWinner ? Colors.green : Colors.grey,
                     width: 2,
                   ),
                 ),
@@ -489,7 +487,8 @@ class ShareableMatchCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2),
       ),
       child: Column(
         children: [

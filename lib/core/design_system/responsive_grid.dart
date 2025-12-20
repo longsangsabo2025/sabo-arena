@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sabo_arena/core/device/device_info.dart';
 
 /// Responsive grid widget that adapts column count based on iPad model
-/// 
+///
 /// Usage:
 /// ```dart
 /// ResponsiveGrid(
@@ -12,7 +12,8 @@ import 'package:sabo_arena/core/device/device_info.dart';
 /// ```
 class ResponsiveGrid extends StatelessWidget {
   final List items;
-  final Widget Function(BuildContext context, dynamic item, int index) itemBuilder;
+  final Widget Function(BuildContext context, dynamic item, int index)
+      itemBuilder;
   final double spacing;
   final double runSpacing;
   final EdgeInsets? padding;
@@ -59,7 +60,7 @@ class ResponsiveGrid extends StatelessWidget {
     }
 
     final iPadModel = DeviceInfo.getIPadModel(context);
-    
+
     switch (iPadModel) {
       case IPadModel.mini:
         return 2; // iPad Mini: 2 columns
@@ -77,7 +78,8 @@ class ResponsiveGrid extends StatelessWidget {
 /// Sliver version for use in CustomScrollView
 class ResponsiveSliverGrid extends StatelessWidget {
   final List items;
-  final Widget Function(BuildContext context, dynamic item, int index) itemBuilder;
+  final Widget Function(BuildContext context, dynamic item, int index)
+      itemBuilder;
   final double spacing;
   final double runSpacing;
   final double childAspectRatio;
@@ -117,7 +119,7 @@ class ResponsiveSliverGrid extends StatelessWidget {
     }
 
     final iPadModel = DeviceInfo.getIPadModel(context);
-    
+
     switch (iPadModel) {
       case IPadModel.mini:
         return 2; // iPad Mini: 2 columns
@@ -141,7 +143,7 @@ extension ResponsiveGridExtension on BuildContext {
     }
 
     final iPadModel = DeviceInfo.getIPadModel(this);
-    
+
     switch (iPadModel) {
       case IPadModel.mini:
         return 2;

@@ -157,13 +157,10 @@ class TournamentEloService {
   Future<EloUpdateResult> _applyEloChange(DetailedEloChange change) async {
     try {
       // Update user's ELO rating
-      await _supabase
-          .from('users')
-          .update({
-            'elo_rating': change.newElo,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', change.participantId);
+      await _supabase.from('users').update({
+        'elo_rating': change.newElo,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', change.participantId);
 
       // Log ELO history
       await _supabase.from('elo_history').insert({
@@ -241,7 +238,20 @@ class TournamentEloService {
     try {
       // 🔔 Gửi thông báo thay đổi rank qua AutoNotificationHooks
       // Determine if it's rank up or rank down based on rank order
-      final rankOrder = ['K', 'I', 'I+', 'G', 'E', 'D', 'C', 'B', 'A', 'S'];
+      // MIGRATED 2025: Removed K+/I+, updated order
+      final rankOrder = [
+        'K',
+        'I',
+        'H',
+        'H+',
+        'G',
+        'G+',
+        'F',
+        'F+',
+        'E',
+        'D',
+        'C'
+      ];
       final oldIndex = rankOrder.indexOf(oldRank);
       final newIndex = rankOrder.indexOf(newRank);
 
@@ -404,4 +414,3 @@ class EloUpdateResult {
     required this.reason,
   });
 }
-

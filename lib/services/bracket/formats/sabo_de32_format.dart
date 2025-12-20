@@ -2,18 +2,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../universal_match_progression_service.dart';
 import 'package:sabo_arena/utils/round_name_calculator.dart';
 
-/// SABO DE32 Hardcoded Service
+/// SABO DE32 Hardcoded Service (ENHANCED v2)
 ///
 /// Structure:
-/// - Total: 55 matches (all created upfront, no dynamic creation)
-/// - Group A: 24 matches (SABO DE16 structure)
+/// - Total: 59 matches (Enhanced from 55)
+/// - Group A: 26 matches (SABO DE16 Enhanced structure)
 ///   - Winner Bracket: 14 matches (3 rounds: 8+4+2)
 ///   - Loser Branch A: 7 matches (3 rounds: 4+2+1)
-///   - Loser Branch B: 3 matches (2 rounds: 2+1)
-/// - Group B: 24 matches (SABO DE16 structure)
+///   - Loser Branch B: 5 matches (4 rounds: 2+1+1+1) - ENHANCED
+/// - Group B: 26 matches (SABO DE16 Enhanced structure)
 ///   - Winner Bracket: 14 matches (3 rounds: 8+4+2)
 ///   - Loser Branch A: 7 matches (3 rounds: 4+2+1)
-///   - Loser Branch B: 3 matches (2 rounds: 2+1)
+///   - Loser Branch B: 5 matches (4 rounds: 2+1+1+1) - ENHANCED
 /// - Cross-Bracket Finals: 7 matches
 ///   - Semi-Finals: 4 matches
 ///   - Finals: 2 matches
@@ -22,17 +22,18 @@ import 'package:sabo_arena/utils/round_name_calculator.dart';
 /// Display Order System:
 /// - Group A WB: 11xxx (11101-11302)
 /// - Group A LB-A: 12xxx (12101-12301)
-/// - Group A LB-B: 13xxx (13101-13201)
+/// - Group A LB-B: 13xxx (13101-13401)
 /// - Group B WB: 21xxx (21101-21302)
 /// - Group B LB-A: 22xxx (22101-22301)
-/// - Group B LB-B: 23xxx (23101-23201)
+/// - Group B LB-B: 23xxx (23101-23401)
 /// - Cross Semi-Finals: 31xxx (31101-31104)
 /// - Cross Finals: 32xxx (32101-32102)
 /// - Grand Final: 33xxx (33101)
 ///
 /// Key Features:
-/// - Each group uses SABO DE16 format (24 matches)
-/// - WB R3 has NO loser advancement (stops at 2 players per group)
+/// - Each group uses SABO DE16 ENHANCED format (26 matches)
+/// - WB R3 losers get "Second Chance" in LB-B R3
+/// - LB-B extended to 4 rounds
 /// - Each group produces 4 qualifiers (2 WB + 1 LB-A + 1 LB-B)
 /// - Cross-bracket finals balance WB vs LB representation
 class HardcodedSaboDE32Service {
@@ -286,7 +287,7 @@ class HardcodedSaboDE32Service {
       matchNumber++;
     }
 
-    // Group A - LB-B Round 2 (1 match): 13201 [QUALIFIER]
+    // Group A - LB-B Round 2 (1 match): 13201
     {
       final displayOrder = 13201;
       final advancement = advancementMap[displayOrder]!;
@@ -298,6 +299,46 @@ class HardcodedSaboDE32Service {
           bracketType: 'LB-B',
           bracketGroup: 'A',
           stageRound: 2,
+          displayOrder: displayOrder,
+          winnerAdvancesTo: advancement['winner'],
+          loserAdvancesTo: advancement['loser'],
+        ),
+      );
+      matchNumber++;
+    }
+
+    // Group A - LB-B Round 3 (1 match): 13301 [Second Chance]
+    {
+      final displayOrder = 13301;
+      final advancement = advancementMap[displayOrder]!;
+      allMatches.add(
+        _createMatch(
+          tournamentId: tournamentId,
+          matchNumber: matchNumber,
+          roundNumber: 203, // LB-B R3
+          bracketType: 'LB-B',
+          bracketGroup: 'A',
+          stageRound: 3,
+          displayOrder: displayOrder,
+          winnerAdvancesTo: advancement['winner'],
+          loserAdvancesTo: advancement['loser'],
+        ),
+      );
+      matchNumber++;
+    }
+
+    // Group A - LB-B Round 4 (1 match): 13401 [QUALIFIER]
+    {
+      final displayOrder = 13401;
+      final advancement = advancementMap[displayOrder]!;
+      allMatches.add(
+        _createMatch(
+          tournamentId: tournamentId,
+          matchNumber: matchNumber,
+          roundNumber: 204, // LB-B R4
+          bracketType: 'LB-B',
+          bracketGroup: 'A',
+          stageRound: 4,
           displayOrder: displayOrder,
           winnerAdvancesTo: advancement['winner'],
           loserAdvancesTo: advancement['loser'],
@@ -471,7 +512,7 @@ class HardcodedSaboDE32Service {
       matchNumber++;
     }
 
-    // Group B - LB-B Round 2 (1 match): 23201 [QUALIFIER]
+    // Group B - LB-B Round 2 (1 match): 23201
     {
       final displayOrder = 23201;
       final advancement = advancementMap[displayOrder]!;
@@ -483,6 +524,46 @@ class HardcodedSaboDE32Service {
           bracketType: 'LB-B',
           bracketGroup: 'B',
           stageRound: 2,
+          displayOrder: displayOrder,
+          winnerAdvancesTo: advancement['winner'],
+          loserAdvancesTo: advancement['loser'],
+        ),
+      );
+      matchNumber++;
+    }
+
+    // Group B - LB-B Round 3 (1 match): 23301 [Second Chance]
+    {
+      final displayOrder = 23301;
+      final advancement = advancementMap[displayOrder]!;
+      allMatches.add(
+        _createMatch(
+          tournamentId: tournamentId,
+          matchNumber: matchNumber,
+          roundNumber: 203, // LB-B R3
+          bracketType: 'LB-B',
+          bracketGroup: 'B',
+          stageRound: 3,
+          displayOrder: displayOrder,
+          winnerAdvancesTo: advancement['winner'],
+          loserAdvancesTo: advancement['loser'],
+        ),
+      );
+      matchNumber++;
+    }
+
+    // Group B - LB-B Round 4 (1 match): 23401 [QUALIFIER]
+    {
+      final displayOrder = 23401;
+      final advancement = advancementMap[displayOrder]!;
+      allMatches.add(
+        _createMatch(
+          tournamentId: tournamentId,
+          matchNumber: matchNumber,
+          roundNumber: 204, // LB-B R4
+          bracketType: 'LB-B',
+          bracketGroup: 'B',
+          stageRound: 4,
           displayOrder: displayOrder,
           winnerAdvancesTo: advancement['winner'],
           loserAdvancesTo: advancement['loser'],
@@ -617,9 +698,9 @@ class HardcodedSaboDE32Service {
     map[11203] = {'winner': 11302, 'loser': 13102}; // displayOrder 11203
     map[11204] = {'winner': 11302, 'loser': 13102}; // displayOrder 11204
 
-    // Group A - WB R3 (2 matches): winner to Cross SF, NO LOSER ADVANCEMENT
-    map[11301] = {'winner': 31101, 'loser': null}; // displayOrder 11301
-    map[11302] = {'winner': 31102, 'loser': null}; // displayOrder 11302
+    // Group A - WB R3 (2 matches): winner to Cross SF, loser to LB-B R3 (Second Chance)
+    map[11301] = {'winner': 31101, 'loser': 13301}; // displayOrder 11301
+    map[11302] = {'winner': 31102, 'loser': 13301}; // displayOrder 11302
 
     // Group A - LB-A R1 (4 matches): winner to LB-A R2
     map[12101] = {'winner': 12201, 'loser': null}; // displayOrder 12101
@@ -638,8 +719,14 @@ class HardcodedSaboDE32Service {
     map[13101] = {'winner': 13201, 'loser': null}; // displayOrder 13101
     map[13102] = {'winner': 13201, 'loser': null}; // displayOrder 13102
 
-    // Group A - LB-B R2 (1 match): winner to Cross SF1
-    map[13201] = {'winner': 31101, 'loser': null}; // displayOrder 13201
+    // Group A - LB-B R2 (1 match): winner to LB-B R4
+    map[13201] = {'winner': 13401, 'loser': null}; // displayOrder 13201
+
+    // Group A - LB-B R3 (1 match): winner to LB-B R4 (Second Chance)
+    map[13301] = {'winner': 13401, 'loser': null}; // displayOrder 13301
+
+    // Group A - LB-B R4 (1 match): winner to Cross SF1
+    map[13401] = {'winner': 31101, 'loser': null}; // displayOrder 13401
 
     // ========================================
     // GROUP B ADVANCEMENT (24 matches)
@@ -661,9 +748,9 @@ class HardcodedSaboDE32Service {
     map[21203] = {'winner': 21302, 'loser': 23102}; // displayOrder 21203
     map[21204] = {'winner': 21302, 'loser': 23102}; // displayOrder 21204
 
-    // Group B - WB R3 (2 matches): winner to Cross SF, NO LOSER ADVANCEMENT
-    map[21301] = {'winner': 31103, 'loser': null}; // displayOrder 21301
-    map[21302] = {'winner': 31104, 'loser': null}; // displayOrder 21302
+    // Group B - WB R3 (2 matches): winner to Cross SF, loser to LB-B R3 (Second Chance)
+    map[21301] = {'winner': 31103, 'loser': 23301}; // displayOrder 21301
+    map[21302] = {'winner': 31104, 'loser': 23301}; // displayOrder 21302
 
     // Group B - LB-A R1 (4 matches): winner to LB-A R2
     map[22101] = {'winner': 22201, 'loser': null}; // displayOrder 22101
@@ -682,8 +769,14 @@ class HardcodedSaboDE32Service {
     map[23101] = {'winner': 23201, 'loser': null}; // displayOrder 23101
     map[23102] = {'winner': 23201, 'loser': null}; // displayOrder 23102
 
-    // Group B - LB-B R2 (1 match): winner to Cross SF3
-    map[23201] = {'winner': 31103, 'loser': null}; // displayOrder 23201
+    // Group B - LB-B R2 (1 match): winner to LB-B R4
+    map[23201] = {'winner': 23401, 'loser': null}; // displayOrder 23201
+
+    // Group B - LB-B R3 (1 match): winner to LB-B R4 (Second Chance)
+    map[23301] = {'winner': 23401, 'loser': null}; // displayOrder 23301
+
+    // Group B - LB-B R4 (1 match): winner to Cross SF3
+    map[23401] = {'winner': 31103, 'loser': null}; // displayOrder 23401
 
     // ========================================
     // CROSS-BRACKET FINALS ADVANCEMENT (7 matches)
@@ -717,14 +810,15 @@ class HardcodedSaboDE32Service {
         .select('player1_id, player2_id, tournament_id')
         .eq('id', matchId)
         .single();
-        
+
     final player1Id = match['player1_id'] as String;
     final player2Id = match['player2_id'] as String;
     final loserId = (winnerId == player1Id) ? player2Id : player1Id;
     final tournamentId = match['tournament_id'] as String;
 
     // Use UniversalMatchProgressionService for immediate advancement
-    return await UniversalMatchProgressionService.instance.updateMatchResultWithImmediateAdvancement(
+    return await UniversalMatchProgressionService.instance
+        .updateMatchResultWithImmediateAdvancement(
       matchId: matchId,
       tournamentId: tournamentId,
       winnerId: winnerId,

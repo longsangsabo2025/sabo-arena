@@ -224,7 +224,7 @@ class ShareBottomSheet extends StatelessWidget {
     try {
       final link = 'https://saboarena.app/post/$postId';
       await Clipboard.setData(ClipboardData(text: link));
-      
+
       // 🔐 SECURITY FIX: Check if context is still mounted before using it
       if (!context.mounted) return;
       Navigator.pop(context);
@@ -266,7 +266,7 @@ class ShareBottomSheet extends StatelessWidget {
           subject: 'Post từ SABO ARENA',
         );
       }
-      
+
       if (context.mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -300,7 +300,7 @@ class ShareBottomSheet extends StatelessWidget {
         createdAt: createdAt,
         context: context,
       );
-      
+
       if (context.mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -330,9 +330,9 @@ class ShareBottomSheet extends StatelessWidget {
     if (postContent != null && postContent!.isNotEmpty) {
       // Trim and remove excessive newlines
       final cleanContent = postContent!.trim().replaceAll(
-        RegExp(r'\n{3,}'),
-        '\n\n',
-      );
+            RegExp(r'\n{3,}'),
+            '\n\n',
+          );
       buffer.write(cleanContent);
       buffer.write('\n\n');
     }

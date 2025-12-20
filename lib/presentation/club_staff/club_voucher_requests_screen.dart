@@ -4,14 +4,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ClubVoucherRequestsScreen extends StatefulWidget {
   final String clubId;
-  
+
   const ClubVoucherRequestsScreen({
     super.key,
     required this.clubId,
   });
 
   @override
-  State<ClubVoucherRequestsScreen> createState() => _ClubVoucherRequestsScreenState();
+  State<ClubVoucherRequestsScreen> createState() =>
+      _ClubVoucherRequestsScreenState();
 }
 
 class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
@@ -27,19 +28,19 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
 
   Future<void> _loadVoucherRequests() async {
     setState(() => _isLoading = true);
-    
+
     try {
       var query = Supabase.instance.client
           .from('club_voucher_requests')
           .select('*')
           .eq('club_id', widget.clubId);
-      
+
       if (_filter != 'all') {
         query = query.eq('status', _filter);
       }
-      
+
       final data = await query.order('created_at', ascending: false);
-      
+
       setState(() {
         _requests = List<Map<String, dynamic>>.from(data);
       });
@@ -56,33 +57,27 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
           .select('voucher_code')
           .eq('id', requestId)
           .single();
-      
+
       final voucherCode = request['voucher_code'];
-      
+
       // Update both tables in transaction-like manner
       // 1. Update club_voucher_requests
-      await Supabase.instance.client
-          .from('club_voucher_requests')
-          .update({
-            'status': 'approved',
-            'processed_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', requestId);
-      
+      await Supabase.instance.client.from('club_voucher_requests').update({
+        'status': 'approved',
+        'processed_at': DateTime.now().toIso8601String(),
+      }).eq('id', requestId);
+
       // 2. Update user_vouchers to mark as used (approved by staff)
-      await Supabase.instance.client
-          .from('user_vouchers')
-          .update({
-            'status': 'used', // Mark as 'used' when staff approves
-          })
-          .eq('voucher_code', voucherCode);
-      
+      await Supabase.instance.client.from('user_vouchers').update({
+        'status': 'used', // Mark as 'used' when staff approves
+      }).eq('voucher_code', voucherCode);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('✅ Đã duyệt voucher!')),
         );
       }
-      
+
       _loadVoucherRequests();
     } catch (e) {
       if (mounted) {
@@ -101,34 +96,28 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
           .select('voucher_code')
           .eq('id', requestId)
           .single();
-      
+
       final voucherCode = request['voucher_code'];
-      
+
       // Update both tables
       // 1. Update club_voucher_requests
-      await Supabase.instance.client
-          .from('club_voucher_requests')
-          .update({
-            'status': 'rejected',
-            'processed_at': DateTime.now().toIso8601String(),
-            'rejection_reason': reason,
-          })
-          .eq('id', requestId);
-      
+      await Supabase.instance.client.from('club_voucher_requests').update({
+        'status': 'rejected',
+        'processed_at': DateTime.now().toIso8601String(),
+        'rejection_reason': reason,
+      }).eq('id', requestId);
+
       // 2. Update user_vouchers to mark as cancelled
-      await Supabase.instance.client
-          .from('user_vouchers')
-          .update({
-            'status': 'cancelled', // Mark as 'cancelled' when staff rejects
-          })
-          .eq('voucher_code', voucherCode);
-      
+      await Supabase.instance.client.from('user_vouchers').update({
+        'status': 'cancelled', // Mark as 'cancelled' when staff rejects
+      }).eq('voucher_code', voucherCode);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('❌ Đã từ chối voucher!')),
         );
       }
-      
+
       _loadVoucherRequests();
     } catch (e) {
       if (mounted) {
@@ -171,7 +160,7 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
               ),
             ),
           ),
-          
+
           // Request list
           Expanded(
             child: _isLoading
@@ -180,7 +169,8 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
                     ? Center(
                         child: Text(
                           'Không có yêu cầu ${_getFilterLabel()}',
-                          style: const TextStyle(fontSize: 16, color: Colors.grey),
+                          style:
+                              const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       )
                     : RefreshIndicator(
@@ -213,20 +203,24 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
 
   String _getFilterLabel() {
     switch (_filter) {
-      case 'pending': return 'chờ duyệt';
-      case 'approved': return 'đã duyệt';
-      case 'rejected': return 'bị từ chối';
-      default: return '';
+      case 'pending':
+        return 'chờ duyệt';
+      case 'approved':
+        return 'đã duyệt';
+      case 'rejected':
+        return 'bị từ chối';
+      default:
+        return '';
     }
   }
 
   Widget _buildRequestCard(Map<String, dynamic> request) {
     final status = request['status'];
     final isPending = status == 'pending';
-    
+
     Color statusColor;
     IconData statusIcon;
-    
+
     switch (status) {
       case 'approved':
         statusColor = Colors.green;
@@ -240,7 +234,7 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
         statusColor = Colors.orange;
         statusIcon = Icons.pending;
     }
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -263,7 +257,8 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -278,21 +273,22 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
                 ),
               ],
             ),
-            
+
             const Divider(height: 24),
-            
+
             // User info
             _buildInfoRow('👤 Người dùng:', request['user_name'] ?? 'N/A'),
             _buildInfoRow('📧 Email:', request['user_email'] ?? 'N/A'),
             _buildInfoRow('💰 Giá trị:', '${request['spa_value']} SPA'),
             _buildInfoRow('📅 Thời gian:', _formatDate(request['created_at'])),
-            
+
             if (request['processed_at'] != null)
-              _buildInfoRow('✅ Xử lý lúc:', _formatDate(request['processed_at'])),
-            
+              _buildInfoRow(
+                  '✅ Xử lý lúc:', _formatDate(request['processed_at'])),
+
             if (request['rejection_reason'] != null)
               _buildInfoRow('❌ Lý do:', request['rejection_reason']),
-            
+
             // Actions
             if (isPending) ...[
               const SizedBox(height: 16),
@@ -359,10 +355,14 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
 
   String _getStatusLabel(String status) {
     switch (status) {
-      case 'pending': return 'Chờ duyệt';
-      case 'approved': return 'Đã duyệt';
-      case 'rejected': return 'Từ chối';
-      default: return status;
+      case 'pending':
+        return 'Chờ duyệt';
+      case 'approved':
+        return 'Đã duyệt';
+      case 'rejected':
+        return 'Từ chối';
+      default:
+        return status;
     }
   }
 
@@ -378,7 +378,7 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
 
   void _showRejectDialog(String requestId) {
     final reasonController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -409,4 +409,3 @@ class _ClubVoucherRequestsScreenState extends State<ClubVoucherRequestsScreen> {
     );
   }
 }
-

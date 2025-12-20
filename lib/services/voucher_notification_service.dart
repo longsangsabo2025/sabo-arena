@@ -16,7 +16,8 @@ class VoucherNotificationService {
       final voucherCheck = await _supabase
           .from('spa_reward_redemptions')
           .select('*')
-          .eq('voucher_code', voucherCode)  // Fixed: use voucher_code not redemption_code
+          .eq('voucher_code',
+              voucherCode) // Fixed: use voucher_code not redemption_code
           .eq('club_id', clubId)
           .maybeSingle();
 
@@ -29,10 +30,11 @@ class VoucherNotificationService {
 
       // 2. Tạo notification cho club (using correct table structure)
       await _supabase.from('notifications').insert({
-        'club_id': clubId,  // Direct club_id column
-        'type': 'voucher_usage_request', 
+        'club_id': clubId, // Direct club_id column
+        'type': 'voucher_usage_request',
         'title': 'Yêu cầu sử dụng voucher',
-        'message': '$userName muốn sử dụng voucher $voucherCode (${voucherCheck['spa_spent']} SPA)',
+        'message':
+            '$userName muốn sử dụng voucher $voucherCode (${voucherCheck['spa_spent']} SPA)',
         'data': {
           'voucher_code': voucherCode,
           'user_email': userEmail,
@@ -48,13 +50,14 @@ class VoucherNotificationService {
 
       // 3. Cập nhật trạng thái voucher - đánh dấu đã gửi yêu cầu đến club
       try {
-        await _supabase
-            .from('spa_reward_redemptions')
-            .update({'status': 'approved'})  // Status: claimed -> approved (đã gửi, chờ club confirm)
+        await _supabase.from('spa_reward_redemptions').update({
+          'status': 'approved'
+        }) // Status: claimed -> approved (đã gửi, chờ club confirm)
             .eq('voucher_code', voucherCode);
       } catch (e) {
         // Ignore if status column doesn't exist yet - không ảnh hưởng notification
-        ProductionLogger.info('Info: Could not update voucher status: $e', tag: 'voucher_notification_service');
+        ProductionLogger.info('Info: Could not update voucher status: $e',
+            tag: 'voucher_notification_service');
       }
 
       return {
@@ -63,28 +66,27 @@ class VoucherNotificationService {
         'voucher_data': voucherCheck
       };
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Lỗi khi gửi yêu cầu: $e'
-      };
+      return {'success': false, 'message': 'Lỗi khi gửi yêu cầu: $e'};
     }
   }
 
   /// Lấy danh sách yêu cầu voucher chưa xử lý cho club
-  static Future<List<Map<String, dynamic>>> getPendingVoucherRequests(String clubId) async {
+  static Future<List<Map<String, dynamic>>> getPendingVoucherRequests(
+      String clubId) async {
     try {
       // Fixed: Use correct table structure - notifications table uses club_id directly
       final notifications = await _supabase
           .from('notifications')
           .select('*')
-          .eq('club_id', clubId)  // Use club_id instead of recipient_id
+          .eq('club_id', clubId) // Use club_id instead of recipient_id
           .eq('type', 'voucher_usage_request')
           .eq('is_read', false)
           .order('created_at', ascending: false);
 
       return notifications.cast<Map<String, dynamic>>();
     } catch (e) {
-      ProductionLogger.info('Error getting pending voucher requests: $e', tag: 'voucher_notification_service');
+      ProductionLogger.info('Error getting pending voucher requests: $e',
+          tag: 'voucher_notification_service');
       return [];
     }
   }
@@ -108,16 +110,13 @@ class VoucherNotificationService {
       final voucherValue = voucher['voucher_value'] as int;
 
       // 2. Đánh dấu voucher đã sử dụng (KHÔNG cộng SPA - user đã trả SPA để có voucher)
-      await _supabase
-          .from('user_vouchers')
-          .update({
-            'is_used': true,
-            'used_at': DateTime.now().toIso8601String(),
-            'status': 'used',
-          })
-          .eq('voucher_code', voucherCode);
+      await _supabase.from('user_vouchers').update({
+        'is_used': true,
+        'used_at': DateTime.now().toIso8601String(),
+        'status': 'used',
+      }).eq('voucher_code', voucherCode);
 
-      // 3. Cập nhật notification thành đã đọc  
+      // 3. Cập nhật notification thành đã đọc
       await _supabase
           .from('notifications')
           .update({'is_read': true})
@@ -127,23 +126,28 @@ class VoucherNotificationService {
 
       // 4. Tạo thông báo cho user
       // Note: 'user_notifications' table does not exist. Using 'notifications' table.
-      // We need user_id, but here we only have userEmail. 
+      // We need user_id, but here we only have userEmail.
       // Assuming we can't easily get ID here without a query, but 'notifications' table requires user_id.
       // For now, we will try to use 'notifications' table and hope we can get user_id or the logic needs refactoring.
       // However, looking at the code context, this service seems to be handling club-side logic.
       // Let's check if we can get user_id from somewhere or if we need to query it.
       // The previous code was inserting 'user_email' into 'user_notifications', which implies 'user_notifications' might have supported email.
       // But 'notifications' table definitely needs 'user_id' (uuid).
-      
+
       // CRITICAL FIX: We must query user_id from email first if we want to insert into 'notifications'.
-      final userRes = await _supabase.from('users').select('id').eq('email', userEmail).maybeSingle();
-      
+      final userRes = await _supabase
+          .from('users')
+          .select('id')
+          .eq('email', userEmail)
+          .maybeSingle();
+
       if (userRes != null) {
         await _supabase.from('notifications').insert({
           'user_id': userRes['id'],
           'type': 'voucher_approved',
           'title': 'Voucher đã được xác nhận',
-          'message': 'Voucher $voucherValue SPA đã được sử dụng thành công tại club',
+          'message':
+              'Voucher $voucherValue SPA đã được sử dụng thành công tại club',
           'is_read': false,
           'created_at': DateTime.now().toIso8601String(),
           // 'data': {'email': userEmail} // Optional metadata
@@ -155,10 +159,7 @@ class VoucherNotificationService {
         'message': 'Đã xác nhận sử dụng voucher thành công'
       };
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Lỗi khi xác nhận voucher: $e'
-      };
+      return {'success': false, 'message': 'Lỗi khi xác nhận voucher: $e'};
     }
   }
 
@@ -180,8 +181,7 @@ class VoucherNotificationService {
       // 2. Đặt lại trạng thái voucher
       await _supabase
           .from('user_vouchers')
-          .update({'status': 'active'})
-          .eq('voucher_code', voucherCode);
+          .update({'status': 'active'}).eq('voucher_code', voucherCode);
 
       // 3. Cập nhật notification thành đã đọc
       await _supabase
@@ -194,7 +194,11 @@ class VoucherNotificationService {
       // 4. Thông báo cho user
       // CRITICAL FIX: Query user_id from email to insert into 'notifications' table
       final userEmail = voucher['user_email'];
-      final userRes = await _supabase.from('users').select('id').eq('email', userEmail).maybeSingle();
+      final userRes = await _supabase
+          .from('users')
+          .select('id')
+          .eq('email', userEmail)
+          .maybeSingle();
 
       if (userRes != null) {
         await _supabase.from('notifications').insert({
@@ -207,20 +211,15 @@ class VoucherNotificationService {
         });
       }
 
-      return {
-        'success': true,
-        'message': 'Đã từ chối yêu cầu voucher'
-      };
+      return {'success': true, 'message': 'Đã từ chối yêu cầu voucher'};
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Lỗi khi từ chối voucher: $e'
-      };
+      return {'success': false, 'message': 'Lỗi khi từ chối voucher: $e'};
     }
   }
 
   /// Lấy lịch sử voucher của club
-  static Future<List<Map<String, dynamic>>> getClubVoucherHistory(String clubId) async {
+  static Future<List<Map<String, dynamic>>> getClubVoucherHistory(
+      String clubId) async {
     try {
       final response = await _supabase
           .from('user_vouchers')
@@ -230,7 +229,8 @@ class VoucherNotificationService {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.info('Error getting club voucher history: $e', tag: 'voucher_notification_service');
+      ProductionLogger.info('Error getting club voucher history: $e',
+          tag: 'voucher_notification_service');
       return [];
     }
   }

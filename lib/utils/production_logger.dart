@@ -11,7 +11,7 @@ import 'dart:developer' as developer;
 /// - Helps diagnose production issues
 class ProductionLogger {
   static const String _tag = 'SABO';
-  
+
   /// Set to true to enable console logs in debug mode
   static bool enableConsoleLogs = false;
 
@@ -81,7 +81,7 @@ class ProductionLogger {
       name: logTag,
       level: 700, // DEBUG level
     );
-    
+
     if (enableConsoleLogs) {
       print('🐛 [$logTag] $message');
     }

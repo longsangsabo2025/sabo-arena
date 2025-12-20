@@ -105,7 +105,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
             PopupMenuItem(
               child: ListTile(
                 leading: Icon(Icons.delete, color: Colors.red),
-                title: Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                title: Text('Xóa',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.red)),
                 dense: true,
               ),
               onTap: () => _deletePromotion(),
@@ -137,7 +139,8 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
                 ),
                 SizedBox(height: 12),
                 Text(
-                  widget.promotion.title, style: TextStyle(
+                  widget.promotion.title,
+                  style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.textPrimaryLight,
@@ -173,7 +176,8 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.promotion.description, style: TextStyle(
+            widget.promotion.description,
+            style: TextStyle(
               fontSize: 14.sp,
               color: AppTheme.textSecondaryLight,
               height: 1.4,
@@ -240,14 +244,18 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
                   Icon(Icons.confirmation_num, color: AppTheme.primaryLight),
                   SizedBox(width: 8),
                   Text(
-                    'Mã khuyến mãi: ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Mã khuyến mãi: ',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 14.sp,
                       color: AppTheme.textSecondaryLight,
                     ),
                   ),
                   Expanded(
                     child: Text(
-                      widget.promotion.promoCode!, overflow: TextOverflow.ellipsis, style: TextStyle(
+                      widget.promotion.promoCode!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.primaryLight,
@@ -346,7 +354,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
               _buildDetailItem('Người tạo', widget.promotion.createdBy!),
             SizedBox(height: 16),
             Text(
-              'Dịch vụ áp dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Dịch vụ áp dụng',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.textPrimaryLight,
@@ -376,7 +386,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
               ),
             ] else ...[
               Text(
-                'Áp dụng cho tất cả dịch vụ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Áp dụng cho tất cả dịch vụ',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 14.sp,
                   color: AppTheme.textSecondaryLight,
                 ),
@@ -406,7 +418,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Điều kiện áp dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Điều kiện áp dụng',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               color: AppTheme.textPrimaryLight,
@@ -424,7 +438,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
                   Icon(Icons.info_outline, size: 48, color: Colors.grey),
                   SizedBox(height: 8),
                   Text(
-                    'Không có điều kiện đặc biệt', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Không có điều kiện đặc biệt',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 14.sp,
                       color: AppTheme.textSecondaryLight,
                     ),
@@ -456,7 +472,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thống kê sử dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Thống kê sử dụng',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               color: AppTheme.textPrimaryLight,
@@ -488,7 +506,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
           if (widget.promotion.maxRedemptions != null) ...[
             SizedBox(height: 16),
             Text(
-              'Tiến độ sử dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Tiến độ sử dụng',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
                 color: AppTheme.textPrimaryLight,
@@ -506,7 +526,9 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
             ),
             SizedBox(height: 8),
             Text(
-              '${widget.promotion.currentRedemptions} / ${widget.promotion.maxRedemptions} lượt', overflow: TextOverflow.ellipsis, style: TextStyle(
+              '${widget.promotion.currentRedemptions} / ${widget.promotion.maxRedemptions} lượt',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 12.sp,
                 color: AppTheme.textSecondaryLight,
               ),
@@ -585,7 +607,8 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        text, style: TextStyle(
+        text,
+        style: TextStyle(
           fontSize: 12.sp,
           fontWeight: FontWeight.w600,
           color: color,
@@ -613,7 +636,8 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
               Icon(icon, size: 16, color: AppTheme.textSecondaryLight),
               SizedBox(width: 4),
               Text(
-                title, style: TextStyle(
+                title,
+                style: TextStyle(
                   fontSize: 12.sp,
                   color: AppTheme.textSecondaryLight,
                 ),
@@ -622,7 +646,8 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
           ),
           SizedBox(height: 4),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppTheme.textPrimaryLight,
@@ -642,7 +667,8 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
           SizedBox(
             width: 120,
             child: Text(
-              label, style: TextStyle(
+              label,
+              style: TextStyle(
                 fontSize: 14.sp,
                 color: AppTheme.textSecondaryLight,
               ),
@@ -650,7 +676,8 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
           ),
           Expanded(
             child: Text(
-              value, style: TextStyle(
+              value,
+              style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
                 color: AppTheme.textPrimaryLight,
@@ -700,14 +727,16 @@ class _PromotionDetailScreenState extends State<PromotionDetailScreen>
           Icon(icon, color: color, size: 24),
           SizedBox(height: 8),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
           Text(
-            title, style: TextStyle(
+            title,
+            style: TextStyle(
               fontSize: 12.sp,
               color: AppTheme.textSecondaryLight,
             ),

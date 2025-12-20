@@ -7,7 +7,7 @@ import 'redis_cache_service.dart';
 
 /// Unified Cache Manager
 /// Provides a single interface for all caching layers
-/// 
+///
 /// Cache Strategy:
 /// 1. Memory Cache (instant, limited size)
 /// 2. Disk Cache (persistent, SharedPreferences)
@@ -23,7 +23,8 @@ class CacheManager {
   static const Duration tournamentTTL = Duration(minutes: 5);
   static const Duration userProfileTTL = Duration(minutes: 15);
   static const Duration clubInfoTTL = Duration(minutes: 30);
-  static const Duration tournamentBracketTTL = Duration(hours: 1); // Until match update
+  static const Duration tournamentBracketTTL =
+      Duration(hours: 1); // Until match update
   static const Duration leaderboardTTL = Duration(minutes: 1);
   static const Duration staticDataTTL = Duration(hours: 24);
 
@@ -36,8 +37,7 @@ class CacheManager {
     await AppCacheService.instance.initialize();
     await TournamentCacheService.initialize();
     RedisCacheService.instance.initialize();
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Get tournament data (multi-layer cache)
@@ -50,7 +50,8 @@ class CacheManager {
     }
 
     // 2. Check disk cache
-    final diskCache = await TournamentCacheService.getCachedTournament(tournamentId);
+    final diskCache =
+        await TournamentCacheService.getCachedTournament(tournamentId);
     if (diskCache != null) {
       // Promote to memory cache
       _setMemoryCache('tournament:$tournamentId', diskCache, tournamentTTL);
@@ -58,7 +59,8 @@ class CacheManager {
     }
 
     // 3. Check Redis cache
-    final redisCache = await RedisCacheService.instance.getTournament(tournamentId);
+    final redisCache =
+        await RedisCacheService.instance.getTournament(tournamentId);
     if (redisCache != null) {
       // Promote to disk and memory cache
       await TournamentCacheService.cacheTournament(tournamentId, redisCache);
@@ -81,7 +83,8 @@ class CacheManager {
     await TournamentCacheService.cacheTournament(tournamentId, data);
 
     // 3. Redis cache
-    await RedisCacheService.instance.setTournament(tournamentId, data, ttl: tournamentTTL);
+    await RedisCacheService.instance
+        .setTournament(tournamentId, data, ttl: tournamentTTL);
   }
 
   /// Invalidate tournament cache (all layers)
@@ -198,8 +201,7 @@ class CacheManager {
     List<String>? userIds,
     List<String>? clubIds,
   }) async {
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
 
     // Warm tournament cache
     if (tournamentIds != null) {
@@ -223,8 +225,7 @@ class CacheManager {
       }
     }
 
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Generic cache getter
@@ -255,10 +256,10 @@ class CacheManager {
     Duration? ttl,
   }) async {
     final cacheTTL = ttl ?? _getTTLForKey(key);
-    
+
     // Memory cache
     _setMemoryCache(key, data, cacheTTL);
-    
+
     // Disk cache
     await AppCacheService.instance.setCache(
       key: key,
@@ -287,8 +288,7 @@ class CacheManager {
     _lruCache.clear();
     await AppCacheService.instance.clearAll();
     await TournamentCacheService.clearAllCache();
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Get cache statistics
@@ -340,5 +340,3 @@ class _CacheEntry {
 
   bool get isExpired => DateTime.now().isAfter(expiry);
 }
-
-

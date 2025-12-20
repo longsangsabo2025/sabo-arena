@@ -8,6 +8,7 @@ import 'participant_management_tab.dart';
 import 'match_management_tab.dart';
 import 'tournament_settings_tab.dart';
 import '../../../services/bracket_visualization_service.dart';
+import '../../../widgets/common/app_button.dart';
 import 'full_tournament_bracket_screen.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
@@ -168,9 +169,8 @@ class _TournamentManagementPanelState extends State<TournamentManagementPanel>
                       tab,
                       style: TextStyle(
                         fontSize: 12.sp,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
                         color: isSelected
                             ? Colors.white
                             : AppTheme.textSecondaryLight,
@@ -251,12 +251,11 @@ class _SimpleBracketTabState extends State<_SimpleBracketTab> {
           .single();
 
       final bracketFormat = tournamentData['bracket_format'] as String?;
-      ProductionLogger.info('🎯 Bracket format: $bracketFormat', tag: 'tournament_management_panel');
+      ProductionLogger.info('🎯 Bracket format: $bracketFormat',
+          tag: 'tournament_management_panel');
 
       // 2. Load matches with bracket_type explicitly
-      final matchesData = await _supabase
-          .from('matches')
-          .select('''
+      final matchesData = await _supabase.from('matches').select('''
             id,
             round_number,
             match_number,
@@ -271,16 +270,22 @@ class _SimpleBracketTabState extends State<_SimpleBracketTab> {
             scheduled_time,
             player1:profiles!matches_player1_id_fkey(id, full_name, avatar_url),
             player2:profiles!matches_player2_id_fkey(id, full_name, avatar_url)
-          ''')
-          .eq('tournament_id', widget.tournamentId)
-          .order('round_number');
+          ''').eq('tournament_id', widget.tournamentId).order('round_number');
 
-      ProductionLogger.info('📊 Loaded ${matchesData.length} matches', tag: 'tournament_management_panel');
+      ProductionLogger.info('📊 Loaded ${matchesData.length} matches',
+          tag: 'tournament_management_panel');
       if (matchesData.isNotEmpty) {
-        ProductionLogger.info('🔍 First match RAW DATA:', tag: 'tournament_management_panel');
-        ProductionLogger.info('   bracket_type: ${matchesData[0]['bracket_type']}', tag: 'tournament_management_panel');
-        ProductionLogger.info('   round_number: ${matchesData[0]['round_number']}', tag: 'tournament_management_panel');
-        ProductionLogger.info('   match_number: ${matchesData[0]['match_number']}', tag: 'tournament_management_panel');
+        ProductionLogger.info('🔍 First match RAW DATA:',
+            tag: 'tournament_management_panel');
+        ProductionLogger.info(
+            '   bracket_type: ${matchesData[0]['bracket_type']}',
+            tag: 'tournament_management_panel');
+        ProductionLogger.info(
+            '   round_number: ${matchesData[0]['round_number']}',
+            tag: 'tournament_management_panel');
+        ProductionLogger.info(
+            '   match_number: ${matchesData[0]['match_number']}',
+            tag: 'tournament_management_panel');
       }
 
       // 3. Transform matches to include player names
@@ -294,31 +299,35 @@ class _SimpleBracketTabState extends State<_SimpleBracketTab> {
 
       // Debug: Check if bracket_type is preserved after transform
       if (matches.isNotEmpty) {
-        ProductionLogger.info('🔍 After transform:', tag: 'tournament_management_panel');
-        ProductionLogger.info('   bracket_type: ${matches[0]['bracket_type']}', tag: 'tournament_management_panel');
-        ProductionLogger.info('   player1_name: ${matches[0]['player1_name']}', tag: 'tournament_management_panel');
+        ProductionLogger.info('🔍 After transform:',
+            tag: 'tournament_management_panel');
+        ProductionLogger.info('   bracket_type: ${matches[0]['bracket_type']}',
+            tag: 'tournament_management_panel');
+        ProductionLogger.info('   player1_name: ${matches[0]['player1_name']}',
+            tag: 'tournament_management_panel');
       }
 
       // 4. Use BracketVisualizationService to build widget
-      final bracketWidget = await BracketVisualizationService.instance
-          .buildTournamentBracket(
-            tournamentId: widget.tournamentId,
-            bracketData: {
-              'id': widget.tournamentId,
-              'format': bracketFormat ?? 'sabo_de16',
-              'matches': matches,
-            },
-            onMatchTap: () {
-              // No action needed - just display
-            },
-          );
+      final bracketWidget =
+          await BracketVisualizationService.instance.buildTournamentBracket(
+        tournamentId: widget.tournamentId,
+        bracketData: {
+          'id': widget.tournamentId,
+          'format': bracketFormat ?? 'sabo_de16',
+          'matches': matches,
+        },
+        onMatchTap: () {
+          // No action needed - just display
+        },
+      );
 
       setState(() {
         _bracketWidget = bracketWidget;
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading bracket: $e', tag: 'tournament_management_panel');
+      ProductionLogger.info('❌ Error loading bracket: $e',
+          tag: 'tournament_management_panel');
       setState(() {
         _error = e.toString();
         _isLoading = false;
@@ -341,7 +350,12 @@ class _SimpleBracketTabState extends State<_SimpleBracketTab> {
             SizedBox(height: 16),
             Text('Lỗi: $_error'),
             SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadBracket, child: Text('Thử lại')),
+            AppButton(
+              label: 'Thử lại',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              onPressed: _loadBracket,
+            ),
           ],
         ),
       );
@@ -350,7 +364,7 @@ class _SimpleBracketTabState extends State<_SimpleBracketTab> {
     return Stack(
       children: [
         _bracketWidget ?? const Center(child: Text('Không có dữ liệu')),
-        
+
         // Full Tournament Button (Top Right)
         Positioned(
           top: 16,
@@ -377,12 +391,14 @@ class _SimpleBracketTabState extends State<_SimpleBracketTab> {
         MaterialPageRoute(
           builder: (context) => FullTournamentBracketScreen(
             tournamentId: widget.tournamentId,
-            tournamentTitle: 'Full Tournament', // Can fetch from tournament data if needed
+            tournamentTitle:
+                'Full Tournament', // Can fetch from tournament data if needed
           ),
         ),
       );
     } catch (e) {
-      ProductionLogger.info('❌ Error opening full tournament view: $e', tag: 'tournament_management_panel');
+      ProductionLogger.info('❌ Error opening full tournament view: $e',
+          tag: 'tournament_management_panel');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Lỗi: $e')),

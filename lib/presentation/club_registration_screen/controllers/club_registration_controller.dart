@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sabo_arena/utils/production_logger.dart';
 import '../../../services/club_service.dart';
 
 class ClubRegistrationController extends ChangeNotifier {
@@ -66,27 +67,31 @@ class ClubRegistrationController extends ChangeNotifier {
     try {
       final user = Supabase.instance.client.auth.currentUser;
       if (user == null) {
-        print('Error uploading image: User not logged in');
+        ProductionLogger.warning('Error uploading image: User not logged in',
+            tag: 'ClubRegistration');
         return null;
       }
 
       final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
       // 🚀 MUSK: Use user-images bucket which is known to work and has proper policies
       final fullPath = 'club_registration/${user.id}/$path/$fileName';
-      
+
       final bytes = await file.readAsBytes();
-      
+
       // Use user-images bucket
       await Supabase.instance.client.storage.from('user-images').uploadBinary(
-        fullPath, 
-        bytes,
-        fileOptions: const FileOptions(upsert: true),
-      );
-      
-      final imageUrl = Supabase.instance.client.storage.from('user-images').getPublicUrl(fullPath);
+            fullPath,
+            bytes,
+            fileOptions: const FileOptions(upsert: true),
+          );
+
+      final imageUrl = Supabase.instance.client.storage
+          .from('user-images')
+          .getPublicUrl(fullPath);
       return imageUrl;
     } catch (e) {
-      print('Error uploading image: $e');
+      ProductionLogger.error('Error uploading image',
+          error: e, tag: 'ClubRegistration');
       return null;
     }
   }
@@ -175,12 +180,14 @@ class ClubRegistrationController extends ChangeNotifier {
 
     try {
       // Upload images
-      final businessLicenseUrl = await _uploadImage(_businessLicenseImage!, 'licenses');
+      final businessLicenseUrl =
+          await _uploadImage(_businessLicenseImage!, 'licenses');
       if (businessLicenseUrl == null) {
         throw Exception('Lỗi tải lên Giấy phép kinh doanh. Vui lòng thử lại.');
       }
 
-      final identityCardUrl = await _uploadImage(_identityCardImage!, 'identities');
+      final identityCardUrl =
+          await _uploadImage(_identityCardImage!, 'identities');
       if (identityCardUrl == null) {
         throw Exception('Lỗi tải lên CCCD/CMND. Vui lòng thử lại.');
       }

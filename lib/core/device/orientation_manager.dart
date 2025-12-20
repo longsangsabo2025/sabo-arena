@@ -5,15 +5,15 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'device_info.dart';
 
 /// Manages device orientation preferences based on device type
-/// 
+///
 /// iPad devices support all orientations (portrait and landscape)
 /// iPhone devices are restricted to portrait by default
-/// 
+///
 /// Usage:
 /// ```dart
 /// // At app start
 /// await OrientationManager.setDeviceOrientations(context);
-/// 
+///
 /// // For specific screens
 /// OrientationScope(
 ///   child: MyScreen(),
@@ -27,7 +27,7 @@ class OrientationManager {
   // ============================================================================
 
   /// Get allowed orientations based on device type
-  /// 
+  ///
   /// Returns:
   /// - iPad: All orientations (portrait + landscape)
   /// - iPhone: Portrait only (can be customized)
@@ -41,7 +41,7 @@ class OrientationManager {
         DeviceOrientation.landscapeRight,
       ];
     }
-    
+
     // iPad: Support all orientations for optimal multitasking
     if (Platform.isIOS && context.isIPad) {
       return [
@@ -61,7 +61,7 @@ class OrientationManager {
   }
 
   /// Apply device-appropriate orientation constraints
-  /// 
+  ///
   /// Call this at app start or when device context changes
   static Future<void> setDeviceOrientations(BuildContext context) async {
     await SystemChrome.setPreferredOrientations(
@@ -84,7 +84,7 @@ class OrientationManager {
   // ============================================================================
 
   /// Lock device to portrait orientation only
-  /// 
+  ///
   /// Useful for:
   /// - Forms and registration screens
   /// - Camera/photo capture
@@ -97,7 +97,7 @@ class OrientationManager {
   }
 
   /// Lock device to landscape orientation only
-  /// 
+  ///
   /// Useful for:
   /// - Video players
   /// - Game screens
@@ -110,7 +110,7 @@ class OrientationManager {
   }
 
   /// Lock to portrait up only (no upside down)
-  /// 
+  ///
   /// Useful for sensitive screens where upside-down would be confusing
   static Future<void> lockPortraitUp() async {
     await SystemChrome.setPreferredOrientations([
@@ -123,7 +123,7 @@ class OrientationManager {
   // ============================================================================
 
   /// Check if device should support landscape
-  /// 
+  ///
   /// iPad: Always true (Apple HIG requirement)
   /// iPhone: Can be configured per app
   static bool shouldSupportLandscape(BuildContext context) {
@@ -134,7 +134,7 @@ class OrientationManager {
   }
 
   /// Get recommended orientations for video playback
-  /// 
+  ///
   /// iPad: Landscape preferred but allow portrait
   /// iPhone: Landscape only for immersive experience
   static List<DeviceOrientation> getVideoOrientations(BuildContext context) {
@@ -160,7 +160,7 @@ class OrientationManager {
   // ============================================================================
 
   /// Check if orientation change should be animated
-  /// 
+  ///
   /// iPad: Usually seamless transitions
   /// iPhone: May want to disable for portrait-only apps
   static bool shouldAnimateOrientationChange(BuildContext context) {
@@ -178,16 +178,16 @@ class OrientationManager {
 // ============================================================================
 
 /// Widget to manage orientation for a specific screen
-/// 
+///
 /// Automatically sets orientations on init and resets on dispose.
-/// 
+///
 /// Usage:
 /// ```dart
 /// // Auto-detect based on device
 /// OrientationScope(
 ///   child: MyScreen(),
 /// )
-/// 
+///
 /// // Force portrait
 /// OrientationScope(
 ///   allowedOrientations: [
@@ -196,7 +196,7 @@ class OrientationManager {
 ///   ],
 ///   child: MyScreen(),
 /// )
-/// 
+///
 /// // Force landscape (e.g., video player)
 /// OrientationScope(
 ///   allowedOrientations: [
@@ -262,7 +262,7 @@ class _OrientationScopeState extends State<OrientationScope> {
 // ============================================================================
 
 /// Convenience widget that forces portrait orientation
-/// 
+///
 /// Usage:
 /// ```dart
 /// PortraitOnly(
@@ -294,7 +294,7 @@ class PortraitOnly extends StatelessWidget {
 // ============================================================================
 
 /// Convenience widget that forces landscape orientation
-/// 
+///
 /// Usage:
 /// ```dart
 /// LandscapeOnly(

@@ -56,7 +56,7 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
 
       // App Bar Theme
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,

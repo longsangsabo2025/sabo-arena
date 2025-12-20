@@ -20,7 +20,7 @@ class LoyaltyProgramScreen extends StatefulWidget {
 class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
   final _loyaltyService = LoyaltyService();
   final _rewardService = LoyaltyRewardService();
-  
+
   bool _isLoading = true;
   Map<String, dynamic>? _program;
   Map<String, dynamic>? _stats;
@@ -34,24 +34,24 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // Load program config
       final program = await _loyaltyService.getLoyaltyProgram(
         clubId: widget.clubId,
       );
-      
+
       // Load stats
       final stats = await _loyaltyService.getClubStats(
         clubId: widget.clubId,
       );
-      
+
       // Load rewards
       final rewards = await _rewardService.getClubRewards(
         clubId: widget.clubId,
         activeOnly: false,
       );
-      
+
       setState(() {
         _program = program;
         _stats = stats;
@@ -204,7 +204,8 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(
+      String label, String value, IconData icon, Color color) {
     return Container(
       padding: EdgeInsets.all(2.w),
       decoration: BoxDecoration(
@@ -244,7 +245,8 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
               children: [
                 Text(
                   'ℹ️ Thông Tin Program',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
@@ -256,7 +258,9 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
             _buildInfoRow('Tên chương trình', _program!['program_name']),
             _buildInfoRow(
               'Trạng thái',
-              _program!['is_active'] == true ? '✅ Đang hoạt động' : '❌ Tạm dừng',
+              _program!['is_active'] == true
+                  ? '✅ Đang hoạt động'
+                  : '❌ Tạm dừng',
             ),
             _buildInfoRow(
               'Điểm hết hạn sau',
@@ -280,7 +284,8 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
               children: [
                 Text(
                   '🎯 Quy Tắc Tích Điểm',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
@@ -319,7 +324,8 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
               children: [
                 Text(
                   '🎁 Hệ Số Nhân',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
@@ -356,7 +362,8 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
               children: [
                 Text(
                   '👑 Hệ Thống Hạng',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
@@ -521,7 +528,7 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
       case 'discount_voucher':
         return Icons.discount;
       case 'free_game':
-        return Icons.sports_esports;
+        return Icons.sports_baseball;
       case 'free_hour':
         return Icons.access_time;
       case 'merchandise':
@@ -544,7 +551,8 @@ class _LoyaltyProgramScreenState extends State<LoyaltyProgramScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
-          Text(value, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600)),
+          Text(value,
+              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600)),
         ],
       ),
     );

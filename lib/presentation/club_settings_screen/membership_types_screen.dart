@@ -443,7 +443,8 @@ class _MembershipTypesScreenState extends State<MembershipTypesScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(isEdit ? 'Chỉnh sửa loại thành viên' : 'Thêm loại thành viên'),
+        title:
+            Text(isEdit ? 'Chỉnh sửa loại thành viên' : 'Thêm loại thành viên'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -504,7 +505,8 @@ class _MembershipTypesScreenState extends State<MembershipTypesScreen> {
               // Validation
               if (nameController.text.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Vui lòng nhập tên loại thành viên')),
+                  const SnackBar(
+                      content: Text('Vui lòng nhập tên loại thành viên')),
                 );
                 return;
               }

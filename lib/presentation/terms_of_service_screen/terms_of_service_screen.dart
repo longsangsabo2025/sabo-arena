@@ -16,7 +16,9 @@ class TermsOfServiceScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          'Điều khoản sử dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+          'Điều khoản sử dụng',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: Color(0xFF1C1C1E),
@@ -46,7 +48,9 @@ class TermsOfServiceScreen extends StatelessWidget {
             // Header
             const Center(
               child: Text(
-                'ĐIỀU KHOẢN SỬ DỤNG SABO ARENA', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'ĐIỀU KHOẢN SỬ DỤNG SABO ARENA',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF1C1C1E),
@@ -59,7 +63,9 @@ class TermsOfServiceScreen extends StatelessWidget {
 
             const Center(
               child: Text(
-                'Có hiệu lực từ ngày 17 tháng 10 năm 2025', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: Color(0xFF8E8E93)),
+                'Có hiệu lực từ ngày 17 tháng 10 năm 2025',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14, color: Color(0xFF8E8E93)),
               ),
             ),
 
@@ -131,7 +137,9 @@ class TermsOfServiceScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                'Bằng việc sử dụng SABO Arena, bạn xác nhận đã đọc, hiểu và đồng ý với tất cả các điều khoản trên.', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Bằng việc sử dụng SABO Arena, bạn xác nhận đã đọc, hiểu và đồng ý với tất cả các điều khoản trên.',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFF8E8E93),
                   fontStyle: FontStyle.italic,
@@ -154,7 +162,8 @@ class TermsOfServiceScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title, style: const TextStyle(
+            title,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: Color(0xFF007AFF),
@@ -162,7 +171,8 @@ class TermsOfServiceScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            content, style: const TextStyle(
+            content,
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
               color: Color(0xFF1C1C1E),

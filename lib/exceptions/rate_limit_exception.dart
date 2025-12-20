@@ -18,7 +18,8 @@ class RateLimitException implements Exception {
 
   /// Constructor for backward compatibility with auth_service.dart
   /// Usage: RateLimitException('login', clientIP, timeUntilReset)
-  RateLimitException.legacy(String action, String identifier, Duration timeUntilReset)
+  RateLimitException.legacy(
+      String action, String identifier, Duration timeUntilReset)
       : this(
           message: 'Rate limit exceeded for $action',
           retryAfter: timeUntilReset,

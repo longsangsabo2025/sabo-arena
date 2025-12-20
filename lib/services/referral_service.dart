@@ -62,18 +62,22 @@ class ReferralService {
               'referrer_bonus': 50, // SPA points for referrer
               'referee_bonus': 25, // SPA points for referee
             },
-            'expires_at': DateTime.now()
-                .add(const Duration(days: 365))
-                .toIso8601String(),
+            'expires_at':
+                DateTime.now().add(const Duration(days: 365)).toIso8601String(),
             'is_active': true,
           })
           .select('code')
           .single();
 
-      if (kDebugMode) ProductionLogger.info('✅ Referral code created: $code for user: $userId', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info(
+            '✅ Referral code created: $code for user: $userId',
+            tag: 'referral_service');
       return response['code'] as String?;
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Failed to create referral code: $error', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Failed to create referral code: $error',
+            tag: 'referral_service');
       return null;
     }
   }
@@ -90,7 +94,9 @@ class ReferralService {
 
       return response?['code'] as String?;
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Failed to get referral code: $error', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Failed to get referral code: $error',
+            tag: 'referral_service');
       return null;
     }
   }
@@ -140,46 +146,43 @@ class ReferralService {
           .select('spa_points')
           .eq('id', referrerId)
           .maybeSingle();
-      
+
       final refereeData = await _supabase
           .from('users')
           .select('spa_points')
           .eq('id', userId)
           .maybeSingle();
 
-      final referrerCurrentSpa = (referrerData?['spa_points'] as num?)?.toInt() ?? 0;
-      final refereeCurrentSpa = (refereeData?['spa_points'] as num?)?.toInt() ?? 0;
+      final referrerCurrentSpa =
+          (referrerData?['spa_points'] as num?)?.toInt() ?? 0;
+      final refereeCurrentSpa =
+          (refereeData?['spa_points'] as num?)?.toInt() ?? 0;
 
       // Cập nhật số lần sử dụng
-      await _supabase
-          .from('referral_codes')
-          .update({
-            'current_uses': (referralResponse['current_uses'] as int) + 1,
-          })
-          .eq('id', referralResponse['id']);
+      await _supabase.from('referral_codes').update({
+        'current_uses': (referralResponse['current_uses'] as int) + 1,
+      }).eq('id', referralResponse['id']);
 
       // Cộng SPA cho người giới thiệu (referrer)
-      await _supabase
-          .from('users')
-          .update({
-            'spa_points': referrerCurrentSpa + referrerBonus,
-          })
-          .eq('id', referrerId);
+      await _supabase.from('users').update({
+        'spa_points': referrerCurrentSpa + referrerBonus,
+      }).eq('id', referrerId);
 
       if (kDebugMode) {
-        ProductionLogger.info('✅ Cộng $referrerBonus SPA cho referrer (total: ${referrerCurrentSpa + referrerBonus})', tag: 'referral_service');
+        ProductionLogger.info(
+            '✅ Cộng $referrerBonus SPA cho referrer (total: ${referrerCurrentSpa + referrerBonus})',
+            tag: 'referral_service');
       }
 
       // Cộng SPA cho người được giới thiệu (referee)
-      await _supabase
-          .from('users')
-          .update({
-            'spa_points': refereeCurrentSpa + refereeBonus,
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'spa_points': refereeCurrentSpa + refereeBonus,
+      }).eq('id', userId);
 
       if (kDebugMode) {
-        ProductionLogger.info('✅ Cộng $refereeBonus SPA cho referee (total: ${refereeCurrentSpa + refereeBonus})', tag: 'referral_service');
+        ProductionLogger.info(
+            '✅ Cộng $refereeBonus SPA cho referee (total: ${refereeCurrentSpa + refereeBonus})',
+            tag: 'referral_service');
       }
 
       // Ghi nhận transactions
@@ -205,7 +208,9 @@ class ReferralService {
         },
       ]);
 
-      if (kDebugMode) ProductionLogger.info('✅ Đã ghi nhận spa_transactions', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info('✅ Đã ghi nhận spa_transactions',
+            tag: 'referral_service');
 
       // Ghi nhận việc sử dụng vào bảng referral_usage
       await _supabase.from('referral_usage').insert({
@@ -219,10 +224,14 @@ class ReferralService {
         'status': 'completed',
       });
 
-      if (kDebugMode) ProductionLogger.info('✅ Referral code used successfully: $code', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info('✅ Referral code used successfully: $code',
+            tag: 'referral_service');
       return true;
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Failed to use referral code: $error', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Failed to use referral code: $error',
+            tag: 'referral_service');
       return false;
     }
   }
@@ -240,7 +249,9 @@ class ReferralService {
       return response != null;
     } catch (error) {
       if (kDebugMode)
-        ProductionLogger.info('❌ Failed to check if user has referral code: $error', tag: 'referral_service');
+        ProductionLogger.info(
+            '❌ Failed to check if user has referral code: $error',
+            tag: 'referral_service');
       return false;
     }
   }
@@ -255,7 +266,9 @@ class ReferralService {
         final hasCode = await userHasReferralCode(userId);
         if (hasCode) {
           if (kDebugMode)
-            ProductionLogger.info('⏭️ User $userId already has referral code, skipping', tag: 'referral_service');
+            ProductionLogger.info(
+                '⏭️ User $userId already has referral code, skipping',
+                tag: 'referral_service');
           continue;
         }
 
@@ -264,14 +277,20 @@ class ReferralService {
         if (code != null) {
           createdCount++;
           if (kDebugMode)
-            ProductionLogger.info('✅ Created referral code $code for user $userId', tag: 'referral_service');
+            ProductionLogger.info(
+                '✅ Created referral code $code for user $userId',
+                tag: 'referral_service');
         } else {
           if (kDebugMode)
-            ProductionLogger.info('❌ Failed to create referral code for user $userId', tag: 'referral_service');
+            ProductionLogger.info(
+                '❌ Failed to create referral code for user $userId',
+                tag: 'referral_service');
         }
       } catch (error) {
         if (kDebugMode)
-          ProductionLogger.info('❌ Error creating referral code for user $userId: $error', tag: 'referral_service');
+          ProductionLogger.info(
+              '❌ Error creating referral code for user $userId: $error',
+              tag: 'referral_service');
       }
     }
 
@@ -281,14 +300,11 @@ class ReferralService {
   /// Get all users who don't have referral codes yet
   Future<List<String>> getUsersWithoutReferralCodes() async {
     try {
-      final usersResponse = await _supabase
-          .from('users')
-          .select('id')
-          .eq('is_active', true);
+      final usersResponse =
+          await _supabase.from('users').select('id').eq('is_active', true);
 
-      final userIds = usersResponse
-          .map<String>((user) => user['id'] as String)
-          .toList();
+      final userIds =
+          usersResponse.map<String>((user) => user['id'] as String).toList();
 
       // Get users who already have referral codes
       final existingCodesResponse = await _supabase
@@ -309,7 +325,9 @@ class ReferralService {
           .toList();
     } catch (error) {
       if (kDebugMode)
-        ProductionLogger.info('❌ Failed to get users without referral codes: $error', tag: 'referral_service');
+        ProductionLogger.info(
+            '❌ Failed to get users without referral codes: $error',
+            tag: 'referral_service');
       return [];
     }
   }
@@ -318,25 +336,36 @@ class ReferralService {
   Future<int> createReferralCodesForAllExistingUsers() async {
     try {
       if (kDebugMode)
-        ProductionLogger.info('🔄 Starting to create referral codes for existing users...', tag: 'referral_service');
+        ProductionLogger.info(
+            '🔄 Starting to create referral codes for existing users...',
+            tag: 'referral_service');
 
       final usersWithoutCodes = await getUsersWithoutReferralCodes();
 
       if (usersWithoutCodes.isEmpty) {
-        if (kDebugMode) ProductionLogger.info('✅ All users already have referral codes', tag: 'referral_service');
+        if (kDebugMode)
+          ProductionLogger.info('✅ All users already have referral codes',
+              tag: 'referral_service');
         return 0;
       }
 
       if (kDebugMode)
-        ProductionLogger.info('📋 Found ${usersWithoutCodes.length} users without referral codes',  tag: 'referral_service');
+        ProductionLogger.info(
+            '📋 Found ${usersWithoutCodes.length} users without referral codes',
+            tag: 'referral_service');
 
       final createdCount = await createReferralCodesForUsers(usersWithoutCodes);
 
-      if (kDebugMode) ProductionLogger.info('✅ Created referral codes for $createdCount users', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info(
+            '✅ Created referral codes for $createdCount users',
+            tag: 'referral_service');
       return createdCount;
     } catch (error) {
       if (kDebugMode)
-        ProductionLogger.info('❌ Failed to create referral codes for existing users: $error', tag: 'referral_service');
+        ProductionLogger.info(
+            '❌ Failed to create referral codes for existing users: $error',
+            tag: 'referral_service');
       return 0;
     }
   }
@@ -370,7 +399,9 @@ class ReferralService {
         'rewards': response['rewards'],
       };
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Failed to get referral stats: $error', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Failed to get referral stats: $error',
+            tag: 'referral_service');
       return null;
     }
   }
@@ -378,9 +409,7 @@ class ReferralService {
   /// Get referral history for a user (list of people they referred)
   Future<List<Map<String, dynamic>>> getReferralHistory(String userId) async {
     try {
-      final response = await _supabase
-          .from('referral_usage')
-          .select('''
+      final response = await _supabase.from('referral_usage').select('''
             id,
             used_at,
             bonus_awarded,
@@ -393,9 +422,7 @@ class ReferralService {
               avatar_url,
               created_at
             )
-          ''')
-          .eq('referrer_id', userId)
-          .order('used_at', ascending: false);
+          ''').eq('referrer_id', userId).order('used_at', ascending: false);
 
       final history = <Map<String, dynamic>>[];
 
@@ -417,12 +444,16 @@ class ReferralService {
       }
 
       if (kDebugMode) {
-        ProductionLogger.info('✅ Loaded ${history.length} referral records for user $userId', tag: 'referral_service');
+        ProductionLogger.info(
+            '✅ Loaded ${history.length} referral records for user $userId',
+            tag: 'referral_service');
       }
 
       return history;
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Failed to get referral history: $error', tag: 'referral_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Failed to get referral history: $error',
+            tag: 'referral_service');
       return [];
     }
   }
@@ -444,7 +475,9 @@ class ReferralService {
       return total;
     } catch (error) {
       if (kDebugMode) {
-        ProductionLogger.info('❌ Failed to get total SPA from referrals: $error', tag: 'referral_service');
+        ProductionLogger.info(
+            '❌ Failed to get total SPA from referrals: $error',
+            tag: 'referral_service');
       }
       return 0;
     }

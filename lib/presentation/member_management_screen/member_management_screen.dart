@@ -87,14 +87,16 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
 
   Future<void> _loadMemberData() async {
     try {
-      ProductionLogger.info('🚀 Loading member data for club: ${widget.clubId}', tag: 'member_management_screen');
+      ProductionLogger.info('🚀 Loading member data for club: ${widget.clubId}',
+          tag: 'member_management_screen');
       // Fetch real member data from the service - get all members first
       final membersData = await MemberManagementService.getClubMembers(
         clubId: widget.clubId,
         // Don't filter by status initially, get all members
       );
 
-      ProductionLogger.info('✅ Got ${membersData.length} members from service', tag: 'member_management_screen');
+      ProductionLogger.info('✅ Got ${membersData.length} members from service',
+          tag: 'member_management_screen');
 
       // Calculate real analytics - COMMENTED OUT (analytics hidden)
       // final totalMembers = membersData.length;
@@ -112,7 +114,9 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
       // }).length;
 
       final convertedMembers = _convertToMemberData(membersData);
-      ProductionLogger.info('✅ Converted ${convertedMembers.length} members to MemberData objects',  tag: 'member_management_screen');
+      ProductionLogger.info(
+          '✅ Converted ${convertedMembers.length} members to MemberData objects',
+          tag: 'member_management_screen');
 
       setState(() {
         _allMembers = convertedMembers;
@@ -128,7 +132,8 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
 
       _animationController.forward();
     } catch (e) {
-      ProductionLogger.info('Error loading member data: $e', tag: 'member_management_screen');
+      ProductionLogger.info('Error loading member data: $e',
+          tag: 'member_management_screen');
       setState(() {
         _isLoading = false;
         // Fallback to empty list or show error
@@ -167,7 +172,8 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
         _isLoadingRankRequests = false;
       });
     } catch (e) {
-      ProductionLogger.info('Error loading rank requests: $e', tag: 'member_management_screen');
+      ProductionLogger.info('Error loading rank requests: $e',
+          tag: 'member_management_screen');
       setState(() => _isLoadingRankRequests = false);
     }
   }
@@ -202,19 +208,23 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
             ),
       title: isInSelectionMode
           ? Text(
-              '${_selectedMembers.length} đã chọn', overflow: TextOverflow.ellipsis, style: AppTypography.headingMedium.copyWith(
+              '${_selectedMembers.length} đã chọn',
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.headingMedium.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             )
           : _isSearchMode
-          ? _buildInlineSearchBar()
-          : Text(
-              'Thành viên', overflow: TextOverflow.ellipsis, style: AppTypography.headingMedium.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+              ? _buildInlineSearchBar()
+              : Text(
+                  'Thành viên',
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.headingMedium.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
       centerTitle: !_isSearchMode,
       actions: isInSelectionMode
           ? [
@@ -230,137 +240,144 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
               ),
             ]
           : _isSearchMode
-          ? [
-              // Cancel button when in search mode
-              AppButton(
-                label: 'Hủy',
-                type: AppButtonType.text,
-                onPressed: () {
-                  setState(() {
-                    _isSearchMode = false;
-                    _searchController.clear();
-                    _searchQuery = '';
-                    _filterMembers();
-                  });
-                },
-              ),
-            ]
-          : [
-              // Search icon
-              IconButton(
-                icon: Icon(Icons.search, color: AppColors.textPrimary),
-                onPressed: () {
-                  setState(() {
-                    _isSearchMode = true;
-                  });
-                  // Auto focus search field
-                  Future.delayed(Duration(milliseconds: 100), () {
-                    _searchFocusNode.requestFocus();
-                  });
-                },
-                tooltip: 'Tìm kiếm',
-              ),
-
-              // Add member icon with badge for rank verification requests
-              Stack(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.person_add, color: AppColors.textPrimary),
-                    onPressed: _showAddMemberDialog,
-                    tooltip: 'Thêm thành viên',
+              ? [
+                  // Cancel button when in search mode
+                  AppButton(
+                    label: 'Hủy',
+                    type: AppButtonType.text,
+                    onPressed: () {
+                      setState(() {
+                        _isSearchMode = false;
+                        _searchController.clear();
+                        _searchQuery = '';
+                        _filterMembers();
+                      });
+                    },
                   ),
-                  if (_pendingRequestsCount > 0)
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        constraints: BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
-                        ),
-                        child: Text(
-                          _pendingRequestsCount > 99
-                              ? '99+'
-                              : _pendingRequestsCount.toString(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                ]
+              : [
+                  // Search icon
+                  IconButton(
+                    icon: Icon(Icons.search, color: AppColors.textPrimary),
+                    onPressed: () {
+                      setState(() {
+                        _isSearchMode = true;
+                      });
+                      // Auto focus search field
+                      Future.delayed(Duration(milliseconds: 100), () {
+                        _searchFocusNode.requestFocus();
+                      });
+                    },
+                    tooltip: 'Tìm kiếm',
+                  ),
+
+                  // Add member icon with badge for rank verification requests
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.person_add,
+                            color: AppColors.textPrimary),
+                        onPressed: _showAddMemberDialog,
+                        tooltip: 'Thêm thành viên',
+                      ),
+                      if (_pendingRequestsCount > 0)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              _pendingRequestsCount > 99
+                                  ? '99+'
+                                  : _pendingRequestsCount.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
+                        ),
+                    ],
+                  ),
+
+                  // More menu
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: AppColors.textPrimary),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'export',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.file_download,
+                              size: 20,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Xuất danh sách',
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                ],
-              ),
-
-              // More menu
-              PopupMenuButton<String>(
-                icon: Icon(Icons.more_vert, color: AppColors.textPrimary),
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'export',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.file_download,
-                          size: 20,
-                          color: AppColors.textSecondary,
+                      PopupMenuItem(
+                        value: 'import',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.file_upload,
+                              size: 20,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Nhập thành viên',
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Xuất danh sách', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textPrimary,
-                          ),
+                      ),
+                      PopupMenuItem(
+                        value: 'settings',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.settings,
+                              size: 20,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Cài đặt',
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'import',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.file_upload,
-                          size: 20,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Nhập thành viên', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'settings',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.settings,
-                          size: 20,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Cài đặt', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
+                    onSelected: _handleMenuAction,
                   ),
                 ],
-                onSelected: _handleMenuAction,
-              ),
-            ],
     );
   }
 
@@ -470,7 +487,9 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
           CircularProgressIndicator(color: AppColors.primary, strokeWidth: 3),
           const SizedBox(height: 24),
           Text(
-            'Đang tải danh sách thành viên...', overflow: TextOverflow.ellipsis, style: AppTypography.bodyLarge.copyWith(
+            'Đang tải danh sách thành viên...',
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodyLarge.copyWith(
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
@@ -612,18 +631,16 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
     setState(() {
       _filteredMembers = _allMembers.where((member) {
         // Text search
-        final matchesSearch =
-            _searchQuery.isEmpty ||
+        final matchesSearch = _searchQuery.isEmpty ||
             member.user.name.toLowerCase().contains(
-              _searchQuery.toLowerCase(),
-            ) ||
+                  _searchQuery.toLowerCase(),
+                ) ||
             member.user.username.toLowerCase().contains(
-              _searchQuery.toLowerCase(),
-            );
+                  _searchQuery.toLowerCase(),
+                );
 
         // Status filter
-        final matchesStatus =
-            _selectedFilter == 'all' ||
+        final matchesStatus = _selectedFilter == 'all' ||
             (_selectedFilter == 'active' &&
                 member.membershipInfo.status == MemberStatus.active) ||
             (_selectedFilter == 'new' && _isNewMember(member)) ||
@@ -790,78 +807,85 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
                   ),
                 )
               : _rankRequests.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.check_circle, color: Colors.green, size: 64),
-                      SizedBox(height: 16),
-                      Text(
-                        'Không có yêu cầu xác minh hạng nào', overflow: TextOverflow.ellipsis, style: AppTypography.bodyLarge.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _rankRequests.length,
-                  itemBuilder: (context, index) {
-                    final request = _rankRequests[index];
-                    return Card(
-                      margin: EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        leading: UserAvatarWidget(
-                          avatarUrl: request.user?.avatarUrl,
-                          size: 40,
-                        ),
-                        title: UserDisplayNameText(
-                          userData: {
-                            'display_name': request.user?.displayName,
-                          },
-                          style: AppTypography.bodyLarge.copyWith(
-                            fontWeight: FontWeight.w600,
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check_circle,
+                              color: Colors.green, size: 64),
+                          SizedBox(height: 16),
+                          Text(
+                            'Không có yêu cầu xác minh hạng nào',
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodyLarge.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                           ),
-                          maxLines: 1,
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Yêu cầu: ${request.requestedAt.toString().split(' ')[0]}',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            if (request.notes != null &&
-                                request.notes!.isNotEmpty)
-                              Text(
-                                'Ghi chú: ${request.notes}', overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                          ],
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.check, color: Colors.green),
-                              onPressed: () => _approveRankRequest(request.id),
-                              tooltip: 'Duyệt',
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.close, color: Colors.red),
-                              onPressed: () => _rejectRankRequest(request.id),
-                              tooltip: 'Từ chối',
-                            ),
-                          ],
-                        ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _rankRequests.length,
+                      itemBuilder: (context, index) {
+                        final request = _rankRequests[index];
+                        return Card(
+                          margin: EdgeInsets.only(bottom: 8),
+                          child: ListTile(
+                            leading: UserAvatarWidget(
+                              avatarUrl: request.user?.avatarUrl,
+                              size: 40,
+                            ),
+                            title: UserDisplayNameText(
+                              userData: {
+                                'display_name': request.user?.displayName,
+                              },
+                              style: AppTypography.bodyLarge.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Yêu cầu: ${request.requestedAt.toString().split(' ')[0]}',
+                                  style: AppTypography.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                if (request.notes != null &&
+                                    request.notes!.isNotEmpty)
+                                  Text(
+                                    'Ghi chú: ${request.notes}',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.check, color: Colors.green),
+                                  onPressed: () =>
+                                      _approveRankRequest(request.id),
+                                  tooltip: 'Duyệt',
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.close, color: Colors.red),
+                                  onPressed: () =>
+                                      _rejectRankRequest(request.id),
+                                  tooltip: 'Từ chối',
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
         ),
         actions: [
           AppButton(
@@ -881,7 +905,7 @@ class _MemberManagementScreenState extends State<MemberManagementScreen>
         clubId: widget.clubId,
         permissionKey: 'verify_rank',
       );
-      
+
       if (!canVerify) {
         if (mounted) {
           AppSnackbar.error(

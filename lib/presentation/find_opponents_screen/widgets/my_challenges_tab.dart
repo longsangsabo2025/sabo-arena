@@ -33,13 +33,13 @@ class _MyChallengesTabState extends State<MyChallengesTab>
   List<Map<String, dynamic>> _allChallenges = [];
   bool _isLoading = true;
   String? _errorMessage;
-  
+
   // Sub-tab controller
   late TabController _subTabController;
 
   @override
   bool get wantKeepAlive => true;
-  
+
   @override
   void dispose() {
     _subTabController.dispose();
@@ -107,7 +107,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
           )
           .order('created_at', ascending: false);
 
-
       // WORKAROUND: Fetch matches separately since schema cache hasn't recognized FK yet
       // Get all challenge IDs that are accepted
       final challengeIds = challengesResponse
@@ -116,14 +115,15 @@ class _MyChallengesTabState extends State<MyChallengesTab>
           .toList();
 
       Map<String, dynamic> matchesMap = {};
-      
+
       if (challengeIds.isNotEmpty) {
         try {
           final matchesResponse = await _supabase
               .from('matches')
-              .select('id, challenge_id, status, is_live, video_urls, player1_score, player2_score')
+              .select(
+                  'id, challenge_id, status, is_live, video_urls, player1_score, player2_score')
               .inFilter('challenge_id', challengeIds);
-          
+
           // Build map of challenge_id -> match
           for (var match in matchesResponse) {
             final challengeId = match['challenge_id'];
@@ -188,7 +188,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
     if (_allChallenges.isEmpty) {
       return Center(
         child: EmptyStateWidget(
-          icon: Icons.sports_esports_outlined,
+          icon: Icons.sports_baseball_outlined,
           message: 'Chưa có trận đấu nào',
           subtitle: 'Tạo thách đấu hoặc tham gia giao lưu để bắt đầu!',
           actionLabel: 'Làm mới',
@@ -242,7 +242,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
             indicatorColor: Theme.of(context).primaryColor,
           ),
         ),
-        
+
         // Sub-tabs content
         Expanded(
           child: TabBarView(
@@ -250,7 +250,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
             children: [
               // Ready tab
               _buildChallengesList(readyChallenges, 'Ready'),
-              
+
               // Complete tab
               _buildChallengesList(completedChallenges, 'Complete'),
             ],
@@ -260,12 +260,13 @@ class _MyChallengesTabState extends State<MyChallengesTab>
     );
   }
 
-  Widget _buildChallengesList(List<Map<String, dynamic>> challenges, String tabName) {
+  Widget _buildChallengesList(
+      List<Map<String, dynamic>> challenges, String tabName) {
     if (challenges.isEmpty) {
       return Center(
         child: EmptyStateWidget(
           icon: tabName == 'Ready' ? Icons.schedule : Icons.check_circle,
-          message: tabName == 'Ready' 
+          message: tabName == 'Ready'
               ? 'Không có trận đấu đang chờ'
               : 'Chưa có trận đấu hoàn thành',
           subtitle: tabName == 'Ready'
@@ -312,7 +313,6 @@ class _MyChallengesTabState extends State<MyChallengesTab>
               child: MatchCardWidgetRealtime(
                 match: Match.fromJson(matchData),
                 onWatchLive: () {
-
                   // Extract video URL from match data
                   final videoUrls = match?['video_urls'] as List?;
                   if (videoUrls != null && videoUrls.isNotEmpty) {
@@ -327,8 +327,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
                         ),
                       ),
                     );
-                  } else {
-                  }
+                  } else {}
                 },
               ),
             );
@@ -341,7 +340,7 @@ class _MyChallengesTabState extends State<MyChallengesTab>
                   // TODO: Navigate to challenge detail
                 },
                 onShareTap: () => _shareMatch(matchData),
-                onInputScore: matchStatus != 'completed' 
+                onInputScore: matchStatus != 'completed'
                     ? () => _showScoreInputDialog(matchData)
                     : null,
               ),
@@ -424,14 +423,14 @@ class _MyChallengesTabState extends State<MyChallengesTab>
       final score1 = match['score1'] as String? ?? '?';
       final score2 = match['score2'] as String? ?? '?';
       final score = '$score1 - $score2';
-      final winner = score1 != '?' && score2 != '?' 
-        ? (int.tryParse(score1) ?? 0) > (int.tryParse(score2) ?? 0) 
-          ? player1Name 
-          : player2Name
-        : 'TBD';
+      final winner = score1 != '?' && score2 != '?'
+          ? (int.tryParse(score1) ?? 0) > (int.tryParse(score2) ?? 0)
+              ? player1Name
+              : player2Name
+          : 'TBD';
       final date = match['date'] as String? ?? '';
       final matchId = match['id'] as String?;
-      
+
       await ShareService.shareMatchResult(
         player1Name: player1Name,
         player2Name: player2Name,
@@ -441,8 +440,9 @@ class _MyChallengesTabState extends State<MyChallengesTab>
         matchId: matchId,
       );
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('❌ Error sharing match: $e', tag: 'my_challenges_tab');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error sharing match: $e',
+            tag: 'my_challenges_tab');
     }
   }
 }
-

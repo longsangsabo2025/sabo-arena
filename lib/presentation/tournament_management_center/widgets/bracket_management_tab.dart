@@ -35,8 +35,10 @@ class BracketManagementTab extends StatefulWidget {
 
 class _BracketManagementTabState extends State<BracketManagementTab> {
   final TournamentService _tournamentService = TournamentService.instance;
-  final UserService _userService = UserService.instance; // ADD: UserService instance
-  final ClubService _clubService = ClubService.instance; // ADD: ClubService instance
+  final UserService _userService =
+      UserService.instance; // ADD: UserService instance
+  final ClubService _clubService =
+      ClubService.instance; // ADD: ClubService instance
   final BracketVisualizationService _visualizationService =
       BracketVisualizationService.instance;
 
@@ -62,7 +64,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
       // Check if user is the owner of the club that created the tournament
       final clubId = widget.tournament.clubId;
       if (clubId == null) return; // No club, can't be owner
-      
+
       final club = await _clubService.getClubById(clubId);
       if (club.ownerId == userProfile.id) {
         setState(() {
@@ -82,7 +84,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
     // 🎯 iPad: Extra padding for better bracket viewing
     final isIPad = DeviceInfo.isIPad(context);
     final padding = isIPad ? 4.w : 3.w;
-    
+
     return Stack(
       children: [
         Container(
@@ -129,7 +131,8 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
                   // Full Tournament button
                   IconButton(
                     onPressed: _openFullTournamentView,
-                    icon: const Icon(Icons.fullscreen, color: Color(0xFF6C757D)),
+                    icon:
+                        const Icon(Icons.fullscreen, color: Color(0xFF6C757D)),
                     tooltip: 'Full Tournament View',
                     iconSize: 24,
                     padding: const EdgeInsets.all(8),
@@ -137,7 +140,8 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
                   ),
                   const SizedBox(width: 4),
                   // Complete Tournament button - ONLY for Club Owners
-                  if (widget.tournament.status != 'completed' && _isClubOwner) ...[
+                  if (widget.tournament.status != 'completed' &&
+                      _isClubOwner) ...[
                     IconButton(
                       onPressed: _completeTournament,
                       icon: const Icon(
@@ -463,9 +467,9 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
           'matches': matches,
           'format': widget.tournament.bracketFormat,
           'total_participants': widget.tournament.currentParticipants,
-          'participantCount': widget.tournament.currentParticipants, // Add for compatibility
+          'participantCount':
+              widget.tournament.currentParticipants, // Add for compatibility
         };
-
 
         setState(() {
           _bracketData = bracketData;
@@ -497,9 +501,11 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
     try {
       // Use ProductionBracketService which supports all formats including sabo_de64
       final productionService = ProductionBracketService();
-      
-      ProductionLogger.info('🎯 Creating bracket with format: ${widget.tournament.bracketFormat}', tag: 'bracket_management_tab');
-      
+
+      ProductionLogger.info(
+          '🎯 Creating bracket with format: ${widget.tournament.bracketFormat}',
+          tag: 'bracket_management_tab');
+
       final result = await productionService.createTournamentBracket(
         tournamentId: widget.tournament.id,
         format: widget.tournament.bracketFormat,
@@ -517,8 +523,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                result?['message'] as String? ??
-                    'Đã tạo bảng đấu thành công',
+                result?['message'] as String? ?? 'Đã tạo bảng đấu thành công',
               ),
               backgroundColor: Colors.green,
             ),
@@ -551,7 +556,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
 
       // Tạo URL để xem bracket full screen trên web
       String webUrl = _generateTournamentBracketWebUrl();
-      
+
       final Uri url = Uri.parse(webUrl);
       if (await canLaunchUrl(url)) {
         await launchUrl(
@@ -563,7 +568,8 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         _openNativeBracketScreen();
       }
     } catch (e) {
-      ProductionLogger.info('❌ Error opening full tournament view: $e', tag: 'bracket_management_tab');
+      ProductionLogger.info('❌ Error opening full tournament view: $e',
+          tag: 'bracket_management_tab');
       // Fallback: Mở native screen như cũ nếu có lỗi
       _openNativeBracketScreen();
     }
@@ -573,13 +579,13 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
     // Tạo URL web cho tournament detail page
     // Sử dụng format URL thật của SABO Arena
     const String baseUrl = 'https://saboarena.com/tournaments';
-    
+
     return '$baseUrl/${widget.tournament.id}?ref=app_fullscreen';
   }
 
   void _openNativeBracketScreen() {
     if (!mounted) return;
-    
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -606,7 +612,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
 
     // Show progress dialog with real-time updates
     if (!mounted) return;
-    
+
     // Create a ValueNotifier to track progress
     final progressNotifier = ValueNotifier<CompletionProgress>(
       CompletionProgress(step: 'Bắt đầu...', progress: 0.0),
@@ -615,16 +621,18 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => _CompletionProgressDialog(progressNotifier: progressNotifier),
+      builder: (context) =>
+          _CompletionProgressDialog(progressNotifier: progressNotifier),
     );
 
     try {
       // Import new orchestrator
       final orchestrator = TournamentCompletionOrchestrator.instance;
-      
+
       // Set up progress callback
       orchestrator.setProgressCallback((step, progress) {
-        progressNotifier.value = CompletionProgress(step: step, progress: progress);
+        progressNotifier.value =
+            CompletionProgress(step: step, progress: progress);
       });
 
       // Complete tournament with orchestrator
@@ -634,7 +642,7 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         distributePrizes: true,
         issueVouchers: true,
         sendNotifications: false,
-        executeRewards: false, // 🆕 DON'T execute rewards - let admin use "Gửi Quà" button manually
+        // 🚀 ELON MODE: executeRewards defaults to true (auto-execute)
       );
 
       if (mounted) {
@@ -646,7 +654,8 @@ class _BracketManagementTabState extends State<BracketManagementTab> {
         if (result['success'] == true) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('🎉 Giải đấu đã hoàn thành! Sử dụng nút "Gửi Quà" để phân phát phần thưởng.'),
+              content: Text(
+                  '✅ Tournament completed! Rewards distributed automatically to all players.'),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 4),
             ),
@@ -753,7 +762,8 @@ class _CompletionProgressDialog extends StatelessWidget {
         valueListenable: progressNotifier,
         builder: (context, progress, child) {
           return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -763,10 +773,11 @@ class _CompletionProgressDialog extends StatelessWidget {
                   CircularProgressIndicator(
                     value: progress.progress > 0 ? progress.progress : null,
                     strokeWidth: 3,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2E86AB)),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Color(0xFF2E86AB)),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Title
                   const Text(
                     '🏆 Đang hoàn thành giải đấu',
@@ -777,7 +788,7 @@ class _CompletionProgressDialog extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Current step
                   Text(
                     progress.step,
@@ -789,7 +800,7 @@ class _CompletionProgressDialog extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // Progress percentage
                   Text(
                     '${(progress.progress * 100).toStringAsFixed(0)}%',
@@ -800,16 +811,17 @@ class _CompletionProgressDialog extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Steps list
                   _buildStep('✅ Kiểm tra trận đấu', progress.progress >= 0.1),
                   _buildStep('⚡ Tính toán xếp hạng', progress.progress >= 0.2),
-                  _buildStep('💰 Phát thưởng ELO & SPA', progress.progress >= 0.6),
+                  _buildStep(
+                      '💰 Phát thưởng ELO & SPA', progress.progress >= 0.6),
                   _buildStep('🎁 Tạo voucher Top 4', progress.progress >= 0.8),
                   _buildStep('🏁 Hoàn tất giải đấu', progress.progress >= 0.9),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Warning text
                   const Text(
                     '⚠️ Vui lòng không tắt ứng dụng',
@@ -828,7 +840,7 @@ class _CompletionProgressDialog extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStep(String text, bool completed) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -858,4 +870,3 @@ class _CompletionProgressDialog extends StatelessWidget {
     );
   }
 }
-

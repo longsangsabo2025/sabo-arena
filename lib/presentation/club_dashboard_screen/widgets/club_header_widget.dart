@@ -123,7 +123,8 @@ class ClubHeaderWidget extends StatelessWidget {
                                 fit: BoxFit.cover,
                               )
                             : Container(
-                                color: AppColors.primary.withValues(alpha: 0.15),
+                                color:
+                                    AppColors.primary.withValues(alpha: 0.15),
                                 alignment: Alignment.center,
                                 child: Text(
                                   (club?.name != null && club!.name.isNotEmpty)

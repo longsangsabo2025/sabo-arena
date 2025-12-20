@@ -153,14 +153,16 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
               const SizedBox(height: 24),
               Text(
                 'Nhập mã OTP',
-                textAlign: TextAlign.center, style: theme.textTheme.headlineSmall?.copyWith(
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Mã xác thực đã được gửi đến\n${widget.phoneNumber}',
-                textAlign: TextAlign.center, style: theme.textTheme.bodyLarge?.copyWith(
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: Colors.grey[600],
                 ),
               ),
@@ -231,7 +233,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   child: _isVerifying
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text(
-                          'Xác nhận', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Xác nhận',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -244,7 +248,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Không nhận được mã? ', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600]),
+                    'Không nhận được mã? ',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.grey[600]),
                   ),
                   TextButton(
                     onPressed: _resendCountdown > 0 || _isResending
@@ -283,11 +289,15 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   child: Column(
                     children: [
                       const Text(
-                        '🔧 Development Mode', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),
+                        '🔧 Development Mode',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'OTP Code: $_debugOTP', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        'OTP Code: $_debugOTP',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 4,

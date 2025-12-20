@@ -5,12 +5,12 @@ import 'circuit_breaker.dart';
 
 /// CDN Service with Circuit Breaker and Fallback
 /// Manages CDN URLs for images and static assets
-/// 
+///
 /// Features:
 /// - Circuit breaker protection
 /// - Automatic fallback to direct storage if CDN fails
 /// - Graceful degradation
-/// 
+///
 /// Supports:
 /// - Cloudflare CDN
 /// - CloudFront CDN
@@ -26,9 +26,10 @@ class CDNService {
   String? _cdnBaseUrl;
   String? _cdnProvider; // 'cloudflare', 'cloudfront', 'supabase'
   bool _enabled = false;
-  
+
   // Circuit breaker for CDN
-  final CircuitBreaker _circuitBreaker = CircuitBreakerManager.instance.getBreaker('cdn');
+  final CircuitBreaker _circuitBreaker =
+      CircuitBreakerManager.instance.getBreaker('cdn');
 
   /// Initialize CDN service
   void initialize({
@@ -39,8 +40,7 @@ class CDNService {
     _cdnProvider = cdnProvider ?? 'supabase';
     _enabled = cdnBaseUrl != null;
 
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Get CDN URL for image with fallback to direct storage
@@ -54,8 +54,7 @@ class CDNService {
     // Check circuit breaker state
     if (_circuitBreaker.state == CircuitState.open) {
       // Circuit is open, use fallback (direct storage)
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return originalUrl;
     }
 
@@ -72,26 +71,28 @@ class CDNService {
 
     // Build CDN URL with size parameter if provided
     final sizeSuffix = size != null ? '_$size' : '';
-    final cdnPath = path.replaceAll(RegExp(r'\.(jpg|jpeg|png)$'), '$sizeSuffix.webp');
-    
+    final cdnPath =
+        path.replaceAll(RegExp(r'\.(jpg|jpeg|png)$'), '$sizeSuffix.webp');
+
     return '$_cdnBaseUrl$cdnPath';
   }
-  
+
   /// Test CDN health and update circuit breaker
   Future<bool> checkHealth() async {
     if (!_enabled || _cdnBaseUrl == null) {
       return false;
     }
-    
+
     return await _circuitBreaker.execute(
       () async {
         // Test CDN with a simple request
         final testUrl = '$_cdnBaseUrl/health';
         final response = await Future.any([
-          Future.delayed(const Duration(seconds: 2), () => throw TimeoutException('CDN health check timeout')),
+          Future.delayed(const Duration(seconds: 2),
+              () => throw TimeoutException('CDN health check timeout')),
           http.get(Uri.parse(testUrl)),
         ]);
-        
+
         if (response.statusCode == 200) {
           return true;
         } else {
@@ -99,8 +100,7 @@ class CDNService {
         }
       },
       fallback: () async {
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
         return false;
       },
     );
@@ -128,7 +128,7 @@ class CDNService {
       // https://[project].supabase.co/storage/v1/object/public/[bucket]/[path]
       final uri = Uri.parse(url);
       final pathSegments = uri.pathSegments;
-      
+
       // Find 'public' segment and get everything after it
       final publicIndex = pathSegments.indexOf('public');
       if (publicIndex == -1 || publicIndex >= pathSegments.length - 1) {
@@ -139,8 +139,7 @@ class CDNService {
       final path = '/${pathSegments.sublist(publicIndex + 1).join('/')}';
       return path;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -160,5 +159,3 @@ class TimeoutException implements Exception {
   final String message;
   TimeoutException(this.message);
 }
-
-

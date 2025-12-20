@@ -25,7 +25,8 @@ class RealTimeTournamentService {
       StreamController<Map<String, dynamic>>.broadcast();
 
   // Subscription management (now using RealtimeSubscriptionManager)
-  final RealtimeSubscriptionManager _subscriptionManager = RealtimeSubscriptionManager.instance;
+  final RealtimeSubscriptionManager _subscriptionManager =
+      RealtimeSubscriptionManager.instance;
 
   // ==================== STREAM GETTERS ====================
 
@@ -47,7 +48,6 @@ class RealTimeTournamentService {
   /// Uses RealtimeSubscriptionManager for limit management
   Future<void> subscribeTournament(String tournamentId) async {
     try {
-
       // Use subscription manager (handles limits and cleanup)
       await _subscriptionManager.subscribeTournament(
         tournamentId,
@@ -62,7 +62,6 @@ class RealTimeTournamentService {
           _handleMatchUpdate(data);
         },
       );
-
     } catch (e) {
       throw Exception('Failed to subscribe to real-time updates: $e');
     }
@@ -104,7 +103,6 @@ class RealTimeTournamentService {
 
       // Broadcast to tournament updates stream
       _tournamentUpdatesController.add(updateData);
-
     } catch (e) {
       // Ignore broadcast errors
     }
@@ -192,12 +190,10 @@ class RealTimeTournamentService {
       await _tournamentUpdatesController.close();
       await _matchUpdatesController.close();
       await _participantUpdatesController.close();
-
     } catch (e) {
       // Ignore error
     }
   }
 }
 
-  // Ignore dispose errors
-    
+// Ignore dispose errors

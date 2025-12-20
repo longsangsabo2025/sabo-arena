@@ -286,8 +286,7 @@ class ClearErrorAction extends MemberAction {
 
 /// Reducer function to handle state changes
 MemberState memberReducer(MemberState state, MemberAction action) {
-  if (kDebugMode) {
-  }
+  if (kDebugMode) {}
 
   switch (action.runtimeType) {
     // Loading and error actions
@@ -477,8 +476,7 @@ MemberState memberReducer(MemberState state, MemberAction action) {
       return const MemberState();
 
     default:
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return state;
   }
 }
@@ -656,4 +654,3 @@ class MemberSelectors {
     ); // Activities per day, capped at 10
   }
 }
-

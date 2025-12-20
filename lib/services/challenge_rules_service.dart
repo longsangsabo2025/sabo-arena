@@ -11,21 +11,20 @@ class ChallengeRulesService {
 
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// 🎯 SABO Rank System - 12 cấp từ K đến C
+  /// 🎯 SABO Rank System - 10 cấp từ K đến C (đã loại bỏ K+ và I+)
+  /// Migration 2025: Đã loại K+ và I+, tất cả rank dịch xuống theo ELO mới
   static const Map<String, int> rankValues = {
     'K': 1,
-    'K+': 2,
-    'I': 3,
-    'I+': 4,
-    'H': 5,
-    'H+': 6,
-    'G': 7,
-    'G+': 8,
-    'F': 9,
-    'F+': 10,
-    'E': 11,
-    'D': 12,
-    'C': 13,
+    'I': 2,
+    'H': 3,
+    'H+': 4,
+    'G': 5,
+    'G+': 6,
+    'F': 7,
+    'F+': 8,
+    'E': 9,
+    'D': 10,
+    'C': 11,
   };
 
   /// 💰 SPA Betting Configuration
@@ -46,8 +45,9 @@ class ChallengeRulesService {
     '2_main': {100: 2.0, 200: 3.0, 300: 4.0, 400: 5.0, 500: 6.0, 600: 7.0},
   };
 
-  /// 🔢 Kiểm tra ai có thể thách đấu ai (±1 hạng chính = 2 sub-rank)
+  /// 🔢 Kiểm tra ai có thể thách đấu ai (±1 hạng chính)
   /// K chỉ chơi với I tối đa, I chơi với K và H, H chơi với I và G
+  /// Note: Sau khi loại bỏ K+ và I+, logic này vẫn giữ nguyên
   bool canChallenge(String challengerRank, String challengedRank) {
     final challengerValue = rankValues[challengerRank];
     final challengedValue = rankValues[challengedRank];
@@ -56,13 +56,14 @@ class ChallengeRulesService {
       return false;
     }
 
-    // Chênh lệch tối đa 2 sub-rank (1 main rank)
-    // Ví dụ: K(1) → K+(2), I(3) OK | K(1) → I+(4) KHÔNG OK
+    // Chênh lệch tối đa 1 hạng chính (ví dụ: K→I, I→H, H→H+)
+    // Ví dụ: K(1) → I(2) OK | K(1) → H(3) KHÔNG OK
     final difference = (challengerValue - challengedValue).abs();
-    return difference <= 2;
+    return difference <= 1;
   }
 
   /// 📊 Lấy danh sách rank có thể thách đấu
+  /// Note: Sau khi loại K+ và I+, danh sách này đã được cập nhật
   List<String> getEligibleRanks(String currentRank) {
     final currentValue = rankValues[currentRank];
     if (currentValue == null) return [];
@@ -73,9 +74,9 @@ class ChallengeRulesService {
       final rankName = entry.key;
       final rankValue = entry.value;
 
-      // Kiểm tra trong phạm vi ±2 sub-rank (1 main rank)
-      // Ví dụ: K(1) → [K, K+, I] | I(3) → [K, K+, I, I+, H]
-      if ((currentValue - rankValue).abs() <= 2) {
+      // Kiểm tra trong phạm vi ±1 hạng chính
+      // Ví dụ: K(1) → [K, I] | I(2) → [K, I, H]
+      if ((currentValue - rankValue).abs() <= 1) {
         eligibleRanks.add(rankName);
       }
     }
@@ -291,22 +292,22 @@ class ChallengeRulesService {
     }).toList();
   }
 
-  /// 📈 Get rank display info
+  /// 📈 Get rank display info (Updated for 10-rank system)
   Map<String, dynamic> getRankDisplayInfo(String rank) {
     final value = rankValues[rank];
     if (value == null) return {};
 
-    // Determine color based on rank level
+    // Determine color based on rank level (updated after removing K+ and I+)
     String color;
-    if (value <= 2) {
-      color = '#4CAF50'; // Green for K, K+
-    } else if (value <= 4)
-      color = '#2196F3'; // Blue for I, I+
-    else if (value <= 6)
+    if (value == 1) {
+      color = '#4CAF50'; // Green for K
+    } else if (value == 2)
+      color = '#2196F3'; // Blue for I
+    else if (value <= 4)
       color = '#FF9800'; // Orange for H, H+
-    else if (value <= 8)
+    else if (value <= 6)
       color = '#9C27B0'; // Purple for G, G+
-    else if (value <= 10)
+    else if (value <= 8)
       color = '#F44336'; // Red for F, F+
     else
       color = '#607D8B'; // Blue Grey for E, D, C

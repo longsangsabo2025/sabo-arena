@@ -14,10 +14,11 @@ class ClubOwnerRankApprovalScreen extends StatefulWidget {
 }
 
 class _ClubOwnerRankApprovalScreenState
-    extends State<ClubOwnerRankApprovalScreen> with SingleTickerProviderStateMixin {
+    extends State<ClubOwnerRankApprovalScreen>
+    with SingleTickerProviderStateMixin {
   final AdminRankApprovalService _approvalService = AdminRankApprovalService();
   late TabController _tabController;
-  
+
   List<Map<String, dynamic>> _pendingRequests = [];
   List<Map<String, dynamic>> _approvedRequests = [];
   bool _isLoading = true;
@@ -45,7 +46,7 @@ class _ClubOwnerRankApprovalScreenState
 
       // Load pending requests
       final pending = await _approvalService.getPendingRankRequests();
-      
+
       // Load approved/rejected requests
       final approved = await _approvalService.getApprovedRankRequests();
 
@@ -73,7 +74,7 @@ class _ClubOwnerRankApprovalScreenState
         clubId: widget.clubId,
         permissionKey: 'verify_rank',
       );
-      
+
       if (!canVerify) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +129,9 @@ class _ClubOwnerRankApprovalScreenState
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          'Duyệt yêu cầu hạng', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),
+          'Duyệt yêu cầu hạng',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -168,7 +171,8 @@ class _ClubOwnerRankApprovalScreenState
     return _buildBody(_approvedRequests, isPending: false);
   }
 
-  Widget _buildBody(List<Map<String, dynamic>> requests, {required bool isPending}) {
+  Widget _buildBody(List<Map<String, dynamic>> requests,
+      {required bool isPending}) {
     if (_isLoading) {
       return Center(
         child: Column(
@@ -177,7 +181,9 @@ class _ClubOwnerRankApprovalScreenState
             CircularProgressIndicator(),
             SizedBox(height: 16),
             Text(
-              'Đang tải yêu cầu...', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600]),
+              'Đang tải yêu cầu...',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey[600]),
             ),
           ],
         ),
@@ -192,14 +198,17 @@ class _ClubOwnerRankApprovalScreenState
             Icon(Icons.error_outline, size: 64, color: Colors.red),
             SizedBox(height: 16),
             Text(
-              'Có lỗi xảy ra', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Có lỗi xảy ra',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 _errorMessage!,
-                textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[600]),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey[600]),
               ),
             ),
             SizedBox(height: 24),
@@ -220,7 +229,9 @@ class _ClubOwnerRankApprovalScreenState
             Icon(Icons.verified_user, size: 64, color: Colors.grey[400]),
             SizedBox(height: 16),
             Text(
-              isPending ? 'Không có yêu cầu nào' : 'Chưa có lịch sử duyệt', overflow: TextOverflow.ellipsis, style: TextStyle(
+              isPending ? 'Không có yêu cầu nào' : 'Chưa có lịch sử duyệt',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey[600],
@@ -228,10 +239,11 @@ class _ClubOwnerRankApprovalScreenState
             ),
             SizedBox(height: 8),
             Text(
-              isPending 
-                ? 'Hiện tại không có yêu cầu duyệt hạng nào cần xử lý'
-                : 'Lịch sử các yêu cầu đã duyệt sẽ hiển thị tại đây',
-              textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[600]),
+              isPending
+                  ? 'Hiện tại không có yêu cầu duyệt hạng nào cần xử lý'
+                  : 'Lịch sử các yêu cầu đã duyệt sẽ hiển thị tại đây',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[600]),
             ),
           ],
         ),
@@ -251,9 +263,12 @@ class _ClubOwnerRankApprovalScreenState
     );
   }
 
-  Widget _buildRequestCard(Map<String, dynamic> request, {required bool isPending}) {
+  Widget _buildRequestCard(Map<String, dynamic> request,
+      {required bool isPending}) {
     final userData = request['users'] ?? {};
-    final userName = userData['display_name'] ?? userData['email']?.split('@')[0] ?? 'Người dùng';
+    final userName = userData['display_name'] ??
+        userData['email']?.split('@')[0] ??
+        'Người dùng';
     final userEmail = userData['email'] ?? '';
     final avatarUrl = userData['avatar_url'];
     final currentRank = userData['rank'] ?? 'N/A';
@@ -290,9 +305,10 @@ class _ClubOwnerRankApprovalScreenState
                 CircleAvatar(
                   radius: 24, // Slightly larger
                   backgroundColor: Colors.blue.shade50,
-                  backgroundImage: avatarUrl != null && avatarUrl.toString().isNotEmpty
-                      ? NetworkImage(avatarUrl)
-                      : null,
+                  backgroundImage:
+                      avatarUrl != null && avatarUrl.toString().isNotEmpty
+                          ? NetworkImage(avatarUrl)
+                          : null,
                   child: avatarUrl == null || avatarUrl.toString().isEmpty
                       ? Text(
                           userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
@@ -313,7 +329,8 @@ class _ClubOwnerRankApprovalScreenState
                         children: [
                           Expanded(
                             child: Text(
-                              userName, style: TextStyle(
+                              userName,
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
                                 color: Colors.black87,
@@ -322,15 +339,17 @@ class _ClubOwnerRankApprovalScreenState
                           ),
                           if (!isPending) _buildStatusBadge(status),
                           if (isPending)
-                             Text(
+                            Text(
                               _formatDate(requestedAt),
-                              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                              style: TextStyle(
+                                  color: Colors.grey[400], fontSize: 12),
                             ),
                         ],
                       ),
                       if (userEmail.isNotEmpty)
                         Text(
-                          userEmail, style: TextStyle(
+                          userEmail,
+                          style: TextStyle(
                             color: Colors.grey[500],
                             fontSize: 13,
                           ),
@@ -356,10 +375,14 @@ class _ClubOwnerRankApprovalScreenState
                 children: [
                   _buildRankBadge(currentRank, label: "Hiện tại"),
                   if (isRankChange) ...[
-                    Icon(Icons.arrow_forward_rounded, color: Colors.grey.shade400, size: 20),
-                    _buildRankBadge(requestedRank, isRequested: true, label: "Đề xuất"),
-                  ] else 
-                    Text("Không thay đổi hạng", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                    Icon(Icons.arrow_forward_rounded,
+                        color: Colors.grey.shade400, size: 20),
+                    _buildRankBadge(requestedRank,
+                        isRequested: true, label: "Đề xuất"),
+                  ] else
+                    Text("Không thay đổi hạng",
+                        style: TextStyle(
+                            color: Colors.orange, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -431,24 +454,29 @@ class _ClubOwnerRankApprovalScreenState
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.grey.shade600,
                         padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: Text('Từ chối', style: TextStyle(fontWeight: FontWeight.w600)),
+                      child: Text('Từ chối',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
                     flex: 2, // Approve is the primary action
                     child: ElevatedButton(
-                      onPressed: () => _handleRequestReview(request['id'], true),
+                      onPressed: () =>
+                          _handleRequestReview(request['id'], true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black, // Musk Black
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: Text('Chấp thuận', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text('Chấp thuận',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -460,17 +488,19 @@ class _ClubOwnerRankApprovalScreenState
     );
   }
 
-  Widget _buildRankBadge(String rank, {bool isRequested = false, String? label}) {
+  Widget _buildRankBadge(String rank,
+      {bool isRequested = false, String? label}) {
     final rankCode = RankMigrationHelper.getRankCodeFromName(rank) ?? rank;
     final displayName = RankMigrationHelper.getNewDisplayName(rank);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
-            child: Text(label.toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+            child: Text(label.toUpperCase(),
+                style: TextStyle(fontSize: 10, color: Colors.grey[500])),
           ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -480,7 +510,9 @@ class _ClubOwnerRankApprovalScreenState
                 : Colors.grey.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isRequested ? Colors.green.withValues(alpha: 0.5) : Colors.grey.withValues(alpha: 0.3),
+              color: isRequested
+                  ? Colors.green.withValues(alpha: 0.5)
+                  : Colors.grey.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -491,7 +523,9 @@ class _ClubOwnerRankApprovalScreenState
                 displayName,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: isRequested ? Colors.green.shade700 : Colors.grey.shade700,
+                  color: isRequested
+                      ? Colors.green.shade700
+                      : Colors.grey.shade700,
                   fontSize: 13,
                 ),
               ),
@@ -500,7 +534,8 @@ class _ClubOwnerRankApprovalScreenState
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                   decoration: BoxDecoration(
-                    color: (isRequested ? Colors.green : Colors.grey).withValues(alpha: 0.2),
+                    color: (isRequested ? Colors.green : Colors.grey)
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -508,7 +543,9 @@ class _ClubOwnerRankApprovalScreenState
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
-                      color: isRequested ? Colors.green.shade800 : Colors.grey.shade800,
+                      color: isRequested
+                          ? Colors.green.shade800
+                          : Colors.grey.shade800,
                     ),
                   ),
                 ),
@@ -548,7 +585,9 @@ class _ClubOwnerRankApprovalScreenState
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Từ chối yêu cầu', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),
+          'Từ chối yêu cầu',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,

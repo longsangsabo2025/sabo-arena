@@ -22,12 +22,13 @@ class TournamentService {
   TournamentService._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   // Get read client (uses replica if available)
   SupabaseClient get _readClient => DatabaseReplicaManager.instance.readClient;
-  
+
   // Get write client (always uses primary)
-  SupabaseClient get _writeClient => DatabaseReplicaManager.instance.writeClient;
+  SupabaseClient get _writeClient =>
+      DatabaseReplicaManager.instance.writeClient;
 
   Future<List<Tournament>> getTournaments({
     TournamentTabStatus? status,
@@ -37,75 +38,75 @@ class TournamentService {
     int pageSize = 15,
   }) async {
     final timer = PerformanceTimer('tournament_service.getTournaments');
-    
+
     // Track query for monitoring
     return await DatabaseMonitoringService.instance.trackQuery(
       'getTournaments',
       () async {
         try {
-      // Check cache first (for first page only)
-      if (page == 1 && status == null && clubId == null) {
-        final cached = await CacheManager.instance.getCache('tournaments_list');
-        if (cached != null) {
-          final tournaments = (cached as List)
+          // Check cache first (for first page only)
+          if (page == 1 && status == null && clubId == null) {
+            final cached =
+                await CacheManager.instance.getCache('tournaments_list');
+            if (cached != null) {
+              final tournaments = (cached as List)
+                  .map<Tournament>((json) => Tournament.fromJson(json))
+                  .toList();
+              ProductionLogger.debug('Using cached tournaments list',
+                  tag: 'TournamentService');
+              return tournaments;
+            }
+          }
+
+          // Use read replica for read operations
+          var query = _readClient
+              .from('tournaments')
+              .select('*, clubs(name, logo_url, address, owner_id)');
+
+          if (status != null) {
+            query = query.eq('status', status.value);
+          }
+          if (clubId != null) {
+            query = query.eq('club_id', clubId);
+          }
+
+          final from = (page - 1) * pageSize;
+          final to = from + pageSize - 1;
+          final isCompleted = status == TournamentTabStatus.completed;
+
+          final response = await query
+              .eq('is_public', true)
+              .order(isCompleted ? 'end_date' : 'start_date',
+                  ascending: !isCompleted)
+              .range(from, to);
+
+          final tournaments = response
               .map<Tournament>((json) => Tournament.fromJson(json))
               .toList();
-          ProductionLogger.debug('Using cached tournaments list', tag: 'TournamentService');
+
+          // Cache first page
+          if (page == 1 && status == null && clubId == null) {
+            await CacheManager.instance.setCache(
+              'tournaments_list',
+              response,
+              ttl: Duration(minutes: 10),
+            );
+          }
+
+          timer.stop();
           return tournaments;
+        } catch (error) {
+          timer.stop();
+          final errorInfo = StandardizedErrorHandler.handleError(
+            error,
+            context: ErrorContext(
+              category: ErrorCategory.database,
+              operation: 'getTournaments',
+              context: 'Failed to fetch tournaments list',
+            ),
+          );
+          throw Exception(errorInfo.message);
         }
-      }
-
-      // Use read replica for read operations
-      var query = _readClient
-          .from('tournaments')
-          .select('*, clubs(name, logo_url, address, owner_id)');
-
-      if (status != null) {
-        query = query.eq('status', status.value);
-      }
-      if (clubId != null) {
-        query = query.eq('club_id', clubId);
-      }
-
-      final from = (page - 1) * pageSize;
-      final to = from + pageSize - 1;
-      final isCompleted = status == TournamentTabStatus.completed;
-      
-      final response = await query
-          .eq('is_public', true)
-          .order(
-            isCompleted ? 'end_date' : 'start_date', 
-            ascending: !isCompleted
-          )
-          .range(from, to);
-
-      final tournaments = response
-          .map<Tournament>((json) => Tournament.fromJson(json))
-          .toList();
-
-      // Cache first page
-      if (page == 1 && status == null && clubId == null) {
-        await CacheManager.instance.setCache(
-          'tournaments_list',
-          response,
-          ttl: Duration(minutes: 10),
-        );
-      }
-
-      timer.stop();
-      return tournaments;
-    } catch (error) {
-      timer.stop();
-      final errorInfo = StandardizedErrorHandler.handleError(
-        error,
-        context: ErrorContext(
-          category: ErrorCategory.database,
-          operation: 'getTournaments',
-          context: 'Failed to fetch tournaments list',
-        ),
-      );
-      throw Exception(errorInfo.message);
-    }
       },
     );
   }
@@ -118,7 +119,8 @@ class TournamentService {
     int pageSize = 100,
   }) async {
     try {
-      ProductionLogger.debug('Loading tournaments for club $clubId', tag: 'TournamentService');
+      ProductionLogger.debug('Loading tournaments for club $clubId',
+          tag: 'TournamentService');
 
       // Use read replica for read operations
       var query = _readClient.from('tournaments').select();
@@ -133,15 +135,15 @@ class TournamentService {
       final from = (page - 1) * pageSize;
       final to = from + pageSize - 1;
 
-      final response = await query
-          .order('created_at', ascending: false)
-          .range(from, to);
+      final response =
+          await query.order('created_at', ascending: false).range(from, to);
 
       final tournaments = response
           .map<Tournament>((json) => Tournament.fromJson(json))
           .toList();
 
-      ProductionLogger.info('Found ${tournaments.length} tournaments for club', tag: 'TournamentService');
+      ProductionLogger.info('Found ${tournaments.length} tournaments for club',
+          tag: 'TournamentService');
       return tournaments;
     } catch (error, stackTrace) {
       final errorInfo = StandardizedErrorHandler.handleError(
@@ -152,7 +154,11 @@ class TournamentService {
           context: 'Failed to fetch club tournaments',
         ),
       );
-      ProductionLogger.error('Error loading club tournaments: ${errorInfo.message}', error: error, stackTrace: stackTrace, tag: 'TournamentService');
+      ProductionLogger.error(
+          'Error loading club tournaments: ${errorInfo.message}',
+          error: error,
+          stackTrace: stackTrace,
+          tag: 'TournamentService');
       // Return mock data as fallback
       return _getMockTournamentsForClub(clubId);
     }
@@ -243,12 +249,15 @@ class TournamentService {
 
   Future<void> hideTournament(String tournamentId) async {
     try {
-      await _writeClient.from('tournaments').update({'is_public': false}).eq('id', tournamentId);
-      
+      await _writeClient
+          .from('tournaments')
+          .update({'is_public': false}).eq('id', tournamentId);
+
       // Invalidate cache
       await CacheManager.instance.removeCache('tournaments_list');
-      
-      ProductionLogger.info('Hidden tournament: $tournamentId', tag: 'TournamentService');
+
+      ProductionLogger.info('Hidden tournament: $tournamentId',
+          tag: 'TournamentService');
     } catch (error) {
       final errorInfo = StandardizedErrorHandler.handleError(
         error,
@@ -265,11 +274,12 @@ class TournamentService {
   Future<void> deleteTournament(String tournamentId) async {
     try {
       await _writeClient.from('tournaments').delete().eq('id', tournamentId);
-      
+
       // Invalidate cache
       await CacheManager.instance.removeCache('tournaments_list');
-      
-      ProductionLogger.info('Deleted tournament: $tournamentId', tag: 'TournamentService');
+
+      ProductionLogger.info('Deleted tournament: $tournamentId',
+          tag: 'TournamentService');
     } catch (error) {
       final errorInfo = StandardizedErrorHandler.handleError(
         error,
@@ -288,14 +298,11 @@ class TournamentService {
   ) async {
     try {
       // ProductionLogger.debug('Querying participants for tournament $tournamentId', tag: 'TournamentService');
-      final response = await _supabase
-          .from('tournament_participants')
-          .select('''
+      final response =
+          await _supabase.from('tournament_participants').select('''
             *,
             users (*)
-          ''')
-          .eq('tournament_id', tournamentId)
-          .order('registered_at');
+          ''').eq('tournament_id', tournamentId).order('registered_at');
 
       // ProductionLogger.debug('Raw response count: ${response.length}', tag: 'TournamentService');
       /*
@@ -311,22 +318,29 @@ class TournamentService {
       */
 
       final participants = response
-          .where((json) => json['users'] != null) // ✅ FIX: Filter out null users
+          .where(
+              (json) => json['users'] != null) // ✅ FIX: Filter out null users
           .map<UserProfile>((json) => UserProfile.fromJson(json['users']))
           .toList();
 
       // ✅ DEBUG: Check for orphaned participants
       final orphanedCount = response.length - participants.length;
       if (orphanedCount > 0) {
-        ProductionLogger.info('⚠️ TournamentService: Found $orphanedCount orphaned participants (no user record)', tag: 'TournamentService');
+        ProductionLogger.info(
+            '⚠️ TournamentService: Found $orphanedCount orphaned participants (no user record)',
+            tag: 'TournamentService');
         for (final item in response) {
           if (item['users'] == null) {
-            ProductionLogger.warning('Orphaned participant: user_id=${item['user_id']}, status=${item['status']}', tag: 'TournamentService');
+            ProductionLogger.warning(
+                'Orphaned participant: user_id=${item['user_id']}, status=${item['status']}',
+                tag: 'TournamentService');
           }
         }
       }
 
-      ProductionLogger.info('Returning ${participants.length} valid participants ($orphanedCount orphaned excluded)', tag: 'TournamentService');
+      ProductionLogger.info(
+          'Returning ${participants.length} valid participants ($orphanedCount orphaned excluded)',
+          tag: 'TournamentService');
       return participants;
     } catch (error) {
       final errorInfo = StandardizedErrorHandler.handleError(
@@ -337,7 +351,9 @@ class TournamentService {
           context: 'Failed to fetch tournament participants',
         ),
       );
-      ProductionLogger.info('❌ TournamentService: Error getting participants: ${errorInfo.message}', tag: 'TournamentService');
+      ProductionLogger.info(
+          '❌ TournamentService: Error getting participants: ${errorInfo.message}',
+          tag: 'TournamentService');
       throw Exception(errorInfo.message);
     }
   }
@@ -356,15 +372,21 @@ class TournamentService {
           .order('round_number')
           .order('match_number');
 
-      ProductionLogger.info('📊 TournamentService: Found ${matches.length} matches', tag: 'TournamentService');
+      ProductionLogger.info(
+          '📊 TournamentService: Found ${matches.length} matches',
+          tag: 'TournamentService');
       if (matches.isEmpty) {
-        ProductionLogger.info('⚠️ No matches found for tournament $tournamentId', tag: 'TournamentService');
+        ProductionLogger.info(
+            '⚠️ No matches found for tournament $tournamentId',
+            tag: 'TournamentService');
         return [];
       }
 
       // Then get user profiles separately for better reliability
       List<String> playerIds = [];
-      ProductionLogger.info('🔍 Processing ${matches.length} matches for player IDs:', tag: 'TournamentService');
+      ProductionLogger.info(
+          '🔍 Processing ${matches.length} matches for player IDs:',
+          tag: 'TournamentService');
       for (int i = 0; i < matches.length && i < 3; i++) {
         var match = matches[i];
         ProductionLogger.debug(
@@ -396,24 +418,33 @@ class TournamentService {
               )
               .inFilter('id', playerIds.toSet().toList());
 
-          ProductionLogger.info('📊 TournamentService: Found ${profiles.length} profiles', tag: 'TournamentService');
+          ProductionLogger.info(
+              '📊 TournamentService: Found ${profiles.length} profiles',
+              tag: 'TournamentService');
           for (var profile in profiles) {
             userProfiles[profile['id']] = profile;
+            final profileId = profile['id']?.toString() ?? '';
             ProductionLogger.debug(
-              'Profile: ${profile['id']?.toString().substring(0, 8)}... - ${profile['display_name'] ?? profile['full_name'] ?? 'No Name'}',
+              'Profile: ${profileId.length > 8 ? "${profileId.substring(0, 8)}..." : profileId} - ${profile['display_name'] ?? profile['full_name'] ?? 'No Name'}',
               tag: 'TournamentService',
             );
           }
 
           if (profiles.length < playerIds.length) {
-            ProductionLogger.warning('Missing profiles: Expected ${playerIds.length}, got ${profiles.length}', tag: 'TournamentService');
+            ProductionLogger.warning(
+                'Missing profiles: Expected ${playerIds.length}, got ${profiles.length}',
+                tag: 'TournamentService');
           }
         } catch (e) {
-          ProductionLogger.error('Error fetching user profiles', error: e, stackTrace: StackTrace.current, tag: 'TournamentService');
+          ProductionLogger.error('Error fetching user profiles',
+              error: e,
+              stackTrace: StackTrace.current,
+              tag: 'TournamentService');
           // Continue without profiles - we'll show placeholder names
         }
       } else {
-        ProductionLogger.info('⚠️ No player IDs found in matches', tag: 'TournamentService');
+        ProductionLogger.info('⚠️ No player IDs found in matches',
+            tag: 'TournamentService');
       }
 
       return matches.map<Map<String, dynamic>>((match) {
@@ -438,12 +469,10 @@ class TournamentService {
           "player1": player1Profile != null
               ? {
                   "id": player1Profile['id'],
-                  "name":
-                      player1Profile['display_name'] ??
+                  "name": player1Profile['display_name'] ??
                       player1Profile['full_name'] ??
                       'Player 1',
-                  "avatar":
-                      player1Profile['avatar_url'] ??
+                  "avatar": player1Profile['avatar_url'] ??
                       "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png",
                   "rank": RankMigrationHelper.getNewDisplayName(
                     player1Profile['rank'] as String?,
@@ -451,24 +480,22 @@ class TournamentService {
                   "score": player1Score,
                 }
               : match['player1_id'] != null
-              ? {
-                  "id": match['player1_id'],
-                  "name": 'Player 1',
-                  "avatar":
-                      "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png",
-                  "rank": "Chưa xếp hạng",
-                  "score": player1Score,
-                }
-              : null,
+                  ? {
+                      "id": match['player1_id'],
+                      "name": 'Player 1',
+                      "avatar":
+                          "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png",
+                      "rank": "Chưa xếp hạng",
+                      "score": player1Score,
+                    }
+                  : null,
           "player2": player2Profile != null
               ? {
                   "id": player2Profile['id'],
-                  "name":
-                      player2Profile['display_name'] ??
+                  "name": player2Profile['display_name'] ??
                       player2Profile['full_name'] ??
                       'Player 2',
-                  "avatar":
-                      player2Profile['avatar_url'] ??
+                  "avatar": player2Profile['avatar_url'] ??
                       "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png",
                   "rank": RankMigrationHelper.getNewDisplayName(
                     player2Profile['rank'] as String?,
@@ -476,15 +503,15 @@ class TournamentService {
                   "score": player2Score,
                 }
               : match['player2_id'] != null
-              ? {
-                  "id": match['player2_id'],
-                  "name": 'Player 2',
-                  "avatar":
-                      "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png",
-                  "rank": "Chưa xếp hạng",
-                  "score": player2Score,
-                }
-              : null,
+                  ? {
+                      "id": match['player2_id'],
+                      "name": 'Player 2',
+                      "avatar":
+                          "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png",
+                      "rank": "Chưa xếp hạng",
+                      "score": player2Score,
+                    }
+                  : null,
           // ⚡ CRITICAL FIX: Add scores at root level for widgets
           "player1_score": player1Score,
           "player2_score": player2Score,
@@ -494,8 +521,8 @@ class TournamentService {
           "id": match['id'],
           "winner": match['winner_id'] != null
               ? (match['winner_id'] == match['player1_id']
-                    ? "player1"
-                    : "player2")
+                  ? "player1"
+                  : "player2")
               : null,
           "status": match['status'] ?? "pending",
           "scheduled_time": match['scheduled_time'],
@@ -523,7 +550,9 @@ class TournamentService {
           context: 'Failed to fetch tournament matches',
         ),
       );
-      ProductionLogger.info('❌ TournamentService: Error getting tournament matches: ${errorInfo.message}', tag: 'TournamentService');
+      ProductionLogger.info(
+          '❌ TournamentService: Error getting tournament matches: ${errorInfo.message}',
+          tag: 'TournamentService');
       throw Exception(errorInfo.message);
     }
   }
@@ -562,12 +591,13 @@ class TournamentService {
       await _supabase.from('tournament_participants').insert({
         'tournament_id': tournamentId,
         'user_id': user.id,
-        'payment_method_id': paymentMethod != '0' ? paymentMethod : null, // Store payment method UUID
+        'payment_method_id': paymentMethod != '0'
+            ? paymentMethod
+            : null, // Store payment method UUID
         "payment_status": 'pending',
         "status": 'registered',
-        'notes': paymentMethod == '0'
-            ? "Thanh toán tại quán"
-            : 'Thanh toán QR code',
+        'notes':
+            paymentMethod == '0' ? "Thanh toán tại quán" : 'Thanh toán QR code',
         'registered_at': DateTime.now().toIso8601String(),
       });
 
@@ -592,7 +622,8 @@ class TournamentService {
           paymentMethod: paymentMethod,
         );
       } catch (e) {
-        ProductionLogger.info('⚠️ Failed to send notification: $e', tag: 'TournamentService');
+        ProductionLogger.info('⚠️ Failed to send notification: $e',
+            tag: 'TournamentService');
       }
 
       return true;
@@ -671,10 +702,10 @@ class TournamentService {
     String prizeSource = 'entry_fees', // 'entry_fees', 'sponsor', 'hybrid'
     String distributionTemplate =
         'top_4', // 'winner_takes_all', 'top_3', 'top_4', 'dong_hang_3', 'custom'
-    double organizerFeePercent = 10.0, // Organizer fee percentage (0-100)
+    double organizerFeePercent = 0.0, // Organizer fee percentage (0-100)
     double sponsorContribution = 0.0, // Additional sponsor money
     List<Map<String, dynamic>>?
-    customDistribution, // For custom distribution [{position: 1, percentage: 50.0}]
+        customDistribution, // For custom distribution [{position: 1, percentage: 50.0}]
     // Rank restriction parameters
     String? minRank, // Minimum rank required
     String? maxRank, // Maximum rank allowed
@@ -707,15 +738,68 @@ class TournamentService {
         actualPrizePool = prizePool * (1.0 - organizerFeePercent / 100.0);
       }
 
+      // 🚀 ELON MODE DEBUG: Log prize configuration
+      ProductionLogger.info('🚀 [SERVICE] Prize configuration:',
+          tag: 'TournamentService');
+      ProductionLogger.info('  Template: $distributionTemplate',
+          tag: 'TournamentService');
+      ProductionLogger.info(
+          '  CustomDistribution type: ${customDistribution?.runtimeType}',
+          tag: 'TournamentService');
+      ProductionLogger.info(
+          '  CustomDistribution length: ${customDistribution is List ? (customDistribution as List).length : "N/A"}',
+          tag: 'TournamentService');
+      if (customDistribution != null && customDistribution.isNotEmpty) {
+        ProductionLogger.info('  First item: ${customDistribution[0]}',
+            tag: 'TournamentService');
+      }
+
+      // 🚨 CRITICAL VALIDATION: Check if customDistribution has ANY non-zero values
+      bool hasValidPrizes = false;
+      if (distributionTemplate == 'custom' &&
+          customDistribution != null &&
+          customDistribution.isNotEmpty) {
+        hasValidPrizes = customDistribution.any((prize) {
+          final cashAmount = prize['cashAmount'] as int? ?? 0;
+          final percentage = prize['percentage'] as num? ?? 0;
+          return cashAmount > 0 || percentage > 0;
+        });
+        ProductionLogger.info(
+            '  Custom distribution has valid prizes: $hasValidPrizes',
+            tag: 'TournamentService');
+      }
+
       // Set up prize distribution data
-      if (distributionTemplate == 'custom' && customDistribution != null) {
-        // Custom distribution
+      if (distributionTemplate == 'custom' && hasValidPrizes) {
+        // Custom distribution - ONLY when template is custom AND we have VALID data (non-zero values)
+        ProductionLogger.info(
+            '✅ Using CUSTOM distribution with ${customDistribution!.length} positions',
+            tag: 'TournamentService');
         prizeDistributionData = {
           'source': prizeSource,
           'template': 'custom',
           'organizerFeePercent': organizerFeePercent,
           'sponsorContribution': sponsorContribution,
           'distribution': customDistribution,
+          'totalPrizePool': actualPrizePool,
+        };
+      } else if (distributionTemplate == 'custom' && !hasValidPrizes) {
+        // ⚠️ CRITICAL BUG FIX: User selected custom template but ALL values are ZERO or no data!
+        // This was causing tournaments to be created with template='custom' but no actual distribution
+        ProductionLogger.info(
+            '❌ ERROR: Custom template selected but NO VALID prize values (all zeros)!',
+            tag: 'TournamentService');
+        ProductionLogger.info('  CustomDistribution: $customDistribution',
+            tag: 'TournamentService');
+        // Fallback to top_3 template to prevent broken tournament
+        distributionTemplate = 'top_3';
+        ProductionLogger.info('  ✅ Falling back to top_3 template',
+            tag: 'TournamentService');
+        prizeDistributionData = {
+          'source': prizeSource,
+          'template': 'top_3', // Fallback
+          'organizerFeePercent': organizerFeePercent,
+          'sponsorContribution': sponsorContribution,
           'totalPrizePool': actualPrizePool,
         };
       } else {
@@ -768,11 +852,55 @@ class TournamentService {
         'registration_fee_waiver': registrationFeeWaiver,
       };
 
-      ProductionLogger.info('🔍 Creating tournament with data:', tag: 'TournamentService');
-      ProductionLogger.info('   - Title: $title', tag: 'TournamentService');
-      ProductionLogger.info('   - Rules: ${rules ?? "(null)"}', tag: 'TournamentService');
-      ProductionLogger.info('   - Rules length: ${rules?.length ?? 0}', tag: 'TournamentService');
-      ProductionLogger.info('   - Special Rules: ${specialRules ?? "(null)"}', tag: 'TournamentService');
+      // 🚀 ELON MODE: Comprehensive logging of ALL tournament data
+      ProductionLogger.info(
+          '🔍 [SERVICE] Creating tournament with COMPLETE data:',
+          tag: 'TournamentService');
+      ProductionLogger.info('   📋 Basic Info:', tag: 'TournamentService');
+      ProductionLogger.info('      - Title: $title', tag: 'TournamentService');
+      ProductionLogger.info(
+          '      - Description: ${description.length > 50 ? "${description.substring(0, 50)}..." : description ?? "N/A"}',
+          tag: 'TournamentService');
+      ProductionLogger.info('      - Format: $format / $gameType',
+          tag: 'TournamentService');
+      ProductionLogger.info('   💰 Prize Config:', tag: 'TournamentService');
+      ProductionLogger.info('      - Entry Fee: $entryFee',
+          tag: 'TournamentService');
+      ProductionLogger.info('      - Prize Pool: $actualPrizePool',
+          tag: 'TournamentService');
+      ProductionLogger.info('      - Source: $prizeSource',
+          tag: 'TournamentService');
+      ProductionLogger.info('      - Template: $distributionTemplate',
+          tag: 'TournamentService');
+      ProductionLogger.info(
+          '      - Custom Dist (column): ${customDistribution != null ? "SET (${(customDistribution as List).length} items)" : "NULL"}',
+          tag: 'TournamentService');
+      ProductionLogger.info(
+          '      - Prize Distribution (JSON): ${prizeDistributionData.keys.join(", ")}',
+          tag: 'TournamentService');
+      if (prizeDistributionData.containsKey('distribution')) {
+        final dist = prizeDistributionData['distribution'] as List;
+        ProductionLogger.info(
+            '      - Distribution array: ${dist.length} positions',
+            tag: 'TournamentService');
+      }
+      ProductionLogger.info('   📝 Rules:', tag: 'TournamentService');
+      ProductionLogger.info('      - Rules: ${rules?.length ?? 0} chars',
+          tag: 'TournamentService');
+      ProductionLogger.info(
+          '      - Special Rules: ${specialRules?.length ?? 0} chars',
+          tag: 'TournamentService');
+      ProductionLogger.info('   🏆 Rank Restrictions:',
+          tag: 'TournamentService');
+      ProductionLogger.info(
+          '      - Min: ${minRank ?? "none"} / Max: ${maxRank ?? "none"}',
+          tag: 'TournamentService');
+      ProductionLogger.info('   📍 Venue:', tag: 'TournamentService');
+      ProductionLogger.info('      - Address: ${venueAddress ?? "none"}',
+          tag: 'TournamentService');
+      ProductionLogger.info(
+          '      - Contact: ${venueContact ?? "none"} / ${venuePhone ?? "none"}',
+          tag: 'TournamentService');
 
       final response = await _supabase
           .from('tournaments')
@@ -783,10 +911,12 @@ class TournamentService {
       // ✅ VERIFY: Check tournament ID
       final tournamentId = response['id'];
       if (tournamentId == null || tournamentId.toString().isEmpty) {
-        throw Exception('Tournament creation failed: No tournament ID returned');
+        throw Exception(
+            'Tournament creation failed: No tournament ID returned');
       }
 
-      ProductionLogger.info('✅ Tournament created successfully: $tournamentId', tag: 'TournamentService');
+      ProductionLogger.info('✅ Tournament created successfully: $tournamentId',
+          tag: 'TournamentService');
 
       // ✅ DOUBLE CHECK: Query back the tournament we just created
       try {
@@ -797,13 +927,19 @@ class TournamentService {
             .maybeSingle();
 
         if (verifyResponse == null) {
-          ProductionLogger.info('⚠️ WARNING: Tournament created but cannot query back! ID: $tournamentId', tag: 'TournamentService');
+          ProductionLogger.info(
+              '⚠️ WARNING: Tournament created but cannot query back! ID: $tournamentId',
+              tag: 'TournamentService');
           // Don't throw here as tournament was created
         } else {
-          ProductionLogger.info('✅ Verification passed: Tournament exists and can be queried', tag: 'TournamentService');
+          ProductionLogger.info(
+              '✅ Verification passed: Tournament exists and can be queried',
+              tag: 'TournamentService');
         }
       } catch (verifyError) {
-        ProductionLogger.info('⚠️ WARNING: Cannot verify tournament after creation: $verifyError', tag: 'TournamentService');
+        ProductionLogger.info(
+            '⚠️ WARNING: Cannot verify tournament after creation: $verifyError',
+            tag: 'TournamentService');
         // Don't throw here as tournament was created
       }
 
@@ -818,13 +954,10 @@ class TournamentService {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-      final response = await _supabase
-          .from('tournament_participants')
-          .select('''
+      final response =
+          await _supabase.from('tournament_participants').select('''
             tournaments (*)
-          ''')
-          .eq('user_id', user.id)
-          .order('created_at', ascending: false);
+          ''').eq('user_id', user.id).order('created_at', ascending: false);
 
       return response
           .map<Tournament>((json) => Tournament.fromJson(json['tournaments']))
@@ -882,12 +1015,10 @@ class TournamentService {
           .select()
           .eq('tournament_id', tournamentId);
 
-      final completedMatches = matches
-          .where((match) => match['status'] == 'completed')
-          .length;
-      final pendingMatches = matches
-          .where((match) => match['status'] == 'pending')
-          .length;
+      final completedMatches =
+          matches.where((match) => match['status'] == 'completed').length;
+      final pendingMatches =
+          matches.where((match) => match['status'] == 'pending').length;
 
       return {
         'total_participants': participants.length,
@@ -911,20 +1042,28 @@ class TournamentService {
     String tournamentId,
   ) async {
     try {
-      ProductionLogger.info('🔍 WithPaymentStatus: Querying participants for tournament $tournamentId',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🔍 WithPaymentStatus: Querying participants for tournament $tournamentId',
+          tag: 'tournament_service');
 
       // Check authentication status
       final currentUser = _supabase.auth.currentUser;
-      ProductionLogger.info('🔐 Auth status: ${currentUser != null ? "Authenticated as ${currentUser.email}" : "NOT AUTHENTICATED"}',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🔐 Auth status: ${currentUser != null ? "Authenticated as ${currentUser.email}" : "NOT AUTHENTICATED"}',
+          tag: 'tournament_service');
 
       // First check total participants without JOIN
       final totalCheck = await _supabase
           .from('tournament_participants')
           .select('id, user_id, payment_status')
           .eq('tournament_id', tournamentId);
-      ProductionLogger.info('🔢 DEBUG: Total participants in DB: ${totalCheck.length}', tag: 'TournamentService');
+      ProductionLogger.info(
+          '🔢 DEBUG: Total participants in DB: ${totalCheck.length}',
+          tag: 'TournamentService');
       for (int i = 0; i < totalCheck.length; i++) {
-        ProductionLogger.info('   ${i + 1}. User ID: ${totalCheck[i]['user_id']} - Payment: ${totalCheck[i]['payment_status']}',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '   ${i + 1}. User ID: ${totalCheck[i]['user_id']} - Payment: ${totalCheck[i]['payment_status']}',
+            tag: 'tournament_service');
       }
       var response = await _supabase
           .from('tournament_participants')
@@ -935,6 +1074,7 @@ class TournamentService {
               email,
               display_name,
               full_name,
+              username,
               avatar_url,
               elo_rating,
               rank
@@ -943,11 +1083,15 @@ class TournamentService {
           .eq('tournament_id', tournamentId)
           .order('registered_at', ascending: true);
 
-      ProductionLogger.info('📊 WithPaymentStatus: Raw response count: ${response.length}',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '📊 WithPaymentStatus: Raw response count: ${response.length}',
+          tag: 'tournament_service');
 
       // If response is still empty or users data is missing, try without join
       if (response.isEmpty || response.any((item) => item['users'] == null)) {
-        ProductionLogger.info('⚠️ WithPaymentStatus: Join failed or empty, trying without join...',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '⚠️ WithPaymentStatus: Join failed or empty, trying without join...',
+            tag: 'tournament_service');
         return await _getTournamentParticipantsWithoutJoin(tournamentId);
       }
 
@@ -975,10 +1119,14 @@ class TournamentService {
         };
       }).toList();
 
-      ProductionLogger.info('✅ WithPaymentStatus: Returning ${result.length} participants with payment info',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '✅ WithPaymentStatus: Returning ${result.length} participants with payment info',
+          tag: 'tournament_service');
       return result;
     } catch (error) {
-      ProductionLogger.info('❌ Error getting participants with payment status: $error', tag: 'TournamentService');
+      ProductionLogger.info(
+          '❌ Error getting participants with payment status: $error',
+          tag: 'TournamentService');
       throw Exception('Failed to get tournament participants: $error');
     }
   }
@@ -988,7 +1136,8 @@ class TournamentService {
     String tournamentId,
   ) async {
     try {
-      ProductionLogger.info('🔄 Fallback: Getting participants without join...', tag: 'TournamentService');
+      ProductionLogger.info('🔄 Fallback: Getting participants without join...',
+          tag: 'TournamentService');
 
       // First get tournament participants
       var participants = await _supabase
@@ -997,27 +1146,29 @@ class TournamentService {
           .eq('tournament_id', tournamentId)
           .order('registered_at', ascending: true);
 
-      ProductionLogger.info('📊 Fallback: Found ${participants.length} participant records',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '📊 Fallback: Found ${participants.length} participant records',
+          tag: 'tournament_service');
 
       // Then get user data in batch (optimized - no N+1 queries)
-      final List<String> userIds = participants
-          .map((p) => p['user_id'] as String)
-          .toSet()
-          .toList();
+      final List<String> userIds =
+          participants.map((p) => p['user_id'] as String).toSet().toList();
 
       Map<String, dynamic> userDataMap = {};
       if (userIds.isNotEmpty) {
         try {
           final users = await _supabase
               .from('users')
-              .select('id, email, display_name, full_name, avatar_url, elo_rating, rank')
+              .select(
+                  'id, email, display_name, full_name, username, avatar_url, elo_rating, rank')
               .inFilter('id', userIds);
 
           for (final user in users) {
             userDataMap[user['id']] = user;
           }
         } catch (e) {
-          ProductionLogger.info('❌ Error fetching users in batch: $e', tag: 'TournamentService');
+          ProductionLogger.info('❌ Error fetching users in batch: $e',
+              tag: 'TournamentService');
         }
       }
 
@@ -1026,7 +1177,9 @@ class TournamentService {
         try {
           final userData = userDataMap[participant['user_id']];
           if (userData == null) {
-            ProductionLogger.info('⚠️ User data not found for user_id: ${participant['user_id']}', tag: 'tournament_service');
+            ProductionLogger.info(
+                '⚠️ User data not found for user_id: ${participant['user_id']}',
+                tag: 'tournament_service');
             continue; // Skip orphaned participants
           }
 
@@ -1051,7 +1204,9 @@ class TournamentService {
             },
           });
         } catch (e) {
-          ProductionLogger.info('⚠️ Fallback: Failed to get user data for ${participant['user_id']}: $e',  tag: 'tournament_service');
+          ProductionLogger.info(
+              '⚠️ Fallback: Failed to get user data for ${participant['user_id']}: $e',
+              tag: 'tournament_service');
           // Add participant without user data
           result.add({
             'id': participant['id'],
@@ -1074,7 +1229,9 @@ class TournamentService {
         }
       }
 
-      ProductionLogger.info('✅ Fallback: Returning ${result.length} participants', tag: 'TournamentService');
+      ProductionLogger.info(
+          '✅ Fallback: Returning ${result.length} participants',
+          tag: 'TournamentService');
       return result;
     } catch (e) {
       ProductionLogger.info('❌ Fallback: Error: $e', tag: 'TournamentService');
@@ -1105,10 +1262,13 @@ class TournamentService {
           .eq('tournament_id', tournamentId)
           .eq('user_id', userId);
 
-      ProductionLogger.info('✅ Updated payment status for user $userId to $paymentStatus', tag: 'TournamentService');
+      ProductionLogger.info(
+          '✅ Updated payment status for user $userId to $paymentStatus',
+          tag: 'TournamentService');
       return true;
     } catch (error) {
-      ProductionLogger.info('❌ Error updating payment status: $error', tag: 'TournamentService');
+      ProductionLogger.info('❌ Error updating payment status: $error',
+          tag: 'TournamentService');
       throw Exception('Failed to update payment status: $error');
     }
   }
@@ -1136,10 +1296,13 @@ class TournamentService {
         params: {'tournament_id': tournamentId},
       );
 
-      ProductionLogger.info('✅ Removed participant $userId from tournament $tournamentId', tag: 'TournamentService');
+      ProductionLogger.info(
+          '✅ Removed participant $userId from tournament $tournamentId',
+          tag: 'TournamentService');
       return true;
     } catch (error) {
-      ProductionLogger.info('❌ Error removing participant: $error', tag: 'TournamentService');
+      ProductionLogger.info('❌ Error removing participant: $error',
+          tag: 'TournamentService');
       throw Exception('Failed to remove participant: $error');
     }
   }
@@ -1154,7 +1317,9 @@ class TournamentService {
     String seedingMethod = SeedingMethods.eloRating,
   }) async {
     try {
-      ProductionLogger.info('🎯 GenerateBracket: Starting bracket generation for tournament $tournamentId with ${participants.length} participants',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🎯 GenerateBracket: Starting bracket generation for tournament $tournamentId with ${participants.length} participants',
+          tag: 'tournament_service');
 
       // Validate format và số người chơi
       if (!TournamentHelper.isValidPlayerCount(format, participants.length)) {
@@ -1163,7 +1328,9 @@ class TournamentService {
 
       // 🏆 SPECIAL HANDLING: Use SABO DE16 bracket generator (27 matches)
       if (format == 'sabo_de16' && participants.length == 16) {
-        ProductionLogger.info('🏆 Using SABO DE16 bracket generator (27 matches)', tag: 'TournamentService');
+        ProductionLogger.info(
+            '🏆 Using SABO DE16 bracket generator (27 matches)',
+            tag: 'TournamentService');
         return await _generateSaboDE16Bracket(
           tournamentId,
           participants,
@@ -1173,7 +1340,9 @@ class TournamentService {
 
       // 🚀 SPECIAL HANDLING: Use CompleteDoubleEliminationService for standard DE16 (31 matches)
       if (format == 'double_elimination' && participants.length == 16) {
-        ProductionLogger.info('🚀 Using CompleteDoubleEliminationService for standard DE16 (31 matches)',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '🚀 Using CompleteDoubleEliminationService for standard DE16 (31 matches)',
+            tag: 'tournament_service');
         return await _generateDE16Bracket(
           tournamentId,
           participants,
@@ -1183,7 +1352,9 @@ class TournamentService {
 
       // 🎯 SPECIAL HANDLING: Use CompleteSaboDE32Service for SABO DE32 (55 matches)
       if (format == 'sabo_de32' && participants.length == 32) {
-        ProductionLogger.info('🎯 Using CompleteSaboDE32Service for SABO DE32 (55 matches)',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '🎯 Using CompleteSaboDE32Service for SABO DE32 (55 matches)',
+            tag: 'tournament_service');
         return await _generateSaboDE32Bracket(
           tournamentId,
           participants,
@@ -1196,18 +1367,23 @@ class TournamentService {
         participants,
         seedingMethod,
       );
-      ProductionLogger.info('✅ GenerateBracket: Participants seeded successfully', tag: 'TournamentService');
+      ProductionLogger.info(
+          '✅ GenerateBracket: Participants seeded successfully',
+          tag: 'TournamentService');
 
       // Generate bracket structure dựa trên format
       final bracketStructure = _generateBracketStructure(
         format,
         seededParticipants,
       );
-      ProductionLogger.info('✅ GenerateBracket: Bracket structure generated', tag: 'TournamentService');
+      ProductionLogger.info('✅ GenerateBracket: Bracket structure generated',
+          tag: 'TournamentService');
 
       // Tạo matches
       final matches = _generateMatches(tournamentId, bracketStructure, format);
-      ProductionLogger.info('📊 GenerateBracket: Generated ${matches.length} matches', tag: 'TournamentService');
+      ProductionLogger.info(
+          '📊 GenerateBracket: Generated ${matches.length} matches',
+          tag: 'TournamentService');
 
       // VALIDATION: Check bracket completeness
       final validationResult = _validateBracketCompleteness(
@@ -1220,25 +1396,32 @@ class TournamentService {
           'Bracket generation failed validation: ${validationResult['error']}',
         );
       }
-      ProductionLogger.info('✅ GenerateBracket: Bracket validation passed', tag: 'TournamentService');
+      ProductionLogger.info('✅ GenerateBracket: Bracket validation passed',
+          tag: 'TournamentService');
 
       // Use SABO approach for single elimination
       if (format == 'single_elimination') {
         await _generateSingleEliminationSaboStyle(tournamentId, participants);
-        ProductionLogger.info('✅ GenerateBracket: Single elimination created SABO style', tag: 'TournamentService');
+        ProductionLogger.info(
+            '✅ GenerateBracket: Single elimination created SABO style',
+            tag: 'TournamentService');
       } else {
         // Save matches to database (for other formats)
         await _saveMatchesToDatabase(matches);
-        ProductionLogger.info('✅ GenerateBracket: Matches saved to database', tag: 'TournamentService');
+        ProductionLogger.info('✅ GenerateBracket: Matches saved to database',
+            tag: 'TournamentService');
       }
 
       // Save bracket structure to database for future reference
       await _saveBracketDataToDatabase(tournamentId, bracketStructure);
-      ProductionLogger.info('✅ GenerateBracket: Bracket data saved to database', tag: 'TournamentService');
+      ProductionLogger.info('✅ GenerateBracket: Bracket data saved to database',
+          tag: 'TournamentService');
 
       // Update tournament status to ongoing
       await updateTournamentStatus(tournamentId, 'ongoing');
-      ProductionLogger.info('✅ GenerateBracket: Tournament status updated to ongoing', tag: 'TournamentService');
+      ProductionLogger.info(
+          '✅ GenerateBracket: Tournament status updated to ongoing',
+          tag: 'TournamentService');
 
       return TournamentBracket(
         tournamentId: tournamentId,
@@ -1250,7 +1433,8 @@ class TournamentService {
         createdAt: DateTime.now(),
       );
     } catch (error) {
-      ProductionLogger.info('🔥 GenerateBracket error: $error', tag: 'TournamentService');
+      ProductionLogger.info('🔥 GenerateBracket error: $error',
+          tag: 'TournamentService');
       throw Exception('Failed to generate bracket: $error');
     }
   }
@@ -1419,7 +1603,9 @@ class TournamentService {
     final int playerCount = participants.length;
     final int rounds = math.log(playerCount) ~/ math.log(2);
 
-    ProductionLogger.info('🏆 Generating complete single elimination bracket: $playerCount players, $rounds rounds',  tag: 'tournament_service');
+    ProductionLogger.info(
+        '🏆 Generating complete single elimination bracket: $playerCount players, $rounds rounds',
+        tag: 'tournament_service');
 
     // Generate ALL rounds structure
     List<List<Map<String, dynamic>>> allRounds = [];
@@ -1471,7 +1657,9 @@ class TournamentService {
       totalMatches += currentRound.length;
     }
 
-    ProductionLogger.info('✅ Generated $totalMatches total matches across $rounds rounds', tag: 'TournamentService');
+    ProductionLogger.info(
+        '✅ Generated $totalMatches total matches across $rounds rounds',
+        tag: 'TournamentService');
 
     // Extract hardcore advancement from all rounds
     Map<String, Map<String, dynamic>> hardcoreAdvancement = {};
@@ -1484,7 +1672,9 @@ class TournamentService {
       }
     }
 
-    ProductionLogger.info('🚀 Hardcore advancement rules: ${hardcoreAdvancement.keys.length}',  tag: 'tournament_service');
+    ProductionLogger.info(
+        '🚀 Hardcore advancement rules: ${hardcoreAdvancement.keys.length}',
+        tag: 'tournament_service');
 
     return {
       "type": 'single_elimination',
@@ -1502,7 +1692,9 @@ class TournamentService {
     List<SeededParticipant> participants,
   ) {
     final int playerCount = participants.length;
-    ProductionLogger.info('🏆 Generating complete double elimination bracket: $playerCount players',  tag: 'tournament_service');
+    ProductionLogger.info(
+        '🏆 Generating complete double elimination bracket: $playerCount players',
+        tag: 'tournament_service');
 
     // WINNER BRACKET: Standard single elimination structure
     List<List<Map<String, dynamic>>> winnerRounds = [];
@@ -1599,7 +1791,9 @@ class TournamentService {
     });
 
     int totalMatches = totalWBMatches + totalLBMatches;
-    ProductionLogger.info('✅ Generated double elimination: $totalWBMatches WB + ${totalLBMatches - totalWBMatches} LB + 2 GF = $totalMatches matches',  tag: 'tournament_service');
+    ProductionLogger.info(
+        '✅ Generated double elimination: $totalWBMatches WB + ${totalLBMatches - totalWBMatches} LB + 2 GF = $totalMatches matches',
+        tag: 'tournament_service');
 
     return {
       "type": 'double_elimination',
@@ -1695,9 +1889,8 @@ class TournamentService {
     return {
       "type": 'parallel_groups',
       'groupCount': groupCount,
-      'groups': groups
-          .map((group) => _generateRoundRobinBracket(group))
-          .toList(),
+      'groups':
+          groups.map((group) => _generateRoundRobinBracket(group)).toList(),
       "finalsStructure": 'knockout', // Top players advance to knockout
     };
   }
@@ -1752,7 +1945,9 @@ class TournamentService {
   /// Save generated matches to database
   Future<void> _saveMatchesToDatabase(List<TournamentMatch> matches) async {
     try {
-      ProductionLogger.info('🔄 Saving ${matches.length} matches to database...', tag: 'TournamentService');
+      ProductionLogger.info(
+          '🔄 Saving ${matches.length} matches to database...',
+          tag: 'TournamentService');
 
       for (final match in matches) {
         final matchData = {
@@ -1773,14 +1968,18 @@ class TournamentService {
           'updated_at': DateTime.now().toIso8601String(),
         };
 
-        ProductionLogger.info('💾 Saving match: R${match.round} M${match.matchNumber} - ${match.player1Id} vs ${match.player2Id}',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '💾 Saving match: R${match.round} M${match.matchNumber} - ${match.player1Id} vs ${match.player2Id}',
+            tag: 'tournament_service');
 
         await Supabase.instance.client.from('matches').insert(matchData);
       }
 
-      ProductionLogger.info('✅ All matches saved successfully', tag: 'TournamentService');
+      ProductionLogger.info('✅ All matches saved successfully',
+          tag: 'TournamentService');
     } catch (e) {
-      ProductionLogger.info('🔥 Error saving matches: $e', tag: 'TournamentService');
+      ProductionLogger.info('🔥 Error saving matches: $e',
+          tag: 'TournamentService');
       throw Exception('Failed to save matches to database: $e');
     }
   }
@@ -1799,12 +1998,16 @@ class TournamentService {
           bracket['allRounds'] as List<List<Map<String, dynamic>>>;
       final hardcoreAdvancement =
           bracket['hardcoreAdvancement'] as Map<String, dynamic>;
-      ProductionLogger.info('🎯 Processing hardcore advancement bracket with ${allRounds.length} rounds',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🎯 Processing hardcore advancement bracket with ${allRounds.length} rounds',
+          tag: 'tournament_service');
 
       // Process all rounds
       for (int roundIndex = 0; roundIndex < allRounds.length; roundIndex++) {
         final roundMatches = allRounds[roundIndex];
-        ProductionLogger.info('📊 Round ${roundIndex + 1}: ${roundMatches.length} matches',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '📊 Round ${roundIndex + 1}: ${roundMatches.length} matches',
+            tag: 'tournament_service');
 
         for (var pairing in roundMatches) {
           final matchKey = 'R${pairing['round']}M${pairing['matchNumber']}';
@@ -1823,7 +2026,9 @@ class TournamentService {
             player1Id = winnerRef1;
             player2Id = winnerRef2;
 
-            ProductionLogger.info('🚀 Match $matchKey uses hardcore advancement: P1=$player1Id, P2=$player2Id',  tag: 'tournament_service');
+            ProductionLogger.info(
+                '🚀 Match $matchKey uses hardcore advancement: P1=$player1Id, P2=$player2Id',
+                tag: 'tournament_service');
           }
 
           matches.add(
@@ -1842,17 +2047,23 @@ class TournamentService {
         }
       }
 
-      ProductionLogger.info('✅ Generated ${matches.length} hardcore advancement matches', tag: 'TournamentService');
+      ProductionLogger.info(
+          '✅ Generated ${matches.length} hardcore advancement matches',
+          tag: 'TournamentService');
     } else if (bracket.containsKey('allRounds')) {
       // Standard complete bracket structure
       final allRounds =
           bracket['allRounds'] as List<List<Map<String, dynamic>>>;
-      ProductionLogger.info('🎯 Processing complete bracket structure with ${allRounds.length} rounds',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🎯 Processing complete bracket structure with ${allRounds.length} rounds',
+          tag: 'tournament_service');
 
       // Process all rounds
       for (int roundIndex = 0; roundIndex < allRounds.length; roundIndex++) {
         final roundMatches = allRounds[roundIndex];
-        ProductionLogger.info('📊 Round ${roundIndex + 1}: ${roundMatches.length} matches',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '📊 Round ${roundIndex + 1}: ${roundMatches.length} matches',
+            tag: 'tournament_service');
 
         for (var pairing in roundMatches) {
           matches.add(
@@ -1871,10 +2082,13 @@ class TournamentService {
         }
       }
 
-      ProductionLogger.info('✅ Generated ${matches.length} complete single elimination matches',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '✅ Generated ${matches.length} complete single elimination matches',
+          tag: 'tournament_service');
     } else {
       // Fallback to old structure for backward compatibility
-      ProductionLogger.info('⚠️ Using legacy firstRound-only structure', tag: 'TournamentService');
+      ProductionLogger.info('⚠️ Using legacy firstRound-only structure',
+          tag: 'TournamentService');
       final firstRound = bracket['firstRound'] as List<Map<String, dynamic>>;
 
       for (var pairing in firstRound) {
@@ -1958,14 +2172,16 @@ class TournamentService {
   ) {
     List<TournamentMatch> matches = [];
 
-    ProductionLogger.info('🎯 Generating double elimination matches...', tag: 'TournamentService');
+    ProductionLogger.info('🎯 Generating double elimination matches...',
+        tag: 'TournamentService');
 
     // Winner Bracket matches
     final winnerBracket = bracket['winnerBracket'] as Map<String, dynamic>;
     if (winnerBracket.containsKey('allRounds')) {
       final winnerRounds =
           winnerBracket['allRounds'] as List<List<Map<String, dynamic>>>;
-      ProductionLogger.info('📊 Winner Bracket: ${winnerRounds.length} rounds', tag: 'TournamentService');
+      ProductionLogger.info('📊 Winner Bracket: ${winnerRounds.length} rounds',
+          tag: 'TournamentService');
 
       for (int roundIndex = 0; roundIndex < winnerRounds.length; roundIndex++) {
         final roundMatches = winnerRounds[roundIndex];
@@ -1994,7 +2210,8 @@ class TournamentService {
     //     : 4; // Unused
     final loserBracketRounds = loserBracket['rounds'] as int;
 
-    ProductionLogger.info('📊 Loser Bracket: $loserBracketRounds rounds', tag: 'TournamentService');
+    ProductionLogger.info('📊 Loser Bracket: $loserBracketRounds rounds',
+        tag: 'TournamentService');
 
     // Generate loser bracket matches (simplified structure)
     int loserMatchNumber = matches.length + 1;
@@ -2003,14 +2220,12 @@ class TournamentService {
       int matchesInRound = round == 1
           ? (matches.length ~/ 2)
           : round % 2 == 0
-          ? (matches.length ~/ (2 * round))
-          : (matches.length ~/ (2 * round));
+              ? (matches.length ~/ (2 * round))
+              : (matches.length ~/ (2 * round));
 
-      for (
-        int matchInRound = 1;
-        matchInRound <= matchesInRound;
-        matchInRound++
-      ) {
+      for (int matchInRound = 1;
+          matchInRound <= matchesInRound;
+          matchInRound++) {
         matches.add(
           TournamentMatch(
             id: _generateMatchId(),
@@ -2061,7 +2276,9 @@ class TournamentService {
       );
     }
 
-    ProductionLogger.info('✅ Generated ${matches.length} double elimination matches', tag: 'TournamentService');
+    ProductionLogger.info(
+        '✅ Generated ${matches.length} double elimination matches',
+        tag: 'TournamentService');
     return matches;
   }
 
@@ -2108,13 +2325,10 @@ class TournamentService {
     String newStatus,
   ) async {
     try {
-      await _supabase
-          .from('tournaments')
-          .update({
-            'status': newStatus,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', tournamentId);
+      await _supabase.from('tournaments').update({
+        'status': newStatus,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', tournamentId);
     } catch (error) {
       throw Exception('Failed to update tournament status: $error');
     }
@@ -2124,9 +2338,11 @@ class TournamentService {
   Future<void> startTournament(String tournamentId) async {
     try {
       await updateTournamentStatus(tournamentId, 'in_progress');
-      ProductionLogger.info('✅ Tournament started: $tournamentId', tag: 'TournamentService');
+      ProductionLogger.info('✅ Tournament started: $tournamentId',
+          tag: 'TournamentService');
     } catch (error) {
-      ProductionLogger.info('❌ Failed to start tournament: $error', tag: 'TournamentService');
+      ProductionLogger.info('❌ Failed to start tournament: $error',
+          tag: 'TournamentService');
       throw Exception('Failed to start tournament: $error');
     }
   }
@@ -2155,7 +2371,9 @@ class TournamentService {
     String format,
   ) {
     try {
-      ProductionLogger.info('🔍 Validating bracket: ${matches.length} matches for $participantCount players ($format)',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🔍 Validating bracket: ${matches.length} matches for $participantCount players ($format)',
+          tag: 'tournament_service');
 
       // Expected match counts for different formats
       int expectedMatches;
@@ -2165,13 +2383,11 @@ class TournamentService {
               participantCount - 1; // N-1 matches for single elimination
           break;
         case TournamentFormats.doubleElimination:
-          expectedMatches =
-              (participantCount - 1) * 2 +
+          expectedMatches = (participantCount - 1) * 2 +
               1; // ~2N matches for double elimination
           break;
         case TournamentFormats.roundRobin:
-          expectedMatches =
-              (participantCount * (participantCount - 1)) ~/
+          expectedMatches = (participantCount * (participantCount - 1)) ~/
               2; // N*(N-1)/2 for round robin
           break;
         default:
@@ -2205,7 +2421,9 @@ class TournamentService {
         };
       }
 
-      ProductionLogger.info('✅ Bracket validation passed: ${matches.length} matches, $assignedFirstRoundMatches assigned first round',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '✅ Bracket validation passed: ${matches.length} matches, $assignedFirstRoundMatches assigned first round',
+          tag: 'tournament_service');
 
       return {
         'isValid': true,
@@ -2325,7 +2543,9 @@ class TournamentService {
     List<UserProfile> participants,
   ) async {
     try {
-      ProductionLogger.info('🚀 Generating single elimination SABO style for ${participants.length} participants',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🚀 Generating single elimination SABO style for ${participants.length} participants',
+          tag: 'tournament_service');
 
       if (participants.length != 16) {
         throw Exception(
@@ -2339,9 +2559,12 @@ class TournamentService {
       // 2. Populate Round 1 with participants
       await _populateRound1SingleElimination(tournamentId, participants);
 
-      ProductionLogger.info('✅ Single elimination SABO style generated successfully', tag: 'TournamentService');
+      ProductionLogger.info(
+          '✅ Single elimination SABO style generated successfully',
+          tag: 'TournamentService');
     } catch (e) {
-      ProductionLogger.info('❌ Error in single elimination SABO style: $e', tag: 'TournamentService');
+      ProductionLogger.info('❌ Error in single elimination SABO style: $e',
+          tag: 'TournamentService');
       throw Exception('Failed to generate single elimination SABO style: $e');
     }
   }
@@ -2422,7 +2645,9 @@ class TournamentService {
       await Supabase.instance.client.from('matches').insert(match);
     }
 
-    ProductionLogger.info('✅ Created ${matches.length} single elimination matches', tag: 'TournamentService');
+    ProductionLogger.info(
+        '✅ Created ${matches.length} single elimination matches',
+        tag: 'TournamentService');
   }
 
   /// Populate Round 1 matches with participants
@@ -2453,21 +2678,22 @@ class TournamentService {
         final player1 = participants[i * 2];
         final player2 = participants[i * 2 + 1];
 
-        await Supabase.instance.client
-            .from('matches')
-            .update({
-              'player1_id': player1.id,
-              'player2_id': player2.id,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('id', match['id']);
+        await Supabase.instance.client.from('matches').update({
+          'player1_id': player1.id,
+          'player2_id': player2.id,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', match['id']);
 
-        ProductionLogger.info('✅ Populated R1 M${i + 1}: ${player1.username} vs ${player2.username}',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '✅ Populated R1 M${i + 1}: ${player1.username} vs ${player2.username}',
+            tag: 'tournament_service');
       }
 
-      ProductionLogger.info('✅ All Round 1 matches populated with participants', tag: 'TournamentService');
+      ProductionLogger.info('✅ All Round 1 matches populated with participants',
+          tag: 'TournamentService');
     } catch (e) {
-      ProductionLogger.info('❌ Error populating Round 1: $e', tag: 'TournamentService');
+      ProductionLogger.info('❌ Error populating Round 1: $e',
+          tag: 'TournamentService');
       throw Exception('Failed to populate Round 1: $e');
     }
   }
@@ -2482,12 +2708,14 @@ class TournamentService {
 
       await Supabase.instance.client
           .from('tournaments')
-          .update({'bracket_data': bracketDataJson})
-          .eq('id', tournamentId);
+          .update({'bracket_data': bracketDataJson}).eq('id', tournamentId);
 
-      ProductionLogger.info('💾 Saved bracket data to database for tournament $tournamentId',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '💾 Saved bracket data to database for tournament $tournamentId',
+          tag: 'tournament_service');
     } catch (e) {
-      ProductionLogger.info('❌ Failed to save bracket data: $e', tag: 'TournamentService');
+      ProductionLogger.info('❌ Failed to save bracket data: $e',
+          tag: 'TournamentService');
       throw Exception('Failed to save bracket data: $e');
     }
   }
@@ -2514,7 +2742,9 @@ class TournamentService {
 
       // Prevent duplicate player assignments
       if (match['player1_id'] == playerId || match['player2_id'] == playerId) {
-        ProductionLogger.info('❌ Player $playerId already assigned to R${roundNumber}M$matchNumber',  tag: 'tournament_service');
+        ProductionLogger.info(
+            '❌ Player $playerId already assigned to R${roundNumber}M$matchNumber',
+            tag: 'tournament_service');
         return null;
       }
 
@@ -2525,20 +2755,21 @@ class TournamentService {
       } else if (match['player2_id'] == null) {
         updateField = 'player2_id';
       } else {
-        ProductionLogger.info('⚠️ Match R${roundNumber}M$matchNumber already full', tag: 'TournamentService');
+        ProductionLogger.info(
+            '⚠️ Match R${roundNumber}M$matchNumber already full',
+            tag: 'TournamentService');
         return null;
       }
 
       // Update match with new player
-      await Supabase.instance.client
-          .from('matches')
-          .update({
-            updateField: playerId,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', match['id']);
+      await Supabase.instance.client.from('matches').update({
+        updateField: playerId,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', match['id']);
 
-      ProductionLogger.info('✅ Advanced player $playerId to R${roundNumber}M$matchNumber ($updateField) from $sourceMatch',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '✅ Advanced player $playerId to R${roundNumber}M$matchNumber ($updateField) from $sourceMatch',
+          tag: 'tournament_service');
 
       return {
         'match_id': match['id'],
@@ -2547,7 +2778,8 @@ class TournamentService {
         'updated_field': updateField,
       };
     } catch (e) {
-      ProductionLogger.info('❌ Error advancing player: $e', tag: 'TournamentService');
+      ProductionLogger.info('❌ Error advancing player: $e',
+          tag: 'TournamentService');
       return null;
     }
   }
@@ -2559,7 +2791,9 @@ class TournamentService {
     String winnerId,
   ) async {
     try {
-      ProductionLogger.info('🚀 Processing single elimination advancement for match $completedMatchId',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🚀 Processing single elimination advancement for match $completedMatchId',
+          tag: 'tournament_service');
 
       // Get completed match details
       final matchResponse = await Supabase.instance.client
@@ -2572,7 +2806,9 @@ class TournamentService {
       final round = match['round_number'] as int;
       final matchNumber = match['match_number'] as int;
 
-      ProductionLogger.info('📊 Completed: R${round}M$matchNumber, Winner: $winnerId', tag: 'TournamentService');
+      ProductionLogger.info(
+          '📊 Completed: R${round}M$matchNumber, Winner: $winnerId',
+          tag: 'TournamentService');
 
       // SIMPLE SINGLE ELIMINATION LOGIC
       Map<String, dynamic> results = {
@@ -2600,7 +2836,8 @@ class TournamentService {
         nextMatchNumber = 15;
       } else {
         // Final round - no advancement
-        ProductionLogger.info('🏆 Final match completed - tournament finished!', tag: 'TournamentService');
+        ProductionLogger.info('🏆 Final match completed - tournament finished!',
+            tag: 'TournamentService');
         return results;
       }
 
@@ -2617,10 +2854,12 @@ class TournamentService {
         results['advancement_made'] = true;
       }
 
-      ProductionLogger.info('🎯 Single elimination advancement complete', tag: 'TournamentService');
+      ProductionLogger.info('🎯 Single elimination advancement complete',
+          tag: 'TournamentService');
       return results;
     } catch (e) {
-      ProductionLogger.info('❌ Error in single elimination advancement: $e', tag: 'TournamentService');
+      ProductionLogger.info('❌ Error in single elimination advancement: $e',
+          tag: 'TournamentService');
       return {
         'advancement_made': false,
         'next_matches': [],
@@ -2636,12 +2875,15 @@ class TournamentService {
     String winnerId,
   ) async {
     try {
-      ProductionLogger.info('🚀 Processing hardcore advancement for match $completedMatchId, winner: $winnerId',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🚀 Processing hardcore advancement for match $completedMatchId, winner: $winnerId',
+          tag: 'tournament_service');
 
       // Get all tournament matches
       final matches = await getTournamentMatches(tournamentId);
       if (matches.isEmpty) {
-        ProductionLogger.info('❌ No matches found for tournament $tournamentId', tag: 'TournamentService');
+        ProductionLogger.info('❌ No matches found for tournament $tournamentId',
+            tag: 'TournamentService');
         return false;
       }
 
@@ -2652,7 +2894,8 @@ class TournamentService {
       );
 
       if (completedMatch.isEmpty) {
-        ProductionLogger.info('❌ Completed match $completedMatchId not found', tag: 'TournamentService');
+        ProductionLogger.info('❌ Completed match $completedMatchId not found',
+            tag: 'TournamentService');
         return false;
       }
 
@@ -2660,7 +2903,9 @@ class TournamentService {
       final matchNumber = completedMatch['match_number'] as int;
       final winnerReference = 'WINNER_FROM_R${round}M$matchNumber';
 
-      ProductionLogger.info('🔍 Looking for matches with winner reference: $winnerReference',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🔍 Looking for matches with winner reference: $winnerReference',
+          tag: 'tournament_service');
 
       // Find matches that reference this completed match as winner
       int advancedMatches = 0;
@@ -2672,14 +2917,18 @@ class TournamentService {
         if (match['player1_id'] == winnerReference) {
           updateData['player1_id'] = winnerId;
           needsUpdate = true;
-          ProductionLogger.info('📝 Advancing winner to match ${match['id']} player1', tag: 'tournament_service');
+          ProductionLogger.info(
+              '📝 Advancing winner to match ${match['id']} player1',
+              tag: 'tournament_service');
         }
 
         // Check if player2 references this match
         if (match['player2_id'] == winnerReference) {
           updateData['player2_id'] = winnerId;
           needsUpdate = true;
-          ProductionLogger.info('📝 Advancing winner to match ${match['id']} player2', tag: 'tournament_service');
+          ProductionLogger.info(
+              '📝 Advancing winner to match ${match['id']} player2',
+              tag: 'tournament_service');
         }
 
         // Update the match if needed
@@ -2692,14 +2941,19 @@ class TournamentService {
               .eq('id', match['id']);
 
           advancedMatches++;
-          ProductionLogger.info('✅ Updated match ${match['id']} with winner advancement', tag: 'tournament_service');
+          ProductionLogger.info(
+              '✅ Updated match ${match['id']} with winner advancement',
+              tag: 'tournament_service');
         }
       }
 
-      ProductionLogger.info('🎯 Hardcore advancement complete: $advancedMatches matches updated',  tag: 'tournament_service');
+      ProductionLogger.info(
+          '🎯 Hardcore advancement complete: $advancedMatches matches updated',
+          tag: 'tournament_service');
       return advancedMatches > 0;
     } catch (e) {
-      ProductionLogger.info('❌ Error in hardcore advancement: $e', tag: 'TournamentService');
+      ProductionLogger.info('❌ Error in hardcore advancement: $e',
+          tag: 'TournamentService');
       return false;
     }
   }
@@ -2745,7 +2999,8 @@ class TournamentService {
       // Generate unique filename
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final extension = fileName.split('.').last.toLowerCase();
-      final uniqueFileName = 'tournament_cover_${tournamentId}_$timestamp.$extension';
+      final uniqueFileName =
+          'tournament_cover_${tournamentId}_$timestamp.$extension';
 
       // Determine content type
       String contentType;
@@ -2765,9 +3020,7 @@ class TournamentService {
       }
 
       // Upload file to storage bucket 'tournament-covers'
-      await _supabase.storage
-          .from('tournament-covers')
-          .uploadBinary(
+      await _supabase.storage.from('tournament-covers').uploadBinary(
             uniqueFileName,
             fileBytes,
             fileOptions: FileOptions(contentType: contentType, upsert: true),
@@ -2778,7 +3031,8 @@ class TournamentService {
           .from('tournament-covers')
           .getPublicUrl(uniqueFileName);
 
-      ProductionLogger.info('Tournament cover uploaded: $publicUrl', tag: 'TournamentService');
+      ProductionLogger.info('Tournament cover uploaded: $publicUrl',
+          tag: 'TournamentService');
 
       // Update tournament cover_image_url in database
       final response = await _supabase
@@ -2791,11 +3045,13 @@ class TournamentService {
           .select()
           .single();
 
-      ProductionLogger.info('Tournament cover updated in database', tag: 'TournamentService');
+      ProductionLogger.info('Tournament cover updated in database',
+          tag: 'TournamentService');
 
       return Tournament.fromJson(response);
     } catch (error) {
-      ProductionLogger.error('Failed to upload tournament cover', error: error, tag: 'TournamentService');
+      ProductionLogger.error('Failed to upload tournament cover',
+          error: error, tag: 'TournamentService');
       throw Exception('Failed to upload tournament cover: $error');
     }
   }

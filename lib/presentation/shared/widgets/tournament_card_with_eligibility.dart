@@ -49,7 +49,7 @@ class _TournamentCardWithEligibilityState
   Future<void> _checkEligibility() async {
     try {
       final user = await UserService.instance.getCurrentUserProfile();
-      
+
       if (user == null) {
         if (mounted) {
           setState(() {
@@ -58,7 +58,7 @@ class _TournamentCardWithEligibilityState
         }
         return;
       }
-      
+
       // Check if user is registered (you may need to add this check)
       // For now, assume not registered
       final result = TournamentEligibilityService.checkEligibility(
@@ -88,7 +88,9 @@ class _TournamentCardWithEligibilityState
       tournamentMap: widget.tournamentCardData,
       onTap: () {
         // Check eligibility before allowing tap action
-        if (!_isLoading && _eligibilityResult != null && !_eligibilityResult!.isEligible) {
+        if (!_isLoading &&
+            _eligibilityResult != null &&
+            !_eligibilityResult!.isEligible) {
           // Show eligibility dialog if not eligible
           _showEligibilityDialog(context);
         } else {
@@ -128,4 +130,3 @@ class _TournamentCardWithEligibilityState
     );
   }
 }
-

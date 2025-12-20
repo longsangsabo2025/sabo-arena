@@ -88,7 +88,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
       await _service.savePolicy(_policy!);
     } catch (e) {
       // Silent fail for auto-save
-      ProductionLogger.info('Auto-save failed: $e', tag: 'membership_policy_screen');
+      ProductionLogger.info('Auto-save failed: $e',
+          tag: 'membership_policy_screen');
     }
   }
 
@@ -206,16 +207,20 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Chính sách thành viên', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Chính sách thành viên',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Cấu hình quy định và chính sách cho thành viên CLB', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondaryLight,
-                  ),
+                  'Cấu hình quy định và chính sách cho thành viên CLB',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondaryLight,
+                      ),
                 ),
               ],
             ),
@@ -400,10 +405,11 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
             Icon(icon, color: AppTheme.primaryLight, size: 24),
             const SizedBox(width: 8),
             Text(
-              title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppTheme.textPrimaryLight,
-                fontWeight: FontWeight.w600,
-              ),
+              title,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppTheme.textPrimaryLight,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ],
         ),
@@ -450,7 +456,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title, style: TextStyle(
+                  title,
+                  style: TextStyle(
                     color: AppTheme.textPrimaryLight,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -458,7 +465,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle, style: TextStyle(
+                  subtitle,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -499,7 +507,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title, style: TextStyle(
+                  title,
+                  style: TextStyle(
                     color: AppTheme.textPrimaryLight,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -507,7 +516,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle, style: TextStyle(
+                  subtitle,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -560,7 +570,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title, style: TextStyle(
+                  title,
+                  style: TextStyle(
                     color: AppTheme.textPrimaryLight,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -568,7 +579,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle, style: TextStyle(
+                  subtitle,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -617,7 +629,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
         children: [
           Expanded(
             child: Text(
-              title, style: TextStyle(color: AppTheme.textPrimaryLight, fontSize: 16),
+              title,
+              style: TextStyle(color: AppTheme.textPrimaryLight, fontSize: 16),
             ),
           ),
           IconButton(
@@ -653,7 +666,8 @@ class _MembershipPolicyScreenState extends State<MembershipPolicyScreen> {
               Icon(Icons.add, color: AppTheme.primaryLight),
               const SizedBox(width: 8),
               Text(
-                title, style: TextStyle(
+                title,
+                style: TextStyle(
                   color: AppTheme.primaryLight,
                   fontWeight: FontWeight.w600,
                 ),

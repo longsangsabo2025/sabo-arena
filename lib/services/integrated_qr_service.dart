@@ -24,8 +24,7 @@ class IntegratedQRService {
   ) async {
     try {
       // 1. Get or generate user code
-      String userCode =
-          await UserCodeService.getUserCode(user.id) ??
+      String userCode = await UserCodeService.getUserCode(user.id) ??
           await UserCodeService.generateUniqueUserCode(user.id);
 
       // 2. Get or create referral code
@@ -83,11 +82,8 @@ class IntegratedQRService {
   static Future<bool> updateUserIntegratedQR(String userId) async {
     try {
       // Get user profile
-      final userResponse = await _supabase
-          .from('users')
-          .select('*')
-          .eq('id', userId)
-          .single();
+      final userResponse =
+          await _supabase.from('users').select('*').eq('id', userId).single();
 
       final user = UserProfile.fromJson(userResponse);
 
@@ -95,16 +91,12 @@ class IntegratedQRService {
       final qrData = await generateQRDataWithReferral(user);
 
       // Update database with new QR data
-      await _supabase
-          .from('users')
-          .update({
-            'user_code': qrData['user_code'],
-            'qr_data': qrData['qr_data'],
-            'qr_generated_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
-
+      await _supabase.from('users').update({
+        'user_code': qrData['user_code'],
+        'qr_data': qrData['qr_data'],
+        'qr_generated_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
 
       return true;
     } catch (e) {
@@ -115,7 +107,6 @@ class IntegratedQRService {
   /// Scan integrated QR code and return profile + referral info
   static Future<Map<String, dynamic>?> scanIntegratedQR(String qrData) async {
     try {
-
       // Parse URL: https://saboarena.com/user/SABO123456?ref=SABO-USERNAME
       final uri = Uri.tryParse(qrData);
 
@@ -124,7 +115,6 @@ class IntegratedQRService {
           uri.pathSegments.length >= 2) {
         final userCode = uri.pathSegments[1]; // SABO123456
         final referralCode = uri.queryParameters['ref']; // SABO-USERNAME
-
 
         // Find user by user_code
         final userProfile = await _findUserByCode(userCode);
@@ -206,11 +196,8 @@ class IntegratedQRService {
     String userId,
   ) async {
     try {
-      final userResponse = await _supabase
-          .from('users')
-          .select('*')
-          .eq('id', userId)
-          .single();
+      final userResponse =
+          await _supabase.from('users').select('*').eq('id', userId).single();
 
       final user = UserProfile.fromJson(userResponse);
       return await generateQRDataWithReferral(user);
@@ -262,4 +249,3 @@ class IntegratedQRService {
     }
   }
 }
-

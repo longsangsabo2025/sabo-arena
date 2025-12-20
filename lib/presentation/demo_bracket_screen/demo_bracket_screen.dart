@@ -40,14 +40,18 @@ class DemoBracketScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Sơ Đồ Mẫu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Sơ Đồ Mẫu',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: Color(0xFF2E86AB),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    'Xem trước các format bảng đấu', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey, fontSize: 12),
+                    'Xem trước các format bảng đấu',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
               ),
@@ -68,7 +72,9 @@ class DemoBracketScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Text(
-              'MẪU', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'MẪU',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Color(0xFF2E86AB),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,

@@ -9,26 +9,17 @@ class TournamentStatusService {
   Future<void> markAsCompleted({
     required String tournamentId,
   }) async {
-
     try {
       // Update tournament status
-      await _supabase
-          .from('tournaments')
-          .update({
-            'status': 'completed',
-            'completed_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', tournamentId);
-
+      await _supabase.from('tournaments').update({
+        'status': 'completed',
+        'completed_at': DateTime.now().toIso8601String(),
+      }).eq('id', tournamentId);
 
       // Update all matches to completed
       await _supabase
           .from('matches')
-          .update({'status': 'completed'})
-          .eq('tournament_id', tournamentId);
-
-
-
+          .update({'status': 'completed'}).eq('tournament_id', tournamentId);
     } catch (e) {
       rethrow;
     }
@@ -38,7 +29,6 @@ class TournamentStatusService {
   Future<Map<String, dynamic>> validateCompletion({
     required String tournamentId,
   }) async {
-
     try {
       // Get tournament
       final tournament = await _supabase
@@ -73,7 +63,6 @@ class TournamentStatusService {
         'canComplete': true,
         'tournament': tournament,
       };
-
     } catch (e) {
       return {
         'canComplete': false,
@@ -82,4 +71,3 @@ class TournamentStatusService {
     }
   }
 }
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../services/tournament_prize_voucher_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/common/app_button.dart';
 
 /// Screen cho user thanh toán tiền bàn bằng voucher
 class VoucherTablePaymentScreen extends StatefulWidget {
@@ -131,7 +132,12 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
             const SizedBox(height: 10),
             Text(
               'Voucher sẽ được đánh dấu đã sử dụng sau khi xác nhận.',
-              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.5)),
             ),
           ],
         ),
@@ -140,9 +146,11 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Xác nhận',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Xác nhận'),
           ),
         ],
       ),
@@ -258,7 +266,12 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
               child: Center(
                 child: Text(
                   'Bạn chưa có voucher thanh toán bàn',
-                  style: TextStyle(fontSize: 12.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                  style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.6)),
                 ),
               ),
             )
@@ -284,7 +297,10 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                     border: Border.all(
                       color: isSelected
                           ? AppTheme.primaryLight
-                          : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                          : Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withValues(alpha: 0.3),
                       width: isSelected ? 2 : 1,
                     ),
                     borderRadius: BorderRadius.circular(10),
@@ -300,7 +316,10 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                             : Icons.radio_button_unchecked,
                         color: isSelected
                             ? AppTheme.primaryLight
-                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.4),
                       ),
                       SizedBox(width: 3.w),
                       Expanded(
@@ -324,7 +343,10 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                               'Mã: ${voucher['voucher_code']}',
                               style: TextStyle(
                                 fontSize: 10.sp,
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.6),
                               ),
                             ),
                           ],
@@ -492,18 +514,12 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
             SizedBox(
               width: double.infinity,
               height: 6.h,
-              child: ElevatedButton(
+              child: AppButton(
+                label: 'Xác nhận thanh toán',
+                type: AppButtonType.primary,
+                size: AppButtonSize.large,
+                fullWidth: true,
                 onPressed: _confirmPayment,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryLight,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  'Xác nhận thanh toán',
-                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
-                ),
               ),
             ),
           ],
@@ -518,11 +534,21 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history, size: 20.w, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+            Icon(Icons.history,
+                size: 20.w,
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.4)),
             SizedBox(height: 4.w),
             Text(
               'Chưa có lịch sử giao dịch',
-              style: TextStyle(fontSize: 14.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+              style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.4)),
             ),
           ],
         ),
@@ -564,7 +590,12 @@ class _VoucherTablePaymentScreenState extends State<VoucherTablePaymentScreen> {
                 ),
                 Text(
                   'Voucher: ${voucher?['voucher_code'] ?? 'N/A'}',
-                  style: TextStyle(fontSize: 10.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+                  style: TextStyle(
+                      fontSize: 10.sp,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.5)),
                 ),
               ],
             ),

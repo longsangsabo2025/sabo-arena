@@ -54,7 +54,7 @@ class AnalyticsService {
       _deviceType = 'desktop';
       return;
     }
-    
+
     if (Platform.isAndroid) {
       _deviceType = 'mobile';
       _os = 'Android';
@@ -83,7 +83,8 @@ class AnalyticsService {
   }
 
   /// Track button click
-  Future<void> trackClick(String buttonName, {Map<String, dynamic>? properties}) async {
+  Future<void> trackClick(String buttonName,
+      {Map<String, dynamic>? properties}) async {
     await _trackEvent(
       eventType: 'click',
       eventName: buttonName,
@@ -92,7 +93,8 @@ class AnalyticsService {
   }
 
   /// Track form submission
-  Future<void> trackFormSubmit(String formName, {Map<String, dynamic>? properties}) async {
+  Future<void> trackFormSubmit(String formName,
+      {Map<String, dynamic>? properties}) async {
     await _trackEvent(
       eventType: 'form_submit',
       eventName: formName,
@@ -101,7 +103,8 @@ class AnalyticsService {
   }
 
   /// Track conversion (e.g., tournament registration, payment)
-  Future<void> trackConversion(String conversionName, {double? value, Map<String, dynamic>? properties}) async {
+  Future<void> trackConversion(String conversionName,
+      {double? value, Map<String, dynamic>? properties}) async {
     final props = properties ?? {};
     if (value != null) props['value'] = value;
 
@@ -113,7 +116,8 @@ class AnalyticsService {
   }
 
   /// Track error
-  Future<void> trackError(String errorMessage, {String? stackTrace, Map<String, dynamic>? properties}) async {
+  Future<void> trackError(String errorMessage,
+      {String? stackTrace, Map<String, dynamic>? properties}) async {
     final props = properties ?? {};
     props['error_message'] = errorMessage;
     if (stackTrace != null) props['stack_trace'] = stackTrace;
@@ -202,7 +206,9 @@ class AnalyticsService {
       );
 
       if (response.statusCode != 201) {
-        ProductionLogger.info('❌ Analytics tracking failed: ${response.statusCode} ${response.body}', tag: 'analytics_service');
+        ProductionLogger.info(
+            '❌ Analytics tracking failed: ${response.statusCode} ${response.body}',
+            tag: 'analytics_service');
       }
     } catch (e) {
       ProductionLogger.info('❌ Analytics error: $e', tag: 'analytics_service');

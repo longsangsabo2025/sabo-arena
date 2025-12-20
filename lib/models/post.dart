@@ -19,7 +19,7 @@ class Post {
   final String? userName;
   final String? userAvatar;
   final String? userRank;
-  
+
   // Club information (if post belongs to club)
   final String? clubName;
   final String? clubAvatar;
@@ -57,9 +57,8 @@ class Post {
           ? List<String>.from(json['image_urls'])
           : null,
       location: json['location'],
-      hashtags: json['hashtags'] != null
-          ? List<String>.from(json['hashtags'])
-          : null,
+      hashtags:
+          json['hashtags'] != null ? List<String>.from(json['hashtags']) : null,
       tournamentId: json['tournament_id'],
       clubId: json['club_id'],
       likeCount: json['like_count'] ?? 0,
@@ -101,7 +100,9 @@ class Post {
     return {
       'id': id,
       'userId': userId,
-      'userName': clubId != null ? (clubName ?? 'Unknown Club') : (userName ?? 'Unknown User'),
+      'userName': clubId != null
+          ? (clubName ?? 'Unknown Club')
+          : (userName ?? 'Unknown User'),
       'userAvatar': clubId != null ? clubAvatar : userAvatar,
       'userRank': clubId != null ? null : userRank, // Clubs don't have ranks
       'content': content,

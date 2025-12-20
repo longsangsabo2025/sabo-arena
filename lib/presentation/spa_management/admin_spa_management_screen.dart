@@ -216,7 +216,9 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
                       ),
                     ),
                     title: Text(
-                      club['name'] ?? 'Chưa có tên', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold),
+                      club['name'] ?? 'Chưa có tên',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -382,7 +384,9 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Top câu lạc bộ hoạt động', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium,
+                      'Top câu lạc bộ hoạt động',
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
                     ...(() {
@@ -415,14 +419,18 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                '$redemptions', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                                '$redemptions',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
                                 ),
                               ),
                               const Text(
-                                'lượt đổi', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12),
+                                'lượt đổi',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 12),
                               ),
                             ],
                           ),
@@ -488,7 +496,9 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
                       ),
                     ),
                     title: Text(
-                      transaction['description'] ?? 'Giao dịch SPA', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w500),
+                      transaction['description'] ?? 'Giao dịch SPA',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,13 +521,17 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '${isPositive ? '+' : ''}${transaction['spa_amount']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          '${isPositive ? '+' : ''}${transaction['spa_amount']}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color: isPositive ? Colors.green : Colors.red,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                        const Text('SPA', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12)),
+                        const Text('SPA',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 12)),
                       ],
                     ),
                     isThreeLine: userName != null,
@@ -556,7 +570,8 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        text, style: TextStyle(
+        text,
+        style: TextStyle(
           color: Colors.blue.shade800,
           fontSize: 12,
           fontWeight: FontWeight.w500,
@@ -582,14 +597,16 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 4),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
           Text(
-            title, style: const TextStyle(fontSize: 12),
+            title,
+            style: const TextStyle(fontSize: 12),
             textAlign: TextAlign.center,
           ),
         ],
@@ -612,7 +629,8 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
             Icon(icon, size: 32, color: color),
             const SizedBox(height: 8),
             Text(
-              value, style: TextStyle(
+              value,
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: color,
@@ -620,7 +638,8 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
             ),
             const SizedBox(height: 4),
             Text(
-              title, style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              title,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
           ],
@@ -646,4 +665,3 @@ class _AdminSpaManagementScreenState extends State<AdminSpaManagementScreen>
     }
   }
 }
-

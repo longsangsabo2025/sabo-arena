@@ -287,13 +287,11 @@ class _FeedPostCardWidgetState extends State<FeedPostCardWidget>
 
   /// Build content hoặc background card tùy theo có ảnh hay không
   Widget _buildContentOrBackground(BuildContext context) {
-    final hasImage =
-        widget.post['imageUrl'] != null &&
+    final hasImage = widget.post['imageUrl'] != null &&
         widget.post['imageUrl'].toString().isNotEmpty &&
         widget.post['imageUrl'].toString() != 'null';
 
-    final hasContent =
-        widget.post['content'] != null &&
+    final hasContent = widget.post['content'] != null &&
         widget.post['content'].toString().isNotEmpty;
 
     // Nếu không có ảnh nhưng có content → hiển thị background card
@@ -475,9 +473,8 @@ class _FeedPostCardWidgetState extends State<FeedPostCardWidget>
                     ? const Color(0xFF00695C) // Teal primary color when saved
                     : const Color(0xFF1A1A1A),
                 onTap: widget.onSave,
-                semanticLabel: widget.post['isSaved'] == true
-                    ? 'Đã lưu'
-                    : 'Lưu bài viết',
+                semanticLabel:
+                    widget.post['isSaved'] == true ? 'Đã lưu' : 'Lưu bài viết',
               ),
             ],
           ),
@@ -504,7 +501,10 @@ class _FeedPostCardWidgetState extends State<FeedPostCardWidget>
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       '•',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF8E8E93), overflow: TextOverflow.ellipsis),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF8E8E93),
+                          overflow: TextOverflow.ellipsis),
                     ),
                   ),
                 if (commentCount > 0) ...[
@@ -615,4 +615,3 @@ class _FeedPostCardWidgetState extends State<FeedPostCardWidget>
     );
   }
 }
-

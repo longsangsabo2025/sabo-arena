@@ -10,14 +10,14 @@ class TournamentPrizeTemplate {
   final bool isSystem; // System templates vs user custom
   final String? createdBy; // User ID who created custom template
   final DateTime createdAt;
-  
+
   // Prize Distribution
   final int prizePool;
   final String prizeDistribution; // template name (standard, top_heavy, etc.)
-  
+
   // Voucher Config
   final List<VoucherPrizeConfig> voucherConfigs;
-  
+
   const TournamentPrizeTemplate({
     required this.id,
     required this.name,
@@ -42,7 +42,7 @@ class VoucherPrizeConfig {
   final int vndValue;
   final int validityDays;
   final String? description;
-  
+
   const VoucherPrizeConfig({
     required this.position,
     required this.vndValue,

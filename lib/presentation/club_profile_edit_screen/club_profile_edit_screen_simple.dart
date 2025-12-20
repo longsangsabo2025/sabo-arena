@@ -1056,4 +1056,3 @@ class _ClubProfileEditScreenSimpleState
     );
   }
 }
-

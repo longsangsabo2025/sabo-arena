@@ -4,7 +4,7 @@ import 'dart:async';
 
 /// Circuit Breaker Pattern
 /// Prevents cascading failures by stopping requests to failing services
-/// 
+///
 /// States:
 /// - CLOSED: Normal operation, requests pass through
 /// - OPEN: Service failing, requests blocked, return cached/fallback data
@@ -14,7 +14,7 @@ class CircuitBreaker {
   final Duration timeout;
   final int failureThreshold;
   final Duration resetTimeout;
-  
+
   CircuitState _state = CircuitState.closed;
   int _failureCount = 0;
   int _successCount = 0;
@@ -36,13 +36,11 @@ class CircuitBreaker {
     if (_state == CircuitState.open) {
       if (_shouldAttemptReset()) {
         _state = CircuitState.halfOpen;
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
       } else {
         // Circuit is open, use fallback
         if (fallback != null) {
-          if (kDebugMode) {
-          }
+          if (kDebugMode) {}
           return await fallback();
         }
         throw CircuitBreakerOpenException('Circuit breaker $name is OPEN');
@@ -56,8 +54,7 @@ class CircuitBreaker {
     } catch (e) {
       _onFailure();
       if (fallback != null && _state == CircuitState.open) {
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
         return await fallback();
       }
       rethrow;
@@ -66,14 +63,13 @@ class CircuitBreaker {
 
   void _onSuccess() {
     _failureCount = 0;
-    
+
     if (_state == CircuitState.halfOpen) {
       _successCount++;
       if (_successCount >= 2) {
         _state = CircuitState.closed;
         _successCount = 0;
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
       }
     }
   }
@@ -81,20 +77,18 @@ class CircuitBreaker {
   void _onFailure() {
     _failureCount++;
     _lastFailureTime = DateTime.now();
-    
+
     if (_failureCount >= failureThreshold) {
       _state = CircuitState.open;
       _successCount = 0;
-      if (kDebugMode) {
-      }
-      
+      if (kDebugMode) {}
+
       // Schedule reset attempt
       _resetTimer?.cancel();
       _resetTimer = Timer(resetTimeout, () {
         if (_state == CircuitState.open) {
           _state = CircuitState.halfOpen;
-          if (kDebugMode) {
-          }
+          if (kDebugMode) {}
         }
       });
     }
@@ -107,15 +101,14 @@ class CircuitBreaker {
 
   CircuitState get state => _state;
   int get failureCount => _failureCount;
-  
+
   void reset() {
     _state = CircuitState.closed;
     _failureCount = 0;
     _successCount = 0;
     _lastFailureTime = null;
     _resetTimer?.cancel();
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   void dispose() {
@@ -132,7 +125,7 @@ enum CircuitState {
 class CircuitBreakerOpenException implements Exception {
   final String message;
   CircuitBreakerOpenException(this.message);
-  
+
   @override
   String toString() => message;
 }
@@ -168,5 +161,3 @@ class CircuitBreakerManager {
     _breakers.clear();
   }
 }
-
-

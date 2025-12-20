@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Keyboard shortcuts manager for iPad Pro
-/// 
+///
 /// Supports common shortcuts:
 /// - Cmd+N: New item/tournament
 /// - Cmd+F: Search
@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 /// - Cmd+S: Save
 /// - Cmd+W: Close
 /// - Cmd+T: New tab
-/// 
+///
 /// Usage:
 /// ```dart
 /// KeyboardShortcutsWrapper(
@@ -41,7 +41,8 @@ class KeyboardShortcutsWrapper extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<KeyboardShortcutsWrapper> createState() => _KeyboardShortcutsWrapperState();
+  State<KeyboardShortcutsWrapper> createState() =>
+      _KeyboardShortcutsWrapperState();
 }
 
 class _KeyboardShortcutsWrapperState extends State<KeyboardShortcutsWrapper> {
@@ -68,25 +69,28 @@ class _KeyboardShortcutsWrapperState extends State<KeyboardShortcutsWrapper> {
     }
 
     // Check for Cmd/Ctrl key
-    final isCmdPressed = HardwareKeyboard.instance.isMetaPressed || 
-                        HardwareKeyboard.instance.isControlPressed;
+    final isCmdPressed = HardwareKeyboard.instance.isMetaPressed ||
+        HardwareKeyboard.instance.isControlPressed;
 
     if (!isCmdPressed) {
       return KeyEventResult.ignored;
     }
 
     // Handle specific shortcuts
-    if (event.logicalKey == LogicalKeyboardKey.keyN && widget.onNewItem != null) {
+    if (event.logicalKey == LogicalKeyboardKey.keyN &&
+        widget.onNewItem != null) {
       widget.onNewItem!();
       return KeyEventResult.handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.keyF && widget.onSearch != null) {
+    if (event.logicalKey == LogicalKeyboardKey.keyF &&
+        widget.onSearch != null) {
       widget.onSearch!();
       return KeyEventResult.handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.keyR && widget.onRefresh != null) {
+    if (event.logicalKey == LogicalKeyboardKey.keyR &&
+        widget.onRefresh != null) {
       widget.onRefresh!();
       return KeyEventResult.handled;
     }
@@ -101,7 +105,8 @@ class _KeyboardShortcutsWrapperState extends State<KeyboardShortcutsWrapper> {
       return KeyEventResult.handled;
     }
 
-    if (event.logicalKey == LogicalKeyboardKey.keyT && widget.onNewTab != null) {
+    if (event.logicalKey == LogicalKeyboardKey.keyT &&
+        widget.onNewTab != null) {
       widget.onNewTab!();
       return KeyEventResult.handled;
     }
@@ -120,9 +125,9 @@ class _KeyboardShortcutsWrapperState extends State<KeyboardShortcutsWrapper> {
 }
 
 /// Keyboard shortcut tooltip widget
-/// 
+///
 /// Shows keyboard shortcut hint in tooltip
-/// 
+///
 /// Usage:
 /// ```dart
 /// KeyboardShortcutTooltip(
@@ -176,7 +181,7 @@ class KeyboardShortcuts {
 }
 
 /// Action button with keyboard shortcut hint
-/// 
+///
 /// Usage:
 /// ```dart
 /// ActionButtonWithShortcut(

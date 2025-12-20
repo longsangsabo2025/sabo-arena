@@ -23,7 +23,7 @@ class ClubListController extends ChangeNotifier {
   // Filter state
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
-  
+
   // Pagination
   int _currentPage = 0;
   static const int _pageSize = 10;
@@ -66,7 +66,6 @@ class ClubListController extends ChangeNotifier {
       if (_selectedClub == null && _clubs.isNotEmpty) {
         _selectedClub = _clubs.first;
       }
-      
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

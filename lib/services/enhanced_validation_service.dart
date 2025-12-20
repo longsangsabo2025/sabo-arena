@@ -226,7 +226,9 @@ class EnhancedValidationService {
     // Check if it's a power of 2 for bracket tournaments (optional but recommended)
     if (maxParticipants > 0 && (maxParticipants & (maxParticipants - 1)) != 0) {
       if (kDebugMode) {
-        ProductionLogger.info('⚠️ Warning: $maxParticipants is not a power of 2, bracket generation may have byes',  tag: 'enhanced_validation_service');
+        ProductionLogger.info(
+            '⚠️ Warning: $maxParticipants is not a power of 2, bracket generation may have byes',
+            tag: 'enhanced_validation_service');
       }
     }
 

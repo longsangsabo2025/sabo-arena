@@ -139,11 +139,20 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), size: 40),
+            Icon(Icons.error_outline,
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.4),
+                size: 40),
             const SizedBox(height: 8),
             Text(
               'Không thể tải thống kê',
-              style: AppTypography.bodyMedium.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+              style: AppTypography.bodyMedium.copyWith(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.4)),
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
@@ -217,7 +226,10 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
             border: Border.all(
               color: isActive
                   ? Colors.green.withValues(alpha: 0.3)
-                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                  : Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -226,7 +238,12 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
             children: [
               Icon(
                 isActive ? Icons.check_circle : Icons.pause_circle,
-                color: isActive ? Colors.green : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                color: isActive
+                    ? Colors.green
+                    : Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.4),
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -235,7 +252,10 @@ class _BasicReferralStatsWidgetState extends State<BasicReferralStatsWidget> {
                 style: AppTypography.bodyMedium.copyWith(
                   color: isActive
                       ? Colors.green.shade700
-                      : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      : Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.7),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -378,4 +398,3 @@ class CompactReferralStats extends StatelessWidget {
     return BasicReferralStatsWidget(userId: userId, showTitle: false);
   }
 }
-

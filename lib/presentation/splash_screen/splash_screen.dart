@@ -84,7 +84,8 @@ class _SplashScreenState extends State<SplashScreen>
       // 🎯 Use the new AuthNavigationController for proper flow
       await AuthNavigationController.navigateFromSplash(context);
     } catch (e) {
-      ProductionLogger.info('ERROR in _navigateToHome: $e', tag: 'splash_screen');
+      ProductionLogger.info('ERROR in _navigateToHome: $e',
+          tag: 'splash_screen');
       // Fallback navigation
       if (mounted) {
         Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
@@ -170,7 +171,9 @@ class _SplashScreenState extends State<SplashScreen>
                         child: Transform.translate(
                           offset: Offset(0, _slideAnimation.value),
                           child: Text(
-                            "SABO ARENA", overflow: TextOverflow.ellipsis, style: theme.textTheme.displayMedium?.copyWith(
+                            "SABO ARENA",
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.displayMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 2.0,
@@ -200,7 +203,9 @@ class _SplashScreenState extends State<SplashScreen>
                         child: Transform.translate(
                           offset: Offset(0, _slideAnimation.value * 0.5),
                           child: Text(
-                            "Kết nối cộng đồng billards", overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyLarge?.copyWith(
+                            "Kết nối cộng đồng billards",
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyLarge?.copyWith(
                               color: Colors.white.withValues(alpha: 0.9),
                               fontWeight: FontWeight.w400,
                               letterSpacing: 0.5,

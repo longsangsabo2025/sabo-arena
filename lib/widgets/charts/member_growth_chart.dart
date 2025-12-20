@@ -145,12 +145,10 @@ class _MemberGrowthChartState extends State<MemberGrowthChart> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          (widget.lineColor ?? ds.AppColors.primary).withValues(
-                            alpha: 0.3,
-                          ),
-                          (widget.lineColor ?? ds.AppColors.primary).withValues(
-                            alpha: 0.05,
-                          ),
+                          (widget.lineColor ?? ds.AppColors.primary)
+                              .withValues(alpha: 0.3),
+                          (widget.lineColor ?? ds.AppColors.primary)
+                              .withValues(alpha: 0.05),
                         ],
                       ),
                     ),

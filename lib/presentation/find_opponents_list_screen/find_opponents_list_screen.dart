@@ -4,7 +4,9 @@ import '../../models/user_profile.dart';
 import '../../widgets/loading_state_widget.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/error_state_widget.dart';
+import '../../widgets/common/app_button.dart';
 import './widgets/opponent_user_card.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 /// Screen hiển thị danh sách đối thủ được đề xuất (Facebook style)
 class FindOpponentsListScreen extends StatefulWidget {
@@ -19,65 +21,71 @@ class FindOpponentsListScreen extends StatefulWidget {
 class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
   final OpponentMatchingService _matchingService =
       OpponentMatchingService.instance;
-  List<UserProfile> _opponents = [];
-  bool _isLoading = true;
+
+  // ♾️ Infinite Scroll Pagination Controller
+  late PagingController<int, UserProfile> _pagingController;
   String? _errorMessage;
-  
+
   // 🚀 MUSK: Search functionality
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   List<UserProfile> _searchResults = [];
-  // bool _isSearching = false;
   bool _showSearchResults = false;
 
   @override
   void initState() {
     super.initState();
-    _loadOpponents();
+
+    // Initialize paging controller
+    _pagingController = PagingController<int, UserProfile>(firstPageKey: 0);
+
+    // Add page request listener
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchOpponentsPage(pageKey);
+    });
+
     _searchController.addListener(_onSearchChanged);
   }
-  
+
   @override
   void dispose() {
+    _pagingController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _loadOpponents() async {
+  Future<void> _fetchOpponentsPage(int pageKey) async {
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
       final opponents = await _matchingService.findMatchedOpponents(
-        radiusKm: 500, // Increased radius for better results
-        rankFilter: null, // All ranks
-        limit: 20, // Add pagination limit
+        radiusKm: 500,
+        rankFilter: null,
+        limit: 20,
+        offset: pageKey,
       );
 
-      if (mounted) {
-        setState(() {
-          _opponents = opponents;
-          _isLoading = false;
-        });
+      final isLastPage = opponents.length < 20;
+      if (isLastPage) {
+        _pagingController.appendLastPage(opponents);
+      } else {
+        _pagingController.appendPage(opponents, pageKey + opponents.length);
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = _getErrorMessage(e);
-        });
-      }
+    } catch (error) {
+      _pagingController.error = error;
+      _errorMessage = _getErrorMessage(error);
     }
+  }
+
+  Future<void> _loadOpponents() async {
+    _pagingController.refresh();
   }
 
   String _getErrorMessage(dynamic error) {
     final errorStr = error.toString().toLowerCase();
     if (errorStr.contains('location')) {
       return 'Không thể xác định vị trí của bạn. Vui lòng cấp quyền truy cập vị trí.';
-    } else if (errorStr.contains('network') || errorStr.contains('connection')) {
+    } else if (errorStr.contains('network') ||
+        errorStr.contains('connection')) {
       return 'Không có kết nối internet. Vui lòng kiểm tra và thử lại.';
     } else if (errorStr.contains('authentication')) {
       return 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
@@ -85,7 +93,7 @@ class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
       return 'Có lỗi xảy ra khi tìm kiếm đối thủ. Vui lòng thử lại sau.';
     }
   }
-  
+
   /// 🚀 MUSK: Debounced search với smart filtering
   void _onSearchChanged() {
     final query = _searchController.text.trim();
@@ -98,13 +106,14 @@ class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
       }
       return;
     }
-    
+
     // Simple local filtering first (instant results)
-    final localResults = _opponents.where((user) {
+    final allOpponents = _pagingController.itemList ?? [];
+    final localResults = allOpponents.where((user) {
       return user.displayName.toLowerCase().contains(query.toLowerCase()) ||
-             (user.rank ?? '').toLowerCase().contains(query.toLowerCase());
+          (user.rank ?? '').toLowerCase().contains(query.toLowerCase());
     }).toList();
-    
+
     if (mounted) {
       setState(() {
         _showSearchResults = true;
@@ -112,7 +121,7 @@ class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
       });
     }
   }
-  
+
   /// Clear search và return to main list
   void _clearSearch() {
     _searchController.clear();
@@ -165,9 +174,9 @@ class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
         color: const Color(0xFFF0F2F5),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: _searchFocusNode.hasFocus 
-            ? const Color(0xFF0866FF) 
-            : Colors.transparent,
+          color: _searchFocusNode.hasFocus
+              ? const Color(0xFF0866FF)
+              : Colors.transparent,
           width: 1.5,
         ),
       ),
@@ -220,30 +229,9 @@ class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading) {
-      return const LoadingStateWidget(message: 'Đang tìm đối thủ phù hợp...');
-    }
-
-    if (_errorMessage != null) {
-      return ErrorStateWidget(
-        errorMessage: _errorMessage,
-        onRetry: _loadOpponents,
-      );
-    }
-
     // 🚀 MUSK: Show search results khi đang search
     if (_showSearchResults) {
       return _buildSearchResults();
-    }
-    
-    if (_opponents.isEmpty) {
-      return EmptyStateWidget(
-        icon: Icons.person_search,
-        message: 'Không tìm thấy đối thủ',
-        subtitle: 'Thử mở rộng phạm vi tìm kiếm hoặc thử lại sau',
-        actionLabel: 'Làm mới',
-        onAction: _loadOpponents,
-      );
     }
 
     return RefreshIndicator(
@@ -266,30 +254,46 @@ class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
               ),
             ),
           Expanded(
-            child: ListView.builder(
+            child: PagedListView<int, UserProfile>(
+              pagingController: _pagingController,
               padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: _opponents.length,
-              itemBuilder: (context, index) {
-                final opponent = _opponents[index];
-                return OpponentUserCard(
-                  user: opponent,
-                  onRefresh: () {
-                    // Only refresh if needed, not full reload
-                    if (mounted) {
-                      setState(() {
-                        // Remove this specific opponent from list if needed
-                      });
-                    }
-                  },
-                );
-              },
+              builderDelegate: PagedChildBuilderDelegate<UserProfile>(
+                itemBuilder: (context, opponent, index) {
+                  return OpponentUserCard(
+                    user: opponent,
+                    onRefresh: () {
+                      // Refresh paging controller
+                      _pagingController.refresh();
+                    },
+                  );
+                },
+                firstPageProgressIndicatorBuilder: (context) =>
+                    const LoadingStateWidget(
+                        message: 'Đang tìm đối thủ phù hợp...'),
+                newPageProgressIndicatorBuilder: (context) => const Center(
+                    child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                )),
+                firstPageErrorIndicatorBuilder: (context) => ErrorStateWidget(
+                  errorMessage: _errorMessage,
+                  onRetry: _loadOpponents,
+                ),
+                noItemsFoundIndicatorBuilder: (context) => EmptyStateWidget(
+                  icon: Icons.person_search,
+                  message: 'Không tìm thấy đối thủ',
+                  subtitle: 'Thử mở rộng phạm vi tìm kiếm hoặc thử lại sau',
+                  actionLabel: 'Làm mới',
+                  onAction: _loadOpponents,
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
-  
+
   /// 🚀 MUSK: Search results with instant feedback
   Widget _buildSearchResults() {
     if (_searchResults.isEmpty) {
@@ -320,24 +324,19 @@ class _FindOpponentsListScreenState extends State<FindOpponentsListScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
+            AppButton(
+              label: 'Xóa tìm kiếm',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              icon: Icons.clear,
+              iconTrailing: false,
               onPressed: _clearSearch,
-              icon: const Icon(Icons.clear, size: 18),
-              label: const Text('Xóa tìm kiếm'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0866FF),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
             ),
           ],
         ),
       );
     }
-    
+
     return Column(
       children: [
         // Search results header

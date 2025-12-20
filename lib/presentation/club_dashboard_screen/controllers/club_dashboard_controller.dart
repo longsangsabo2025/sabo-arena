@@ -8,7 +8,8 @@ import '../../../services/club_service.dart';
 
 class ClubDashboardController extends ChangeNotifier {
   final String clubId;
-  final AdminRankApprovalService _rankApprovalService = AdminRankApprovalService();
+  final AdminRankApprovalService _rankApprovalService =
+      AdminRankApprovalService();
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;

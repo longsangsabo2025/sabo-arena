@@ -14,7 +14,9 @@ class TournamentCacheService {
   /// Initialize SharedPreferences
   static Future<void> initialize() async {
     _prefs = await SharedPreferences.getInstance();
-    ProductionLogger.info('🗃️ TournamentCacheService initialized with SharedPreferences', tag: 'tournament_cache_service');
+    ProductionLogger.info(
+        '🗃️ TournamentCacheService initialized with SharedPreferences',
+        tag: 'tournament_cache_service');
   }
 
   /// Ensure _prefs is initialized
@@ -33,7 +35,9 @@ class TournamentCacheService {
     final prefs = await _getPrefs();
     final key = '$_tournamentsPrefix$tournamentId';
     await prefs.setString(key, jsonEncode(tournamentData));
-    ProductionLogger.info('💾 Cached tournament: ${tournamentId.substring(0, 8)}...', tag: 'tournament_cache_service');
+    ProductionLogger.info(
+        '💾 Cached tournament: ${tournamentId.substring(0, 8)}...',
+        tag: 'tournament_cache_service');
   }
 
   /// Get cached tournament
@@ -44,7 +48,9 @@ class TournamentCacheService {
     final key = '$_tournamentsPrefix$tournamentId';
     final cached = prefs.getString(key);
     if (cached != null) {
-      ProductionLogger.info('⚡ Retrieved tournament from cache: ${tournamentId.substring(0, 8)}...',  tag: 'tournament_cache_service');
+      ProductionLogger.info(
+          '⚡ Retrieved tournament from cache: ${tournamentId.substring(0, 8)}...',
+          tag: 'tournament_cache_service');
       return jsonDecode(cached);
     }
     return null;
@@ -58,7 +64,9 @@ class TournamentCacheService {
     final prefs = await _getPrefs();
     final key = '$_matchesPrefix$tournamentId';
     await prefs.setString(key, jsonEncode(matches));
-    ProductionLogger.info('💾 Cached ${matches.length} matches for tournament: ${tournamentId.substring(0, 8)}...',  tag: 'tournament_cache_service');
+    ProductionLogger.info(
+        '💾 Cached ${matches.length} matches for tournament: ${tournamentId.substring(0, 8)}...',
+        tag: 'tournament_cache_service');
   }
 
   /// Get cached matches for tournament
@@ -71,7 +79,9 @@ class TournamentCacheService {
     if (cached != null) {
       final List<dynamic> decoded = jsonDecode(cached);
       final matches = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
-      ProductionLogger.info('⚡ Retrieved ${matches.length} matches from cache for: ${tournamentId.substring(0, 8)}...',  tag: 'tournament_cache_service');
+      ProductionLogger.info(
+          '⚡ Retrieved ${matches.length} matches from cache for: ${tournamentId.substring(0, 8)}...',
+          tag: 'tournament_cache_service');
       return matches;
     }
     return null;
@@ -90,7 +100,9 @@ class TournamentCacheService {
       if (matchIndex != -1) {
         matches[matchIndex] = updatedMatch;
         await cacheMatches(tournamentId, matches);
-        ProductionLogger.info('🔄 Updated cached match: ${updatedMatch['id'].toString().substring(0, 8)}...',  tag: 'tournament_cache_service');
+        ProductionLogger.info(
+            '🔄 Updated cached match: ${updatedMatch['id'].toString().substring(0, 8)}...',
+            tag: 'tournament_cache_service');
       }
     }
   }
@@ -121,7 +133,8 @@ class TournamentCacheService {
     for (final player in players) {
       await cachePlayer(player['id'], player);
     }
-    ProductionLogger.info('💾 Cached ${players.length} players', tag: 'tournament_cache_service');
+    ProductionLogger.info('💾 Cached ${players.length} players',
+        tag: 'tournament_cache_service');
   }
 
   /// Check if tournament data exists in cache
@@ -146,7 +159,9 @@ class TournamentCacheService {
 
     await prefs.remove(tournamentKey);
     await prefs.remove(matchesKey);
-    ProductionLogger.info('🗑️ Cleared cache for tournament: ${tournamentId.substring(0, 8)}...',  tag: 'tournament_cache_service');
+    ProductionLogger.info(
+        '🗑️ Cleared cache for tournament: ${tournamentId.substring(0, 8)}...',
+        tag: 'tournament_cache_service');
   }
 
   /// Clear all cache (development/testing only)
@@ -163,7 +178,8 @@ class TournamentCacheService {
         await prefs.remove(key);
       }
     }
-    ProductionLogger.info('🗑️ Cleared all tournament cache', tag: 'tournament_cache_service');
+    ProductionLogger.info('🗑️ Cleared all tournament cache',
+        tag: 'tournament_cache_service');
   }
 
   /// Get cache statistics
@@ -194,7 +210,8 @@ class TournamentCacheService {
 
     pending.add(action);
     await prefs.setString(_pendingActionsKey, jsonEncode(pending));
-    ProductionLogger.info('📝 Stored pending action: ${action['type']}', tag: 'tournament_cache_service');
+    ProductionLogger.info('📝 Stored pending action: ${action['type']}',
+        tag: 'tournament_cache_service');
   }
 
   /// Get pending offline actions
@@ -212,7 +229,8 @@ class TournamentCacheService {
   static Future<void> clearPendingActions() async {
     final prefs = await _getPrefs();
     await prefs.remove(_pendingActionsKey);
-    ProductionLogger.info('✅ Cleared pending actions', tag: 'tournament_cache_service');
+    ProductionLogger.info('✅ Cleared pending actions',
+        tag: 'tournament_cache_service');
   }
 
   /// Mark data as needing sync
@@ -222,7 +240,9 @@ class TournamentCacheService {
     if (!syncList.contains(tournamentId)) {
       syncList.add(tournamentId);
       await prefs.setString(_syncListKey, jsonEncode(syncList));
-      ProductionLogger.info('🔄 Marked for sync: ${tournamentId.substring(0, 8)}...', tag: 'tournament_cache_service');
+      ProductionLogger.info(
+          '🔄 Marked for sync: ${tournamentId.substring(0, 8)}...',
+          tag: 'tournament_cache_service');
     }
   }
 
@@ -243,7 +263,9 @@ class TournamentCacheService {
     final syncList = await getSyncList();
     syncList.remove(tournamentId);
     await prefs.setString(_syncListKey, jsonEncode(syncList));
-    ProductionLogger.info('✅ Removed from sync list: ${tournamentId.substring(0, 8)}...', tag: 'tournament_cache_service');
+    ProductionLogger.info(
+        '✅ Removed from sync list: ${tournamentId.substring(0, 8)}...',
+        tag: 'tournament_cache_service');
   }
 
   /// Check if device is offline (simple version - can be enhanced)
@@ -252,7 +274,9 @@ class TournamentCacheService {
   /// Set offline mode
   static void setOfflineMode(bool offline) {
     isOfflineMode = offline;
-    ProductionLogger.info(offline ? '📴 Switched to offline mode' : '📶 Switched to online mode',  tag: 'tournament_cache_service');
+    ProductionLogger.info(
+        offline ? '📴 Switched to offline mode' : '📶 Switched to online mode',
+        tag: 'tournament_cache_service');
   }
 
   /// Get cache age for data freshness check

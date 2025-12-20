@@ -6,6 +6,7 @@ import '../../models/user_achievement.dart';
 import '../../services/voucher_reward_service.dart';
 import 'widgets/voucher_card_widget.dart';
 import 'widgets/achievement_card_widget.dart';
+import '../../widgets/common/app_button.dart';
 import 'voucher_detail_screen.dart';
 import 'voucher_table_payment_screen.dart';
 // ELON_MODE_AUTO_FIX
@@ -108,7 +109,8 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => VoucherTablePaymentScreen(userId: widget.userId),
+                  builder: (_) =>
+                      VoucherTablePaymentScreen(userId: widget.userId),
                 ),
               );
             },
@@ -123,15 +125,40 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
 
           // Tab Bar
           Container(
-            color: Theme.of(context).colorScheme.surface,
+            margin: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 16.sp),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(12.sp),
+            ),
             child: TabBar(
               controller: _tabController,
-              labelColor: AppTheme.primaryLight,
+              labelColor: Colors.white,
               unselectedLabelColor: AppTheme.textSecondaryLight,
-              indicatorColor: AppTheme.primaryLight,
+              indicator: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.primaryLight,
+                    AppTheme.primaryLight.withValues(alpha: 0.8)
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(10.sp),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryLight.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              dividerColor: Colors.transparent,
               labelStyle: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w500,
               ),
               tabs: const [
                 Tab(text: 'Voucher của tôi'),
@@ -154,34 +181,61 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
 
   Widget _buildStatisticsHeader() {
     final activeVouchers = _allVouchers.where((v) => v.isUsable).length;
-    final completedAchievements = _allAchievements
-        .where((a) => a.isCompleted)
-        .length;
+    final completedAchievements =
+        _allAchievements.where((a) => a.isCompleted).length;
     final totalAchievements = _allAchievements.length;
 
     return Container(
-      padding: EdgeInsets.all(16.sp),
-      color: Theme.of(context).colorScheme.surface,
+      padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 12.sp),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.primaryLight,
+            AppTheme.primaryLight.withValues(alpha: 0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20.sp),
+          bottomRight: Radius.circular(20.sp),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryLight.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Row(
         children: [
           Expanded(
             child: _buildStatCard(
-              title: 'Voucher khả dụng',
+              title: 'Voucher\nkhả dụng',
               value: activeVouchers.toString(),
-              icon: Icons.local_offer,
-              color: Colors.green,
+              icon: Icons.confirmation_number_rounded,
+              gradient: LinearGradient(
+                colors: [Colors.green[400]!, Colors.teal[400]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
-          SizedBox(width: 12.sp),
+          SizedBox(width: 8.sp),
           Expanded(
             child: _buildStatCard(
               title: 'Thành tựu',
               value: '$completedAchievements/$totalAchievements',
-              icon: Icons.emoji_events,
-              color: Colors.orange,
+              icon: Icons.emoji_events_rounded,
+              gradient: LinearGradient(
+                colors: [Colors.amber[600]!, Colors.orange[400]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
-          SizedBox(width: 12.sp),
+          SizedBox(width: 8.sp),
           Expanded(
             child: _buildStatCard(
               title: 'Đã sử dụng',
@@ -189,8 +243,12 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                   .where((v) => v.status == VoucherStatus.used)
                   .length
                   .toString(),
-              icon: Icons.check_circle,
-              color: Colors.blue,
+              icon: Icons.check_circle_rounded,
+              gradient: LinearGradient(
+                colors: [Colors.blue[500]!, Colors.lightBlue[400]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
         ],
@@ -202,29 +260,57 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
     required String title,
     required String value,
     required IconData icon,
-    required Color color,
+    required LinearGradient gradient,
   }) {
     return Container(
       padding: EdgeInsets.all(12.sp),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8.sp),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.sp),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 24.sp),
-          SizedBox(height: 4.sp),
+          Container(
+            width: 36.sp,
+            height: 36.sp,
+            decoration: BoxDecoration(
+              gradient: gradient,
+              borderRadius: BorderRadius.circular(10.sp),
+              boxShadow: [
+                BoxShadow(
+                  color: gradient.colors.first.withValues(alpha: 0.3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 20.sp),
+          ),
+          SizedBox(height: 8.sp),
           Text(
-            value, style: TextStyle(
-              fontSize: 18.sp,
+            value,
+            style: TextStyle(
+              fontSize: 20.sp,
               fontWeight: FontWeight.bold,
-              color: color,
+              color: AppTheme.textPrimaryLight,
+              letterSpacing: -0.3,
             ),
           ),
+          SizedBox(height: 2.sp),
           Text(
-            title, style: TextStyle(
+            title,
+            style: TextStyle(
               fontSize: 10.sp,
               color: AppTheme.textSecondaryLight,
+              fontWeight: FontWeight.w500,
+              height: 1.2,
             ),
             textAlign: TextAlign.center,
           ),
@@ -270,20 +356,13 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 32.sp),
-              ElevatedButton.icon(
+              AppButton(
+                label: 'Thử lại',
+                type: AppButtonType.primary,
+                size: AppButtonSize.medium,
+                icon: Icons.refresh,
+                iconTrailing: false,
                 onPressed: _loadData,
-                icon: Icon(Icons.refresh),
-                label: Text('Thử lại'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryLight,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 32.sp,
-                    vertical: 12.sp,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.sp),
-                  ),
-                ),
               ),
             ],
           ),
@@ -293,31 +372,72 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
 
     if (_allVouchers.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.local_offer,
-              size: 64.sp,
-              color: AppTheme.textSecondaryLight,
-            ),
-            SizedBox(height: 16.sp),
-            Text(
-              'Chưa có voucher nào', overflow: TextOverflow.ellipsis, style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textSecondaryLight,
+        child: Padding(
+          padding: EdgeInsets.all(32.sp),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 120.sp,
+                height: 120.sp,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.orange[200]!, Colors.pink[200]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.redeem_rounded,
+                  size: 60.sp,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            SizedBox(height: 8.sp),
-            Text(
-              'Hoàn thành các thành tựu để nhận voucher!', overflow: TextOverflow.ellipsis, style: TextStyle(
-                fontSize: 12.sp,
-                color: AppTheme.textSecondaryLight,
+              SizedBox(height: 24.sp),
+              Text(
+                'Chưa có voucher nào',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimaryLight,
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              SizedBox(height: 12.sp),
+              Text(
+                'Hoàn thành các thành tựu để nhận voucher\nvà nhiều phần thưởng hấp dẫn!',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: AppTheme.textSecondaryLight,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 32.sp),
+              ElevatedButton.icon(
+                onPressed: () => _tabController.animateTo(1),
+                icon: const Icon(Icons.emoji_events_rounded),
+                label: const Text('Xem thành tựu'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryLight,
+                  foregroundColor: Colors.white,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.sp, vertical: 14.sp),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.sp),
+                  ),
+                  elevation: 4,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -327,16 +447,19 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
     if (_selectedFilter == 'active') {
       filteredVouchers = _allVouchers.where((v) => v.isUsable).toList();
     } else if (_selectedFilter == 'used') {
-      filteredVouchers = _allVouchers.where((v) => v.status == VoucherStatus.used).toList();
+      filteredVouchers =
+          _allVouchers.where((v) => v.status == VoucherStatus.used).toList();
     } else if (_selectedFilter == 'expired') {
       filteredVouchers = _allVouchers.where((v) => v.isExpired).toList();
     }
 
     // Apply sort
     if (_selectedSort == 'value_desc') {
-      filteredVouchers.sort((a, b) => (b.discountAmount ?? 0).compareTo(a.discountAmount ?? 0));
+      filteredVouchers.sort(
+          (a, b) => (b.discountAmount ?? 0).compareTo(a.discountAmount ?? 0));
     } else if (_selectedSort == 'value_asc') {
-      filteredVouchers.sort((a, b) => (a.discountAmount ?? 0).compareTo(b.discountAmount ?? 0));
+      filteredVouchers.sort(
+          (a, b) => (a.discountAmount ?? 0).compareTo(b.discountAmount ?? 0));
     } else if (_selectedSort == 'expiry_asc') {
       filteredVouchers.sort((a, b) => a.expiresAt.compareTo(b.expiresAt));
     }
@@ -354,7 +477,8 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.sp),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8.sp),
                   ),
                   child: DropdownButton<String>(
@@ -364,9 +488,11 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                     icon: Icon(Icons.filter_list, size: 20.sp),
                     items: [
                       DropdownMenuItem(value: 'all', child: Text('Tất cả')),
-                      DropdownMenuItem(value: 'active', child: Text('Khả dụng')),
+                      DropdownMenuItem(
+                          value: 'active', child: Text('Khả dụng')),
                       DropdownMenuItem(value: 'used', child: Text('Đã dùng')),
-                      DropdownMenuItem(value: 'expired', child: Text('Hết hạn')),
+                      DropdownMenuItem(
+                          value: 'expired', child: Text('Hết hạn')),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -382,7 +508,8 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.sp),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8.sp),
                   ),
                   child: DropdownButton<String>(
@@ -391,9 +518,12 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                     underline: SizedBox(),
                     icon: Icon(Icons.sort, size: 20.sp),
                     items: [
-                      DropdownMenuItem(value: 'value_desc', child: Text('Giá trị cao')),
-                      DropdownMenuItem(value: 'value_asc', child: Text('Giá trị thấp')),
-                      DropdownMenuItem(value: 'expiry_asc', child: Text('Sắp hết hạn')),
+                      DropdownMenuItem(
+                          value: 'value_desc', child: Text('Giá trị cao')),
+                      DropdownMenuItem(
+                          value: 'value_asc', child: Text('Giá trị thấp')),
+                      DropdownMenuItem(
+                          value: 'expiry_asc', child: Text('Sắp hết hạn')),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -414,7 +544,12 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.search_off, size: 64.sp, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                      Icon(Icons.search_off,
+                          size: 64.sp,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.4)),
                       SizedBox(height: 16.sp),
                       Text(
                         'Không tìm thấy voucher',
@@ -452,34 +587,65 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
 
     if (_allAchievements.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.emoji_events,
-              size: 64.sp,
-              color: AppTheme.textSecondaryLight,
-            ),
-            SizedBox(height: 16.sp),
-            Text(
-              'Chưa có thành tựu nào', overflow: TextOverflow.ellipsis, style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textSecondaryLight,
+        child: Padding(
+          padding: EdgeInsets.all(32.sp),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 120.sp,
+                height: 120.sp,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.amber[400]!, Colors.orange[400]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withValues(alpha: 0.4),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.emoji_events_rounded,
+                  size: 60.sp,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 24.sp),
+              Text(
+                'Chưa có thành tựu nào',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimaryLight,
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              Text(
+                'Bắt đầu tham gia các giải đấu\nvà chinh phục thành tích!',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: AppTheme.textSecondaryLight,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       );
     }
 
     // Group achievements by completion status
-    final completedAchievements = _allAchievements
-        .where((a) => a.isCompleted)
-        .toList();
-    final inProgressAchievements = _allAchievements
-        .where((a) => !a.isCompleted)
-        .toList();
+    final completedAchievements =
+        _allAchievements.where((a) => a.isCompleted).toList();
+    final inProgressAchievements =
+        _allAchievements.where((a) => !a.isCompleted).toList();
 
     return ListView(
       padding: EdgeInsets.all(16.sp),
@@ -512,7 +678,8 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title, style: TextStyle(
+          title,
+          style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
             color: color,
@@ -574,7 +741,12 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                       ? Icons.emoji_events
                       : Icons.emoji_events_outlined,
                   size: 32.sp,
-                  color: achievement.isCompleted ? Colors.amber : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                  color: achievement.isCompleted
+                      ? Colors.amber
+                      : Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.4),
                 ),
                 SizedBox(width: 12.sp),
                 Expanded(
@@ -582,13 +754,15 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        achievement.title, style: TextStyle(
+                        achievement.title,
+                        style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        achievement.description, style: TextStyle(
+                        achievement.description,
+                        style: TextStyle(
                           fontSize: 14.sp,
                           color: AppTheme.textSecondaryLight,
                         ),
@@ -600,19 +774,24 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
             ),
             SizedBox(height: 20.sp),
             Text(
-              'Tiến độ', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              'Tiến độ',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 8.sp),
             LinearProgressIndicator(
               value: achievement.progressPercentage,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHigh,
               valueColor: AlwaysStoppedAnimation<Color>(
                 achievement.isCompleted ? Colors.green : AppTheme.primaryLight,
               ),
             ),
             SizedBox(height: 8.sp),
             Text(
-              '${achievement.progressCurrent}/${achievement.progressRequired}', overflow: TextOverflow.ellipsis, style: TextStyle(
+              '${achievement.progressCurrent}/${achievement.progressRequired}',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 12.sp,
                 color: AppTheme.textSecondaryLight,
               ),
@@ -621,11 +800,15 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
                 achievement.rewardVoucherIds?.isNotEmpty == true) ...[
               SizedBox(height: 20.sp),
               Text(
-                'Phần thưởng đã nhận', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                'Phần thưởng đã nhận',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 8.sp),
               Text(
-                '${achievement.rewardVoucherIds!.length} voucher khuyến mãi', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, color: Colors.green),
+                '${achievement.rewardVoucherIds!.length} voucher khuyến mãi',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14.sp, color: Colors.green),
               ),
             ],
           ],
@@ -634,4 +817,3 @@ class _UserVoucherScreenState extends State<UserVoucherScreen>
     );
   }
 }
-

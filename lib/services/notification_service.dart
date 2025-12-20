@@ -15,12 +15,13 @@ class NotificationService {
   NotificationService._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   // Get read client (uses replica if available)
   SupabaseClient get _readClient => DatabaseReplicaManager.instance.readClient;
-  
+
   // Get write client (always uses primary)
-  SupabaseClient get _writeClient => DatabaseReplicaManager.instance.writeClient;
+  SupabaseClient get _writeClient =>
+      DatabaseReplicaManager.instance.writeClient;
   final AuthService _authService = AuthService.instance;
   final NotificationPreferencesService _preferencesService =
       NotificationPreferencesService.instance;
@@ -90,9 +91,11 @@ class NotificationService {
             .eq('user_id', currentUser.id)
             .eq('is_read', false)
             .eq('is_dismissed', false);
-            
+
         final unreadList = List<Map<String, dynamic>>.from(responseWithType);
-        return unreadList.where((n) => !_clubNotificationTypes.contains(n['type'])).length;
+        return unreadList
+            .where((n) => !_clubNotificationTypes.contains(n['type']))
+            .length;
       }
     } catch (e) {
       ProductionLogger.error(
@@ -115,13 +118,10 @@ class NotificationService {
   Future<void> markNotificationAsRead(String notificationId) async {
     try {
       // Use write client for write operations
-      await _writeClient
-          .from('notifications')
-          .update({
-            'is_read': true,
-            'read_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', notificationId);
+      await _writeClient.from('notifications').update({
+        'is_read': true,
+        'read_at': DateTime.now().toIso8601String(),
+      }).eq('id', notificationId);
 
       // ✨ Refresh count immediately
       await refreshUnreadCount();
@@ -216,8 +216,7 @@ class NotificationService {
       }
 
       // Create notification message
-      final message =
-          '''
+      final message = '''
 🎱 Đăng ký giải đấu mới!
 
 Giải đấu: ${tournamentResponse['title']}
@@ -257,6 +256,7 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
   Future<List<NotificationModel>> getNotifications({
     bool? isRead,
     int limit = 20,
+    int offset = 0,
     bool isClubContext = false,
   }) async {
     try {
@@ -264,10 +264,8 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
       if (user == null) return [];
 
       // Use read replica for read operations
-      var query = _readClient
-          .from('notifications')
-          .select('*')
-          .eq('user_id', user.id);
+      var query =
+          _readClient.from('notifications').select('*').eq('user_id', user.id);
 
       if (isRead != null) {
         query = query.eq('is_read', isRead);
@@ -287,14 +285,16 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
         // But wait, the previous code was doing client side filtering.
         // Let's try to improve it.
         // query = query.not('type', 'in', _clubNotificationTypes); // This is likely the correct syntax for recent supabase_flutter
-        
+
         // For now, to be safe and consistent with the previous "working" state (even if imperfect pagination),
         // I will keep the client side filtering but I should really try to do it server side.
         // Let's check if I can find other usages of .not() or .filter() in the codebase.
       }
 
-      final response = await query.order('created_at', ascending: false).limit(limit);
-      
+      final response = await query
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
+
       var notifications = (response as List)
           .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -323,8 +323,7 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
       // Use write client for write operations
       await _writeClient
           .from('notifications')
-          .update({'is_read': true})
-          .eq('id', notificationId);
+          .update({'is_read': true}).eq('id', notificationId);
     } catch (error) {
       throw Exception('Failed to mark notification as read: $error');
     }
@@ -520,7 +519,7 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
 
     try {
       // int successCount = 0; // Unused
-      
+
       // Send notifications one by one using create_notification
       for (final notif in notifications) {
         try {
@@ -536,9 +535,9 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
           // Continue with next notification
         }
       }
-
     } catch (error) {
-      ProductionLogger.warning('Failed to send batch notifications', error: error, tag: 'NotificationService');
+      ProductionLogger.warning('Failed to send batch notifications',
+          error: error, tag: 'NotificationService');
     }
   }
 
@@ -549,8 +548,7 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
     Map<String, dynamic>? data,
   }) async {
     final title = 'Chào mừng đến với SABO Arena!';
-    final body =
-        message ??
+    final body = message ??
         'Tài khoản của bạn đã được tạo thành công! Bắt đầu hành trình của bạn ngay bây giờ.';
 
     await sendNotification(
@@ -622,7 +620,6 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
 
       // Send as batch for efficiency
       await sendBatchNotifications(batchNotifications);
-
     } catch (error) {
       throw Exception('Failed to send tournament notification: $error');
     }
@@ -633,7 +630,6 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
     try {
       // Close existing subscription if any
       await unsubscribeFromNotifications();
-
 
       // Subscribe to notifications table changes
       _notificationChannel = _supabase
@@ -648,7 +644,6 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
               value: userId,
             ),
             callback: (payload) async {
-
               // Refresh unread count
               await refreshUnreadCount();
             },
@@ -663,7 +658,6 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
               value: userId,
             ),
             callback: (payload) async {
-
               // Refresh unread count (might have been marked as read)
               await refreshUnreadCount();
             },
@@ -672,9 +666,9 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
 
       // Initial count load
       await refreshUnreadCount();
-
     } catch (e) {
-      ProductionLogger.error('Error subscribing to notifications', error: e, tag: 'NotificationService');
+      ProductionLogger.error('Error subscribing to notifications',
+          error: e, tag: 'NotificationService');
     }
   }
 
@@ -686,7 +680,8 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
         _notificationChannel = null;
       }
     } catch (e) {
-      ProductionLogger.error('Error unsubscribing from notifications', error: e, tag: 'NotificationService');
+      ProductionLogger.error('Error unsubscribing from notifications',
+          error: e, tag: 'NotificationService');
     }
   }
 
@@ -701,7 +696,8 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
       final clubCount = await getUnreadNotificationCount(isClubContext: true);
       _clubUnreadCountController.add(clubCount);
     } catch (e) {
-      ProductionLogger.error('Error refreshing unread count', error: e, tag: 'NotificationService');
+      ProductionLogger.error('Error refreshing unread count',
+          error: e, tag: 'NotificationService');
     }
   }
 
@@ -712,4 +708,3 @@ Vui lòng xác nhận thanh toán khi thành viên đến thi đấu.
     _clubUnreadCountController.close();
   }
 }
-

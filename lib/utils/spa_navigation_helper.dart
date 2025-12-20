@@ -157,7 +157,8 @@ class SpaNavigationHelper {
                     'Bạn đã nhận SPA!',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text('+${NumberFormatter.formatCurrency(spaAmount)} SPA từ $activity'),
+                  Text(
+                      '+${NumberFormatter.formatCurrency(spaAmount)} SPA từ $activity'),
                 ],
               ),
             ),
@@ -199,7 +200,8 @@ class SpaNavigationHelper {
                     'Đổi thưởng thành công!',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text('$rewardName (-${NumberFormatter.formatCurrency(spaCost)} SPA)'),
+                  Text(
+                      '$rewardName (-${NumberFormatter.formatCurrency(spaCost)} SPA)'),
                 ],
               ),
             ),
@@ -237,9 +239,9 @@ class SpaNavigationHelper {
             ),
             const SizedBox(width: 4),
             Text(
-              showLabel 
-                ? NumberFormatter.formatWithUnit(balance, 'SPA')
-                : NumberFormatter.formatCurrency(balance),
+              showLabel
+                  ? NumberFormatter.formatWithUnit(balance, 'SPA')
+                  : NumberFormatter.formatCurrency(balance),
               style: TextStyle(
                 color: Colors.blue.shade700,
                 fontWeight: FontWeight.bold,
@@ -261,13 +263,12 @@ class SpaNavigationHelper {
     VoidCallback? onPressed,
   }) {
     return FloatingActionButton.extended(
-      onPressed:
-          onPressed ??
+      onPressed: onPressed ??
           () => navigateToUserSpaRewards(
-            context,
-            clubId: clubId,
-            clubName: clubName,
-          ),
+                context,
+                clubId: clubId,
+                clubName: clubName,
+              ),
       backgroundColor: Colors.blue,
       icon: const Icon(Icons.account_balance_wallet),
       label: Text(NumberFormatter.formatWithUnit(balance, 'SPA')),

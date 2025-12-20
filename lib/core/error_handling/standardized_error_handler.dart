@@ -1,12 +1,12 @@
 /// STANDARDIZED ERROR HANDLING PATTERN FOR FLUTTER
-/// 
+///
 /// Use this pattern across ALL services and UI for consistent error handling.
 /// Compatible with existing ErrorHandlingService.
-/// 
+///
 /// Usage:
 /// ```dart
 /// import 'package:sabo_arena/core/error_handling/standardized_error_handler.dart';
-/// 
+///
 /// try {
 ///   await someOperation();
 /// } catch (error) {
@@ -54,7 +54,7 @@ class ErrorContext {
 }
 
 /// Standardized Error Handler for Flutter
-/// 
+///
 /// Provides consistent error handling across the app:
 /// 1. Classifies errors
 /// 2. Gets user-friendly messages
@@ -66,66 +66,72 @@ class StandardizedErrorHandler {
     if (error == null) return ErrorCategory.unknown;
 
     final errorString = error.toString().toLowerCase();
-    final errorMessage = error is Exception ? error.toString().toLowerCase() : '';
+    final errorMessage =
+        error is Exception ? error.toString().toLowerCase() : '';
 
     // Network errors
     if (_containsAny(errorString, [
-      'network',
-      'connection',
-      'timeout',
-      'socket',
-      'dioexception',
-      'connectionerror',
-    ]) || _containsAny(errorMessage, ['network', 'connection', 'timeout'])) {
+          'network',
+          'connection',
+          'timeout',
+          'socket',
+          'dioexception',
+          'connectionerror',
+        ]) ||
+        _containsAny(errorMessage, ['network', 'connection', 'timeout'])) {
       return ErrorCategory.network;
     }
 
     // Auth errors
     if (_containsAny(errorString, [
-      'auth',
-      'unauthorized',
-      'forbidden',
-      'token',
-      'session',
-      'authexception',
-    ]) || _containsAny(errorMessage, ['auth', 'unauthorized', 'forbidden'])) {
+          'auth',
+          'unauthorized',
+          'forbidden',
+          'token',
+          'session',
+          'authexception',
+        ]) ||
+        _containsAny(errorMessage, ['auth', 'unauthorized', 'forbidden'])) {
       return ErrorCategory.auth;
     }
 
     // Validation errors
     if (_containsAny(errorString, [
-      'validation',
-      'invalid',
-      'required',
-      'format',
-    ]) || _containsAny(errorMessage, ['validation', 'invalid', 'required'])) {
+          'validation',
+          'invalid',
+          'required',
+          'format',
+        ]) ||
+        _containsAny(errorMessage, ['validation', 'invalid', 'required'])) {
       return ErrorCategory.validation;
     }
 
     // Database errors (Supabase/PostgreSQL)
     if (_containsAny(errorString, [
-      'database',
-      'postgres',
-      'supabase',
-      'postgrest',
-      'sql',
-      'postgresterror',
-      'postgresexception',
-    ]) || _containsAny(errorMessage, [
-      'database',
-      'relation',
-      'column',
-      'constraint',
-    ])) {
+          'database',
+          'postgres',
+          'supabase',
+          'postgrest',
+          'sql',
+          'postgresterror',
+          'postgresexception',
+        ]) ||
+        _containsAny(errorMessage, [
+          'database',
+          'relation',
+          'column',
+          'constraint',
+        ])) {
       return ErrorCategory.database;
     }
 
     // API errors
     if (_containsAny(errorString, [
-      'api',
-      'endpoint',
-      'http',
-    ]) || _containsAny(errorMessage, ['api', 'endpoint'])) {
+          'api',
+          'endpoint',
+          'http',
+        ]) ||
+        _containsAny(errorMessage, ['api', 'endpoint'])) {
       return ErrorCategory.api;
     }
 
@@ -171,7 +177,7 @@ class StandardizedErrorHandler {
   }
 
   /// Handle error with standardized pattern
-  /// 
+  ///
   /// This function:
   /// 1. Classifies the error
   /// 2. Gets user-friendly message
@@ -193,8 +199,7 @@ class StandardizedErrorHandler {
 
     // Log in debug mode
     if (kDebugMode) {
-      if (context != null) {
-      }
+      if (context != null) {}
     }
 
     return ErrorInfo(
@@ -224,8 +229,7 @@ class StandardizedErrorHandler {
       );
     } catch (e) {
       // Don't fail if Sentry is not initialized
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -240,8 +244,7 @@ class StandardizedErrorHandler {
     // LongSangErrorReporter automatically catches errors via FlutterError.onError
     // set up in main.dart, so we don't need to manually report here
     // Just log for debugging
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Retry handler with exponential backoff
@@ -309,5 +312,3 @@ extension ErrorHandlingExtension<T> on Future<T> {
     }
   }
 }
-
-

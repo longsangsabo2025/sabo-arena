@@ -24,6 +24,29 @@ class TournamentInfoWidget extends StatelessWidget {
     }
   }
 
+  String _getSkillLevelDisplay() {
+    // If both minRank and maxRank are specified, show range
+    if (tournament.minRank != null && tournament.maxRank != null) {
+      if (tournament.minRank == tournament.maxRank) {
+        return 'Hạng ${tournament.minRank}';
+      }
+      return 'Hạng ${tournament.minRank} - ${tournament.maxRank}';
+    }
+
+    // If only minRank is specified
+    if (tournament.minRank != null) {
+      return 'Hạng ${tournament.minRank} trở lên';
+    }
+
+    // If only maxRank is specified
+    if (tournament.maxRank != null) {
+      return 'Hạng ${tournament.maxRank} trở xuống';
+    }
+
+    // Fallback to skillLevelRequired or default
+    return tournament.skillLevelRequired ?? 'Tất cả trình độ';
+  }
+
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd/MM/yyyy');
@@ -88,11 +111,7 @@ class TournamentInfoWidget extends StatelessWidget {
                     Expanded(
                       child: _buildInfoItem(
                         Icons.emoji_events,
-                        tournament.tournamentType == 'single_elimination' 
-                            ? 'Loại trực tiếp' 
-                            : (tournament.tournamentType == 'double_elimination' 
-                                ? 'Nhánh thắng thua' 
-                                : 'Vòng tròn'),
+                        _getTournamentTypeDisplay(),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -111,8 +130,8 @@ class TournamentInfoWidget extends StatelessWidget {
                     Expanded(
                       child: _buildInfoItem(
                         Icons.payment,
-                        tournament.entryFee == 0 
-                            ? 'Miễn phí' 
+                        tournament.entryFee == 0
+                            ? 'Miễn phí'
                             : currencyFormat.format(tournament.entryFee),
                       ),
                     ),
@@ -120,7 +139,7 @@ class TournamentInfoWidget extends StatelessWidget {
                     Expanded(
                       child: _buildInfoItem(
                         Icons.military_tech,
-                        tournament.skillLevelRequired ?? 'Tất cả trình độ',
+                        _getSkillLevelDisplay(),
                       ),
                     ),
                   ],
@@ -208,5 +227,32 @@ class TournamentInfoWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Get formatted tournament type display
+  String _getTournamentTypeDisplay() {
+    final type = tournament.tournamentType.toLowerCase();
+    switch (type) {
+      case 'single_elimination':
+        return 'Loại trực tiếp';
+      case 'double_elimination':
+        return 'Nhánh thắng thua';
+      case 'round_robin':
+        return 'Vòng tròn';
+      case 'swiss':
+      case 'swiss_system':
+        return 'Swiss System';
+      case 'sabo_de8':
+        return 'SABO DE8 (8 người)';
+      case 'sabo_de16':
+        return 'SABO DE16 (16 người)';
+      case 'sabo_de32':
+        return 'SABO DE32 (32 người)';
+      case 'sabo_de64':
+        return 'SABO DE64 (64 người)';
+      default:
+        // Fallback for unknown formats
+        return tournament.tournamentType;
+    }
   }
 }

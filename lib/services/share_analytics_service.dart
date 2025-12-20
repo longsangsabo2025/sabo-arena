@@ -15,7 +15,7 @@ class ShareAnalyticsService {
   }) async {
     try {
       final user = userId ?? _supabase.auth.currentUser?.id;
-      
+
       await _supabase.from('share_analytics').insert({
         'user_id': user,
         'content_type': contentType,
@@ -24,7 +24,6 @@ class ShareAnalyticsService {
         'event_type': 'share_initiated',
         'created_at': DateTime.now().toIso8601String(),
       });
-
     } catch (e) {
       // Ignore error
     }
@@ -35,12 +34,13 @@ class ShareAnalyticsService {
     required String contentType,
     required String contentId,
     required String shareMethod,
-    required String shareDestination, // 'whatsapp', 'facebook', 'messenger', etc.
+    required String
+        shareDestination, // 'whatsapp', 'facebook', 'messenger', etc.
     String? userId,
   }) async {
     try {
       final user = userId ?? _supabase.auth.currentUser?.id;
-      
+
       await _supabase.from('share_analytics').insert({
         'user_id': user,
         'content_type': contentType,
@@ -50,7 +50,6 @@ class ShareAnalyticsService {
         'event_type': 'share_completed',
         'created_at': DateTime.now().toIso8601String(),
       });
-
     } catch (e) {
       // Ignore error
     }
@@ -65,7 +64,7 @@ class ShareAnalyticsService {
   }) async {
     try {
       final user = userId ?? _supabase.auth.currentUser?.id;
-      
+
       await _supabase.from('share_analytics').insert({
         'user_id': user,
         'content_type': contentType,
@@ -74,7 +73,6 @@ class ShareAnalyticsService {
         'event_type': 'share_cancelled',
         'created_at': DateTime.now().toIso8601String(),
       });
-
     } catch (e) {
       // Ignore error
     }
@@ -89,7 +87,7 @@ class ShareAnalyticsService {
   }) async {
     try {
       final user = userId ?? _supabase.auth.currentUser?.id;
-      
+
       await _supabase.from('share_analytics').insert({
         'user_id': user,
         'content_type': contentType,
@@ -113,7 +111,7 @@ class ShareAnalyticsService {
   }) async {
     try {
       final user = userId ?? _supabase.auth.currentUser?.id;
-      
+
       await _supabase.from('share_analytics').insert({
         'user_id': user,
         'content_type': contentType,
@@ -143,11 +141,16 @@ class ShareAnalyticsService {
       final data = response as List<dynamic>;
 
       // Calculate metrics
-      final totalShares = data.where((e) => e['event_type'] == 'share_completed').length;
-      final totalInitiated = data.where((e) => e['event_type'] == 'share_initiated').length;
-      final totalCancelled = data.where((e) => e['event_type'] == 'share_cancelled').length;
-      final totalClicks = data.where((e) => e['event_type'] == 'link_clicked').length;
-      final totalQRScans = data.where((e) => e['event_type'] == 'qr_scanned').length;
+      final totalShares =
+          data.where((e) => e['event_type'] == 'share_completed').length;
+      final totalInitiated =
+          data.where((e) => e['event_type'] == 'share_initiated').length;
+      final totalCancelled =
+          data.where((e) => e['event_type'] == 'share_cancelled').length;
+      final totalClicks =
+          data.where((e) => e['event_type'] == 'link_clicked').length;
+      final totalQRScans =
+          data.where((e) => e['event_type'] == 'qr_scanned').length;
 
       // Calculate conversion rate
       final conversionRate = totalInitiated > 0
@@ -162,7 +165,8 @@ class ShareAnalyticsService {
       // Get top destinations
       final destinations = <String, int>{};
       for (var item in data) {
-        if (item['event_type'] == 'share_completed' && item['share_destination'] != null) {
+        if (item['event_type'] == 'share_completed' &&
+            item['share_destination'] != null) {
           final dest = item['share_destination'] as String;
           destinations[dest] = (destinations[dest] ?? 0) + 1;
         }
@@ -255,4 +259,3 @@ class ShareAnalyticsService {
     }
   }
 }
-

@@ -170,9 +170,13 @@ class AuthService {
       // 🎯 POST-REGISTRATION HOOKS - Run in background, don't block registration
       if (response.user != null) {
         if (kDebugMode) {
-          ProductionLogger.info('✅ Clean registration successful - no hooks', tag: 'auth_service');
-        ProductionLogger.info('   User ID: ${response.user!.id}', tag: 'auth_service');
-        ProductionLogger.info('   📋 Note: User initialization will happen after onboarding', tag: 'auth_service');
+          ProductionLogger.info('✅ Clean registration successful - no hooks',
+              tag: 'auth_service');
+          ProductionLogger.info('   User ID: ${response.user!.id}',
+              tag: 'auth_service');
+          ProductionLogger.info(
+              '   📋 Note: User initialization will happen after onboarding',
+              tag: 'auth_service');
         }
 
         // � Hook 1: Welcome notification (non-blocking)
@@ -189,30 +193,37 @@ class AuthService {
     } on AuthException catch (e) {
       // ✅ Handle specific Supabase Auth errors with clear messages
       String userMessage;
-      
+
       if (e.message.toLowerCase().contains('user already registered') ||
           e.message.toLowerCase().contains('email already exists') ||
           e.message.toLowerCase().contains('already registered')) {
-        userMessage = 'Email này đã được đăng ký. Vui lòng đăng nhập hoặc sử dụng email khác.';
+        userMessage =
+            'Email này đã được đăng ký. Vui lòng đăng nhập hoặc sử dụng email khác.';
       } else if (e.message.toLowerCase().contains('invalid email')) {
         userMessage = 'Email không hợp lệ. Vui lòng kiểm tra lại.';
       } else if (e.message.toLowerCase().contains('weak password') ||
-                 e.message.toLowerCase().contains('password')) {
-        userMessage = 'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu mạnh hơn (tối thiểu 6 ký tự).';
+          e.message.toLowerCase().contains('password')) {
+        userMessage =
+            'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu mạnh hơn (tối thiểu 6 ký tự).';
       } else if (e.message.toLowerCase().contains('database error')) {
-        userMessage = 'Lỗi hệ thống. Email này có thể đã tồn tại. Vui lòng thử email khác hoặc liên hệ hỗ trợ.';
+        userMessage =
+            'Lỗi hệ thống. Email này có thể đã tồn tại. Vui lòng thử email khác hoặc liên hệ hỗ trợ.';
       } else if (e.statusCode == '500') {
-        userMessage = 'Lỗi máy chủ (500). Email có thể đã được sử dụng. Vui lòng thử email khác.';
+        userMessage =
+            'Lỗi máy chủ (500). Email có thể đã được sử dụng. Vui lòng thử email khác.';
       } else {
         userMessage = 'Đăng ký thất bại: ${e.message}';
       }
-      
+
       if (kDebugMode) {
-        ProductionLogger.info('❌ Auth Error: ${e.message}', tag: 'auth_service');
-        ProductionLogger.info('   Status: ${e.statusCode}', tag: 'auth_service');
-        ProductionLogger.info('   User Message: $userMessage', tag: 'auth_service');
+        ProductionLogger.info('❌ Auth Error: ${e.message}',
+            tag: 'auth_service');
+        ProductionLogger.info('   Status: ${e.statusCode}',
+            tag: 'auth_service');
+        ProductionLogger.info('   User Message: $userMessage',
+            tag: 'auth_service');
       }
-      
+
       throw Exception(userMessage);
     } catch (error) {
       final errorInfo = StandardizedErrorHandler.handleError(
@@ -224,7 +235,8 @@ class AuthService {
         ),
       );
       if (kDebugMode) {
-        ProductionLogger.info('❌ Unexpected error: ${errorInfo.message}', tag: 'auth_service');
+        ProductionLogger.info('❌ Unexpected error: ${errorInfo.message}',
+            tag: 'auth_service');
       }
       throw Exception(errorInfo.message);
     }
@@ -258,8 +270,8 @@ class AuthService {
 
         // 🎯 Xử lý mã ref từ QR code (nếu có)
         try {
-          final storedReferralCode = await DeepLinkService.instance
-              .getStoredReferralCodeForNewUser();
+          final storedReferralCode =
+              await DeepLinkService.instance.getStoredReferralCodeForNewUser();
           if (storedReferralCode != null && storedReferralCode.isNotEmpty) {
             // Sử dụng mã ref để tính điểm bonus cho cả 2 người
             await ReferralService.instance.useReferralCode(
@@ -296,7 +308,7 @@ class AuthService {
           .maybeSingle();
 
       final exists = response != null;
-      
+
       if (exists) {
         ProductionLogger.info('Phone number already exists', tag: 'Auth');
       } else {
@@ -485,7 +497,6 @@ class AuthService {
 
   Future<void> signOut() async {
     try {
-
       // Sign out from Supabase
       await _supabase.auth.signOut();
 
@@ -495,8 +506,7 @@ class AuthService {
       // Verify session is cleared
       final session = _supabase.auth.currentSession;
       if (session == null) {
-      } else {
-      }
+      } else {}
     } catch (error) {
       throw Exception('Đăng xuất thất bại: $error');
     }
@@ -516,7 +526,8 @@ class AuthService {
       return UserProfile.fromJson(response);
     } catch (error) {
       if (kDebugMode) {
-        ProductionLogger.info('⚠️ Error getting user profile: $error', tag: 'auth_service');
+        ProductionLogger.info('⚠️ Error getting user profile: $error',
+            tag: 'auth_service');
       }
       return null; // Return null instead of throwing to avoid app crash
     }
@@ -568,7 +579,8 @@ class AuthService {
           'password_reset',
           clientIP,
         );
-        throw RateLimitException.legacy('password_reset', clientIP, timeUntilReset);
+        throw RateLimitException.legacy(
+            'password_reset', clientIP, timeUntilReset);
       }
 
       await _supabase.auth.resetPasswordForEmail(email);
@@ -622,8 +634,7 @@ class AuthService {
         '84$normalizedPhone', // 840961167717
       ];
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       // Check if user exists with any of these phone formats
       final userCheck = await _supabase
@@ -707,8 +718,7 @@ class AuthService {
         '84$normalizedPhone',
       ];
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       // Find valid OTP (search all possible phone formats)
       final otpRecord = await _supabase
@@ -733,10 +743,10 @@ class AuthService {
       }
 
       // Mark OTP as used
-      await _supabase
-          .from('otp_codes')
-          .update({'used': true, 'used_at': DateTime.now().toIso8601String()})
-          .eq('id', otpRecord['id']);
+      await _supabase.from('otp_codes').update({
+        'used': true,
+        'used_at': DateTime.now().toIso8601String()
+      }).eq('id', otpRecord['id']);
 
       // Get user info using the phone format from OTP record
       final dbPhoneFormat = otpRecord['phone'] as String;
@@ -791,7 +801,9 @@ class AuthService {
       ];
 
       if (kDebugMode) {
-        ProductionLogger.info('🔍 Resetting password for phone formats: $possibleFormats', tag: 'auth_service');
+        ProductionLogger.info(
+            '🔍 Resetting password for phone formats: $possibleFormats',
+            tag: 'auth_service');
       }
 
       // Get user by phone (search all possible formats)
@@ -806,7 +818,8 @@ class AuthService {
       }
 
       if (kDebugMode) {
-        ProductionLogger.info('✅ Found user ${user['id']} for password reset', tag: 'auth_service');
+        ProductionLogger.info('✅ Found user ${user['id']} for password reset',
+            tag: 'auth_service');
       }
 
       // Update password via Supabase Admin API or use updateUser
@@ -814,7 +827,9 @@ class AuthService {
       await _supabase.auth.updateUser(UserAttributes(password: newPassword));
 
       if (kDebugMode) {
-        ProductionLogger.info('✅ Password reset successfully for user: ${user['id']}', tag: 'auth_service');
+        ProductionLogger.info(
+            '✅ Password reset successfully for user: ${user['id']}',
+            tag: 'auth_service');
       }
     } catch (error) {
       ProductionLogger.error('Reset password error', error: error, tag: 'Auth');
@@ -865,10 +880,8 @@ class AuthService {
       final fileName =
           '${currentUser!.id}/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      await _supabase.storage
-          .from('user-content')
-          .uploadBinary(
-            fileName, 
+      await _supabase.storage.from('user-content').uploadBinary(
+            fileName,
             Uint8List.fromList(fileBytes),
             fileOptions: const FileOptions(
               contentType: 'image/jpeg',
@@ -884,13 +897,10 @@ class AuthService {
       if (response.isEmpty) throw Exception('Lỗi lấy đường dẫn ảnh');
 
       // Update user profile with new avatar URL
-      await _supabase
-          .from('users')
-          .update({
-            'avatar_url': response,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', currentUser!.id);
+      await _supabase.from('users').update({
+        'avatar_url': response,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', currentUser!.id);
 
       return response;
     } catch (error) {
@@ -942,8 +952,7 @@ class AuthService {
 
       ProductionLogger.info('Resending verification email', tag: 'Auth');
       if (kDebugMode)
-
-      await _supabase.auth.resend(type: OtpType.signup, email: userEmail);
+        await _supabase.auth.resend(type: OtpType.signup, email: userEmail);
 
       ProductionLogger.info(
         'Verification email sent successfully',
@@ -1059,13 +1068,14 @@ class AuthService {
 
       if (existingUser != null) {
         // User already exists, just update
-        ProductionLogger.info('User profile already exists, updating...', tag: 'Auth');
-        
+        ProductionLogger.info('User profile already exists, updating...',
+            tag: 'Auth');
+
         final updateData = {
           'full_name': fullName,
           'updated_at': DateTime.now().toIso8601String(),
         };
-        
+
         // Only update email/phone if provided and different
         if (email != null && email != existingUser['email']) {
           updateData['email'] = email;
@@ -1073,12 +1083,9 @@ class AuthService {
         if (phone != null && phone != existingUser['phone']) {
           updateData['phone'] = phone;
         }
-        
-        await _supabase
-            .from('users')
-            .update(updateData)
-            .eq('id', user.id);
-            
+
+        await _supabase.from('users').update(updateData).eq('id', user.id);
+
         ProductionLogger.info('User profile updated successfully', tag: 'Auth');
         return;
       }
@@ -1103,10 +1110,10 @@ class AuthService {
         error: error,
         tag: 'Auth',
       );
-      
+
       // Don't throw exception if user already exists (OTP already verified successfully)
       // Just log warning and continue
-      if (error.toString().contains('duplicate') || 
+      if (error.toString().contains('duplicate') ||
           error.toString().contains('already exists') ||
           error.toString().contains('unique constraint')) {
         ProductionLogger.warning(
@@ -1115,7 +1122,7 @@ class AuthService {
         );
         return;
       }
-      
+
       throw Exception('Failed to create user profile: $error');
     }
   }
@@ -1135,11 +1142,14 @@ class AuthService {
           registrationMethod: 'email',
         );
         if (kDebugMode) {
-          ProductionLogger.info('✅ Welcome notification sent successfully', tag: 'auth_service');
+          ProductionLogger.info('✅ Welcome notification sent successfully',
+              tag: 'auth_service');
         }
       } catch (e) {
         if (kDebugMode) {
-          ProductionLogger.info('⚠️ Welcome notification failed (non-critical): $e', tag: 'auth_service');
+          ProductionLogger.info(
+              '⚠️ Welcome notification failed (non-critical): $e',
+              tag: 'auth_service');
         }
         ProductionLogger.warning(
           'Welcome notification failed',
@@ -1156,11 +1166,14 @@ class AuthService {
       try {
         await ReferralService.instance.createReferralCodeForUser(userId);
         if (kDebugMode) {
-          ProductionLogger.info('✅ Referral code created successfully', tag: 'auth_service');
+          ProductionLogger.info('✅ Referral code created successfully',
+              tag: 'auth_service');
         }
       } catch (e) {
         if (kDebugMode) {
-          ProductionLogger.info('⚠️ Referral code creation failed (non-critical): $e', tag: 'auth_service');
+          ProductionLogger.info(
+              '⚠️ Referral code creation failed (non-critical): $e',
+              tag: 'auth_service');
         }
         ProductionLogger.warning(
           'Referral code creation failed',
@@ -1175,8 +1188,8 @@ class AuthService {
   void _runProcessReferralCodeHook(String userId) {
     Future.delayed(Duration.zero, () async {
       try {
-        final storedReferralCode = await DeepLinkService.instance
-            .getStoredReferralCodeForNewUser();
+        final storedReferralCode =
+            await DeepLinkService.instance.getStoredReferralCodeForNewUser();
         if (storedReferralCode != null && storedReferralCode.isNotEmpty) {
           await ReferralService.instance.useReferralCode(
             storedReferralCode,
@@ -1185,12 +1198,15 @@ class AuthService {
           await DeepLinkService.instance.clearStoredReferralCode();
           ProductionLogger.info('Applied referral code', tag: 'Auth');
           if (kDebugMode) {
-            ProductionLogger.info('✅ Referral code processed successfully', tag: 'auth_service');
+            ProductionLogger.info('✅ Referral code processed successfully',
+                tag: 'auth_service');
           }
         }
       } catch (e) {
         if (kDebugMode) {
-          ProductionLogger.info('⚠️ Referral code processing failed (non-critical): $e', tag: 'auth_service');
+          ProductionLogger.info(
+              '⚠️ Referral code processing failed (non-critical): $e',
+              tag: 'auth_service');
         }
         ProductionLogger.warning(
           'Referral code processing failed',
@@ -1200,4 +1216,3 @@ class AuthService {
     });
   }
 }
-

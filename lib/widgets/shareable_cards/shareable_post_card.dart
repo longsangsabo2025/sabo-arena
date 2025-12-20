@@ -62,7 +62,7 @@ class ShareablePostCard extends StatelessWidget {
                 children: [
                   // Author section
                   _buildAuthorSection(),
-                  
+
                   SizedBox(height: 3.h),
 
                   // Post content or image
@@ -108,7 +108,7 @@ class ShareablePostCard extends StatelessWidget {
 
   Widget _buildAuthorSection() {
     final timeAgo = _getTimeAgo(createdAt);
-    
+
     return Container(
       padding: EdgeInsets.all(2.w),
       decoration: BoxDecoration(
@@ -129,7 +129,7 @@ class ShareablePostCard extends StatelessWidget {
             avatarUrl: authorAvatar,
             size: 50,
           ),
-          
+
           SizedBox(width: 3.w),
 
           // Name and time

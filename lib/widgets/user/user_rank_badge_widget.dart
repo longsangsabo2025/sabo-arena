@@ -80,14 +80,14 @@ class UserRankBadgeWidget extends StatelessWidget {
   /// 🔹 Compact Badge - Chỉ rank code + icon nhỏ
   Widget _buildCompactBadge() {
     final color = SaboRankSystem.getRankColor(rankCode!);
-    final displayText = showFullName
-        ? SaboRankSystem.getRankDisplayName(rankCode!)
-        : rankCode!;
+    final displayText =
+        showFullName ? SaboRankSystem.getRankDisplayName(rankCode!) : rankCode!;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding:
+            padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(12),
@@ -123,10 +123,14 @@ class UserRankBadgeWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding:
+            padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.1)],
+            colors: [
+              color.withValues(alpha: 0.2),
+              color.withValues(alpha: 0.1)
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -298,7 +302,8 @@ class UserRankBadgeWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding:
+            padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(16),

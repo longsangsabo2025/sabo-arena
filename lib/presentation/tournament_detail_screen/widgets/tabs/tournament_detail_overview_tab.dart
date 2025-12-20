@@ -32,7 +32,7 @@ class TournamentDetailOverviewTab extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: Gaps.lg),
-          
+
           // Eligibility Status Card
           if (eligibilityResult != null)
             Padding(
@@ -47,9 +47,9 @@ class TournamentDetailOverviewTab extends StatelessWidget {
                 },
               ),
             ),
-          
+
           if (eligibilityResult != null) const SizedBox(height: Gaps.lg),
-          
+
           TournamentInfoWidget(tournament: tournament),
           const SizedBox(height: Gaps.lg),
           PrizePoolWidget(tournament: tournament),

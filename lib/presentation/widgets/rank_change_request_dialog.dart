@@ -80,7 +80,8 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Theme.of(context).colorScheme.outline),
+                border:
+                    Border.all(color: Theme.of(context).colorScheme.outline),
               ),
               child: Row(
                 children: [
@@ -94,7 +95,10 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
                           'Hạng hiện tại',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.6),
                           ),
                         ),
                         Text(
@@ -214,7 +218,10 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
                         'Đính kèm hình ảnh hoặc video chứng minh trình độ của bạn',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -433,7 +440,8 @@ class _RankChangeRequestDialogState extends State<RankChangeRequestDialog> {
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.check_circle, color: Theme.of(context).colorScheme.onPrimary),
+            Icon(Icons.check_circle,
+                color: Theme.of(context).colorScheme.onPrimary),
             const SizedBox(width: 12),
             Expanded(
               child: Text(

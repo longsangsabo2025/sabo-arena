@@ -69,7 +69,6 @@ class UserJourneyAnalytics {
     await _setUserId(userId);
     await _loadUserProperties();
     _startPeriodicFlush();
-
   }
 
   /// Track user event with comprehensive metadata
@@ -102,7 +101,6 @@ class UserJourneyAnalytics {
 
     // Track funnel progression
     await _trackFunnelProgression(eventName);
-
 
     // Flush if queue is getting large
     if (_eventQueue.length >= 10) {
@@ -399,8 +397,8 @@ class UserJourneyAnalytics {
             'step_name': eventName,
             'step_index': stepIndex,
             'total_steps': steps.length,
-            'completion_percentage': ((stepIndex + 1) / steps.length * 100)
-                .round(),
+            'completion_percentage':
+                ((stepIndex + 1) / steps.length * 100).round(),
           },
           category: 'funnel',
           isConversion: true,
@@ -424,9 +422,8 @@ class UserJourneyAnalytics {
     final analysis = <String, dynamic>{
       'funnel_type': funnelType,
       'total_steps': steps.length,
-      'completed_steps': eventCounts.keys
-          .where((k) => steps.contains(k))
-          .length,
+      'completed_steps':
+          eventCounts.keys.where((k) => steps.contains(k)).length,
       'step_counts': eventCounts,
       'conversion_rates': <String, double>{},
     };
@@ -604,4 +601,3 @@ mixin AnalyticsTracking<T extends StatefulWidget> on State<T> {
     );
   }
 }
-

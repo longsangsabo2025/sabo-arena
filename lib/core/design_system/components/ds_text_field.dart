@@ -178,9 +178,9 @@ class DSTextField extends StatefulWidget {
     this.borderRadius,
     this.enableHaptic = true,
   }) : assert(
-         controller == null || initialValue == null,
-         'Cannot provide both controller and initialValue',
-       );
+          controller == null || initialValue == null,
+          'Cannot provide both controller and initialValue',
+        );
 
   /// Email text field factory
   factory DSTextField.email({
@@ -398,8 +398,8 @@ class _DSTextFieldState extends State<DSTextField> {
               color: _hasError
                   ? AppColors.error
                   : widget.enabled
-                  ? AppColors.textPrimary
-                  : AppColors.textTertiary,
+                      ? AppColors.textPrimary
+                      : AppColors.textTertiary,
             ),
           ),
           SizedBox(height: DesignTokens.space8),
@@ -481,9 +481,8 @@ class _DSTextFieldState extends State<DSTextField> {
                   _displayErrorText ?? widget.helperText!,
                   style: TextStyle(
                     fontSize: 12,
-                    color: _hasError
-                        ? AppColors.error
-                        : AppColors.textSecondary,
+                    color:
+                        _hasError ? AppColors.error : AppColors.textSecondary,
                   ),
                 ),
               ),
@@ -522,8 +521,8 @@ class _DSTextFieldState extends State<DSTextField> {
         color: _hasError
             ? AppColors.error
             : _isFocused
-            ? AppColors.primary
-            : AppColors.textSecondary,
+                ? AppColors.primary
+                : AppColors.textSecondary,
       ),
     );
   }
@@ -572,8 +571,8 @@ class _DSTextFieldState extends State<DSTextField> {
         color: _hasError
             ? AppColors.error
             : _isFocused
-            ? AppColors.primary
-            : AppColors.textSecondary,
+                ? AppColors.primary
+                : AppColors.textSecondary,
       ),
     );
   }

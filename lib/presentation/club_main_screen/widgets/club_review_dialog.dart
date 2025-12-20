@@ -3,6 +3,7 @@ import '../../../models/club.dart';
 import '../../../models/club_review.dart';
 import '../../../services/club_review_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../widgets/common/app_button.dart';
 
 /// 🌟 Club Review Dialog - Đánh giá câu lạc bộ
 ///
@@ -276,9 +277,8 @@ class _ClubReviewDialogState extends State<ClubReviewDialog> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withValues(
-                            alpha: 0.3,
-                          ),
+                          fillColor: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.3),
                         ),
                       ),
                     ],
@@ -293,46 +293,25 @@ class _ClubReviewDialogState extends State<ClubReviewDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: _isSubmitting
-                          ? null
-                          : () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Hủy'),
+                    child: AppButton(
+                      label: 'Hủy',
+                      type: AppButtonType.outline,
+                      size: AppButtonSize.medium,
+                      fullWidth: true,
+                      onPressed:
+                          _isSubmitting ? null : () => Navigator.pop(context),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton(
+                    child: AppButton(
+                      label: 'Gửi đánh giá',
+                      type: AppButtonType.primary,
+                      size: AppButtonSize.medium,
+                      isLoading: _isSubmitting,
+                      fullWidth: true,
                       onPressed: _isSubmitting ? null : _submitReview,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: _isSubmitting
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : Text(
-                              widget.existingReview == null
-                                  ? 'Gửi đánh giá'
-                                  : 'Cập nhật',
-                            ),
                     ),
                   ),
                 ],
@@ -393,9 +372,8 @@ class _ClubReviewDialogState extends State<ClubReviewDialog> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.clear, size: 16),
-                  onPressed: rating != null
-                      ? () => onRatingChanged(null)
-                      : null,
+                  onPressed:
+                      rating != null ? () => onRatingChanged(null) : null,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),

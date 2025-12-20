@@ -17,7 +17,6 @@ class PaymentRefundService {
     String? additionalNotes,
   }) async {
     try {
-
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) {
         throw Exception('User not authenticated');
@@ -94,9 +93,7 @@ class PaymentRefundService {
   /// Get refund request status
   Future<Map<String, dynamic>?> getRefundStatus(String refundRequestId) async {
     try {
-      final refund = await _supabase
-          .from('refund_requests')
-          .select('''
+      final refund = await _supabase.from('refund_requests').select('''
             *,
             transaction:payment_transactions(
               id,
@@ -107,9 +104,7 @@ class PaymentRefundService {
             reviewer:users!reviewed_by(
               display_name
             )
-          ''')
-          .eq('id', refundRequestId)
-          .single();
+          ''').eq('id', refundRequestId).single();
 
       return refund;
     } catch (e) {
@@ -146,9 +141,7 @@ class PaymentRefundService {
   /// Admin: Get all pending refund requests
   Future<List<Map<String, dynamic>>> getPendingRefundRequests() async {
     try {
-      final refunds = await _supabase
-          .from('refund_requests')
-          .select('''
+      final refunds = await _supabase.from('refund_requests').select('''
             *,
             user:users!user_id(
               id,
@@ -161,9 +154,7 @@ class PaymentRefundService {
               payment_method,
               created_at
             )
-          ''')
-          .eq('status', 'pending')
-          .order('requested_at', ascending: true);
+          ''').eq('status', 'pending').order('requested_at', ascending: true);
 
       return List<Map<String, dynamic>>.from(refunds);
     } catch (e) {
@@ -177,7 +168,6 @@ class PaymentRefundService {
     String? adminNotes,
   }) async {
     try {
-
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) {
         throw Exception('Admin not authenticated');
@@ -219,21 +209,17 @@ class PaymentRefundService {
     required String rejectionReason,
   }) async {
     try {
-
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) {
         throw Exception('Admin not authenticated');
       }
 
-      await _supabase
-          .from('refund_requests')
-          .update({
-            'status': 'rejected',
-            'rejection_reason': rejectionReason,
-            'reviewed_by': currentUser.id,
-            'reviewed_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', refundRequestId);
+      await _supabase.from('refund_requests').update({
+        'status': 'rejected',
+        'rejection_reason': rejectionReason,
+        'reviewed_by': currentUser.id,
+        'reviewed_at': DateTime.now().toIso8601String(),
+      }).eq('id', refundRequestId);
 
       return true;
     } catch (e) {
@@ -250,7 +236,6 @@ class PaymentRefundService {
     try {
       // This is a placeholder for VNPay API integration
       // In production, you would call VNPay's refund API here
-
 
       // Simulated VNPay API response
       // Replace this with actual VNPay API call
@@ -276,7 +261,6 @@ class PaymentRefundService {
     required String refundReason,
   }) async {
     try {
-
       // Placeholder for MoMo API integration
       await Future.delayed(const Duration(seconds: 1));
 
@@ -314,13 +298,10 @@ class PaymentRefundService {
         throw Exception('Not authorized to cancel this refund');
       }
 
-      await _supabase
-          .from('refund_requests')
-          .update({
-            'status': 'cancelled',
-            'cancelled_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', refundRequestId);
+      await _supabase.from('refund_requests').update({
+        'status': 'cancelled',
+        'cancelled_at': DateTime.now().toIso8601String(),
+      }).eq('id', refundRequestId);
 
       return true;
     } catch (e) {
@@ -337,24 +318,21 @@ class PaymentRefundService {
 
       final totalRefunds = allRefunds.length;
       final pending = allRefunds.where((r) => r['status'] == 'pending').length;
-      final approved = allRefunds
-          .where((r) => r['status'] == 'approved')
-          .length;
-      final rejected = allRefunds
-          .where((r) => r['status'] == 'rejected')
-          .length;
+      final approved =
+          allRefunds.where((r) => r['status'] == 'approved').length;
+      final rejected =
+          allRefunds.where((r) => r['status'] == 'rejected').length;
 
       final totalAmount = allRefunds.fold<int>(
         0,
         (sum, r) => sum + ((r['amount'] as num?)?.toInt() ?? 0),
       );
 
-      final approvedAmount = allRefunds
-          .where((r) => r['status'] == 'approved')
-          .fold<int>(
-            0,
-            (sum, r) => sum + ((r['amount'] as num?)?.toInt() ?? 0),
-          );
+      final approvedAmount =
+          allRefunds.where((r) => r['status'] == 'approved').fold<int>(
+                0,
+                (sum, r) => sum + ((r['amount'] as num?)?.toInt() ?? 0),
+              );
 
       return {
         'total_refunds': totalRefunds,
@@ -369,4 +347,3 @@ class PaymentRefundService {
     }
   }
 }
-

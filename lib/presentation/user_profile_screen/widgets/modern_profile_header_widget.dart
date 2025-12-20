@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
-import '../../../core/app_export.dart' hide AppColors;
-import '../../../core/design_system/design_system.dart';
+import '../../../core/app_export.dart' hide AppColors, AppTypography;
+import '../../../core/design_system/design_system.dart' hide AppTypography;
+import '../../../core/design_system/typography.dart';
 import '../../../core/utils/sabo_rank_system.dart';
 import '../../../widgets/user/user_widgets.dart';
 import '../../../widgets/common/common_widgets.dart'; // Phase 4: AppButton & AppSnackbar
@@ -31,7 +32,8 @@ class ModernProfileHeaderWidget extends StatefulWidget {
   final VoidCallback? onEditProfile;
   final VoidCallback? onAvatarTap;
   final VoidCallback? onCoverPhotoTap;
-  final Function(int)? onTabChanged; // 0: Bài đăng, 1: Giải Đấu, 2: Trận Đấu, 3: Kết quả
+  final Function(int)?
+      onTabChanged; // 0: Bài đăng, 1: Giải Đấu, 2: Trận Đấu, 3: Kết quả
   final int selectedTabIndex;
 
   const ModernProfileHeaderWidget({
@@ -63,29 +65,29 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         children: [
           // Cover Photo + Avatar Stack
           _buildCoverAndAvatar(context),
-          
+
           const SizedBox(height: 12),
-          
+
           // User Info (Name, Rank, Bio)
           _buildUserInfo(context),
 
           const SizedBox(height: 8),
-          
+
           // Social Stats
           _buildSocialStatsRow(context),
 
           const SizedBox(height: 12),
-          
+
           // Action Buttons
           _buildActionButtons(context),
 
           const SizedBox(height: 12),
-          
+
           // Stats Row
           _buildStatsRow(context),
 
           const SizedBox(height: 8),
-          
+
           // Tabs
           _buildMainTabs(context),
 
@@ -99,16 +101,18 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
     final coverHeight = 180.0;
     final avatarSize = 100.0;
     final overlap = avatarSize / 2;
-    
+
     final currentRankCode = widget.userProfile.rank;
-    final bool hasRank = (currentRankCode?.isNotEmpty ?? false) && currentRankCode != 'unranked';
+    final bool hasRank =
+        (currentRankCode?.isNotEmpty ?? false) && currentRankCode != 'unranked';
 
     ImageProvider? coverImage;
     if (widget.tempCoverPhoto != null) {
       coverImage = kIsWeb
           ? NetworkImage(widget.tempCoverPhoto!)
           : FileImage(File(widget.tempCoverPhoto!)) as ImageProvider;
-    } else if (widget.userProfile.coverPhotoUrl != null && widget.userProfile.coverPhotoUrl!.isNotEmpty) {
+    } else if (widget.userProfile.coverPhotoUrl != null &&
+        widget.userProfile.coverPhotoUrl!.isNotEmpty) {
       coverImage = NetworkImage(widget.userProfile.coverPhotoUrl!);
     }
 
@@ -134,13 +138,13 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
               ? Center(child: Icon(Icons.camera_alt, color: Colors.grey[600]))
               : null,
         ),
-        
+
         // Cover Photo Tap Area
         Positioned.fill(
-            child: Material(
-                color: Colors.transparent,
-                child: InkWell(onTap: widget.onCoverPhotoTap),
-            ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(onTap: widget.onCoverPhotoTap),
+          ),
         ),
 
         // 2. Avatar
@@ -148,35 +152,36 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           bottom: 0,
           child: Stack(
             children: [
-               GestureDetector(
-                 onTap: widget.onAvatarTap,
-                 child: _buildAvatar(avatarSize, currentRankCode, hasRank),
-               ),
-               // Edit Icon
-               Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: widget.onEditProfile,
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.surface, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.shadow.withValues(alpha: 0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Icon(Icons.edit, size: 16, color: AppColors.textOnPrimary),
+              GestureDetector(
+                onTap: widget.onAvatarTap,
+                child: _buildAvatar(avatarSize, currentRankCode, hasRank),
+              ),
+              // Edit Icon
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: widget.onEditProfile,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.surface, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.shadow.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
+                    child: Icon(Icons.edit,
+                        size: 16, color: AppColors.textOnPrimary),
                   ),
                 ),
+              ),
             ],
           ),
         ),
@@ -185,30 +190,31 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
   }
 
   Widget _buildAvatar(double size, String? rankCode, bool showRankBorder) {
-      if (widget.tempAvatar != null) {
-          final rankColor = SaboRankSystem.getRankColor(rankCode ?? '');
-          return Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: showRankBorder ? Border.all(color: rankColor, width: 3) : null,
-              ),
-              child: CircleAvatar(
-                  backgroundImage: kIsWeb
-                      ? NetworkImage(widget.tempAvatar!)
-                      : FileImage(File(widget.tempAvatar!)) as ImageProvider,
-                  radius: size / 2,
-              ),
-          );
-      }
-      
-      return UserAvatarWidget(
-          avatarUrl: widget.userProfile.avatarUrl,
-          rankCode: rankCode,
-          size: size,
-          showRankBorder: showRankBorder,
+    if (widget.tempAvatar != null) {
+      final rankColor = SaboRankSystem.getRankColor(rankCode ?? '');
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border:
+              showRankBorder ? Border.all(color: rankColor, width: 3) : null,
+        ),
+        child: CircleAvatar(
+          backgroundImage: kIsWeb
+              ? NetworkImage(widget.tempAvatar!)
+              : FileImage(File(widget.tempAvatar!)) as ImageProvider,
+          radius: size / 2,
+        ),
       );
+    }
+
+    return UserAvatarWidget(
+      avatarUrl: widget.userProfile.avatarUrl,
+      rankCode: rankCode,
+      size: size,
+      showRankBorder: showRankBorder,
+    );
   }
 
   Widget _buildUserInfo(BuildContext context) {
@@ -216,7 +222,8 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         ? widget.userProfile.bio!
         : "🎱 Cơ thủ chuyên nghiệp";
     final currentRankCode = widget.userProfile.rank;
-    final bool hasRank = (currentRankCode?.isNotEmpty ?? false) && currentRankCode != 'unranked';
+    final bool hasRank =
+        (currentRankCode?.isNotEmpty ?? false) && currentRankCode != 'unranked';
 
     return Column(
       children: [
@@ -361,7 +368,8 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
     final eloRating = widget.userProfile.eloRating;
     final spaPoints = widget.userProfile.spaPoints;
     final ranking = widget.userStats?.ranking ?? 0;
-    final totalMatches = widget.userStats?.totalMatches ?? (widget.userProfile.totalWins + widget.userProfile.totalLosses);
+    final totalMatches = widget.userStats?.totalMatches ??
+        (widget.userProfile.totalWins + widget.userProfile.totalLosses);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -384,14 +392,14 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           _buildStatItem(
             icon: Icons.trending_up,
             value: '#$ranking',
-            label: 'Hạng',
+            label: 'Rank',
             color: AppColors.primary, // Platform green
           ),
           _buildDivider(),
           _buildStatItem(
-            icon: Icons.sports_esports,
+            icon: Icons.sports_baseball,
             value: totalMatches.toString(),
-            label: 'Trận đấu',
+            label: 'Matches',
             color: AppColors.primary, // Platform green
           ),
         ],
@@ -405,6 +413,11 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
     required String label,
     required Color color,
   }) {
+    // Map English keys to Vietnamese display labels
+    String displayLabel = label;
+    if (label == 'Rank') displayLabel = 'Hạng';
+    if (label == 'Matches') displayLabel = 'Trận đấu';
+
     return Expanded(
       child: Builder(
         builder: (context) => Column(
@@ -435,7 +448,8 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                       color: color,
                       letterSpacing: -0.3,
                       shadows: [
-                        Shadow(color: color.withValues(alpha: 0.4), blurRadius: 6),
+                        Shadow(
+                            color: color.withValues(alpha: 0.4), blurRadius: 6),
                       ],
                     ),
                   ),
@@ -444,30 +458,34 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
             ),
             const SizedBox(height: 2),
             // Label with info icon (clickable - show explanation)
-            InkWell(
+            GestureDetector(
               onTap: () {
                 _showStatExplanation(context, label);
               },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: ModernProfileHeaderWidget
-                          .primaryGreen, // Platform green
-                      letterSpacing: 0.8,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      displayLabel,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: ModernProfileHeaderWidget
+                            .primaryGreen, // Platform green
+                        letterSpacing: 0.8,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Icon(
-                    Icons.info_outline,
-                    size: 14,
-                    color: AppColors.error, // Red for visibility
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: AppColors.error, // Red for visibility
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -569,7 +587,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Icon(
-                      Icons.sports_esports_outlined,
+                      Icons.sports_baseball_outlined,
                       color: widget.selectedTabIndex == 2
                           ? ModernProfileHeaderWidget.primaryGreen
                           : AppColors.textSecondary,
@@ -636,8 +654,8 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
   void _navigateToHistoryScreen(BuildContext context, String label) {
     final userId = widget.userProfile.id;
     // Display name is handled consistently by UserDisplayNameText
-    final userName = widget.userProfile.displayName.isNotEmpty 
-        ? widget.userProfile.displayName 
+    final userName = widget.userProfile.displayName.isNotEmpty
+        ? widget.userProfile.displayName
         : widget.userProfile.fullName;
 
     if (userId.isEmpty) {
@@ -670,6 +688,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         );
         break;
       case 'Rank':
+      case 'Hạng':
         // For Rank, show rank history (promotions/demotions)
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -681,6 +700,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         );
         break;
       case 'Matches':
+      case 'Trận đấu':
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => MatchHistoryScreen(
@@ -747,6 +767,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         break;
 
       case 'Rank':
+      case 'Hạng':
         title = 'Bảng xếp hạng Bida Việt Nam';
         icon = Icons.trending_up;
         iconColor = AppColors.info600;
@@ -754,9 +775,9 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         details = [
           '🎱 Rank được tính tự động từ điểm ELO:',
           '',
-          '• Xem chi tiết 12 hạng từ K → C tại tab ELO',
+          '• Xem chi tiết 10 hạng từ K → C tại tab ELO',
           '• Mỗi hạng tương ứng với kỹ năng đánh bi khác nhau',
-          '• Range: 1000 ELO (K) → 2199 ELO (C)',
+          '• Range: 1000 ELO (K) → 2099 ELO (C)',
           '',
           '📈 Cách thăng/giáng hạng:',
           '',
@@ -779,8 +800,9 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         break;
 
       case 'Matches':
+      case 'Trận đấu':
         title = 'Tổng số giải đấu';
-        icon = Icons.sports_esports;
+        icon = Icons.sports_baseball;
         iconColor = AppColors.success;
         description = 'Tổng số tournament bạn đã tham gia trên SABO Arena.';
         details = [
@@ -865,12 +887,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.4,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: AppTypography.headingSmall,
                     ),
                   ),
                   IconButton(
@@ -905,13 +922,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                     // Description
                     Text(
                       description,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.3,
-                        color: AppColors.textPrimary,
-                        height: 1.4,
-                      ),
+                      style: AppTypography.bodyLargeMedium,
                     ),
                     const SizedBox(height: 20),
 
@@ -920,8 +931,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                       customContent
                     else
                       ...details.map((detail) {
-                        final isHeader =
-                            detail.startsWith('🏆') ||
+                        final isHeader = detail.startsWith('🏆') ||
                             detail.startsWith('🎯') ||
                             detail.startsWith('💰') ||
                             detail.startsWith('🎱') ||
@@ -937,17 +947,9 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
                             detail,
-                            style: TextStyle(
-                              fontSize: isHeader ? 16 : 15,
-                              fontWeight: isHeader
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              letterSpacing: isHeader ? -0.3 : -0.2,
-                              color: isHeader
-                                  ? AppColors.textPrimary
-                                  : AppColors.textSecondary,
-                              height: 1.5,
-                            ),
+                            style: isHeader
+                                ? AppTypography.bodyLargeMedium
+                                : AppTypography.bodyMedium,
                           ),
                         );
                       }),
@@ -966,6 +968,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
               ),
               child: AppButton(
                 label: 'Đóng',
+                type: AppButtonType.primary,
                 fullWidth: true,
                 size: AppButtonSize.large,
                 onPressed: () => Navigator.pop(context),
@@ -979,96 +982,92 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
 
   // Build ELO Ranking Table with colors
   Widget _buildEloRankingTable() {
+    // MIGRATED 2025: Removed K+/I+, shifted ELO ranges
+    // Descriptions from RANK_MIGRATION_PLAN.md
     final ranks = [
       {
         'rank': 'K',
         'elo': '1000-1099',
-        'role': 'Người mới',
-        'skill': '2-4 bi khi hình dễ',
+        'role': 'Beginner',
+        'skill': '1-2 Bi',
+        'desc': 'Không ổn định, chỉ biết các kỹ thuật như cule, trỏ',
         'color': const Color(0xFF8B4513),
       },
       {
-        'rank': 'K+',
-        'elo': '1100-1199',
-        'role': 'Học việc',
-        'skill': 'Đã quen cơ bida',
-        'color': const Color(0xFFA0522D),
-      },
-      {
         'rank': 'I',
-        'elo': '1200-1299',
-        'role': 'Thợ 3',
-        'skill': '3-5 bi; chưa điều chấm',
+        'elo': '1100-1199',
+        'role': 'Novice',
+        'skill': '1-3 Bi',
+        'desc':
+            'Không ổn định, chỉ biết đơn và biết các kỹ thuật như cule, trỏ',
         'color': const Color(0xFFCD853F),
       },
       {
-        'rank': 'I+',
-        'elo': '1300-1399',
-        'role': 'Thợ 2',
-        'skill': 'Kỹ thuật I ổn định',
-        'color': const Color(0xFFDEB887),
-      },
-      {
         'rank': 'H',
-        'elo': '1400-1499',
-        'role': 'Thợ 1',
-        'skill': '5-8 bi; rùa 1 chấm dễ',
+        'elo': '1200-1299',
+        'role': 'Amateur',
+        'skill': '3-5 Bi',
+        'desc': 'Chưa ổn định, không có khả năng đi chấm, biết 1 ít ắp phẻ',
         'color': const Color(0xFFC0C0C0),
       },
       {
         'rank': 'H+',
-        'elo': '1500-1599',
-        'role': 'Thợ chính',
-        'skill': 'Trình H chắc chắn',
+        'elo': '1300-1399',
+        'role': 'Amateur+',
+        'skill': '3-5 Bi',
+        'desc':
+            'Ổn định, không có khả năng đi chấm, Don 1-2 hình trên 1 race 7',
         'color': const Color(0xFFB0B0B0),
       },
       {
         'rank': 'G',
-        'elo': '1600-1699',
-        'role': 'Thợ giỏi',
-        'skill': 'Clear 1 chấm + 3-7 bi',
+        'elo': '1400-1499',
+        'role': 'Intermediate',
+        'skill': '5-6 Bi',
+        'desc':
+            'Chưa ổn định, đi được 1 chấm / race chạm 7, Don 3 hình trên 1 race 7',
         'color': const Color(0xFFFFD700),
       },
       {
         'rank': 'G+',
-        'elo': '1700-1799',
-        'role': 'Cao thủ',
-        'skill': 'Trình phong trào ngon',
+        'elo': '1500-1599',
+        'role': 'Intermediate+',
+        'skill': '5-6 Bi',
+        'desc':
+            'Ổn định, đi được 1 chấm / race chạm 7, Don 4 hình trên 1 race 7',
         'color': const Color(0xFFFFA500),
       },
       {
         'rank': 'F',
-        'elo': '1800-1899',
-        'role': 'Chuyên gia',
-        'skill': '60-80% clear 1 chấm',
+        'elo': '1600-1699',
+        'role': 'Advanced',
+        'skill': '6-8 Bi',
+        'desc':
+            'Rất ổn định, đi được 2 chấm / race chạm 7, Đi hình, don bàn khá tốt',
         'color': const Color(0xFFFF6347),
       },
       {
-        'rank': 'F+',
-        'elo': '1900-1999',
-        'role': 'Đại cao thủ',
-        'skill': 'Safety & spin tốt',
-        'color': const Color(0xFFFF4500),
-      },
-      {
         'rank': 'E',
-        'elo': '2000-2099',
-        'role': 'Huyền thoại',
-        'skill': '90-100% clear 1 chấm',
-        'color': const Color(0xFFDC143C),
+        'elo': '1700-1799',
+        'role': 'Master',
+        'skill': '2 Chấm',
+        'desc': 'Cực kỳ ổn định, khả năng đi 2 chấm thông',
+        'color': const Color(0xFFD32F2F),
       },
       {
         'rank': 'D',
-        'elo': '2000-2099',
-        'role': 'Huyền Thoại',
-        'skill': 'Master cơ hội',
-        'color': const Color(0xFFDC143C),
+        'elo': '1800-1899',
+        'role': 'Grand Master',
+        'skill': '3 Chấm',
+        'desc': 'Chuyên gia, khả năng đi 3 chấm thông',
+        'color': const Color(0xFF795548),
       },
       {
         'rank': 'C',
-        'elo': '2100-2199',
-        'role': 'Vô Địch',
-        'skill': 'Điều bi phức tạp',
+        'elo': '1900+',
+        'role': 'Champion',
+        'skill': '4 Chấm',
+        'desc': 'Huyền thoại, khả năng đi 4 chấm thông',
         'color': const Color(0xFFFFD700),
       },
     ];
@@ -1077,14 +1076,9 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section title
-        const Text(
+        Text(
           '📊 Bảng xếp hạng ELO',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.3,
-            color: AppColors.textPrimary,
-          ),
+          style: AppTypography.bodyLargeMedium,
         ),
         const SizedBox(height: 12),
 
@@ -1126,18 +1120,16 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                         color: (rank['color'] as Color).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: (rank['color'] as Color).withValues(alpha: 0.3),
+                          color:
+                              (rank['color'] as Color).withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         rank['rank'] as String,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                        style: AppTypography.bodyMediumMedium.copyWith(
                           color: rank['color'] as Color,
-                          letterSpacing: -0.2,
                         ),
                       ),
                     ),
@@ -1153,27 +1145,20 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                             children: [
                               Text(
                                 rank['elo'] as String,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
+                                style: AppTypography.bodySmallMedium.copyWith(
                                   color: AppColors.textSecondary,
-                                  letterSpacing: -0.1,
                                 ),
                               ),
-                              const Text(
+                              Text(
                                 ' • ',
-                                style: TextStyle(
-                                  fontSize: 13,
+                                style: AppTypography.bodySmall.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
                               ),
                               Text(
                                 rank['role'] as String,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
+                                style: AppTypography.bodySmallMedium.copyWith(
                                   color: AppColors.textPrimary,
-                                  letterSpacing: -0.1,
                                 ),
                               ),
                             ],
@@ -1182,11 +1167,19 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
                           // Skill
                           Text(
                             rank['skill'] as String,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.textSecondary,
+                            style: AppTypography.bodySmall.copyWith(
                               height: 1.3,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          // Stability description
+                          Text(
+                            rank['desc'] as String,
+                            style: AppTypography.bodySmall.copyWith(
+                              height: 1.4,
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -1201,14 +1194,9 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         const SizedBox(height: 20),
 
         // Tournament rewards section
-        const Text(
+        Text(
           '🏆 Cách tăng ELO - Thi đấu Tournament',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.3,
-            color: AppColors.textPrimary,
-          ),
+          style: AppTypography.bodyLargeMedium,
         ),
         const SizedBox(height: 12),
 
@@ -1238,21 +1226,13 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           Expanded(
             child: Text(
               position,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-                color: AppColors.textPrimary,
-                letterSpacing: -0.2,
-              ),
+              style: AppTypography.bodyMedium,
             ),
           ),
           Text(
             reward,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+            style: AppTypography.bodyMediumMedium.copyWith(
               color: color,
-              letterSpacing: -0.2,
             ),
           ),
         ],
@@ -1278,7 +1258,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
           children: [
             // Handle bar
             Center(
-              child:               Container(
+              child: Container(
                 width: 40,
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 20),
@@ -1437,10 +1417,10 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
               size: 28,
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
                 'Hệ thống xếp hạng',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                style: AppTypography.headingSmall,
               ),
             ),
           ],
@@ -1485,11 +1465,14 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
         actions: [
           AppButton(
             label: 'Đóng',
-            type: AppButtonType.text,
+            type: AppButtonType.secondary,
+            size: AppButtonSize.medium,
             onPressed: () => Navigator.pop(context),
           ),
           AppButton(
             label: 'Đăng ký ngay',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             customColor: ModernProfileHeaderWidget.primaryGreen,
             onPressed: () {
               Navigator.pop(context);
@@ -1510,11 +1493,7 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: AppTypography.bodyMediumMedium,
         ),
         const SizedBox(height: 8),
         ...items.map(
@@ -1523,16 +1502,17 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   '• ',
-                  style: TextStyle(fontSize: 14, color: AppColors.textTertiary, overflow: TextOverflow.ellipsis),
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 Expanded(
                   child: Text(
                     item,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textTertiary,
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -1553,11 +1533,12 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
     final currentRankColor = currentRankInfo['color'] as Color;
 
     // Find next rank
-    final allRanks = SaboRankSystem.rankEloMapping.entries
-        .toList()
-        ..sort((a, b) => (a.value['elo'] as int).compareTo(b.value['elo'] as int));
+    final allRanks = SaboRankSystem.rankEloMapping.entries.toList()
+      ..sort(
+          (a, b) => (a.value['elo'] as int).compareTo(b.value['elo'] as int));
 
-    final currentRankIndex = allRanks.indexWhere((rank) => rank.key == currentRankCode);
+    final currentRankIndex =
+        allRanks.indexWhere((rank) => rank.key == currentRankCode);
     if (currentRankIndex == -1 || currentRankIndex >= allRanks.length - 1) {
       // Max rank reached
       return Container();
@@ -1571,7 +1552,8 @@ class _ModernProfileHeaderWidgetState extends State<ModernProfileHeaderWidget> {
     final userElo = widget.userProfile.eloRating;
     final progressInCurrentRank = (userElo ?? 0) - currentElo;
     final totalRankRange = nextRankElo - currentElo;
-    final progressPercentage = (progressInCurrentRank / totalRankRange).clamp(0.0, 1.0);
+    final progressPercentage =
+        (progressInCurrentRank / totalRankRange).clamp(0.0, 1.0);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 32),

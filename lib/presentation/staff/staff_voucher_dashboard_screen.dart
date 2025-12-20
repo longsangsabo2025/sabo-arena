@@ -17,10 +17,12 @@ class StaffVoucherDashboardScreen extends StatefulWidget {
   });
 
   @override
-  State<StaffVoucherDashboardScreen> createState() => _StaffVoucherDashboardScreenState();
+  State<StaffVoucherDashboardScreen> createState() =>
+      _StaffVoucherDashboardScreenState();
 }
 
-class _StaffVoucherDashboardScreenState extends State<StaffVoucherDashboardScreen>
+class _StaffVoucherDashboardScreenState
+    extends State<StaffVoucherDashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _voucherService = VoucherManagementService();
@@ -53,7 +55,8 @@ class _StaffVoucherDashboardScreenState extends State<StaffVoucherDashboardScree
       final usedFuture = _voucherService.getVoucherHistory(widget.clubId);
       final statsFuture = _voucherService.getVoucherStats(widget.clubId);
 
-      final results = await Future.wait([pendingFuture, usedFuture, statsFuture]);
+      final results =
+          await Future.wait([pendingFuture, usedFuture, statsFuture]);
 
       if (!mounted) return;
 
@@ -358,7 +361,9 @@ class _StaffVoucherDashboardScreenState extends State<StaffVoucherDashboardScree
                     vertical: 4.sp,
                   ),
                   decoration: BoxDecoration(
-                    color: isPending ? AppColors.warning.withValues(alpha: 0.1) : AppColors.success.withValues(alpha: 0.1),
+                    color: isPending
+                        ? AppColors.warning.withValues(alpha: 0.1)
+                        : AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12.sp),
                   ),
                   child: Text(
@@ -376,17 +381,23 @@ class _StaffVoucherDashboardScreenState extends State<StaffVoucherDashboardScree
             SizedBox(height: 12.sp),
 
             // Details
-            _buildDetailRow('👤 Khách hàng:', voucher['users']['username'] ?? 'N/A'),
-            _buildDetailRow('💰 Giá trị:', _formatCurrency(voucher['voucher_value'])),
+            _buildDetailRow(
+                '👤 Khách hàng:', voucher['users']['username'] ?? 'N/A'),
+            _buildDetailRow(
+                '💰 Giá trị:', _formatCurrency(voucher['voucher_value'])),
             _buildDetailRow('🔢 Mã voucher:', voucher['voucher_code'] ?? 'N/A'),
-            _buildDetailRow('🏆 Tournament:', voucher['tournaments']?['name'] ?? 'N/A'),
-            _buildDetailRow('📅 Ngày tạo:', _formatDateTime(voucher['created_at'])),
-            
+            _buildDetailRow(
+                '🏆 Tournament:', voucher['tournaments']?['name'] ?? 'N/A'),
+            _buildDetailRow(
+                '📅 Ngày tạo:', _formatDateTime(voucher['created_at'])),
+
             if (voucher['used_at'] != null)
-              _buildDetailRow('✅ Ngày sử dụng:', _formatDateTime(voucher['used_at'])),
+              _buildDetailRow(
+                  '✅ Ngày sử dụng:', _formatDateTime(voucher['used_at'])),
 
             if (voucher['expires_at'] != null)
-              _buildDetailRow('⏰ Hết hạn:', _formatDateTime(voucher['expires_at'])),
+              _buildDetailRow(
+                  '⏰ Hết hạn:', _formatDateTime(voucher['expires_at'])),
           ],
         ),
       ),
@@ -444,9 +455,9 @@ class _StaffVoucherDashboardScreenState extends State<StaffVoucherDashboardScree
     if (value == null) return '0 VNĐ';
     if (value is num) {
       return '${value.toStringAsFixed(0).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (Match m) => '${m[1]},',
-      )} VNĐ';
+            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (Match m) => '${m[1]},',
+          )} VNĐ';
     }
     return value.toString();
   }

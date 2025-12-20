@@ -4,6 +4,7 @@ import '../../../models/user_profile.dart';
 import '../../../services/simple_challenge_service.dart';
 import '../../../services/opponent_club_service.dart';
 import '../../../core/constants/ranking_constants.dart';
+import '../../../widgets/common/app_button.dart';
 import 'user_search_dialog.dart';
 
 class CreateSocialChallengeModal extends StatefulWidget {
@@ -65,9 +66,7 @@ class _CreateSocialChallengeModalState
           _commonLocations.add('Khác (tự nhập)');
 
           // Build map: club name -> club ID
-          _clubNameToId = {
-            for (var club in clubs) club.name: club.id
-          };
+          _clubNameToId = {for (var club in clubs) club.name: club.id};
 
           // Set default location to first club if available
           if (_commonLocations.isNotEmpty &&
@@ -109,15 +108,14 @@ class _CreateSocialChallengeModalState
         challengeType: 'giao_luu',
         gameType: _selectedGameType,
         scheduledTime: _selectedDateTime,
-        location: _selectedLocation.isEmpty
-            ? 'Chưa xác định'
-            : _selectedLocation,
+        location:
+            _selectedLocation.isEmpty ? 'Chưa xác định' : _selectedLocation,
         clubId: _selectedClubId, // ← THÊM: Gửi club ID
         spaPoints: 0, // No SPA points for social challenges
         message: _noteController.text.trim().isEmpty
             ? (_selectedOpponent == null
-                  ? 'Giao lưu mở - Ai cũng có thể tham gia!'
-                  : 'Mời giao lưu')
+                ? 'Giao lưu mở - Ai cũng có thể tham gia!'
+                : 'Mời giao lưu')
             : _noteController.text.trim(),
       );
 
@@ -185,7 +183,8 @@ class _CreateSocialChallengeModalState
                   const Color(
                     0xFF7B1FA2,
                   ).withValues(alpha: 0.95), // Purple for social
-                  const Color(0xFF6A1B9A).withValues(alpha: 0.95), // Dark purple
+                  const Color(0xFF6A1B9A)
+                      .withValues(alpha: 0.95), // Dark purple
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -413,7 +412,8 @@ class _CreateSocialChallengeModalState
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF7B1FA2).withValues(alpha: 0.05), // Purple
+                            const Color(0xFF7B1FA2)
+                                .withValues(alpha: 0.05), // Purple
                             const Color(
                               0xFF6A1B9A,
                             ).withValues(alpha: 0.05), // Dark purple
@@ -474,52 +474,17 @@ class _CreateSocialChallengeModalState
                   ),
                 ],
               ),
-              child: ElevatedButton(
+              child: AppButton(
+                label: _selectedOpponent == null
+                    ? 'Tạo Giao Lưu Mở'
+                    : 'Gửi Lời Mời',
+                type: AppButtonType.primary,
+                size: AppButtonSize.large,
+                customColor: const Color(0xFF7B1FA2), // Purple for social
+                customTextColor: Colors.white,
+                isLoading: _isCreating,
+                fullWidth: true,
                 onPressed: _isCreating ? null : _createSocialChallenge,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.white,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isCreating
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Đang tạo...',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white.withValues(alpha: 0.8),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        _selectedOpponent == null
-                            ? 'Tạo Giao Lưu Mở'
-                            : 'Gửi Lời Mời',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
               ),
             ),
           ),
@@ -584,7 +549,8 @@ class _CreateSocialChallengeModalState
           height: 140,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: widget.opponents.length + 2, // +2: "Giao lưu mở" + "Tìm đối thủ"
+            itemCount: widget.opponents.length +
+                2, // +2: "Giao lưu mở" + "Tìm đối thủ"
             itemBuilder: (context, index) {
               // First item: "Giao lưu mở"
               if (index == 0) {
@@ -621,7 +587,8 @@ class _CreateSocialChallengeModalState
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: const Color(0xFF7B1FA2).withValues(alpha: 0.3),
+                                color: const Color(0xFF7B1FA2)
+                                    .withValues(alpha: 0.3),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -648,22 +615,26 @@ class _CreateSocialChallengeModalState
                                       const Color(0xFF6A1B9A),
                                     ]
                                   : [
-                                      Colors.grey.shade400.withValues(alpha: 0.6),
-                                      Colors.grey.shade500.withValues(alpha: 0.7),
+                                      Colors.grey.shade400
+                                          .withValues(alpha: 0.6),
+                                      Colors.grey.shade500
+                                          .withValues(alpha: 0.7),
                                     ],
                             ),
                             shape: BoxShape.circle,
-                            boxShadow: isSelected 
+                            boxShadow: isSelected
                                 ? [
                                     BoxShadow(
-                                      color: const Color(0xFF7B1FA2).withValues(alpha: 0.3),
+                                      color: const Color(0xFF7B1FA2)
+                                          .withValues(alpha: 0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 3),
                                     ),
                                   ]
                                 : [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.1),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.1),
                                       blurRadius: 2,
                                       offset: const Offset(0, 1),
                                     ),
@@ -671,7 +642,9 @@ class _CreateSocialChallengeModalState
                           ),
                           child: Icon(
                             Icons.public,
-                            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.7),
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.7),
                             size: 28,
                           ),
                         ),
@@ -683,7 +656,8 @@ class _CreateSocialChallengeModalState
                             fontWeight: FontWeight.w600,
                             color: isSelected
                                 ? const Color(0xFF7B1FA2)
-                                : Colors.grey.shade500, // Dimmed when not selected
+                                : Colors
+                                    .grey.shade500, // Dimmed when not selected
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -691,9 +665,10 @@ class _CreateSocialChallengeModalState
                           'Ai cũng tham gia',
                           style: TextStyle(
                             fontSize: 10,
-                            color: isSelected 
-                                ? Colors.grey.shade600 
-                                : Colors.grey.shade400, // Even more dimmed when not selected
+                            color: isSelected
+                                ? Colors.grey.shade600
+                                : Colors.grey
+                                    .shade400, // Even more dimmed when not selected
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -712,7 +687,8 @@ class _CreateSocialChallengeModalState
                       context: context,
                       builder: (context) => UserSearchDialog(
                         currentUser: widget.currentUser!,
-                        excludeUserIds: widget.opponents.map((o) => o.id).toList(),
+                        excludeUserIds:
+                            widget.opponents.map((o) => o.id).toList(),
                       ),
                     );
 
@@ -819,7 +795,8 @@ class _CreateSocialChallengeModalState
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF7B1FA2).withValues(alpha: 0.3),
+                              color: const Color(0xFF7B1FA2)
+                                  .withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 2),
                             ),
@@ -853,7 +830,8 @@ class _CreateSocialChallengeModalState
                           fontWeight: FontWeight.w600,
                           color: isSelected
                               ? const Color(0xFF7B1FA2)
-                              : Colors.grey.shade500, // Dimmed when not selected
+                              : Colors
+                                  .grey.shade500, // Dimmed when not selected
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 2,
@@ -863,9 +841,10 @@ class _CreateSocialChallengeModalState
                         'Hạng: ${opponent.rank ?? 'N/A'}',
                         style: TextStyle(
                           fontSize: 10,
-                          color: isSelected 
-                              ? Colors.grey.shade600 
-                              : Colors.grey.shade400, // More dimmed when not selected
+                          color: isSelected
+                              ? Colors.grey.shade600
+                              : Colors.grey
+                                  .shade400, // More dimmed when not selected
                         ),
                       ),
                     ],
@@ -940,7 +919,8 @@ class _CreateSocialChallengeModalState
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF7B1FA2).withValues(alpha: 0.2),
+                              color: const Color(0xFF7B1FA2)
+                                  .withValues(alpha: 0.2),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -1130,8 +1110,7 @@ class _CreateSocialChallengeModalState
           child: Column(
             children: [
               DropdownButtonFormField<String>(
-                initialValue:
-                    _selectedLocation.isEmpty ||
+                initialValue: _selectedLocation.isEmpty ||
                         !_commonLocations.contains(_selectedLocation)
                     ? null
                     : _selectedLocation,
@@ -1523,15 +1502,15 @@ class _CreateSocialChallengeModalState
           child: Text(
             _selectedOpponent == null
                 ? '• Loại: Giao lưu mở - Ai cũng có thể tham gia\n'
-                      '• Game: $_selectedGameType\n'
-                      '• Thời gian: ${_selectedDateTime.day}/${_selectedDateTime.month} ${_selectedDateTime.hour}:${_selectedDateTime.minute.toString().padLeft(2, '0')}\n'
-                      '• Địa điểm: ${_selectedLocation.isEmpty ? 'Chưa xác định' : _selectedLocation}'
-                      '${_rankMin != null || _rankMax != null ? '\n• Hạng: ${_rankMin ?? 'Tất cả'} → ${_rankMax ?? 'Tất cả'}' : ''}'
+                    '• Game: $_selectedGameType\n'
+                    '• Thời gian: ${_selectedDateTime.day}/${_selectedDateTime.month} ${_selectedDateTime.hour}:${_selectedDateTime.minute.toString().padLeft(2, '0')}\n'
+                    '• Địa điểm: ${_selectedLocation.isEmpty ? 'Chưa xác định' : _selectedLocation}'
+                    '${_rankMin != null || _rankMax != null ? '\n• Hạng: ${_rankMin ?? 'Tất cả'} → ${_rankMax ?? 'Tất cả'}' : ''}'
                 : '• Đối thủ: ${_selectedOpponent!.displayName}\n'
-                      '• Game: $_selectedGameType\n'
-                      '• Thời gian: ${_selectedDateTime.day}/${_selectedDateTime.month} ${_selectedDateTime.hour}:${_selectedDateTime.minute.toString().padLeft(2, '0')}\n'
-                      '• Địa điểm: ${_selectedLocation.isEmpty ? 'Chưa xác định' : _selectedLocation}'
-                      '${_rankMin != null || _rankMax != null ? '\n• Hạng: ${_rankMin ?? 'Tất cả'} → ${_rankMax ?? 'Tất cả'}' : ''}',
+                    '• Game: $_selectedGameType\n'
+                    '• Thời gian: ${_selectedDateTime.day}/${_selectedDateTime.month} ${_selectedDateTime.hour}:${_selectedDateTime.minute.toString().padLeft(2, '0')}\n'
+                    '• Địa điểm: ${_selectedLocation.isEmpty ? 'Chưa xác định' : _selectedLocation}'
+                    '${_rankMin != null || _rankMax != null ? '\n• Hạng: ${_rankMin ?? 'Tất cả'} → ${_rankMax ?? 'Tất cả'}' : ''}',
             style: const TextStyle(
               fontSize: 13,
               height: 1.4,

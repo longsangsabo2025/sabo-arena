@@ -17,15 +17,49 @@ class VoucherRewardService {
   /// Lấy tất cả achievements của user
   Future<List<UserAchievement>> getUserAchievements(String userId) async {
     try {
-      final response = await _supabase
+      // 1. Fetch user_achievements
+      final userAchievementsResponse = await _supabase
           .from('user_achievements')
           .select('*')
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
-      return (response as List)
-          .map((json) => UserAchievement.fromJson(json))
+      final userAchievementsData = userAchievementsResponse as List;
+      if (userAchievementsData.isEmpty) return [];
+
+      // 2. Extract achievement IDs
+      final achievementIds = userAchievementsData
+          .map((e) => e['achievement_id'] as String)
+          .toSet()
           .toList();
+
+      // 3. Fetch achievements details
+      final achievementsResponse = await _supabase
+          .from('achievements')
+          .select('*')
+          .inFilter('id', achievementIds);
+
+      final achievementsMap = {
+        for (var item in (achievementsResponse as List))
+          item['id'] as String: item
+      };
+
+      // 4. Merge and map to UserAchievement
+      return userAchievementsData.map((json) {
+        final achievementId = json['achievement_id'] as String;
+        final achievementDetails = achievementsMap[achievementId] ?? {};
+
+        // Merge details into json
+        final mergedJson = Map<String, dynamic>.from(json);
+        // Add fields from achievementDetails if not present in json
+        achievementDetails.forEach((key, value) {
+          if (!mergedJson.containsKey(key)) {
+            mergedJson[key] = value;
+          }
+        });
+
+        return UserAchievement.fromJson(mergedJson);
+      }).toList();
     } catch (e) {
       throw Exception('Lỗi tải thành tích người dùng: $e');
     }
@@ -54,13 +88,10 @@ class VoucherRewardService {
         final newProgress = achievement.progressCurrent + incrementBy;
 
         // Cập nhật progress
-        await _supabase
-            .from('user_achievements')
-            .update({
-              'progress_current': newProgress,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('id', achievement.id);
+        await _supabase.from('user_achievements').update({
+          'progress_current': newProgress,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', achievement.id);
 
         // Kiểm tra xem đã hoàn thành chưa
         if (newProgress >= achievement.progressRequired) {
@@ -87,14 +118,11 @@ class VoucherRewardService {
   ) async {
     try {
       // Mark achievement as completed
-      await _supabase
-          .from('user_achievements')
-          .update({
-            'is_completed': true,
-            'completed_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', achievement.id);
+      await _supabase.from('user_achievements').update({
+        'is_completed': true,
+        'completed_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', achievement.id);
 
       // Tạo vouchers reward dựa trên achievement type
       final voucherIds = await _generateAchievementRewards(achievement);
@@ -102,8 +130,7 @@ class VoucherRewardService {
       // Cập nhật achievement với voucher IDs
       await _supabase
           .from('user_achievements')
-          .update({'reward_voucher_ids': voucherIds})
-          .eq('id', achievement.id);
+          .update({'reward_voucher_ids': voucherIds}).eq('id', achievement.id);
 
       return achievement.copyWith(
         isCompleted: true,
@@ -161,9 +188,8 @@ class VoucherRewardService {
               'discount_percentage': promotion.discountPercentage,
               'min_order_amount': promotion.conditions?['minOrderAmount'] ?? 0,
               'issued_at': DateTime.now().toIso8601String(),
-              'expires_at': DateTime.now()
-                  .add(Duration(days: 30))
-                  .toIso8601String(),
+              'expires_at':
+                  DateTime.now().add(Duration(days: 30)).toIso8601String(),
               'metadata': {
                 'achievement_type': achievement.type.name,
                 'achievement_title': achievement.title,
@@ -194,7 +220,7 @@ class VoucherRewardService {
     try {
       var query = _supabase
           .from('user_vouchers')
-          .select('*')
+          .select('*, clubs(name)')
           .eq('user_id', userId);
 
       if (status != null) {
@@ -252,10 +278,8 @@ class VoucherRewardService {
 
       // Kiểm tra expiry
       if (voucher.isExpired) {
-        await _supabase
-            .from('user_vouchers')
-            .update({'status': VoucherStatus.expired.name})
-            .eq('id', voucher.id);
+        await _supabase.from('user_vouchers').update(
+            {'status': VoucherStatus.expired.name}).eq('id', voucher.id);
         return null;
       }
 
@@ -345,9 +369,8 @@ class VoucherRewardService {
   String _generateVoucherCode(AchievementType achievementType, String clubId) {
     final prefix = achievementType.name.substring(0, 2).toUpperCase();
     final clubPrefix = clubId.substring(0, 2).toUpperCase();
-    final timestamp = DateTime.now().millisecondsSinceEpoch
-        .toString()
-        .substring(8);
+    final timestamp =
+        DateTime.now().millisecondsSinceEpoch.toString().substring(8);
     return '$prefix$clubPrefix$timestamp';
   }
 
@@ -375,9 +398,8 @@ class VoucherRewardService {
   /// Get statistics for admin dashboard
   Future<Map<String, dynamic>> getVoucherStatistics() async {
     try {
-      final totalVouchersResponse = await _supabase
-          .from('user_vouchers')
-          .select('*');
+      final totalVouchersResponse =
+          await _supabase.from('user_vouchers').select('*');
       final totalVouchers = totalVouchersResponse.length;
 
       final usedVouchersResponse = await _supabase

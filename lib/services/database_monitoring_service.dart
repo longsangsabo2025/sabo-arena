@@ -6,7 +6,7 @@ import 'performance_monitor.dart';
 
 /// Database Monitoring Service
 /// Tracks database query performance and identifies slow queries
-/// 
+///
 /// Features:
 /// - Query execution time tracking
 /// - Slow query detection (>100ms)
@@ -76,19 +76,16 @@ class DatabaseMonitoringService {
     // Check for slow queries
     if (durationMs > _criticalQueryThresholdMs) {
       _criticalQueries++;
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } else if (durationMs > _slowQueryThresholdMs) {
       _slowQueries++;
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
   /// Record query error
   void _recordQueryError(String queryName, dynamic error) {
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Get slow queries report
@@ -111,7 +108,8 @@ class DatabaseMonitoringService {
           'max_ms': maxTime,
           'count': times.length,
           'slow_count': slowCount,
-          'slow_percentage': (slowCount / times.length * 100).toStringAsFixed(1),
+          'slow_percentage':
+              (slowCount / times.length * 100).toStringAsFixed(1),
         };
       }
     }
@@ -192,7 +190,6 @@ class DatabaseMonitoringService {
   /// Print monitoring report
   void printReport() {
     if (kDebugMode) {
-      
       // overall variable removed - only used in debug log
 
       final slowQueries = getSlowQueriesReport();
@@ -200,7 +197,6 @@ class DatabaseMonitoringService {
         // for (final entry in slowQueries.entries) {
         // }
       }
-
     }
   }
 
@@ -212,9 +208,6 @@ class DatabaseMonitoringService {
     _slowQueries = 0;
     _criticalQueries = 0;
 
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 }
-
-

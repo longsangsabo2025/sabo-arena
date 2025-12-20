@@ -331,8 +331,8 @@ class _TournamentStatsViewState extends State<TournamentStatsView>
                                   color: isCompleted
                                       ? Colors.grey[600] ?? Colors.grey
                                       : (isCurrent
-                                            ? Colors.grey[600] ?? Colors.grey
-                                            : Colors.grey[600] ?? Colors.grey),
+                                          ? Colors.grey[600] ?? Colors.grey
+                                          : Colors.grey[600] ?? Colors.grey),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(

@@ -73,7 +73,6 @@ class TournamentTemplateService {
     Map<String, dynamic>? customizations,
   }) async {
     try {
-
       // Get template configuration
       Map<String, dynamic> templateConfig;
 
@@ -136,8 +135,7 @@ class TournamentTemplateService {
       if (!templateId.startsWith('builtin_')) {
         await _supabase
             .from('tournament_templates')
-            .update({'usage_count': 'usage_count + 1'})
-            .eq('id', templateId);
+            .update({'usage_count': 'usage_count + 1'}).eq('id', templateId);
       }
 
       return tournamentId;
@@ -156,7 +154,6 @@ class TournamentTemplateService {
     bool isPublic = false,
   }) async {
     try {
-
       // Get tournament data
       final tournament = await _tournamentService.getTournamentById(
         tournamentId,
@@ -479,7 +476,6 @@ class TournamentTemplateService {
     // - Setting up automated tasks
     // - Applying custom rules or scoring systems
 
-
     // Example: Set up automated notifications
     if (config['auto_notifications'] == true) {
       // Configure notification schedule
@@ -531,8 +527,7 @@ class TournamentTemplateService {
         'special',
       ];
       for (final category in builtInCategories) {
-        categoryCount[category] =
-            (categoryCount[category] ?? 0) +
+        categoryCount[category] = (categoryCount[category] ?? 0) +
             _getBuiltInTemplatesByCategory(category).length;
       }
 
@@ -611,7 +606,6 @@ class TournamentTemplateService {
           .from('tournament_templates')
           .update(updates!)
           .eq('id', templateId);
-
     } catch (e) {
       throw Exception('Failed to update template: $e');
     }
@@ -628,7 +622,6 @@ class TournamentTemplateService {
           .from('tournament_templates')
           .delete()
           .eq('id', templateId);
-
     } catch (e) {
       throw Exception('Failed to delete template: $e');
     }
@@ -674,10 +667,8 @@ class TournamentTemplateService {
   double _calculateTemplateSuccessRate(List<Map<String, dynamic>> tournaments) {
     if (tournaments.isEmpty) return 0.0;
 
-    final completedTournaments = tournaments
-        .where((t) => t['status'] == 'completed')
-        .length;
+    final completedTournaments =
+        tournaments.where((t) => t['status'] == 'completed').length;
     return (completedTournaments / tournaments.length) * 100;
   }
 }
-

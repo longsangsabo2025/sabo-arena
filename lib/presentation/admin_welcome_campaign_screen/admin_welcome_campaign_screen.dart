@@ -129,7 +129,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
             Icon(Icons.campaign_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'No campaigns yet', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              'No campaigns yet',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
@@ -174,7 +176,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
                 children: [
                   Expanded(
                     child: Text(
-                      campaign['name'] ?? 'Unnamed Campaign', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                      campaign['name'] ?? 'Unnamed Campaign',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -190,7 +194,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
               const SizedBox(height: 8),
               if (campaign['description'] != null)
                 Text(
-                  campaign['description'], overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600]),
+                  campaign['description'],
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.grey[600]),
                 ),
               const SizedBox(height: 12),
               if (template != null) ...[
@@ -206,7 +212,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          template['name'] ?? 'Voucher Template', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w500),
+                          template['name'] ?? 'Voucher Template',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],
@@ -262,7 +270,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
           Icon(icon, size: 16, color: color),
           const SizedBox(width: 4),
           Text(
-            '$label: $value', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '$label: $value',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 12,
               color: color,
               fontWeight: FontWeight.w600,
@@ -284,7 +294,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
             Icon(Icons.store_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'Select a campaign first', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              'Select a campaign first',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
@@ -305,7 +317,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
     if (_clubRegistrations.isEmpty) {
       return Center(
         child: Text(
-          'No club registrations yet', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600]),
+          'No club registrations yet',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: Colors.grey[600]),
         ),
       );
     }
@@ -355,7 +369,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
               children: [
                 Expanded(
                   child: Text(
-                    club['name'] ?? 'Unknown Club', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                    club['name'] ?? 'Unknown Club',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -391,7 +407,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
             const SizedBox(height: 8),
             if (club['address'] != null)
               Text(
-                club['address'], overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                club['address'],
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
             const SizedBox(height: 8),
             Text(
@@ -407,7 +425,9 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
                       onPressed: () => _showRejectDialog(registration['id']),
                       icon: const Icon(Icons.close, color: Colors.red),
                       label: const Text(
-                        'Reject', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red),
+                        'Reject',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.red),
                       ),
                     ),
                   ),
@@ -500,11 +520,13 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title, style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    title,
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    value, style: const TextStyle(
+                    value,
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
@@ -512,7 +534,8 @@ class _AdminWelcomeCampaignScreenState extends State<AdminWelcomeCampaignScreen>
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                      subtitle,
+                      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                     ),
                   ],
                 ],

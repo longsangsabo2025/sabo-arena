@@ -118,9 +118,8 @@ class _MemberFilterSectionState extends State<MemberFilterSection>
                           ? Theme.of(context).colorScheme.onPrimary
                           : Theme.of(context).colorScheme.onSurface,
                       fontSize: 14,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.normal,
                     ),
                     children: [
                       TextSpan(text: tab.label),
@@ -299,22 +298,21 @@ class _MemberFilterSectionState extends State<MemberFilterSection>
                 ),
                 isDense: true,
               ),
-              items:
-                  [
-                    'beginner',
-                    'amateur',
-                    'intermediate',
-                    'advanced',
-                    'professional',
-                  ].map((rank) {
-                    return DropdownMenuItem(
-                      value: rank,
-                      child: Text(
-                        _getRankLabelFromString(rank),
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    );
-                  }).toList(),
+              items: [
+                'beginner',
+                'amateur',
+                'intermediate',
+                'advanced',
+                'professional',
+              ].map((rank) {
+                return DropdownMenuItem(
+                  value: rank,
+                  child: Text(
+                    _getRankLabelFromString(rank),
+                    style: TextStyle(fontSize: 12),
+                  ),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
                   _currentFilters = AdvancedFilters(
@@ -342,22 +340,21 @@ class _MemberFilterSectionState extends State<MemberFilterSection>
                 ),
                 isDense: true,
               ),
-              items:
-                  [
-                    'beginner',
-                    'amateur',
-                    'intermediate',
-                    'advanced',
-                    'professional',
-                  ].map((rank) {
-                    return DropdownMenuItem(
-                      value: rank,
-                      child: Text(
-                        _getRankLabelFromString(rank),
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    );
-                  }).toList(),
+              items: [
+                'beginner',
+                'amateur',
+                'intermediate',
+                'advanced',
+                'professional',
+              ].map((rank) {
+                return DropdownMenuItem(
+                  value: rank,
+                  child: Text(
+                    _getRankLabelFromString(rank),
+                    style: TextStyle(fontSize: 12),
+                  ),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
                   _currentFilters = AdvancedFilters(
@@ -648,11 +645,11 @@ class _FilterGroup extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.8),
-          ),
+                fontWeight: FontWeight.w600,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.8),
+              ),
         ),
         SizedBox(height: 8),
         child,

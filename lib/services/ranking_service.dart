@@ -10,7 +10,7 @@ import 'package:sabo_arena/models/user_profile.dart';
 class RankingService {
   /// Returns display information for a given rank code.
   ///
-  /// - [rankCode]: The rank code (e.g., 'K', 'I+').
+  /// - [rankCode]: The rank code (e.g., 'K', 'I', 'H', 'H+', 'G', etc.)
   ///
   /// Returns a [RankDisplayInfo] object with name, color, and icon.
   RankDisplayInfo getRankDisplayInfo(String? rankCode) {
@@ -33,7 +33,7 @@ class RankingService {
 
   /// Calculates a user's rank based on their ELO rating.
   ///
-  /// Returns the corresponding rank code (e.g., 'K', 'I+', 'G') from [RankingConstants].
+  /// Returns the corresponding rank code (e.g., 'K', 'I', 'H', 'H+', 'G', 'G+', 'F', 'F+', 'E', 'D', 'C') from [RankingConstants].
   /// If the ELO does not fall into any defined range, it returns [RankingConstants.UNRANKED].
   String getRankFromElo(int elo) {
     for (final entry in RankingConstants.RANK_ELO_RANGES.entries) {

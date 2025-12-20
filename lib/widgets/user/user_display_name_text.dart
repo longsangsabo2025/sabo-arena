@@ -121,8 +121,10 @@ class UserDisplayNameText extends StatelessWidget {
   String _getDisplayName() {
     // Priority 0: UserProfile Model
     if (userProfile != null) {
-      if (_isValidName(userProfile!.displayName)) return userProfile!.displayName;
+      if (_isValidName(userProfile!.displayName))
+        return userProfile!.displayName;
       if (_isValidName(userProfile!.fullName)) return userProfile!.fullName;
+      if (_isValidName(userProfile!.username)) return userProfile!.username!;
     }
 
     if (userData == null) return fallbackText;
@@ -143,15 +145,26 @@ class UserDisplayNameText extends StatelessWidget {
     name = userData!['fullName']?.toString().trim();
     if (_isValidName(name)) return name!;
 
+    // Priority 5: username (snake_case)
+    name = userData!['username']?.toString().trim();
+    if (_isValidName(name)) return name!;
+
+    // Priority 6: userName (camelCase)
+    name = userData!['userName']?.toString().trim();
+    if (_isValidName(name)) return name!;
+
     // Fallback
     return fallbackText;
   }
 
   /// Check if name is valid (not null, not empty, not "User")
   bool _isValidName(String? name) {
-    if (name == null || name.isEmpty) return false;
-    if (name.toLowerCase() == 'user') return false;
-    if (name.toLowerCase() == 'unknown') return false;
+    if (name == null || name.trim().isEmpty) return false;
+    final lower = name.trim().toLowerCase();
+    if (lower == 'user') return false;
+    if (lower == 'unknown') return false;
+    if (lower == 'unknown user') return false;
+    if (lower == 'người dùng') return false;
     return true;
   }
 
@@ -169,8 +182,7 @@ class UserDisplayNameText extends StatelessWidget {
       return userProfile!.isVerified;
     }
     if (userData == null) return false;
-    return userData!['is_verified'] == true ||
-        userData!['isVerified'] == true;
+    return userData!['is_verified'] == true || userData!['isVerified'] == true;
   }
 }
 
@@ -199,6 +211,14 @@ class UserDisplayNameHelper {
 
     // Priority 4: fullName
     name = userData['fullName']?.toString().trim();
+    if (_isValidName(name)) return name!;
+
+    // Priority 5: username
+    name = userData['username']?.toString().trim();
+    if (_isValidName(name)) return name!;
+
+    // Priority 6: userName
+    name = userData['userName']?.toString().trim();
     if (_isValidName(name)) return name!;
 
     return fallback;
@@ -265,9 +285,12 @@ class UserDisplayNameHelper {
 
   /// Validate name helper
   static bool _isValidName(String? name) {
-    if (name == null || name.isEmpty) return false;
-    if (name.toLowerCase() == 'user') return false;
-    if (name.toLowerCase() == 'unknown') return false;
+    if (name == null || name.trim().isEmpty) return false;
+    final lower = name.trim().toLowerCase();
+    if (lower == 'user') return false;
+    if (lower == 'unknown') return false;
+    if (lower == 'unknown user') return false;
+    if (lower == 'người dùng') return false;
     return true;
   }
 }

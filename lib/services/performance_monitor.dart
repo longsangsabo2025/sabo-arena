@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 /// Performance Monitor
 /// Tracks app performance metrics for monitoring and optimization
-/// 
+///
 /// Metrics tracked:
 /// - App startup time
 /// - Screen load times
@@ -12,19 +12,20 @@ import 'package:flutter/foundation.dart';
 /// - Image load times
 class PerformanceMonitor {
   static PerformanceMonitor? _instance;
-  static PerformanceMonitor get instance => _instance ??= PerformanceMonitor._();
+  static PerformanceMonitor get instance =>
+      _instance ??= PerformanceMonitor._();
 
   PerformanceMonitor._();
 
   // Metrics storage
   final Map<String, List<int>> _metrics = {};
   final Map<String, DateTime> _startTimes = {};
-  
+
   // Configuration
   static const int _maxMetricsPerKey = 100;
   static const int _slowQueryThresholdMs = 500;
   static const int _slowApiThresholdMs = 2000;
-  
+
   // Statistics
   int _totalMetricsRecorded = 0;
   int _slowQueriesDetected = 0;
@@ -39,8 +40,7 @@ class PerformanceMonitor {
   void endTiming(String key) {
     final startTime = _startTimes[key];
     if (startTime == null) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return;
     }
 
@@ -53,14 +53,12 @@ class PerformanceMonitor {
     // Check for slow operations
     if (key.contains('query') && durationMs > _slowQueryThresholdMs) {
       _slowQueriesDetected++;
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
 
     if (key.contains('api') && durationMs > _slowApiThresholdMs) {
       _slowApisDetected++;
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -176,8 +174,7 @@ class PerformanceMonitor {
     _slowQueriesDetected = 0;
     _slowApisDetected = 0;
 
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Clear metrics for a specific key
@@ -189,11 +186,9 @@ class PerformanceMonitor {
   /// Print performance report
   void printReport() {
     if (kDebugMode) {
-
       // final summary = getMetricsSummary(); // Unused
       // for (final entry in summary.entries) {
       // }
-
     }
   }
 }
@@ -211,5 +206,3 @@ class PerformanceTimer {
     _monitor.endTiming(key);
   }
 }
-
-

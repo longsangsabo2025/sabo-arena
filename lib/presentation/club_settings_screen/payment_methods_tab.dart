@@ -32,20 +32,26 @@ class _PaymentMethodsTabState extends State<PaymentMethodsTab> {
   Future<void> _loadPaymentMethods() async {
     setState(() => _isLoading = true);
     try {
-      ProductionLogger.info('🔍 Loading payment methods for club: ${widget.clubId}', tag: 'payment_methods_tab');
+      ProductionLogger.info(
+          '🔍 Loading payment methods for club: ${widget.clubId}',
+          tag: 'payment_methods_tab');
       final methods = await _paymentService.getClubPaymentMethods(
         widget.clubId,
       );
-      ProductionLogger.info('✅ Loaded ${methods.length} payment methods', tag: 'payment_methods_tab');
+      ProductionLogger.info('✅ Loaded ${methods.length} payment methods',
+          tag: 'payment_methods_tab');
       for (var method in methods) {
-        ProductionLogger.info('  - ${method.type.displayName} - ${method.accountName ?? "N/A"}', tag: 'payment_methods_tab');
+        ProductionLogger.info(
+            '  - ${method.type.displayName} - ${method.accountName ?? "N/A"}',
+            tag: 'payment_methods_tab');
       }
       setState(() {
         _paymentMethods = methods;
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading payment methods: $e', tag: 'payment_methods_tab');
+      ProductionLogger.info('❌ Error loading payment methods: $e',
+          tag: 'payment_methods_tab');
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -71,8 +77,7 @@ class _PaymentMethodsTabState extends State<PaymentMethodsTab> {
                         _buildHeader(),
                         SizedBox(height: 20.h),
                         ..._paymentMethods
-                            .map((method) => _buildPaymentMethodCard(method))
-                            ,
+                            .map((method) => _buildPaymentMethodCard(method)),
                       ],
                     ),
             ),
@@ -96,7 +101,8 @@ class _PaymentMethodsTabState extends State<PaymentMethodsTab> {
           ],
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.appTheme.primary.withValues(alpha: 0.2)),
+        border:
+            Border.all(color: context.appTheme.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -736,7 +742,8 @@ class _AddPaymentMethodSheetState extends State<AddPaymentMethodSheet> {
               SizedBox(height: 20.h),
 
               // Show fields based on selected type
-              if (_selectedType == 'bank_transfer') ..._buildBankTransferFields(),
+              if (_selectedType == 'bank_transfer')
+                ..._buildBankTransferFields(),
               if (_selectedType == 'qr_code') ..._buildQRCodeFields(),
 
               // QR Code Upload (common for both types)
@@ -832,7 +839,9 @@ class _AddPaymentMethodSheetState extends State<AddPaymentMethodSheet> {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: isSelected ? context.appTheme.primary.withValues(alpha: 0.1) : Colors.grey.shade100,
+          color: isSelected
+              ? context.appTheme.primary.withValues(alpha: 0.1)
+              : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? context.appTheme.primary : Colors.grey.shade300,
@@ -841,13 +850,17 @@ class _AddPaymentMethodSheetState extends State<AddPaymentMethodSheet> {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 32, color: isSelected ? context.appTheme.primary : Colors.grey),
+            Icon(icon,
+                size: 32,
+                color: isSelected ? context.appTheme.primary : Colors.grey),
             SizedBox(height: 8.h),
             Text(
               label,
               style: TextStyle(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? context.appTheme.primary : Colors.grey.shade700,
+                color: isSelected
+                    ? context.appTheme.primary
+                    : Colors.grey.shade700,
               ),
             ),
           ],
@@ -875,7 +888,7 @@ class _AddPaymentMethodSheetState extends State<AddPaymentMethodSheet> {
         },
       ),
       SizedBox(height: 16.h),
-      
+
       // Account number
       TextFormField(
         controller: _accountNumberController,
@@ -894,7 +907,7 @@ class _AddPaymentMethodSheetState extends State<AddPaymentMethodSheet> {
         },
       ),
       SizedBox(height: 16.h),
-      
+
       // Account name
       TextFormField(
         controller: _accountNameController,

@@ -21,7 +21,7 @@ class CreatePostModalWidget extends StatefulWidget {
   final String? defaultClubId; // 🎱 For posting as club from club profile
 
   const CreatePostModalWidget({
-    super.key, 
+    super.key,
     this.onPostCreated,
     this.defaultClubId,
   });
@@ -75,10 +75,10 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
       if (user == null) return;
 
       final clubs = await _clubService.getUserManagedClubs(user.id);
-      
+
       setState(() {
         _managedClubs = clubs;
-        
+
         // Set default club if provided
         if (widget.defaultClubId != null && clubs.isNotEmpty) {
           _selectedClub = clubs.firstWhere(
@@ -87,7 +87,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
           );
         }
       });
-
     } catch (e) {
       // Ignore error
     }
@@ -110,39 +109,48 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
 
   Future<bool> _requestCameraPermission() async {
     if (kIsWeb) return true;
-    
+
     try {
-      ProductionLogger.info('🔍 Checking camera permission...', tag: 'create_post_modal_widget');
+      ProductionLogger.info('🔍 Checking camera permission...',
+          tag: 'create_post_modal_widget');
       final status = await Permission.camera.status;
-      ProductionLogger.info('📋 Current camera permission status: $status', tag: 'create_post_modal_widget');
-      
+      ProductionLogger.info('📋 Current camera permission status: $status',
+          tag: 'create_post_modal_widget');
+
       if (status == PermissionStatus.granted) {
-        ProductionLogger.info('✅ Camera permission already granted', tag: 'create_post_modal_widget');
+        ProductionLogger.info('✅ Camera permission already granted',
+            tag: 'create_post_modal_widget');
         return true;
       }
-      
+
       if (status == PermissionStatus.permanentlyDenied) {
-        ProductionLogger.info('❌ Camera permission permanently denied', tag: 'create_post_modal_widget');
+        ProductionLogger.info('❌ Camera permission permanently denied',
+            tag: 'create_post_modal_widget');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Quyền camera bị từ chối vĩnh viễn. Vui lòng bật trong cài đặt.'),
+              content: Text(
+                  'Quyền camera bị từ chối vĩnh viễn. Vui lòng bật trong cài đặt.'),
               backgroundColor: AppColors.error,
             ),
           );
         }
         return false;
       }
-      
-      ProductionLogger.info('🔄 Requesting camera permission...', tag: 'create_post_modal_widget');
+
+      ProductionLogger.info('🔄 Requesting camera permission...',
+          tag: 'create_post_modal_widget');
       final result = await Permission.camera.request();
-      ProductionLogger.info('📋 Camera permission result: $result', tag: 'create_post_modal_widget');
-      
+      ProductionLogger.info('📋 Camera permission result: $result',
+          tag: 'create_post_modal_widget');
+
       if (result == PermissionStatus.granted) {
-        ProductionLogger.info('✅ Camera permission granted', tag: 'create_post_modal_widget');
+        ProductionLogger.info('✅ Camera permission granted',
+            tag: 'create_post_modal_widget');
         return true;
       } else {
-        ProductionLogger.info('❌ Camera permission denied', tag: 'create_post_modal_widget');
+        ProductionLogger.info('❌ Camera permission denied',
+            tag: 'create_post_modal_widget');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -154,7 +162,8 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         return false;
       }
     } catch (e) {
-      ProductionLogger.info('❌ Error requesting camera permission: $e', tag: 'create_post_modal_widget');
+      ProductionLogger.info('❌ Error requesting camera permission: $e',
+          tag: 'create_post_modal_widget');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -238,11 +247,13 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
 
   Future<void> _pickImageFromGallery() async {
     try {
-      ProductionLogger.info('🔍 Starting image picker from gallery...', tag: 'create_post_modal_widget');
-      
+      ProductionLogger.info('🔍 Starting image picker from gallery...',
+          tag: 'create_post_modal_widget');
+
       // Let iOS/Android handle permission automatically (no pre-check needed)
       // ImagePicker will trigger native permission dialog on first access
-      ProductionLogger.info('🎨 Opening image picker...', tag: 'create_post_modal_widget');
+      ProductionLogger.info('🎨 Opening image picker...',
+          tag: 'create_post_modal_widget');
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1920,
@@ -251,16 +262,19 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
       );
 
       if (image != null) {
-        ProductionLogger.info('✅ Image selected successfully: ${image.path}', tag: 'create_post_modal_widget');
+        ProductionLogger.info('✅ Image selected successfully: ${image.path}',
+            tag: 'create_post_modal_widget');
         setState(() {
           _selectedImage = image;
           _showCamera = false;
         });
       } else {
-        ProductionLogger.info('ℹ️ No image selected (user cancelled)', tag: 'create_post_modal_widget');
+        ProductionLogger.info('ℹ️ No image selected (user cancelled)',
+            tag: 'create_post_modal_widget');
       }
     } catch (e) {
-      ProductionLogger.info('❌ Gallery picker error: $e', tag: 'create_post_modal_widget');
+      ProductionLogger.info('❌ Gallery picker error: $e',
+          tag: 'create_post_modal_widget');
       // If permission denied, show helpful message
       if (e.toString().contains('photo') ||
           e.toString().contains('library') ||
@@ -291,15 +305,18 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
 
   Future<void> _pickImageFromCamera() async {
     try {
-      ProductionLogger.info('📸 Starting image picker from camera...', tag: 'create_post_modal_widget');
-      
+      ProductionLogger.info('📸 Starting image picker from camera...',
+          tag: 'create_post_modal_widget');
+
       // Check camera permission
       if (!await _requestCameraPermission()) {
-        ProductionLogger.info('❌ Camera permission not granted', tag: 'create_post_modal_widget');
+        ProductionLogger.info('❌ Camera permission not granted',
+            tag: 'create_post_modal_widget');
         return;
       }
-      
-      ProductionLogger.info('📸 Opening camera...', tag: 'create_post_modal_widget');
+
+      ProductionLogger.info('📸 Opening camera...',
+          tag: 'create_post_modal_widget');
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1920,
@@ -309,16 +326,19 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
       );
 
       if (image != null) {
-        ProductionLogger.info('✅ Photo captured successfully: ${image.path}', tag: 'create_post_modal_widget');
+        ProductionLogger.info('✅ Photo captured successfully: ${image.path}',
+            tag: 'create_post_modal_widget');
         setState(() {
           _selectedImage = image;
           _showCamera = false;
         });
       } else {
-        ProductionLogger.info('ℹ️ No photo captured (user cancelled)', tag: 'create_post_modal_widget');
+        ProductionLogger.info('ℹ️ No photo captured (user cancelled)',
+            tag: 'create_post_modal_widget');
       }
     } catch (e) {
-      ProductionLogger.info('❌ Camera picker error: $e', tag: 'create_post_modal_widget');
+      ProductionLogger.info('❌ Camera picker error: $e',
+          tag: 'create_post_modal_widget');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -332,18 +352,21 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
 
   Future<void> _pickVideoFromGallery() async {
     try {
-      ProductionLogger.info('🔍 Starting video picker from gallery...', tag: 'create_post_modal_widget');
-      
+      ProductionLogger.info('🔍 Starting video picker from gallery...',
+          tag: 'create_post_modal_widget');
+
       // Let iOS/Android handle permission automatically (no pre-check needed)
       // ImagePicker will trigger native permission dialog on first access
-      ProductionLogger.info('🎥 Opening video picker...', tag: 'create_post_modal_widget');
+      ProductionLogger.info('🎥 Opening video picker...',
+          tag: 'create_post_modal_widget');
       final XFile? video = await _imagePicker.pickVideo(
         source: ImageSource.gallery,
         maxDuration: const Duration(seconds: 60), // Cho phép video tối đa 60s
       );
 
       if (video != null) {
-        ProductionLogger.info('✅ Video selected successfully: ${video.path}', tag: 'create_post_modal_widget');
+        ProductionLogger.info('✅ Video selected successfully: ${video.path}',
+            tag: 'create_post_modal_widget');
         setState(() {
           _isLoading = true;
         });
@@ -680,12 +703,14 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
   }
 
   void _createPost() async {
-    ProductionLogger.info('🚀 Starting post creation...', tag: 'create_post_modal_widget');
-    
+    ProductionLogger.info('🚀 Starting post creation...',
+        tag: 'create_post_modal_widget');
+
     if (_textController.text.trim().isEmpty &&
         _selectedImage == null &&
         _selectedVideo == null) {
-      ProductionLogger.info('❌ No content provided', tag: 'create_post_modal_widget');
+      ProductionLogger.info('❌ No content provided',
+          tag: 'create_post_modal_widget');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Vui lòng nhập nội dung, chọn ảnh hoặc video'),
@@ -694,9 +719,12 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
       return;
     }
 
-    ProductionLogger.info('📝 Content: "${_textController.text.trim()}"', tag: 'create_post_modal_widget');
-    ProductionLogger.info('📷 Has image: ${_selectedImage != null}', tag: 'create_post_modal_widget');
-    ProductionLogger.info('🎥 Has video: ${_selectedVideo != null}', tag: 'create_post_modal_widget');
+    ProductionLogger.info('📝 Content: "${_textController.text.trim()}"',
+        tag: 'create_post_modal_widget');
+    ProductionLogger.info('📷 Has image: ${_selectedImage != null}',
+        tag: 'create_post_modal_widget');
+    ProductionLogger.info('🎥 Has video: ${_selectedVideo != null}',
+        tag: 'create_post_modal_widget');
 
     setState(() => _isLoading = true);
 
@@ -706,32 +734,37 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
       final hashtags = RegExp(
         r'#\w+',
       ).allMatches(content).map((match) => match.group(0)!).toList();
-      
-      ProductionLogger.info('🏷️ Extracted hashtags: $hashtags', tag: 'create_post_modal_widget');
+
+      ProductionLogger.info('🏷️ Extracted hashtags: $hashtags',
+          tag: 'create_post_modal_widget');
 
       // Upload image if selected
       String? uploadedImageUrl;
       if (_selectedImage != null) {
         try {
-          ProductionLogger.info('📤 Uploading image...', tag: 'create_post_modal_widget');
+          ProductionLogger.info('📤 Uploading image...',
+              tag: 'create_post_modal_widget');
           final user = Supabase.instance.client.auth.currentUser;
           if (user == null) throw Exception('User not authenticated');
 
-          ProductionLogger.info('👤 User authenticated: ${user.id}', tag: 'create_post_modal_widget');
+          ProductionLogger.info('👤 User authenticated: ${user.id}',
+              tag: 'create_post_modal_widget');
 
           // Read image bytes
           final imageBytes = await _selectedImage!.readAsBytes();
           final fileName = 'post_${DateTime.now().millisecondsSinceEpoch}.jpg';
           final filePath = 'posts/${user.id}/$fileName';
 
-          ProductionLogger.info('📁 Uploading to path: $filePath', tag: 'create_post_modal_widget');
-          ProductionLogger.info('📊 Image size: ${imageBytes.length} bytes', tag: 'create_post_modal_widget');
+          ProductionLogger.info('📁 Uploading to path: $filePath',
+              tag: 'create_post_modal_widget');
+          ProductionLogger.info('📊 Image size: ${imageBytes.length} bytes',
+              tag: 'create_post_modal_widget');
 
           // Upload to Supabase Storage
           await Supabase.instance.client.storage
               .from('user-images')
               .uploadBinary(
-                filePath, 
+                filePath,
                 imageBytes,
                 fileOptions: const FileOptions(
                   contentType: 'image/jpeg', // Most camera photos are JPEG
@@ -744,9 +777,12 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
               .from('user-images')
               .getPublicUrl(filePath);
 
-          ProductionLogger.info('✅ Image uploaded successfully: $uploadedImageUrl', tag: 'create_post_modal_widget');
+          ProductionLogger.info(
+              '✅ Image uploaded successfully: $uploadedImageUrl',
+              tag: 'create_post_modal_widget');
         } catch (uploadError) {
-          ProductionLogger.info('❌ Image upload error: $uploadError', tag: 'create_post_modal_widget');
+          ProductionLogger.info('❌ Image upload error: $uploadError',
+              tag: 'create_post_modal_widget');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Lỗi tải ảnh lên: $uploadError')),
@@ -767,16 +803,26 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         videoPlatform = 'supabase';
         videoThumbnailUrl = null; // Can generate thumbnail later if needed
         videoDuration = null; // Can extract duration if needed
-        ProductionLogger.info('🎥 Video data: platform=$videoPlatform, url=$_uploadedVideoId', tag: 'create_post_modal_widget');
+        ProductionLogger.info(
+            '🎥 Video data: platform=$videoPlatform, url=$_uploadedVideoId',
+            tag: 'create_post_modal_widget');
       }
 
-      ProductionLogger.info('📋 Creating post with data:', tag: 'create_post_modal_widget');
-      ProductionLogger.info('  Content: "$content"', tag: 'create_post_modal_widget');
-      ProductionLogger.info('  Image URL: $uploadedImageUrl', tag: 'create_post_modal_widget');
-      ProductionLogger.info('  Video URL: $_uploadedVideoId', tag: 'create_post_modal_widget');
-      ProductionLogger.info('  Hashtags: $hashtags', tag: 'create_post_modal_widget');
-      ProductionLogger.info('  Location: ${_locationController.text.trim()}', tag: 'create_post_modal_widget');
-      ProductionLogger.info('  Club ID: ${_selectedClub?.id ?? "null (posting as user)"}', tag: 'create_post_modal_widget');
+      ProductionLogger.info('📋 Creating post with data:',
+          tag: 'create_post_modal_widget');
+      ProductionLogger.info('  Content: "$content"',
+          tag: 'create_post_modal_widget');
+      ProductionLogger.info('  Image URL: $uploadedImageUrl',
+          tag: 'create_post_modal_widget');
+      ProductionLogger.info('  Video URL: $_uploadedVideoId',
+          tag: 'create_post_modal_widget');
+      ProductionLogger.info('  Hashtags: $hashtags',
+          tag: 'create_post_modal_widget');
+      ProductionLogger.info('  Location: ${_locationController.text.trim()}',
+          tag: 'create_post_modal_widget');
+      ProductionLogger.info(
+          '  Club ID: ${_selectedClub?.id ?? "null (posting as user)"}',
+          tag: 'create_post_modal_widget');
 
       // Create the post with uploaded image URL or video URL
       final post = await _postRepository.createPost(
@@ -793,20 +839,24 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         clubId: _selectedClub?.id, // 🎱 Post as club if selected
       );
 
-      ProductionLogger.info('📝 Post creation result: ${post?.id ?? "NULL"}', tag: 'create_post_modal_widget');
+      ProductionLogger.info('📝 Post creation result: ${post?.id ?? "NULL"}',
+          tag: 'create_post_modal_widget');
 
       setState(() => _isLoading = false);
 
       if (mounted) {
         if (post != null) {
-          ProductionLogger.info('✅ Post created successfully with ID: ${post.id}', tag: 'create_post_modal_widget');
+          ProductionLogger.info(
+              '✅ Post created successfully with ID: ${post.id}',
+              tag: 'create_post_modal_widget');
           Navigator.pop(context);
           widget.onPostCreated?.call();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đã đăng bài viết thành công!')),
           );
         } else {
-          ProductionLogger.info('❌ Post creation returned null', tag: 'create_post_modal_widget');
+          ProductionLogger.info('❌ Post creation returned null',
+              tag: 'create_post_modal_widget');
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Lỗi đăng bài viết. Vui lòng thử lại!'),
@@ -815,7 +865,6 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
         }
       }
     } catch (e) {
-
       setState(() => _isLoading = false);
 
       if (mounted) {
@@ -921,7 +970,8 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                     shape: BoxShape.circle,
                     color: AppColors.shadowDark,
                   ),
-                  child: const Icon(Icons.close, color: AppColors.textOnPrimary, size: 24),
+                  child: const Icon(Icons.close,
+                      color: AppColors.textOnPrimary, size: 24),
                 ),
               ),
               GestureDetector(
@@ -978,8 +1028,7 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
             future: _getUserData(),
             builder: (context, snapshot) {
               final userData = snapshot.data;
-              final displayName =
-                  userData?['display_name'] as String? ??
+              final displayName = userData?['display_name'] as String? ??
                   userData?['username'] as String? ??
                   userData?['full_name'] as String? ??
                   'Người dùng';
@@ -1116,11 +1165,13 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                           value: null,
                           child: Row(
                             children: [
-                              Icon(Icons.person, size: 18, color: AppColors.info),
+                              Icon(Icons.person,
+                                  size: 18, color: AppColors.info),
                               SizedBox(width: 8),
                               Text(
                                 'Cá nhân',
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),
@@ -1136,14 +1187,16 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                                   height: 18,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: AppColors.premium.withValues(alpha: 0.1),
+                                    color: AppColors.premium
+                                        .withValues(alpha: 0.1),
                                   ),
                                   child: club.logoUrl != null
                                       ? ClipOval(
                                           child: Image.network(
                                             club.logoUrl!,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stack) {
+                                            errorBuilder:
+                                                (context, error, stack) {
                                               return const Icon(
                                                 Icons.sports_basketball,
                                                 size: 12,
@@ -1162,7 +1215,9 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                                 Expanded(
                                   child: Text(
                                     club.name,
-                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -1176,7 +1231,8 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
                           if (clubId == null) {
                             _selectedClub = null;
                           } else {
-                            _selectedClub = _managedClubs.firstWhere((c) => c.id == clubId);
+                            _selectedClub =
+                                _managedClubs.firstWhere((c) => c.id == clubId);
                           }
                         });
                       },
@@ -1205,7 +1261,7 @@ class _CreatePostModalWidgetState extends State<CreatePostModalWidget> {
             ),
             style: const TextStyle(
               fontSize: 15,
-                            color: AppColors.textPrimary, // Facebook: text primary
+              color: AppColors.textPrimary, // Facebook: text primary
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -1650,7 +1706,7 @@ class _LocationPickerViewState extends State<_LocationPickerView> {
           });
         }
         _filteredLocations = _popularLocations;
-      // Ignore error
+        // Ignore error
       });
     } catch (e) {
       // Ignore error
@@ -2015,115 +2071,116 @@ class _TagClubViewState extends State<_TagClubView> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _error.isNotEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: AppColors.error,
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              size: 48,
+                              color: AppColors.error,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _error,
+                              style: const TextStyle(color: AppColors.error),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            AppButton(
+                              label: 'Thử lại',
+                              type: AppButtonType.primary,
+                              size: AppButtonSize.medium,
+                              onPressed: _loadClubs,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _error,
-                          style: const TextStyle(color: AppColors.error),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        AppButton(
-                          label: 'Thử lại',
-                          type: AppButtonType.primary,
-                          size: AppButtonSize.medium,
-                          onPressed: _loadClubs,
-                        ),
-                      ],
-                    ),
-                  )
-                : _filteredClubs.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(
-                          Icons.search_off,
-                          size: 48,
-                          color: AppColors.textSecondary,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Không tìm thấy CLB nào',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    controller: widget.scrollController,
-                    itemCount: _filteredClubs.length,
-                    itemBuilder: (context, index) {
-                      final club = _filteredClubs[index];
-                      return ListTile(
-                        onTap: () {
-                          widget.onClubSelected(club.name ?? 'CLB');
-                        },
-                        leading: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.premium.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: club.logoUrl != null
-                              ? ClipOval(
-                                  child: Image.network(
-                                    club.logoUrl!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stack) {
-                                      return const Icon(
-                                        Icons.sports_basketball,
-                                        color: AppColors.premium,
-                                      );
-                                    },
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.sports_basketball,
-                                  color: AppColors.premium,
-                                ),
-                        ),
-                        title: Text(
-                          club.name ?? 'Unnamed Club',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        subtitle: club.description != null
-                            ? Text(
-                                club.description!,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  fontSize: 13,
+                      )
+                    : _filteredClubs.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 48,
                                   color: AppColors.textSecondary,
                                 ),
-                              )
-                            : null,
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AppColors.textSecondary,
-                        ),
-                      );
-                    },
-                  ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Không tìm thấy CLB nào',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: widget.scrollController,
+                            itemCount: _filteredClubs.length,
+                            itemBuilder: (context, index) {
+                              final club = _filteredClubs[index];
+                              return ListTile(
+                                onTap: () {
+                                  widget.onClubSelected(club.name ?? 'CLB');
+                                },
+                                leading: Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.premium
+                                        .withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: club.logoUrl != null
+                                      ? ClipOval(
+                                          child: Image.network(
+                                            club.logoUrl!,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stack) {
+                                              return const Icon(
+                                                Icons.sports_basketball,
+                                                color: AppColors.premium,
+                                              );
+                                            },
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.sports_basketball,
+                                          color: AppColors.premium,
+                                        ),
+                                ),
+                                title: Text(
+                                  club.name ?? 'Unnamed Club',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                subtitle: club.description != null
+                                    ? Text(
+                                        club.description!,
+                                        maxLines: 1,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      )
+                                    : null,
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: AppColors.textSecondary,
+                                ),
+                              );
+                            },
+                          ),
           ),
         ],
       ),
     );
   }
 }
-

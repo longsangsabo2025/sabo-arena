@@ -118,8 +118,7 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
 
   Future<void> _shareReferralCode() async {
     if (_referralCode != null) {
-      final shareText =
-          '''
+      final shareText = '''
 🏆 Tham gia SABO Arena cùng tôi!
 
 🎯 Sử dụng mã giới thiệu: $_referralCode
@@ -404,4 +403,3 @@ class _BasicReferralCardState extends State<BasicReferralCard> {
     );
   }
 }
-

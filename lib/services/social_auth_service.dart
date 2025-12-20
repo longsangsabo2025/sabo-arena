@@ -132,12 +132,12 @@ class SocialAuthService {
       ProductionLogger.network('POST', 'Supabase signInWithIdToken (Google)');
 
       // Authenticate with Supabase
-      final response = await SupabaseService.instance.client.auth
-          .signInWithIdToken(
-            provider: OAuthProvider.google,
-            idToken: googleAuth.idToken!,
-            accessToken: googleAuth.accessToken,
-          );
+      final response =
+          await SupabaseService.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: googleAuth.idToken!,
+        accessToken: googleAuth.accessToken,
+      );
 
       ProductionLogger.auth(
         '✅ Google Sign-In SUCCESS',
@@ -222,11 +222,11 @@ class SocialAuthService {
           );
 
           // Authenticate with Supabase
-          final response = await SupabaseService.instance.client.auth
-              .signInWithIdToken(
-                provider: OAuthProvider.facebook,
-                idToken: accessToken.tokenString,
-              );
+          final response =
+              await SupabaseService.instance.client.auth.signInWithIdToken(
+            provider: OAuthProvider.facebook,
+            idToken: accessToken.tokenString,
+          );
 
           ProductionLogger.auth(
             '✅ Facebook Sign-In SUCCESS',
@@ -291,7 +291,9 @@ class SocialAuthService {
   Future<AuthResponse?> signInWithApple() async {
     try {
       if (kDebugMode) {
-        ProductionLogger.info('🚀 Attempting Apple Sign-In on ${kIsWeb ? "web" : "mobile"}', tag: 'social_auth_service');
+        ProductionLogger.info(
+            '🚀 Attempting Apple Sign-In on ${kIsWeb ? "web" : "mobile"}',
+            tag: 'social_auth_service');
       }
 
       // Platform compatibility checks
@@ -337,30 +339,40 @@ class SocialAuthService {
         );
       }
 
-      if (kDebugMode) ProductionLogger.info('✅ Apple Identity Token acquired', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('✅ Apple Identity Token acquired',
+            tag: 'social_auth_service');
 
       // Authenticate with Supabase
-      final response = await SupabaseService.instance.client.auth
-          .signInWithIdToken(
-            provider: OAuthProvider.apple,
-            idToken: credential.identityToken!,
-          );
+      final response =
+          await SupabaseService.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: credential.identityToken!,
+      );
 
       if (kDebugMode) {
-        ProductionLogger.info('✅ Apple Sign-In successful: ${response.user?.email}', tag: 'social_auth_service');
+        ProductionLogger.info(
+            '✅ Apple Sign-In successful: ${response.user?.email}',
+            tag: 'social_auth_service');
       }
 
       return response;
     } on SignInWithAppleAuthorizationException catch (e) {
       if (e.code == AuthorizationErrorCode.canceled) {
-        if (kDebugMode) ProductionLogger.info('❌ User cancelled Apple Sign-In', tag: 'social_auth_service');
+        if (kDebugMode)
+          ProductionLogger.info('❌ User cancelled Apple Sign-In',
+              tag: 'social_auth_service');
         return null; // User canceled
       }
 
-      if (kDebugMode) ProductionLogger.info('💥 Apple authorization error: ${e.message}', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('💥 Apple authorization error: ${e.message}',
+            tag: 'social_auth_service');
       throw SocialAuthException(e.message, 'apple', e.code.toString());
     } on PlatformException catch (e) {
-      if (kDebugMode) ProductionLogger.info('💥 Apple platform error: ${e.message}', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('💥 Apple platform error: ${e.message}',
+            tag: 'social_auth_service');
       throw SocialAuthException(
         e.message ?? 'Lỗi hệ thống Apple Sign-In',
         'apple',
@@ -369,7 +381,9 @@ class SocialAuthService {
     } on SocialAuthException {
       rethrow; // Re-throw our custom exceptions
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('💥 Apple Sign-In error: $e', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('💥 Apple Sign-In error: $e',
+            tag: 'social_auth_service');
       throw SocialAuthException(
         'Đăng nhập Apple thất bại. Vui lòng thử lại.',
         'apple',
@@ -380,26 +394,36 @@ class SocialAuthService {
   /// Sign out from all social providers
   Future<void> signOutFromAllProviders() async {
     try {
-      if (kDebugMode) ProductionLogger.info('🚪 Signing out from all social providers', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('🚪 Signing out from all social providers',
+            tag: 'social_auth_service');
 
       // Sign out from Google
       if (await _googleSignIn.isSignedIn()) {
         await _googleSignIn.signOut();
-        if (kDebugMode) ProductionLogger.info('✅ Signed out from Google', tag: 'social_auth_service');
+        if (kDebugMode)
+          ProductionLogger.info('✅ Signed out from Google',
+              tag: 'social_auth_service');
       }
 
       // Sign out from Facebook (only on mobile)
       if (!kIsWeb) {
         await FacebookAuth.instance.logOut();
-        if (kDebugMode) ProductionLogger.info('✅ Signed out from Facebook', tag: 'social_auth_service');
+        if (kDebugMode)
+          ProductionLogger.info('✅ Signed out from Facebook',
+              tag: 'social_auth_service');
       }
 
       // Apple Sign-In doesn't require explicit sign out
       // User credentials are managed by iOS system
 
-      if (kDebugMode) ProductionLogger.info('✅ Signed out from all social providers', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('✅ Signed out from all social providers',
+            tag: 'social_auth_service');
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('⚠️ Error during social sign out: $e', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('⚠️ Error during social sign out: $e',
+            tag: 'social_auth_service');
       // Don't throw - sign out should be best effort
     }
   }
@@ -412,7 +436,9 @@ class SocialAuthService {
     try {
       return await _googleSignIn.isSignedIn();
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('Error checking Google sign-in status: $e', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('Error checking Google sign-in status: $e',
+            tag: 'social_auth_service');
       return false;
     }
   }
@@ -426,7 +452,9 @@ class SocialAuthService {
     try {
       return await SignInWithApple.isAvailable();
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('Error checking Apple Sign-In availability: $e', tag: 'social_auth_service');
+      if (kDebugMode)
+        ProductionLogger.info('Error checking Apple Sign-In availability: $e',
+            tag: 'social_auth_service');
       return false;
     }
   }

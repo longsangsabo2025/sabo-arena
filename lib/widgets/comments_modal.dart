@@ -433,81 +433,81 @@ class _CommentsModalState extends State<CommentsModal> {
                       ),
                     )
                   : _comments.isEmpty
-                  ? RefreshIndicator(
-                      onRefresh: _refreshComments,
-                      child: ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.3,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                      ? RefreshIndicator(
+                          onRefresh: _refreshComments,
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              Icon(
-                                Icons.chat_bubble_outline,
-                                size: 64,
-                                color: Colors.grey.shade300,
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.3,
                               ),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'Chưa có bình luận nào\nHãy là người đầu tiên bình luận!',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Kéo xuống để làm mới',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.chat_bubble_outline,
+                                    size: 64,
+                                    color: Colors.grey.shade300,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    'Chưa có bình luận nào\nHãy là người đầu tiên bình luận!',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Kéo xuống để làm mới',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _refreshComments,
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount:
-                            _comments.length +
-                            (_hasMore && !_isLoading ? 1 : 0) +
-                            (_isLoading && _comments.isNotEmpty ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index >= _comments.length) {
-                            return const Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Center(
-                                child: Column(
-                                  children: [
-                                    CircularProgressIndicator(),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Đang tải thêm...',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
-                                      ),
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _refreshComments,
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: _comments.length +
+                                (_hasMore && !_isLoading ? 1 : 0) +
+                                (_isLoading && _comments.isNotEmpty ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index >= _comments.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        CircularProgressIndicator(),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          'Đang tải thêm...',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
+                                  ),
+                                );
+                              }
 
-                          final comment = _comments[index];
-                          return _buildCommentItem(comment, index);
-                        },
-                      ),
-                    ),
+                              final comment = _comments[index];
+                              return _buildCommentItem(comment, index);
+                            },
+                          ),
+                        ),
             ),
 
             // Comment Input
@@ -544,25 +544,24 @@ class _CommentsModalState extends State<CommentsModal> {
                       ),
                       maxLines: null,
                       maxLength: 1000,
-                      buildCounter:
-                          (
-                            context, {
-                            required currentLength,
-                            required isFocused,
-                            maxLength,
-                          }) {
-                            return currentLength > 900
-                                ? Text(
-                                    '$currentLength/$maxLength',
-                                    style: TextStyle(
-                                      color: currentLength >= maxLength!
-                                          ? Colors.red
-                                          : Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  )
-                                : null;
-                          },
+                      buildCounter: (
+                        context, {
+                        required currentLength,
+                        required isFocused,
+                        maxLength,
+                      }) {
+                        return currentLength > 900
+                            ? Text(
+                                '$currentLength/$maxLength',
+                                style: TextStyle(
+                                  color: currentLength >= maxLength!
+                                      ? Colors.red
+                                      : Colors.grey,
+                                  fontSize: 12,
+                                ),
+                              )
+                            : null;
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -581,8 +580,7 @@ class _CommentsModalState extends State<CommentsModal> {
                       : Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color:
-                                _commentController.text.trim().isEmpty ||
+                            color: _commentController.text.trim().isEmpty ||
                                     _isPosting
                                 ? Colors.grey.shade300
                                 : AppTheme.primaryLight,
@@ -590,13 +588,12 @@ class _CommentsModalState extends State<CommentsModal> {
                           child: IconButton(
                             onPressed:
                                 (_commentController.text.trim().isEmpty ||
-                                    _isPosting)
-                                ? null
-                                : _postComment,
+                                        _isPosting)
+                                    ? null
+                                    : _postComment,
                             icon: Icon(
                               Icons.send,
-                              color:
-                                  _commentController.text.trim().isEmpty ||
+                              color: _commentController.text.trim().isEmpty ||
                                       _isPosting
                                   ? Colors.grey.shade600
                                   : Colors.white,

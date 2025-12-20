@@ -41,7 +41,8 @@ class PostBackgroundService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_keySelectedTheme, themeId);
     } catch (e) {
-      ProductionLogger.info('Error saving theme: $e', tag: 'post_background_service');
+      ProductionLogger.info('Error saving theme: $e',
+          tag: 'post_background_service');
     }
   }
 
@@ -61,7 +62,8 @@ class PostBackgroundService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_keyAutoRotate, enabled);
     } catch (e) {
-      ProductionLogger.info('Error saving auto rotate: $e', tag: 'post_background_service');
+      ProductionLogger.info('Error saving auto rotate: $e',
+          tag: 'post_background_service');
     }
   }
 
@@ -102,7 +104,8 @@ class PostBackgroundService {
       current.add(imageUrl);
       await prefs.setStringList(_keyCustomBackgrounds, current);
     } catch (e) {
-      ProductionLogger.info('Error adding custom background: $e', tag: 'post_background_service');
+      ProductionLogger.info('Error adding custom background: $e',
+          tag: 'post_background_service');
     }
   }
 
@@ -114,7 +117,8 @@ class PostBackgroundService {
       current.remove(imageUrl);
       await prefs.setStringList(_keyCustomBackgrounds, current);
     } catch (e) {
-      ProductionLogger.info('Error removing custom background: $e', tag: 'post_background_service');
+      ProductionLogger.info('Error removing custom background: $e',
+          tag: 'post_background_service');
     }
   }
 
@@ -126,7 +130,8 @@ class PostBackgroundService {
       await prefs.remove(_keyAutoRotate);
       await prefs.remove(_keyCustomBackgrounds);
     } catch (e) {
-      ProductionLogger.info('Error resetting: $e', tag: 'post_background_service');
+      ProductionLogger.info('Error resetting: $e',
+          tag: 'post_background_service');
     }
   }
 }

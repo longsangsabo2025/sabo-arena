@@ -9,7 +9,8 @@ class ClubRegistrationDialog extends StatelessWidget {
     required this.onConfirm,
   });
 
-  static Future<void> show(BuildContext context, {required VoidCallback onConfirm}) {
+  static Future<void> show(BuildContext context,
+      {required VoidCallback onConfirm}) {
     return showDialog(
       context: context,
       barrierDismissible: false,

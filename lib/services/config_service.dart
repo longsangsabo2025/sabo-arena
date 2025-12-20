@@ -141,10 +141,8 @@ class ConfigService {
     }
 
     try {
-      final response = await _supabase
-          .from('rank_system')
-          .select('*')
-          .order('rank_order');
+      final response =
+          await _supabase.from('rank_system').select('*').order('rank_order');
 
       final definitions = response
           .map<RankingDefinition>((json) => RankingDefinition.fromJson(json))
@@ -275,13 +273,10 @@ class ConfigService {
     bool isActive,
   ) async {
     try {
-      await _supabase
-          .from('tournament_formats')
-          .update({
-            'is_active': isActive,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('format_code', formatCode);
+      await _supabase.from('tournament_formats').update({
+        'is_active': isActive,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('format_code', formatCode);
 
       clearCacheKey('tournament_formats');
     } catch (error) {

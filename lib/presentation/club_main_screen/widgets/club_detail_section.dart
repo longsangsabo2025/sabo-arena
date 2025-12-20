@@ -88,9 +88,8 @@ class _ClubDetailSectionState extends State<ClubDetailSection>
                   TabBar(
                     controller: _tabController,
                     labelColor: colorScheme.primary,
-                    unselectedLabelColor: colorScheme.onSurface.withValues(
-                      alpha: 0.6,
-                    ),
+                    unselectedLabelColor:
+                        colorScheme.onSurface.withValues(alpha: 0.6),
                     indicatorColor: colorScheme.primary,
                     indicatorWeight: 2,
                     isScrollable: true,
@@ -331,7 +330,7 @@ class _ClubDetailSectionState extends State<ClubDetailSection>
 
   Future<void> _handleDeleteTournament(Tournament tournament) async {
     final canDelete = await _controller.canDeleteTournament(tournament);
-    
+
     if (!mounted) return;
 
     if (!canDelete) {
@@ -415,7 +414,8 @@ class _ClubDetailSectionState extends State<ClubDetailSection>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Ẩn giải đấu?'),
-        content: Text('Bạn có chắc chắn muốn ẩn giải đấu "${tournament.title}" không? Người dùng sẽ không thấy giải đấu này nữa.'),
+        content: Text(
+            'Bạn có chắc chắn muốn ẩn giải đấu "${tournament.title}" không? Người dùng sẽ không thấy giải đấu này nữa.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -463,4 +463,3 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
     return false;
   }
 }
-

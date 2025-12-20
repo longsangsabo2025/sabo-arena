@@ -13,7 +13,6 @@ class VoucherIssuanceService {
     required List<Map<String, dynamic>> standings,
     required Map<String, dynamic> tournament,
   }) async {
-
     // Get prize distribution config
     final prizeDistJson = tournament['prize_distribution'];
     if (prizeDistJson == null || prizeDistJson is! Map) {
@@ -34,12 +33,11 @@ class VoucherIssuanceService {
       return;
     }
 
-
     // Issue vouchers to top 4
     // int issuedCount = 0; // Unused
     for (final config in voucherConfigs) {
       final position = config['position'] as int;
-      
+
       if (position > standings.length) {
         continue;
       }
@@ -56,14 +54,15 @@ class VoucherIssuanceService {
             .eq('tournament_id', tournamentId)
             .eq('user_id', userId)
             .eq('position', position);
-        
+
         if (existingVoucher.isNotEmpty) {
           // final voucherCode = existingVoucher.first['voucher_code']; // Unused
           continue; // Skip duplicate
         }
 
         final voucherCode = _generateVoucherCode();
-        final expiryDate = DateTime.now().add(Duration(days: config['expiry_days'] ?? 30));
+        final expiryDate =
+            DateTime.now().add(Duration(days: config['expiry_days'] ?? 30));
 
         await _supabase.from('user_vouchers').insert({
           'user_id': userId,
@@ -81,12 +80,10 @@ class VoucherIssuanceService {
         });
 
         // issuedCount++;
-
       } catch (e) {
         // Ignore error
       }
     }
-
   }
 
   /// Generate unique voucher code
@@ -95,4 +92,3 @@ class VoucherIssuanceService {
     return List.generate(8, (_) => chars[_random.nextInt(chars.length)]).join();
   }
 }
-

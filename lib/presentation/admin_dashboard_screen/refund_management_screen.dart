@@ -129,7 +129,9 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
               Column(
                 children: [
                   const Text(
-                    'Total Amount', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey),
+                    'Total Amount',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -144,7 +146,9 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
               Column(
                 children: [
                   const Text(
-                    'Approved Amount', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey),
+                    'Approved Amount',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -175,7 +179,8 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
         Icon(icon, color: color, size: 28),
         const SizedBox(height: 8),
         Text(
-          value, style: TextStyle(
+          value,
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: color,
@@ -225,7 +230,8 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              label, style: TextStyle(
+              label,
+              style: TextStyle(
                 color: isSelected ? Colors.white : Colors.grey,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
@@ -245,7 +251,9 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
             Icon(Icons.inbox, size: 64, color: Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
-              'No pending refund requests', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600]),
+              'No pending refund requests',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey[600]),
             ),
           ],
         ),
@@ -286,13 +294,17 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?['display_name'] ?? 'Unknown User', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        user?['display_name'] ?? 'Unknown User',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
                       Text(
-                        user?['email'] ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        user?['email'] ?? '',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                     ],
                   ),
@@ -331,11 +343,15 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Reason:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    'Reason:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    reason ?? 'No reason provided', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14),
+                    reason ?? 'No reason provided',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 14),
                   ),
                 ],
               ),
@@ -385,7 +401,8 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
         children: [
           Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
           Text(
-            value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            value,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -507,4 +524,3 @@ class _RefundManagementScreenState extends State<RefundManagementScreen> {
     }
   }
 }
-

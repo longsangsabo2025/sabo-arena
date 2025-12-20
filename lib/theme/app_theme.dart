@@ -114,7 +114,9 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: surfaceLight,
       foregroundColor: textPrimaryLight,
-      elevation: (!kIsWeb && Platform.isIOS) ? 0.0 : 1.0, // iOS: flat, Android: minimal elevation
+      elevation: (!kIsWeb && Platform.isIOS)
+          ? 0.0
+          : 1.0, // iOS: flat, Android: minimal elevation
       shadowColor: shadowLight,
       surfaceTintColor: Colors.transparent,
       titleTextStyle: (!kIsWeb && Platform.isIOS)
@@ -125,7 +127,7 @@ class AppTheme {
               color: textPrimaryLight,
               letterSpacing: -0.3, // iOS negative spacing
             )
-          : GoogleFonts.roboto(
+          : GoogleFonts.inter(
               fontSize: 20,
               fontWeight: FontWeight.w500,
               color: textPrimaryLight,
@@ -138,7 +140,9 @@ class AppTheme {
     // Card theme - iOS style (16px radius, subtle shadow) on iOS
     cardTheme: CardThemeData(
       color: cardLight,
-      elevation: (!kIsWeb && Platform.isIOS) ? 0.0 : DesignTokens.elevation2, // iOS: flat
+      elevation: (!kIsWeb && Platform.isIOS)
+          ? 0.0
+          : DesignTokens.elevation2, // iOS: flat
       shadowColor: shadowLight,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
@@ -161,11 +165,11 @@ class AppTheme {
       unselectedItemColor: textSecondaryLight,
       elevation: 8.0,
       type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: GoogleFonts.roboto(
+      selectedLabelStyle: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w500,
       ),
-      unselectedLabelStyle: GoogleFonts.roboto(
+      unselectedLabelStyle: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w400,
       ),
@@ -186,7 +190,9 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         foregroundColor: onPrimaryLight,
         backgroundColor: primaryLight, // Brand teal green #1E8A6F
-        elevation: (!kIsWeb && Platform.isIOS) ? 0.0 : DesignTokens.elevation2, // iOS: flat
+        elevation: (!kIsWeb && Platform.isIOS)
+            ? 0.0
+            : DesignTokens.elevation2, // iOS: flat
         padding: DesignTokens.only(
           left: DesignTokens.space24,
           right: DesignTokens.space24,
@@ -205,7 +211,7 @@ class AppTheme {
                 fontWeight: FontWeight.w600,
                 letterSpacing: -0.3, // iOS negative spacing
               )
-            : GoogleFonts.roboto(
+            : GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 letterSpacing: DesignTokens.letterSpacingWide,
@@ -238,7 +244,7 @@ class AppTheme {
                 fontWeight: FontWeight.w600,
                 letterSpacing: -0.3,
               )
-            : GoogleFonts.roboto(
+            : GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 letterSpacing: DesignTokens.letterSpacingWide,
@@ -248,7 +254,7 @@ class AppTheme {
 
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: (!kIsWeb && Platform.isIOS) 
+        foregroundColor: (!kIsWeb && Platform.isIOS)
             ? const Color(0xFF007AFF) // iOS blue cho links
             : primaryLight, // Brand color cho Android
         padding: DesignTokens.only(
@@ -269,7 +275,7 @@ class AppTheme {
                 fontWeight: FontWeight.w400,
                 letterSpacing: -0.3,
               )
-            : GoogleFonts.roboto(
+            : GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 letterSpacing: DesignTokens.letterSpacingWide,
@@ -282,7 +288,7 @@ class AppTheme {
 
     // Input decoration - iOS style (rounded, no border) on iOS
     inputDecorationTheme: InputDecorationTheme(
-      fillColor: (!kIsWeb && Platform.isIOS) 
+      fillColor: (!kIsWeb && Platform.isIOS)
           ? const Color(0xFFF2F2F7) // iOS gray background
           : surfaceLight,
       filled: true,
@@ -318,12 +324,12 @@ class AppTheme {
         borderRadius: DesignTokens.radius(DesignTokens.radiusSM),
         borderSide: const BorderSide(color: errorLight, width: 2),
       ),
-      labelStyle: GoogleFonts.openSans(
+      labelStyle: GoogleFonts.inter(
         color: textSecondaryLight,
         fontSize: 16,
         fontWeight: FontWeight.w400,
       ),
-      hintStyle: GoogleFonts.openSans(
+      hintStyle: GoogleFonts.inter(
         color: textDisabledLight,
         fontSize: 16,
         fontWeight: FontWeight.w400,
@@ -385,8 +391,8 @@ class AppTheme {
       unselectedLabelColor: textSecondaryLight,
       indicatorColor: primaryLight,
       indicatorSize: TabBarIndicatorSize.label,
-      labelStyle: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500),
-      unselectedLabelStyle: GoogleFonts.roboto(
+      labelStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500),
+      unselectedLabelStyle: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
@@ -397,12 +403,12 @@ class AppTheme {
         color: textPrimaryLight.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(4),
       ),
-      textStyle: GoogleFonts.openSans(color: surfaceLight, fontSize: 12),
+      textStyle: GoogleFonts.inter(color: surfaceLight, fontSize: 12),
     ),
 
     snackBarTheme: SnackBarThemeData(
       backgroundColor: textPrimaryLight,
-      contentTextStyle: GoogleFonts.openSans(color: surfaceLight, fontSize: 14),
+      contentTextStyle: GoogleFonts.inter(color: surfaceLight, fontSize: 14),
       actionTextColor: accentLight,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -468,7 +474,7 @@ class AppTheme {
       elevation: 1.0,
       shadowColor: shadowDark,
       surfaceTintColor: Colors.transparent,
-      titleTextStyle: GoogleFonts.roboto(
+      titleTextStyle: GoogleFonts.inter(
         fontSize: 20,
         fontWeight: FontWeight.w500,
         color: textPrimaryDark,
@@ -491,11 +497,11 @@ class AppTheme {
       unselectedItemColor: textSecondaryDark,
       elevation: 8.0,
       type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: GoogleFonts.roboto(
+      selectedLabelStyle: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w500,
       ),
-      unselectedLabelStyle: GoogleFonts.roboto(
+      unselectedLabelStyle: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w400,
       ),
@@ -513,7 +519,7 @@ class AppTheme {
         elevation: 2.0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        textStyle: GoogleFonts.roboto(
+        textStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           letterSpacing: 1.25,
@@ -526,7 +532,7 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         side: const BorderSide(color: primaryDark, width: 1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        textStyle: GoogleFonts.roboto(
+        textStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           letterSpacing: 1.25,
@@ -538,7 +544,7 @@ class AppTheme {
         foregroundColor: primaryDark,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        textStyle: GoogleFonts.roboto(
+        textStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           letterSpacing: 1.25,
@@ -570,12 +576,12 @@ class AppTheme {
         borderRadius: BorderRadius.circular(8.0),
         borderSide: const BorderSide(color: errorDark, width: 2),
       ),
-      labelStyle: GoogleFonts.openSans(
+      labelStyle: GoogleFonts.inter(
         color: textSecondaryDark,
         fontSize: 16,
         fontWeight: FontWeight.w400,
       ),
-      hintStyle: GoogleFonts.openSans(
+      hintStyle: GoogleFonts.inter(
         color: textDisabledDark,
         fontSize: 16,
         fontWeight: FontWeight.w400,
@@ -629,8 +635,8 @@ class AppTheme {
       unselectedLabelColor: textSecondaryDark,
       indicatorColor: primaryDark,
       indicatorSize: TabBarIndicatorSize.label,
-      labelStyle: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500),
-      unselectedLabelStyle: GoogleFonts.roboto(
+      labelStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500),
+      unselectedLabelStyle: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
@@ -640,11 +646,11 @@ class AppTheme {
         color: textPrimaryDark.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(4),
       ),
-      textStyle: GoogleFonts.openSans(color: surfaceDark, fontSize: 12),
+      textStyle: GoogleFonts.inter(color: surfaceDark, fontSize: 12),
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: textPrimaryDark,
-      contentTextStyle: GoogleFonts.openSans(color: surfaceDark, fontSize: 14),
+      contentTextStyle: GoogleFonts.inter(color: surfaceDark, fontSize: 14),
       actionTextColor: accentDark,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -671,50 +677,45 @@ class AppTheme {
   /// iOS Support: Uses SF Pro Display on iOS with negative letter spacing
   static TextTheme _buildTextTheme({required bool isLight}) {
     final Color textPrimary = isLight ? textPrimaryLight : textPrimaryDark;
-    final Color textSecondary = isLight
-        ? textSecondaryLight
-        : textSecondaryDark;
+    final Color textSecondary =
+        isLight ? textSecondaryLight : textSecondaryDark;
     final Color textDisabled = isLight ? textDisabledLight : textDisabledDark;
-    
-    final isIOS = !kIsWeb && Platform.isIOS;
-    final fontFamily = isIOS ? '.SF Pro Display' : null; // iOS system font
-    final letterSpacing = isIOS ? -0.3 : 0.0; // iOS negative spacing
 
     return TextTheme(
-      // Display styles for tournament headers - MONTSERRAT BOLD
-      displayLarge: GoogleFonts.montserrat(
+      // Display styles for tournament headers - INTER BOLD
+      displayLarge: GoogleFonts.inter(
         fontSize: 57,
         fontWeight: FontWeight.w800, // Extra bold for impact
         color: textPrimary,
         letterSpacing: -1.0, // Tighter for modern look
       ),
-      displayMedium: GoogleFonts.montserrat(
+      displayMedium: GoogleFonts.inter(
         fontSize: 45,
         fontWeight: FontWeight.w700,
         color: textPrimary,
         letterSpacing: -0.5,
       ),
-      displaySmall: GoogleFonts.montserrat(
+      displaySmall: GoogleFonts.inter(
         fontSize: 36,
         fontWeight: FontWeight.w700,
         color: textPrimary,
         letterSpacing: -0.25,
       ),
 
-      // Headline styles for section headers - MONTSERRAT STRONG
-      headlineLarge: GoogleFonts.montserrat(
+      // Headline styles for section headers - INTER STRONG
+      headlineLarge: GoogleFonts.inter(
         fontSize: 32,
         fontWeight: FontWeight.w700,
         color: textPrimary,
         letterSpacing: -0.5,
       ),
-      headlineMedium: GoogleFonts.montserrat(
+      headlineMedium: GoogleFonts.inter(
         fontSize: 28,
         fontWeight: FontWeight.w600,
         color: textPrimary,
         letterSpacing: -0.25,
       ),
-      headlineSmall: GoogleFonts.montserrat(
+      headlineSmall: GoogleFonts.inter(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: textPrimary,
@@ -741,70 +742,43 @@ class AppTheme {
         letterSpacing: 0.1,
       ),
 
-      // Body styles - iOS SF Pro on iOS, Source Sans 3 on Android
-      bodyLarge: isIOS
-          ? TextStyle(
-              fontFamily: fontFamily,
-              fontSize: 17, // iOS standard body size
-              fontWeight: FontWeight.w400,
-              color: textPrimary,
-              letterSpacing: letterSpacing,
-              height: 1.2, // iOS tighter line height
-            )
-          : GoogleFonts.sourceSans3(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: textPrimary,
-              letterSpacing: 0.1,
-              height: 1.6,
-            ),
-      bodyMedium: isIOS
-          ? TextStyle(
-              fontFamily: fontFamily,
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: textPrimary,
-              letterSpacing: letterSpacing,
-              height: 1.2,
-            )
-          : GoogleFonts.sourceSans3(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: textPrimary,
-              letterSpacing: 0.1,
-              height: 1.5,
-            ),
-      bodySmall: isIOS
-          ? TextStyle(
-              fontFamily: fontFamily,
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: textSecondary,
-              letterSpacing: letterSpacing,
-              height: 1.2,
-            )
-          : GoogleFonts.sourceSans3(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: textSecondary,
-              letterSpacing: 0.1,
-              height: 1.4,
-            ),
+      // Body styles - Unified Inter (iOS style)
+      bodyLarge: GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: textPrimary,
+        letterSpacing: 0.15,
+        height: 1.5,
+      ),
+      bodyMedium: GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: textPrimary,
+        letterSpacing: 0.25,
+        height: 1.43,
+      ),
+      bodySmall: GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: textSecondary,
+        letterSpacing: 0.4,
+        height: 1.33,
+      ),
 
-      // Label styles for buttons and captions - ROBOTO UI
-      labelLarge: GoogleFonts.roboto(
+      // Label styles for buttons and captions - INTER UI
+      labelLarge: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: textPrimary,
         letterSpacing: 0.1,
       ),
-      labelMedium: GoogleFonts.roboto(
+      labelMedium: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: textSecondary,
         letterSpacing: 0.5,
       ),
-      labelSmall: GoogleFonts.roboto(
+      labelSmall: GoogleFonts.inter(
         fontSize: 11,
         fontWeight: FontWeight.w500,
         color: textDisabled,

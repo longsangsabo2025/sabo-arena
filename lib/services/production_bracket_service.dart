@@ -25,13 +25,15 @@ class ProductionBracketService {
     try {
       final response = await _supabase
           .from('tournaments')
-          .select('id, name, bracket_format, max_participants, status, start_date')
+          .select(
+              'id, name, bracket_format, max_participants, status, start_date')
           .eq('id', tournamentId)
           .single();
 
       return response;
     } catch (e) {
-      ProductionLogger.info('❌ Error loading tournament info: $e', tag: 'production_bracket_service');
+      ProductionLogger.info('❌ Error loading tournament info: $e',
+          tag: 'production_bracket_service');
       return null;
     }
   }
@@ -78,7 +80,8 @@ class ProductionBracketService {
 
       return tournamentList.cast<Map<String, dynamic>>();
     } catch (e) {
-      ProductionLogger.info('❌ Error loading tournaments: $e', tag: 'production_bracket_service');
+      ProductionLogger.info('❌ Error loading tournaments: $e',
+          tag: 'production_bracket_service');
       return [];
     }
   }
@@ -108,7 +111,8 @@ class ProductionBracketService {
 
       return (response as List? ?? []).cast<Map<String, dynamic>>();
     } catch (e) {
-      ProductionLogger.info('❌ Error loading participants: $e', tag: 'production_bracket_service');
+      ProductionLogger.info('❌ Error loading participants: $e',
+          tag: 'production_bracket_service');
       return [];
     }
   }
@@ -145,14 +149,18 @@ class ProductionBracketService {
       // NOTE: Database uses 'game_format' not 'format'! This was the bug causing all conditionals to fail
       final gameFormat = tournamentResponse['game_format'];
 
-      ProductionLogger.info('🔍 Tournament formats: game_format=$gameFormat, bracket_format=$bracketFormat',  tag: 'production_bracket_service');
+      ProductionLogger.info(
+          '🔍 Tournament formats: game_format=$gameFormat, bracket_format=$bracketFormat',
+          tag: 'production_bracket_service');
 
       // Use Unified Bracket Service for ALL formats
       // This consolidates logic and removes the need for multiple hardcoded services here
       final formatToUse = bracketFormat ?? gameFormat ?? 'single_elimination';
       final unifiedFormat = _mapToUnifiedFormat(formatToUse);
-      
-      ProductionLogger.info('🎯 Delegating to UnifiedBracketService with format: $unifiedFormat', tag: 'production_bracket_service');
+
+      ProductionLogger.info(
+          '🎯 Delegating to UnifiedBracketService with format: $unifiedFormat',
+          tag: 'production_bracket_service');
 
       // Extract participant IDs
       final participantIds = participants
@@ -176,26 +184,28 @@ class ProductionBracketService {
       );
 
       if (result['success'] != true) {
-        throw Exception(result['error'] ?? 'Failed to create bracket via Unified Service');
+        throw Exception(
+            result['error'] ?? 'Failed to create bracket via Unified Service');
       }
 
-      ProductionLogger.info('✅ Bracket created successfully via Unified Service', tag: 'production_bracket_service');
+      ProductionLogger.info(
+          '✅ Bracket created successfully via Unified Service',
+          tag: 'production_bracket_service');
 
       // Update tournament status
-      await _supabase
-          .from('tournaments')
-          .update({
-            'status': 'bracket_created',
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', tournamentId);
+      await _supabase.from('tournaments').update({
+        'status': 'bracket_created',
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', tournamentId);
 
       // Force refresh cache to ensure UI shows fresh data
       try {
         await CachedTournamentService.refreshTournamentData(tournamentId);
-        ProductionLogger.info('✅ Refreshed cache after bracket creation', tag: 'production_bracket_service');
+        ProductionLogger.info('✅ Refreshed cache after bracket creation',
+            tag: 'production_bracket_service');
       } catch (e) {
-        ProductionLogger.info('⚠️ Failed to refresh cache: $e', tag: 'production_bracket_service');
+        ProductionLogger.info('⚠️ Failed to refresh cache: $e',
+            tag: 'production_bracket_service');
       }
 
       return {
@@ -205,7 +215,8 @@ class ProductionBracketService {
         'message': '✅ Bảng đấu đã được tạo thành công!',
       };
     } catch (e) {
-      ProductionLogger.info('❌ Error creating bracket: $e', tag: 'production_bracket_service');
+      ProductionLogger.info('❌ Error creating bracket: $e',
+          tag: 'production_bracket_service');
       return {
         'success': false,
         'error': e.toString(),
@@ -240,8 +251,6 @@ class ProductionBracketService {
 
     return participants;
   }
-
-
 
   /// Load existing tournament bracket
   Future<Map<String, dynamic>?> loadTournamentBracket(
@@ -278,7 +287,8 @@ class ProductionBracketService {
         'hasExistingBracket': (matches as List).isNotEmpty,
       };
     } catch (e) {
-      ProductionLogger.info('❌ Error loading bracket: $e', tag: 'production_bracket_service');
+      ProductionLogger.info('❌ Error loading bracket: $e',
+          tag: 'production_bracket_service');
       return null;
     }
   }
@@ -302,7 +312,8 @@ class ProductionBracketService {
 
       return result['success'] == true;
     } catch (e) {
-      ProductionLogger.info('❌ Error updating match result: $e', tag: 'production_bracket_service');
+      ProductionLogger.info('❌ Error updating match result: $e',
+          tag: 'production_bracket_service');
       return false;
     }
   }
@@ -316,9 +327,8 @@ class ProductionBracketService {
           .eq('tournament_id', tournamentId);
 
       final totalMatches = (matches as List).length;
-      final completedMatches = matches
-          .where((m) => m['status'] == 'completed')
-          .length;
+      final completedMatches =
+          matches.where((m) => m['status'] == 'completed').length;
       final pendingMatches = totalMatches - completedMatches;
 
       return {
@@ -330,7 +340,8 @@ class ProductionBracketService {
             : 0,
       };
     } catch (e) {
-      ProductionLogger.info('❌ Error getting tournament stats: $e', tag: 'production_bracket_service');
+      ProductionLogger.info('❌ Error getting tournament stats: $e',
+          tag: 'production_bracket_service');
       return {
         'total_matches': 0,
         'completed_matches': 0,

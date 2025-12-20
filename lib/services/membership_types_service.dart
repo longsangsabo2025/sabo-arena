@@ -96,8 +96,7 @@ class MembershipTypesService {
     try {
       await _supabase
           .from('membership_types')
-          .update({'is_active': isActive})
-          .eq('id', id);
+          .update({'is_active': isActive}).eq('id', id);
     } catch (e) {
       throw Exception('Failed to toggle membership type status: $e');
     }
@@ -106,17 +105,15 @@ class MembershipTypesService {
   /// Delete a membership type
   Future<void> deleteMembershipType(String id) async {
     try {
-      await _supabase
-          .from('membership_types')
-          .delete()
-          .eq('id', id);
+      await _supabase.from('membership_types').delete().eq('id', id);
     } catch (e) {
       throw Exception('Failed to delete membership type: $e');
     }
   }
 
   /// Check if a name already exists for a club
-  Future<bool> nameExists(String clubId, String name, {String? excludeId}) async {
+  Future<bool> nameExists(String clubId, String name,
+      {String? excludeId}) async {
     try {
       var query = _supabase
           .from('membership_types')
@@ -140,8 +137,7 @@ class MembershipTypesService {
     try {
       await _supabase
           .from('membership_types')
-          .update({'priority': priority})
-          .eq('id', id);
+          .update({'priority': priority}).eq('id', id);
     } catch (e) {
       throw Exception('Failed to update priority: $e');
     }

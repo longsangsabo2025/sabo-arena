@@ -16,14 +16,15 @@ class AdminVoucherCampaignApprovalScreen extends StatefulWidget {
 }
 
 class _AdminVoucherCampaignApprovalScreenState
-    extends State<AdminVoucherCampaignApprovalScreen> with SingleTickerProviderStateMixin {
+    extends State<AdminVoucherCampaignApprovalScreen>
+    with SingleTickerProviderStateMixin {
   final AdminService _adminService = AdminService.instance;
   late TabController _tabController;
-  
+
   List<VoucherCampaign> _pendingCampaigns = [];
   List<VoucherCampaign> _approvedCampaigns = [];
   List<VoucherCampaign> _rejectedCampaigns = [];
-  
+
   bool _isLoading = true;
   Map<String, int> _stats = {};
 
@@ -72,15 +73,18 @@ class _AdminVoucherCampaignApprovalScreenState
       title: 'Phê duyệt Campaign',
       hint: 'Ghi chú cho club owner (tùy chọn)...',
     );
-    
+
     if (notes == null) return; // User cancelled
 
     try {
-      await _adminService.approveVoucherCampaign(campaign.id, adminNotes: notes.isEmpty ? null : notes);
-      
+      await _adminService.approveVoucherCampaign(campaign.id,
+          adminNotes: notes.isEmpty ? null : notes);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('✅ Đã phê duyệt!'), backgroundColor: AppColors.success),
+          SnackBar(
+              content: const Text('✅ Đã phê duyệt!'),
+              backgroundColor: AppColors.success),
         );
         _loadData();
       }
@@ -99,15 +103,17 @@ class _AdminVoucherCampaignApprovalScreenState
       hint: 'Lý do từ chối (bắt buộc)...',
       required: true,
     );
-    
+
     if (reason == null || reason.isEmpty) return;
 
     try {
       await _adminService.rejectVoucherCampaign(campaign.id, reason: reason);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('❌ Đã từ chối!'), backgroundColor: AppColors.warning),
+          SnackBar(
+              content: const Text('❌ Đã từ chối!'),
+              backgroundColor: AppColors.warning),
         );
         _loadData();
       }
@@ -126,7 +132,7 @@ class _AdminVoucherCampaignApprovalScreenState
     bool required = false,
   }) async {
     final controller = TextEditingController();
-    
+
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -175,15 +181,21 @@ class _AdminVoucherCampaignApprovalScreenState
             color: AppColors.surface,
             child: Row(
               children: [
-                Expanded(child: _buildStatCard('Chờ duyệt', _stats['pending'] ?? 0, AppColors.warning)),
+                Expanded(
+                    child: _buildStatCard('Chờ duyệt', _stats['pending'] ?? 0,
+                        AppColors.warning)),
                 SizedBox(width: DesignTokens.space8),
-                Expanded(child: _buildStatCard('Đã duyệt', _stats['approved'] ?? 0, AppColors.success)),
+                Expanded(
+                    child: _buildStatCard('Đã duyệt', _stats['approved'] ?? 0,
+                        AppColors.success)),
                 SizedBox(width: DesignTokens.space8),
-                Expanded(child: _buildStatCard('Từ chối', _stats['rejected'] ?? 0, AppColors.error)),
+                Expanded(
+                    child: _buildStatCard(
+                        'Từ chối', _stats['rejected'] ?? 0, AppColors.error)),
               ],
             ),
           ),
-          
+
           // Tabs
           Container(
             color: AppColors.surface,
@@ -199,7 +211,7 @@ class _AdminVoucherCampaignApprovalScreenState
               ],
             ),
           ),
-          
+
           // Content
           Expanded(
             child: _isLoading
@@ -234,22 +246,23 @@ class _AdminVoucherCampaignApprovalScreenState
           Text(
             value.toString(),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCampaignList(List<VoucherCampaign> campaigns, {bool showActions = false}) {
+  Widget _buildCampaignList(List<VoucherCampaign> campaigns,
+      {bool showActions = false}) {
     if (campaigns.isEmpty) {
       return EmptyStateWidget(
         icon: Icons.inbox,
@@ -262,14 +275,16 @@ class _AdminVoucherCampaignApprovalScreenState
       child: ListView.builder(
         padding: EdgeInsets.all(3.w),
         itemCount: campaigns.length,
-        itemBuilder: (context, index) => _buildCampaignCard(campaigns[index], showActions: showActions),
+        itemBuilder: (context, index) =>
+            _buildCampaignCard(campaigns[index], showActions: showActions),
       ),
     );
   }
 
-  Widget _buildCampaignCard(VoucherCampaign campaign, {bool showActions = false}) {
+  Widget _buildCampaignCard(VoucherCampaign campaign,
+      {bool showActions = false}) {
     final formatter = NumberFormat('#,###', 'vi_VN');
-    
+
     return Card(
       margin: EdgeInsets.only(bottom: 2.h),
       elevation: 2,
@@ -283,9 +298,11 @@ class _AdminVoucherCampaignApprovalScreenState
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(campaign.approvalStatus).withValues(alpha: 0.2),
+                    color: _getStatusColor(campaign.approvalStatus)
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -299,7 +316,8 @@ class _AdminVoucherCampaignApprovalScreenState
                 ),
                 SizedBox(width: 2.w),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -310,22 +328,24 @@ class _AdminVoucherCampaignApprovalScreenState
                   ),
                 ),
                 const Spacer(),
-                Icon(Icons.calendar_today, size: 14, color: AppColors.textSecondary),
+                Icon(Icons.calendar_today,
+                    size: 14, color: AppColors.textSecondary),
                 SizedBox(width: 1.w),
                 Text(
                   DateFormat('dd/MM/yy').format(campaign.createdAt),
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style:
+                      TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
               ],
             ),
             SizedBox(height: 1.h),
-            
+
             // Title
             Text(
               campaign.title,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            
+
             // Club info
             if (campaign.clubName != null) ...[
               SizedBox(height: 1.h),
@@ -338,20 +358,22 @@ class _AdminVoucherCampaignApprovalScreenState
                     style: TextStyle(color: AppColors.textPrimary),
                   ),
                   if (campaign.clubOwnerName != null) ...[
-                    Text(' • ', style: TextStyle(color: AppColors.textTertiary)),
+                    Text(' • ',
+                        style: TextStyle(color: AppColors.textTertiary)),
                     Text(
                       campaign.clubOwnerName!,
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      style: TextStyle(
+                          color: AppColors.textSecondary, fontSize: 12),
                     ),
                   ],
                 ],
               ),
             ],
-            
+
             SizedBox(height: 1.5.h),
             Divider(),
             SizedBox(height: 1.h),
-            
+
             // Details
             Row(
               children: [
@@ -390,9 +412,10 @@ class _AdminVoucherCampaignApprovalScreenState
                 ),
               ],
             ),
-            
+
             // Description
-            if (campaign.description != null && campaign.description!.isNotEmpty) ...[
+            if (campaign.description != null &&
+                campaign.description!.isNotEmpty) ...[
               SizedBox(height: 1.5.h),
               Text(
                 campaign.description!,
@@ -401,9 +424,10 @@ class _AdminVoucherCampaignApprovalScreenState
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            
+
             // Admin notes
-            if (campaign.adminNotes != null && campaign.adminNotes!.isNotEmpty) ...[
+            if (campaign.adminNotes != null &&
+                campaign.adminNotes!.isNotEmpty) ...[
               SizedBox(height: 1.h),
               Container(
                 padding: EdgeInsets.all(2.w),
@@ -419,14 +443,15 @@ class _AdminVoucherCampaignApprovalScreenState
                     Expanded(
                       child: Text(
                         campaign.adminNotes!,
-                        style: TextStyle(fontSize: 12, color: AppColors.warning700),
+                        style: TextStyle(
+                            fontSize: 12, color: AppColors.warning700),
                       ),
                     ),
                   ],
                 ),
               ),
             ],
-            
+
             // Action buttons
             if (showActions) ...[
               SizedBox(height: 2.h),

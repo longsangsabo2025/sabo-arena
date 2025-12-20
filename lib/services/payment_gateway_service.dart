@@ -34,8 +34,7 @@ class PaymentGatewayService {
       final amountStr = amount.toInt().toString();
 
       // Create signature
-      final rawSignature =
-          'accessKey=$accessKey'
+      final rawSignature = 'accessKey=$accessKey'
           '&amount=$amountStr'
           '&extraData=${extraData ?? ""}'
           '&ipnUrl=$notifyUrl'
@@ -106,8 +105,7 @@ class PaymentGatewayService {
     try {
       final receivedSignature = callbackData['signature'] as String;
 
-      final rawSignature =
-          'accessKey=${callbackData['accessKey']}'
+      final rawSignature = 'accessKey=${callbackData['accessKey']}'
           '&amount=${callbackData['amount']}'
           '&extraData=${callbackData['extraData']}'
           '&message=${callbackData['message']}'
@@ -377,4 +375,3 @@ extension DateTimeFormat on DateTime {
         .replaceAll('ss', second);
   }
 }
-

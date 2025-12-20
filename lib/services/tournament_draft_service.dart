@@ -37,7 +37,6 @@ class TournamentDraftService {
 
       // Cập nhật danh sách drafts
       await _updateDraftsList(draftId, draft['name'] as String);
-
     } catch (e) {
       // Ignore error
     }
@@ -142,7 +141,6 @@ class TournamentDraftService {
 
       // Update drafts list
       await _removeDraftFromList(draftId);
-
     } catch (e) {
       // Ignore error
     }
@@ -165,7 +163,6 @@ class TournamentDraftService {
           newName,
           isAutoSave: draft['isAutoSave'] ?? false,
         );
-
       }
     } catch (e) {
       // Ignore error
@@ -202,9 +199,8 @@ class TournamentDraftService {
   Future<Map<String, dynamic>?> getLatestAutoSave() async {
     try {
       final drafts = await getAllDrafts();
-      final autoSaveDrafts = drafts
-          .where((d) => d['isAutoSave'] == true)
-          .toList();
+      final autoSaveDrafts =
+          drafts.where((d) => d['isAutoSave'] == true).toList();
 
       if (autoSaveDrafts.isNotEmpty) {
         return autoSaveDrafts.first; // Already sorted by updatedAt
@@ -219,9 +215,8 @@ class TournamentDraftService {
   Future<void> cleanUpAutoSaves() async {
     try {
       final drafts = await getAllDrafts();
-      final autoSaveDrafts = drafts
-          .where((d) => d['isAutoSave'] == true)
-          .toList();
+      final autoSaveDrafts =
+          drafts.where((d) => d['isAutoSave'] == true).toList();
 
       if (autoSaveDrafts.length > 3) {
         // Keep only latest 3, delete the rest
@@ -290,4 +285,3 @@ class TournamentDraftService {
     }
   }
 }
-

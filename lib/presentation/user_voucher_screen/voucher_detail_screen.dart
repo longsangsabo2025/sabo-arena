@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 import '../../models/user_achievement.dart';
 import '../../core/design_system/design_system.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/common/app_button.dart';
 
 class VoucherDetailScreen extends StatefulWidget {
   final UserVoucher voucher;
@@ -48,9 +49,8 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: widget.voucher.isUsable
-          ? _buildBottomActions()
-          : null,
+      bottomNavigationBar:
+          widget.voucher.isUsable ? _buildBottomActions() : null,
     );
   }
 
@@ -84,7 +84,10 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                   width: 60.sp,
                   height: 60.sp,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onPrimary
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12.sp),
                   ),
                   child: Icon(
@@ -102,7 +105,8 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.voucher.title, style: TextStyle(
+                        widget.voucher.title,
+                        style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.onPrimary,
@@ -110,9 +114,13 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                       ),
                       SizedBox(height: 4.sp),
                       Text(
-                        widget.voucher.clubName, style: TextStyle(
+                        widget.voucher.clubName,
+                        style: TextStyle(
                           fontSize: 14.sp,
-                          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimary
+                              .withValues(alpha: 0.8),
                         ),
                       ),
                     ],
@@ -130,7 +138,10 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.sp),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimary
+                    .withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8.sp),
               ),
               child: Text(
@@ -147,9 +158,13 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
 
             // Description
             Text(
-              widget.voucher.description, style: TextStyle(
+              widget.voucher.description,
+              style: TextStyle(
                 fontSize: 14.sp,
-                color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimary
+                    .withValues(alpha: 0.9),
                 height: 1.4,
               ),
             ),
@@ -161,10 +176,16 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                 width: double.infinity,
                 padding: EdgeInsets.all(12.sp),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.1),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8.sp),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onPrimary
+                        .withValues(alpha: 0.3),
                     style: BorderStyle.solid,
                   ),
                 ),
@@ -175,13 +196,19 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Mã voucher', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Mã voucher',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 12.sp,
-                            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimary
+                                .withValues(alpha: 0.7),
                           ),
                         ),
                         Text(
-                          widget.voucher.voucherCode, style: TextStyle(
+                          widget.voucher.voucherCode,
+                          style: TextStyle(
                             fontSize: 18.sp,
                             fontFamily: 'monospace',
                             fontWeight: FontWeight.bold,
@@ -192,7 +219,9 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                     ),
                     IconButton(
                       onPressed: _copyVoucherCode,
-                      icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.onPrimary, size: 20.sp),
+                      icon: Icon(Icons.copy,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 20.sp),
                     ),
                   ],
                 ),
@@ -223,7 +252,9 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thông tin chi tiết', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Thông tin chi tiết',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -270,7 +301,9 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                   Icon(Icons.warning, color: AppColors.warning, size: 16.sp),
                   SizedBox(width: 6.sp),
                   Text(
-                    'Voucher sắp hết hạn trong ${widget.voucher.daysUntilExpiry} ngày', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Voucher sắp hết hạn trong ${widget.voucher.daysUntilExpiry} ngày',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 12.sp,
                       color: AppColors.warning,
                       fontWeight: FontWeight.w600,
@@ -293,7 +326,8 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
           SizedBox(
             width: 100.sp,
             child: Text(
-              label, style: TextStyle(
+              label,
+              style: TextStyle(
                 fontSize: 12.sp,
                 color: AppColors.textSecondary,
               ),
@@ -301,7 +335,8 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
           ),
           Expanded(
             child: Text(
-              value, style: TextStyle(
+              value,
+              style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -332,15 +367,15 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Điều khoản sử dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Điều khoản sử dụng',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-
           SizedBox(height: 12.sp),
-
           ..._getTermsAndConditions().map(
             (term) => Padding(
               padding: EdgeInsets.only(bottom: 6.sp),
@@ -348,14 +383,17 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '• ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    '• ',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 12.sp,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   Expanded(
                     child: Text(
-                      term, style: TextStyle(
+                      term,
+                      style: TextStyle(
                         fontSize: 12.sp,
                         color: AppColors.textSecondary,
                         height: 1.4,
@@ -388,7 +426,9 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
               Icon(Icons.info_outline, color: AppColors.success, size: 20.sp),
               SizedBox(width: 8.sp),
               Text(
-                'Hướng dẫn sử dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Hướng dẫn sử dụng',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.success,
@@ -396,9 +436,7 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
               ),
             ],
           ),
-
           SizedBox(height: 12.sp),
-
           ..._getUsageInstructions().map(
             (instruction) => Padding(
               padding: EdgeInsets.only(bottom: 6.sp),
@@ -415,7 +453,8 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
                   ),
                   Expanded(
                     child: Text(
-                      instruction, style: TextStyle(
+                      instruction,
+                      style: TextStyle(
                         fontSize: 12.sp,
                         color: AppColors.textPrimary,
                         height: 1.4,
@@ -466,7 +505,8 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
         borderRadius: BorderRadius.circular(6.sp),
       ),
       child: Text(
-        text, style: TextStyle(
+        text,
+        style: TextStyle(
           fontSize: 12.sp,
           fontWeight: FontWeight.w600,
           color: color,
@@ -491,29 +531,29 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
       child: Row(
         children: [
           Expanded(
-            child: OutlinedButton.icon(
+            child: AppButton(
+              label: 'Sao chép mã',
+              type: AppButtonType.outline,
+              size: AppButtonSize.medium,
+              icon: Icons.copy,
+              iconTrailing: false,
+              fullWidth: true,
               onPressed: _copyVoucherCode,
-              icon: Icon(Icons.copy, size: 16.sp),
-              label: const Text('Sao chép mã'),
-              style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 12.sp),
-              ),
             ),
           ),
-
           SizedBox(width: 12.sp),
-
           Expanded(
             flex: 2,
-            child: ElevatedButton.icon(
+            child: AppButton(
+              label: 'Đến CLB sử dụng',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              icon: Icons.store,
+              iconTrailing: false,
+              customColor: _getHeaderColor(),
+              customTextColor: AppColors.textOnPrimary,
+              fullWidth: true,
               onPressed: _navigateToClub,
-              icon: Icon(Icons.store, size: 16.sp),
-              label: const Text('Đến CLB sử dụng'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _getHeaderColor(),
-                foregroundColor: AppColors.textOnPrimary,
-                padding: EdgeInsets.symmetric(vertical: 12.sp),
-              ),
             ),
           ),
         ],
@@ -525,7 +565,9 @@ class _VoucherDetailScreenState extends State<VoucherDetailScreen> {
   Color _getHeaderColor() {
     switch (widget.voucher.status) {
       case VoucherStatus.active:
-        return widget.voucher.isExpired ? AppColors.textTertiary : AppColors.primary;
+        return widget.voucher.isExpired
+            ? AppColors.textTertiary
+            : AppColors.primary;
       case VoucherStatus.used:
         return AppColors.info;
       case VoucherStatus.expired:

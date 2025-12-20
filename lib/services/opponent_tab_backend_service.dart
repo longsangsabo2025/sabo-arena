@@ -21,7 +21,6 @@ class OpponentTabBackendService {
         },
       );
 
-
       if (response is List) {
         return List<Map<String, dynamic>>.from(response);
       }
@@ -71,7 +70,6 @@ class OpponentTabBackendService {
           'status_filter': statusFilter,
         },
       );
-
 
       if (response is List) {
         return List<Map<String, dynamic>>.from(response);
@@ -125,7 +123,6 @@ class OpponentTabBackendService {
   /// Check if backend tables have required columns
   Future<void> checkBackendSchema() async {
     try {
-
       // Check matches table columns
       await _supabase
           .from('matches')
@@ -139,10 +136,7 @@ class OpponentTabBackendService {
           .limit(1);
 
       // Check challenges table exists
-      await _supabase
-          .from('challenges')
-          .select('id')
-          .limit(1);
+      await _supabase.from('challenges').select('id').limit(1);
     } catch (e) {
       // Ignore errors in schema check
     }
@@ -174,7 +168,6 @@ class OpponentTabBackendService {
 
   /// Run comprehensive backend tests
   Future<void> runComprehensiveTest() async {
-
     // 1. Check schema
     await checkBackendSchema();
 
@@ -213,10 +206,7 @@ class OpponentTabBackendService {
         stakesType: 'none',
       );
 
-      if (challengeId != null) {
-      }
+      if (challengeId != null) {}
     }
-
   }
 }
-

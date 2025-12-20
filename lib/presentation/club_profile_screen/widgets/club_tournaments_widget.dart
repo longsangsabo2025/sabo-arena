@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
+import '../../../widgets/common/app_button.dart';
 
 class ClubTournamentsWidget extends StatelessWidget {
   final List<Map<String, dynamic>> tournaments;
@@ -101,9 +102,12 @@ class ClubTournamentsWidget extends StatelessWidget {
           ),
           if (isOwner) ...[
             SizedBox(height: 3.h),
-            ElevatedButton(
+            AppButton(
+              label: 'Tạo giải đấu',
+              type: AppButtonType.primary,
+              size: AppButtonSize.large,
+              fullWidth: true,
               onPressed: onCreateTournament,
-              child: Text('Tạo giải đấu'),
             ),
           ],
         ],
@@ -152,11 +156,11 @@ class ClubTournamentsWidget extends StatelessWidget {
                         ),
                         child: Text(
                           _getStatusText(tournament["status"]),
-                          style: AppTheme.lightTheme.textTheme.bodySmall
-                              ?.copyWith(
-                                color: _getStatusColor(tournament["status"]),
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+                            color: _getStatusColor(tournament["status"]),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Spacer(),
@@ -216,11 +220,11 @@ class ClubTournamentsWidget extends StatelessWidget {
                         SizedBox(width: 2.w),
                         Text(
                           'Giải thưởng: ${_formatPrize(tournament["prizePool"])}',
-                          style: AppTheme.lightTheme.textTheme.bodySmall
-                              ?.copyWith(
-                                color: AppTheme.lightTheme.colorScheme.primary,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style:
+                              AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+                            color: AppTheme.lightTheme.colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -229,16 +233,14 @@ class ClubTournamentsWidget extends StatelessWidget {
                   // View Details Button
                   SizedBox(
                     width: double.infinity,
-                    child: OutlinedButton.icon(
+                    child: AppButton(
+                      label: 'Xem chi tiết',
+                      type: AppButtonType.outline,
+                      size: AppButtonSize.medium,
+                      icon: Icons.info_outline,
+                      iconTrailing: false,
+                      fullWidth: true,
                       onPressed: () => onTournamentTap(tournament),
-                      icon: Icon(Icons.info_outline, size: 4.w),
-                      label: Text('Xem chi tiết'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.lightTheme.colorScheme.primary,
-                        side: BorderSide(
-                          color: AppTheme.lightTheme.colorScheme.primary,
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -284,9 +286,8 @@ class ClubTournamentsWidget extends StatelessWidget {
     if (date == null) return 'Chưa xác định';
 
     try {
-      final DateTime dateTime = date is DateTime
-          ? date
-          : DateTime.parse(date.toString());
+      final DateTime dateTime =
+          date is DateTime ? date : DateTime.parse(date.toString());
       return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
     } catch (e) {
       return 'Chưa xác định';

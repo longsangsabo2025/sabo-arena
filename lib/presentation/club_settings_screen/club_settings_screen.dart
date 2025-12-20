@@ -42,7 +42,9 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: Text(
-                'CÀI ĐẶT CHUNG', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'CÀI ĐẶT CHUNG',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 13.sp,
                   color: AppTheme.textSecondaryLight,
                   fontWeight: FontWeight.w600,
@@ -76,7 +78,9 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: Text(
-                'TÀI CHÍNH', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'TÀI CHÍNH',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 13.sp,
                   color: AppTheme.textSecondaryLight,
                   fontWeight: FontWeight.w600,
@@ -110,7 +114,9 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: Text(
-                'GIAO DIỆN', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'GIAO DIỆN',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 13.sp,
                   color: AppTheme.textSecondaryLight,
                   fontWeight: FontWeight.w600,
@@ -143,7 +149,9 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: Text(
-                'THÀNH VIÊN', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'THÀNH VIÊN',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 13.sp,
                   color: AppTheme.textSecondaryLight,
                   fontWeight: FontWeight.w600,
@@ -177,7 +185,9 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: Text(
-                'HỆ THỐNG', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'HỆ THỐNG',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 13.sp,
                   color: AppTheme.textSecondaryLight,
                   fontWeight: FontWeight.w600,
@@ -282,7 +292,8 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          title, style: TextStyle(
+                          title,
+                          style: TextStyle(
                             fontSize: 17, // iOS standard 17pt
                             color: AppTheme.textPrimaryLight,
                             fontWeight: FontWeight.w400,
@@ -291,7 +302,8 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          subtitle, style: TextStyle(
+                          subtitle,
+                          style: TextStyle(
                             fontSize: 14, // iOS standard 14pt for subtitle
                             color: AppTheme.textSecondaryLight,
                             fontWeight: FontWeight.w400,
@@ -529,7 +541,9 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Quay về giao diện Player', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Quay về giao diện Player',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
@@ -537,7 +551,9 @@ class _ClubSettingsScreenState extends State<ClubSettingsScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Chuyển sang giao diện người chơi', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Chuyển sang giao diện người chơi',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 12.sp,
                         ),

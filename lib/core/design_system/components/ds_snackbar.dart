@@ -92,12 +92,12 @@ class DSSnackbar {
               onPressed: onActionPressed ?? () {},
             )
           : showCloseButton
-          ? SnackBarAction(
-              label: '',
-              textColor: AppColors.surface,
-              onPressed: () => messenger.hideCurrentSnackBar(),
-            )
-          : null,
+              ? SnackBarAction(
+                  label: '',
+                  textColor: AppColors.surface,
+                  onPressed: () => messenger.hideCurrentSnackBar(),
+                )
+              : null,
     );
 
     return messenger.showSnackBar(snackBar);

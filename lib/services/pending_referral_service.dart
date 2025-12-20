@@ -18,7 +18,9 @@ class PendingReferralService {
   Future<Map<String, dynamic>> claimPendingReferral(String newUserId) async {
     try {
       if (kDebugMode) {
-        ProductionLogger.info('🎯 Attempting to claim pending referral for user: $newUserId', tag: 'pending_referral_service');
+        ProductionLogger.info(
+            '🎯 Attempting to claim pending referral for user: $newUserId',
+            tag: 'pending_referral_service');
       }
 
       // Get device info for matching
@@ -27,8 +29,10 @@ class PendingReferralService {
       final ipAddress = ''; // Will be captured by backend from request
 
       if (kDebugMode) {
-        ProductionLogger.info('📱 Device fingerprint: $deviceFingerprint', tag: 'pending_referral_service');
-        ProductionLogger.info('🌐 User agent: $userAgent', tag: 'pending_referral_service');
+        ProductionLogger.info('📱 Device fingerprint: $deviceFingerprint',
+            tag: 'pending_referral_service');
+        ProductionLogger.info('🌐 User agent: $userAgent',
+            tag: 'pending_referral_service');
       }
 
       // Call Supabase RPC to claim pending referral
@@ -40,7 +44,8 @@ class PendingReferralService {
       });
 
       if (kDebugMode) {
-        ProductionLogger.info('📊 Claim response: $response', tag: 'pending_referral_service');
+        ProductionLogger.info('📊 Claim response: $response',
+            tag: 'pending_referral_service');
       }
 
       // Response is JSONB, parse it
@@ -49,11 +54,20 @@ class PendingReferralService {
 
         if (success) {
           if (kDebugMode) {
-            ProductionLogger.info('✅ Pending referral claimed successfully!', tag: 'pending_referral_service');
-            ProductionLogger.info('   Referral code: ${response['referral_code']}', tag: 'pending_referral_service');
-            ProductionLogger.info('   Referee bonus: ${response['referee_bonus']} SPA', tag: 'pending_referral_service');
-            ProductionLogger.info('   Referrer bonus: ${response['referrer_bonus']} SPA', tag: 'pending_referral_service');
-            ProductionLogger.info('   Match method: ${response['match_method']}', tag: 'pending_referral_service');
+            ProductionLogger.info('✅ Pending referral claimed successfully!',
+                tag: 'pending_referral_service');
+            ProductionLogger.info(
+                '   Referral code: ${response['referral_code']}',
+                tag: 'pending_referral_service');
+            ProductionLogger.info(
+                '   Referee bonus: ${response['referee_bonus']} SPA',
+                tag: 'pending_referral_service');
+            ProductionLogger.info(
+                '   Referrer bonus: ${response['referrer_bonus']} SPA',
+                tag: 'pending_referral_service');
+            ProductionLogger.info(
+                '   Match method: ${response['match_method']}',
+                tag: 'pending_referral_service');
           }
 
           // Clear any stored referral code since we claimed server-side one
@@ -70,7 +84,9 @@ class PendingReferralService {
           };
         } else {
           if (kDebugMode) {
-            ProductionLogger.info('⚠️  No pending referral found: ${response['message']}', tag: 'pending_referral_service');
+            ProductionLogger.info(
+                '⚠️  No pending referral found: ${response['message']}',
+                tag: 'pending_referral_service');
           }
 
           return {
@@ -88,7 +104,8 @@ class PendingReferralService {
       };
     } catch (error) {
       if (kDebugMode) {
-        ProductionLogger.info('❌ Error claiming pending referral: $error', tag: 'pending_referral_service');
+        ProductionLogger.info('❌ Error claiming pending referral: $error',
+            tag: 'pending_referral_service');
       }
 
       return {
@@ -119,14 +136,17 @@ class PendingReferralService {
         await prefs.setString('device_fingerprint', fingerprint);
 
         if (kDebugMode) {
-          ProductionLogger.info('🆕 Generated new device fingerprint: $fingerprint', tag: 'pending_referral_service');
+          ProductionLogger.info(
+              '🆕 Generated new device fingerprint: $fingerprint',
+              tag: 'pending_referral_service');
         }
       }
 
       return fingerprint;
     } catch (error) {
       if (kDebugMode) {
-        ProductionLogger.info('❌ Error getting device fingerprint: $error', tag: 'pending_referral_service');
+        ProductionLogger.info('❌ Error getting device fingerprint: $error',
+            tag: 'pending_referral_service');
       }
       return 'unknown_device';
     }
@@ -153,11 +173,13 @@ class PendingReferralService {
       await prefs.remove('referral_code_expiry');
 
       if (kDebugMode) {
-        ProductionLogger.info('🗑️  Cleared stored referral code', tag: 'pending_referral_service');
+        ProductionLogger.info('🗑️  Cleared stored referral code',
+            tag: 'pending_referral_service');
       }
     } catch (error) {
       if (kDebugMode) {
-        ProductionLogger.info('❌ Error clearing stored referral code: $error', tag: 'pending_referral_service');
+        ProductionLogger.info('❌ Error clearing stored referral code: $error',
+            tag: 'pending_referral_service');
       }
     }
   }

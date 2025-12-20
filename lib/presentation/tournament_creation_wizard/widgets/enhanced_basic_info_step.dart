@@ -247,8 +247,7 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                           value: _nameController.text,
                           hintText: 'VD: Giải 8-Ball Mùa Thu 2025',
                           icon: Icons.emoji_events_outlined,
-                          isValid:
-                              !_errors.containsKey('Tên giải đấu') &&
+                          isValid: !_errors.containsKey('Tên giải đấu') &&
                               _nameController.text.length >= 3,
                           onChanged: (value) {
                             _nameController.text = value;
@@ -266,8 +265,7 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                               'Mô tả chi tiết về quy định, giải thưởng...',
                           icon: Icons.description_outlined,
                           maxLines: 4,
-                          isValid:
-                              _descriptionController.text.isEmpty ||
+                          isValid: _descriptionController.text.isEmpty ||
                               _descriptionController.text.length >= 10,
                           onChanged: (value) {
                             _descriptionController.text = value;
@@ -484,7 +482,9 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                         ? LinearGradient(
                             colors: [
                               Theme.of(context).primaryColor,
-                              Theme.of(context).primaryColor.withValues(alpha: 0.8),
+                              Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.8),
                             ],
                           )
                         : null,
@@ -542,14 +542,49 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
   /// Format chip selector
   Widget _buildFormatChipSelector() {
     final formats = [
-      {'id': 'single_elimination', 'name': 'Loại trực tiếp', 'icon': '⚡', 'enabled': true},
-      {'id': 'double_elimination', 'name': 'Loại kép', 'icon': '🔄', 'enabled': false, 'comingSoon': true},
+      {
+        'id': 'single_elimination',
+        'name': 'Loại trực tiếp',
+        'icon': '⚡',
+        'enabled': true
+      },
+      {
+        'id': 'double_elimination',
+        'name': 'Loại kép',
+        'icon': '🔄',
+        'enabled': false,
+        'comingSoon': true
+      },
       {'id': 'sabo_de16', 'name': 'SABO DE16', 'icon': '🏆', 'enabled': true},
-      {'id': 'sabo_de24', 'name': 'SABO DE24', 'icon': '🎯', 'badge': '✨ NEW', 'enabled': true},
+      {
+        'id': 'sabo_de24',
+        'name': 'SABO DE24',
+        'icon': '🎯',
+        'badge': '✨ NEW',
+        'enabled': true
+      },
       {'id': 'sabo_de32', 'name': 'SABO DE32', 'icon': '👑', 'enabled': true},
-      {'id': 'sabo_de64', 'name': 'SABO DE64', 'icon': '🚀', 'badge': '🏆 PRO', 'enabled': true},
-      {'id': 'round_robin', 'name': 'Vòng tròn', 'icon': '🔁', 'enabled': false, 'comingSoon': true},
-      {'id': 'swiss_system', 'name': 'Swiss', 'icon': '♟️', 'enabled': false, 'comingSoon': true},
+      {
+        'id': 'sabo_de64',
+        'name': 'SABO DE64',
+        'icon': '🚀',
+        'badge': '🏆 PRO',
+        'enabled': true
+      },
+      {
+        'id': 'round_robin',
+        'name': 'Vòng tròn',
+        'icon': '🔁',
+        'enabled': false,
+        'comingSoon': true
+      },
+      {
+        'id': 'swiss_system',
+        'name': 'Swiss',
+        'icon': '♟️',
+        'enabled': false,
+        'comingSoon': true
+      },
     ];
 
     final currentValue = widget.data['format'] ?? 'single_elimination';
@@ -585,14 +620,16 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
               final isSelected = currentValue == format['id'];
               final isEnabled = format['enabled'] as bool? ?? true;
               final comingSoon = format['comingSoon'] as bool? ?? false;
-              
+
               return Opacity(
                 opacity: isEnabled ? 1.0 : 0.5,
                 child: GestureDetector(
-                  onTap: isEnabled ? () {
-                    widget.onDataChanged({'format': format['id']});
-                    _validateAndUpdate();
-                  } : null,
+                  onTap: isEnabled
+                      ? () {
+                          widget.onDataChanged({'format': format['id']});
+                          _validateAndUpdate();
+                        }
+                      : null,
                   child: Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: 16.w,
@@ -603,13 +640,15 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                           ? LinearGradient(
                               colors: [
                                 Theme.of(context).primaryColor,
-                                Theme.of(context).primaryColor.withValues(alpha: 0.8),
+                                Theme.of(context)
+                                    .primaryColor
+                                    .withValues(alpha: 0.8),
                               ],
                             )
                           : null,
-                      color: isSelected && isEnabled 
-                          ? null 
-                          : isEnabled 
+                      color: isSelected && isEnabled
+                          ? null
+                          : isEnabled
                               ? Colors.grey.shade100
                               : Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(12),
@@ -644,24 +683,27 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: isSelected && isEnabled 
-                                ? Colors.white 
+                            color: isSelected && isEnabled
+                                ? Colors.white
                                 : isEnabled
                                     ? Colors.black87
                                     : Colors.grey.shade500,
-                            decoration: !isEnabled ? TextDecoration.lineThrough : null,
+                            decoration:
+                                !isEnabled ? TextDecoration.lineThrough : null,
                           ),
                         ),
                         if (isSelected && isEnabled) ...[
                           SizedBox(width: 8.w),
-                          Icon(Icons.check_circle, color: Colors.white, size: 16),
+                          Icon(Icons.check_circle,
+                              color: Colors.white, size: 16),
                         ],
                         if (format['badge'] != null && isEnabled) ...[
                           SizedBox(width: 8.w),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6.w, vertical: 2.h),
                             decoration: BoxDecoration(
-                              color: isSelected 
+                              color: isSelected
                                   ? Colors.white.withValues(alpha: 0.3)
                                   : Colors.green.shade100,
                               borderRadius: BorderRadius.circular(4),
@@ -671,7 +713,7 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                                color: isSelected 
+                                color: isSelected
                                     ? Colors.white
                                     : Colors.green.shade700,
                               ),
@@ -681,7 +723,8 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                         if (comingSoon) ...[
                           SizedBox(width: 8.w),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6.w, vertical: 2.h),
                             decoration: BoxDecoration(
                               color: Colors.orange.shade100,
                               borderRadius: BorderRadius.circular(4),
@@ -766,10 +809,10 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                       format == 'sabo_de16'
                           ? '⚠️ SABO DE16 yêu cầu ĐÚNG 16 người'
                           : format == 'sabo_de32'
-                          ? '⚠️ SABO DE32 yêu cầu ĐÚNG 32 người'
-                          : format == 'sabo_de64'
-                          ? '⚠️ SABO DE64 yêu cầu ĐÚNG 64 người (4 bảng × 16)'
-                          : 'Double Elimination yêu cầu 16 người',
+                              ? '⚠️ SABO DE32 yêu cầu ĐÚNG 32 người'
+                              : format == 'sabo_de64'
+                                  ? '⚠️ SABO DE64 yêu cầu ĐÚNG 64 người (4 bảng × 16)'
+                                  : 'Double Elimination yêu cầu 16 người',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.orange.shade700,
@@ -799,7 +842,9 @@ class _EnhancedBasicInfoStepState extends State<EnhancedBasicInfoStep> {
                           ? LinearGradient(
                               colors: [
                                 Theme.of(context).primaryColor,
-                                Theme.of(context).primaryColor.withValues(alpha: 0.8),
+                                Theme.of(context)
+                                    .primaryColor
+                                    .withValues(alpha: 0.8),
                               ],
                             )
                           : null,

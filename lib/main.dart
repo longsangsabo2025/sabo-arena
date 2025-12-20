@@ -29,15 +29,17 @@ import 'package:sabo_arena/utils/production_logger.dart';
 
 void main() {
   // Initialize Sentry for error tracking (if DSN provided)
-  final sentryDsn = const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-  
+  final sentryDsn =
+      const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+
   if (sentryDsn.isNotEmpty) {
     // Initialize Sentry and run app
     SentryFlutter.init(
       (options) {
         options.dsn = sentryDsn;
         options.tracesSampleRate = 1.0;
-        options.environment = const String.fromEnvironment('ENV', defaultValue: 'development');
+        options.environment =
+            const String.fromEnvironment('ENV', defaultValue: 'development');
         options.enableAutoSessionTracking = true;
         options.attachStacktrace = true;
         options.enableAutoPerformanceTracing = true;
@@ -57,29 +59,30 @@ void main() {
 Future<void> _runApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-    // 🎯 CRITICAL INITIALIZATION ONLY - Keep startup fast
-    ProductionLogger.info('🚀 Starting SABO Arena...', tag: 'AppInit');
+  // 🎯 CRITICAL INITIALIZATION ONLY - Keep startup fast
+  ProductionLogger.info('🚀 Starting SABO Arena...', tag: 'AppInit');
 
-    // 1️⃣ CRITICAL: Initialize Supabase first (REQUIRED for app to work)
+  // 1️⃣ CRITICAL: Initialize Supabase first (REQUIRED for app to work)
+  try {
+    await SupabaseService.initialize();
+    ProductionLogger.info('✅ Supabase ready!', tag: 'AppInit');
+
+    // Initialize Database Replica Manager after Supabase is ready
     try {
-      await SupabaseService.initialize();
-      ProductionLogger.info('✅ Supabase ready!', tag: 'AppInit');
-      
-      // Initialize Database Replica Manager after Supabase is ready
-      try {
-        await DatabaseReplicaManager.instance.initialize();
-        ProductionLogger.info('✅ Database Replica Manager ready!', tag: 'AppInit');
-      } catch (e) {
-        ProductionLogger.warning(
-          'Database Replica Manager initialization failed',
-          error: e,
-          tag: 'AppInit',
-        );
-        // Non-critical, app can continue
-      }
-      
-      // 🧪 AUTO BACKEND TESTING: DISABLED BY ELON (Too slow for startup)
-      /*
+      await DatabaseReplicaManager.instance.initialize();
+      ProductionLogger.info('✅ Database Replica Manager ready!',
+          tag: 'AppInit');
+    } catch (e) {
+      ProductionLogger.warning(
+        'Database Replica Manager initialization failed',
+        error: e,
+        tag: 'AppInit',
+      );
+      // Non-critical, app can continue
+    }
+
+    // 🧪 AUTO BACKEND TESTING: DISABLED BY ELON (Too slow for startup)
+    /*
       if (kDebugMode) {
         try {
           ProductionLogger.info('🧪 Running backend tests...', tag: 'BackendTest');
@@ -109,47 +112,47 @@ Future<void> _runApp() async {
         }
       }
       */
-    } catch (e) {
-      ProductionLogger.error(
-        '💥 Critical: Supabase initialization failed',
-        error: e,
-        tag: 'AppInit',
-      );
-      // App cannot work without Supabase
-    }
+  } catch (e) {
+    ProductionLogger.error(
+      '💥 Critical: Supabase initialization failed',
+      error: e,
+      tag: 'AppInit',
+    );
+    // App cannot work without Supabase
+  }
 
-    // 📊 Initialize Analytics
-    try {
-      AnalyticsService();
-      ProductionLogger.info('✅ Analytics ready!', tag: 'AppInit');
-    } catch (e) {
-      ProductionLogger.warning(
-        'Analytics initialization failed',
-        error: e,
-        tag: 'AppInit',
-      );
-    }
+  // 📊 Initialize Analytics
+  try {
+    AnalyticsService();
+    ProductionLogger.info('✅ Analytics ready!', tag: 'AppInit');
+  } catch (e) {
+    ProductionLogger.warning(
+      'Analytics initialization failed',
+      error: e,
+      tag: 'AppInit',
+    );
+  }
 
-    // 2️⃣ NON-CRITICAL: Initialize in background to keep startup fast
-    _initializeNonCriticalServices();
+  // 2️⃣ NON-CRITICAL: Initialize in background to keep startup fast
+  _initializeNonCriticalServices();
 
-    ProductionLogger.info('✅ App startup complete!', tag: 'AppInit');
+  ProductionLogger.info('✅ App startup complete!', tag: 'AppInit');
 
-    // 🚨 CRITICAL: Custom error handling - DO NOT REMOVE
-    // ErrorWidget.builder = (FlutterErrorDetails details) {
-    //   return Center(child: Text('Error: ${details.exception}'));
-    // };
+  // 🚨 CRITICAL: Custom error handling - DO NOT REMOVE
+  // ErrorWidget.builder = (FlutterErrorDetails details) {
+  //   return Center(child: Text('Error: ${details.exception}'));
+  // };
 
-    // ✅ iOS HIG: Support all orientations initially
-    // Will auto-adjust to device-specific orientations after app starts
-    // iPad: landscape + portrait | iPhone: portrait only
+  // ✅ iOS HIG: Support all orientations initially
+  // Will auto-adjust to device-specific orientations after app starts
+  // iPad: landscape + portrait | iPhone: portrait only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  
+
   runApp(const MyApp());
 }
 
@@ -202,7 +205,8 @@ class _MyAppState extends State<MyApp> {
             locale: Locale('vi', 'VN'), // Set Vietnamese as default
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.system, // ✅ iOS: Respect system dark mode preference
+            themeMode:
+                ThemeMode.system, // ✅ iOS: Respect system dark mode preference
             // ✅ iOS ACCESSIBILITY: Support Dynamic Type for vision accessibility
             // Removed forced text scaling to allow users to adjust text size in iOS Settings
             debugShowCheckedModeBanner: false,
@@ -211,14 +215,16 @@ class _MyAppState extends State<MyApp> {
             // 🔄 AUTO UPDATE: Check for app updates from App Store/Play Store
             home: UpgradeAlert(
               upgrader: Upgrader(
-                durationUntilAlertAgain: Duration(days: 1), // Show alert once per day
+                durationUntilAlertAgain:
+                    Duration(days: 1), // Show alert once per day
                 messages: UpgraderMessagesVi(),
               ),
               child: Builder(
                 builder: (context) => Navigator(
                   onGenerateRoute: (settings) {
                     final String? routeName = settings.name;
-                    final WidgetBuilder? builder = AppRoutes.routes[routeName ?? AppRoutes.initial];
+                    final WidgetBuilder? builder =
+                        AppRoutes.routes[routeName ?? AppRoutes.initial];
                     if (builder != null) {
                       return MaterialPageRoute(
                         builder: builder,
@@ -248,7 +254,8 @@ void _initializeNonCriticalServices() async {
     // 1. Cache Service
     try {
       await TournamentCacheService.initialize();
-      ProductionLogger.info('✅ Background: Tournament Cache initialized', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: Tournament Cache initialized',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: Cache init failed (non-critical)',
@@ -260,7 +267,8 @@ void _initializeNonCriticalServices() async {
     // 2. App Cache Service
     try {
       await AppCacheService.instance.initialize();
-      ProductionLogger.info('✅ Background: App Cache initialized', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: App Cache initialized',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: App Cache init failed (non-critical)',
@@ -273,7 +281,8 @@ void _initializeNonCriticalServices() async {
     if (!kIsWeb) {
       try {
         await Firebase.initializeApp();
-        ProductionLogger.info('✅ Background: Firebase initialized', tag: 'AppInit');
+        ProductionLogger.info('✅ Background: Firebase initialized',
+            tag: 'AppInit');
       } catch (e) {
         ProductionLogger.warning(
           'Background: Firebase init failed (non-critical)',
@@ -287,7 +296,8 @@ void _initializeNonCriticalServices() async {
     try {
       // Initialize CDN (configure via environment variable if needed)
       CDNService.instance.initialize();
-      ProductionLogger.info('✅ Background: CDN Service initialized', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: CDN Service initialized',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: CDN init failed (non-critical)',
@@ -299,7 +309,8 @@ void _initializeNonCriticalServices() async {
     // 5. Rate Limit Service
     try {
       RateLimitService.instance.initialize();
-      ProductionLogger.info('✅ Background: Rate Limit Service initialized', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: Rate Limit Service initialized',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: Rate Limit init failed (non-critical)',
@@ -311,7 +322,8 @@ void _initializeNonCriticalServices() async {
     // 6. Performance Monitor
     try {
       // Performance monitor is ready to use
-      ProductionLogger.info('✅ Background: Performance Monitor ready', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: Performance Monitor ready',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: Performance Monitor init failed (non-critical)',
@@ -323,7 +335,8 @@ void _initializeNonCriticalServices() async {
     // 7. Database Monitoring
     try {
       // Database monitoring is ready to use
-      ProductionLogger.info('✅ Background: Database Monitoring ready', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: Database Monitoring ready',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: Database Monitoring init failed (non-critical)',
@@ -335,7 +348,8 @@ void _initializeNonCriticalServices() async {
     // 8. Cost Monitoring
     try {
       CostMonitoringService.instance.initialize();
-      ProductionLogger.info('✅ Background: Cost Monitoring initialized', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: Cost Monitoring initialized',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: Cost Monitoring init failed (non-critical)',
@@ -347,7 +361,8 @@ void _initializeNonCriticalServices() async {
     // 9. Schedule data archival (run weekly)
     try {
       // Schedule archival to run weekly (can be configured)
-      ProductionLogger.info('✅ Background: Data Archival service ready', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: Data Archival service ready',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: Data Archival init failed (non-critical)',
@@ -359,7 +374,8 @@ void _initializeNonCriticalServices() async {
     // 4. User Journey Analytics
     try {
       await UserJourneyAnalytics.instance.initialize();
-      ProductionLogger.info('✅ Background: Analytics initialized', tag: 'AppInit');
+      ProductionLogger.info('✅ Background: Analytics initialized',
+          tag: 'AppInit');
     } catch (e) {
       ProductionLogger.warning(
         'Background: Analytics init failed (non-critical)',
@@ -368,6 +384,7 @@ void _initializeNonCriticalServices() async {
       );
     }
 
-    ProductionLogger.info('✅ All background services initialized', tag: 'AppInit');
+    ProductionLogger.info('✅ All background services initialized',
+        tag: 'AppInit');
   });
 }

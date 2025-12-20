@@ -90,8 +90,8 @@ class NotificationPreferencesService {
 
       final updatedSettings =
           Map<NotificationType, NotificationTypeSetting>.from(
-            preferences.typeSettings,
-          );
+        preferences.typeSettings,
+      );
 
       final currentSetting =
           updatedSettings[type] ?? NotificationTypeSetting.defaultSetting(type);
@@ -397,7 +397,8 @@ class NotificationPreferencesService {
 
       // Handle different preference types
       if (key == 'all_notifications_enabled') {
-        return await updatePreferences(prefs.copyWith(notificationsEnabled: value as bool));
+        return await updatePreferences(
+            prefs.copyWith(notificationsEnabled: value as bool));
       } else if (key == 'quiet_hours_enabled') {
         return await updateQuietHours(enabled: value as bool);
       } else if (key == 'quiet_hours_start' || key == 'quiet_hours_end') {
@@ -508,11 +509,11 @@ class NotificationPreferencesService {
       final currentUser = _authService.currentUser;
       if (currentUser == null) return false;
 
-      final prefs = NotificationPreferences.defaultPreferences(currentUser.id)
-          .copyWith(
-            notificationsEnabled: true,
-            // Map enabled types to NotificationPreferences
-          );
+      final prefs =
+          NotificationPreferences.defaultPreferences(currentUser.id).copyWith(
+        notificationsEnabled: true,
+        // Map enabled types to NotificationPreferences
+      );
 
       return await updatePreferences(prefs);
     } catch (e) {
@@ -528,4 +529,3 @@ extension TimeOfDayExtension on TimeOfDay {
     return TimeOfDay(hour: now.hour, minute: now.minute);
   }
 }
-

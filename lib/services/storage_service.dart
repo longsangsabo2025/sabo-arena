@@ -14,11 +14,15 @@ class StorageService {
   /// Upload avatar image to Supabase Storage and update user profile
   /// 🚀 MUSK: Atomic operation - Upload, Update DB, Delete Old, Invalidate Cache
   /// Supports both File (Mobile) and Uint8List (Web/Bytes)
-  static Future<String?> uploadAvatar(dynamic imageSource, {String? oldUrl, String? fileName, bool skipDatabaseUpdate = false}) async {
+  static Future<String?> uploadAvatar(dynamic imageSource,
+      {String? oldUrl,
+      String? fileName,
+      bool skipDatabaseUpdate = false}) async {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) {
-        debugPrint('🚀 MUSK_DEBUG: uploadAvatar failed - User not authenticated');
+        debugPrint(
+            '🚀 MUSK_DEBUG: uploadAvatar failed - User not authenticated');
         return null;
       }
 
@@ -38,20 +42,25 @@ class StorageService {
       if (imageSource is File) {
         bytes = await imageSource.readAsBytes();
         fileExtension = path.extension(imageSource.path).toLowerCase();
-        debugPrint('🚀 MUSK_DEBUG: Source is File. Size: ${bytes.length} bytes, Ext: $fileExtension');
+        debugPrint(
+            '🚀 MUSK_DEBUG: Source is File. Size: ${bytes.length} bytes, Ext: $fileExtension');
       } else if (imageSource is Uint8List) {
         bytes = imageSource;
-        fileExtension = fileName != null ? path.extension(fileName).toLowerCase() : '.jpg';
-        debugPrint('🚀 MUSK_DEBUG: Source is Uint8List. Size: ${bytes.length} bytes, Ext: $fileExtension');
+        fileExtension =
+            fileName != null ? path.extension(fileName).toLowerCase() : '.jpg';
+        debugPrint(
+            '🚀 MUSK_DEBUG: Source is Uint8List. Size: ${bytes.length} bytes, Ext: $fileExtension');
       } else {
-        debugPrint('🚀 MUSK_DEBUG: uploadAvatar failed - Invalid image source type');
+        debugPrint(
+            '🚀 MUSK_DEBUG: uploadAvatar failed - Invalid image source type');
         throw Exception('Invalid image source type');
       }
 
       final allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
       if (!allowedExtensions.contains(fileExtension)) {
-        debugPrint('🚀 MUSK_DEBUG: Unsupported extension $fileExtension, falling back to .jpg');
-        fileExtension = '.jpg'; 
+        debugPrint(
+            '🚀 MUSK_DEBUG: Unsupported extension $fileExtension, falling back to .jpg');
+        fileExtension = '.jpg';
       }
 
       // Create unique filename
@@ -62,9 +71,7 @@ class StorageService {
 
       // Upload to Supabase Storage
       debugPrint('🚀 MUSK_DEBUG: Uploading to Supabase Storage...');
-      await _supabase.storage
-          .from('user-images')
-          .uploadBinary(
+      await _supabase.storage.from('user-images').uploadBinary(
             filePath,
             bytes,
             fileOptions: FileOptions(
@@ -75,24 +82,21 @@ class StorageService {
       debugPrint('🚀 MUSK_DEBUG: Storage upload successful');
 
       // Get public URL
-      final publicUrl = _supabase.storage
-          .from('user-images')
-          .getPublicUrl(filePath);
+      final publicUrl =
+          _supabase.storage.from('user-images').getPublicUrl(filePath);
       debugPrint('🚀 MUSK_DEBUG: Public URL generated: $publicUrl');
 
       // Update user profile in database
       if (!skipDatabaseUpdate) {
         debugPrint('🚀 MUSK_DEBUG: Updating database user record...');
-        await _supabase
-            .from('users')
-            .update({
-              'avatar_url': publicUrl,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('id', userId);
+        await _supabase.from('users').update({
+          'avatar_url': publicUrl,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', userId);
         debugPrint('🚀 MUSK_DEBUG: Database update successful');
       } else {
-        debugPrint('🚀 MUSK_DEBUG: Skipping database update (handled by caller)');
+        debugPrint(
+            '🚀 MUSK_DEBUG: Skipping database update (handled by caller)');
       }
 
       // 🚀 MUSK: Delete old avatar if provided
@@ -104,7 +108,7 @@ class StorageService {
       // 🚀 MUSK: Invalidate cache
       debugPrint('🚀 MUSK_DEBUG: Invalidating user cache...');
       await CacheManager.instance.invalidateUser(userId);
-      
+
       // Use CDN service if available, otherwise return public URL
       final cdnUrl = CDNService.instance.getImageUrl(publicUrl);
       debugPrint('🚀 MUSK_DEBUG: Final CDN URL: $cdnUrl');
@@ -125,21 +129,25 @@ class StorageService {
 
   /// Upload cover photo to Supabase Storage and update user profile
   /// 🚀 MUSK: Atomic operation - Upload, Update DB, Delete Old, Invalidate Cache
-  static Future<String?> uploadCoverPhoto(dynamic imageSource, {String? oldUrl, String? fileName}) async {
+  static Future<String?> uploadCoverPhoto(dynamic imageSource,
+      {String? oldUrl, String? fileName}) async {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) {
-        debugPrint('🚀 MUSK_DEBUG: uploadCoverPhoto failed - User not authenticated');
+        debugPrint(
+            '🚀 MUSK_DEBUG: uploadCoverPhoto failed - User not authenticated');
         return null;
       }
 
       final userId = user.id;
-      debugPrint('🚀 MUSK_DEBUG: Starting cover photo upload for user: $userId');
+      debugPrint(
+          '🚀 MUSK_DEBUG: Starting cover photo upload for user: $userId');
 
       // Check rate limit
       final rateLimitService = RateLimitService.instance;
       if (!await rateLimitService.checkImageUpload(userId)) {
-        debugPrint('🚀 MUSK_DEBUG: uploadCoverPhoto failed - Rate limit exceeded');
+        debugPrint(
+            '🚀 MUSK_DEBUG: uploadCoverPhoto failed - Rate limit exceeded');
         throw Exception('Rate limit exceeded. Please try again later.');
       }
 
@@ -149,20 +157,25 @@ class StorageService {
       if (imageSource is File) {
         bytes = await imageSource.readAsBytes();
         fileExtension = path.extension(imageSource.path).toLowerCase();
-        debugPrint('🚀 MUSK_DEBUG: Source is File. Size: ${bytes.length} bytes, Ext: $fileExtension');
+        debugPrint(
+            '🚀 MUSK_DEBUG: Source is File. Size: ${bytes.length} bytes, Ext: $fileExtension');
       } else if (imageSource is Uint8List) {
         bytes = imageSource;
-        fileExtension = fileName != null ? path.extension(fileName).toLowerCase() : '.jpg';
-        debugPrint('🚀 MUSK_DEBUG: Source is Uint8List. Size: ${bytes.length} bytes, Ext: $fileExtension');
+        fileExtension =
+            fileName != null ? path.extension(fileName).toLowerCase() : '.jpg';
+        debugPrint(
+            '🚀 MUSK_DEBUG: Source is Uint8List. Size: ${bytes.length} bytes, Ext: $fileExtension');
       } else {
-        debugPrint('🚀 MUSK_DEBUG: uploadCoverPhoto failed - Invalid image source type');
+        debugPrint(
+            '🚀 MUSK_DEBUG: uploadCoverPhoto failed - Invalid image source type');
         throw Exception('Invalid image source type');
       }
 
       final allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
       if (!allowedExtensions.contains(fileExtension)) {
-        debugPrint('🚀 MUSK_DEBUG: Unsupported extension $fileExtension, falling back to .jpg');
-        fileExtension = '.jpg'; 
+        debugPrint(
+            '🚀 MUSK_DEBUG: Unsupported extension $fileExtension, falling back to .jpg');
+        fileExtension = '.jpg';
       }
 
       // Create unique filename
@@ -173,9 +186,7 @@ class StorageService {
 
       // Upload to Supabase Storage
       debugPrint('🚀 MUSK_DEBUG: Uploading to Supabase Storage...');
-      await _supabase.storage
-          .from('user-images')
-          .uploadBinary(
+      await _supabase.storage.from('user-images').uploadBinary(
             filePath,
             bytes,
             fileOptions: FileOptions(
@@ -186,20 +197,16 @@ class StorageService {
       debugPrint('🚀 MUSK_DEBUG: Storage upload successful');
 
       // Get public URL
-      final publicUrl = _supabase.storage
-          .from('user-images')
-          .getPublicUrl(filePath);
+      final publicUrl =
+          _supabase.storage.from('user-images').getPublicUrl(filePath);
       debugPrint('🚀 MUSK_DEBUG: Public URL generated: $publicUrl');
 
       // Update user profile in database
       debugPrint('🚀 MUSK_DEBUG: Updating database user record...');
-      await _supabase
-          .from('users')
-          .update({
-            'cover_photo_url': publicUrl,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'cover_photo_url': publicUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
       debugPrint('🚀 MUSK_DEBUG: Database update successful');
 
       // 🚀 MUSK: Delete old cover photo if provided
@@ -234,22 +241,25 @@ class StorageService {
   static Future<void> deleteOldAvatar(String oldAvatarUrl) async {
     try {
       if (oldAvatarUrl.isEmpty) return;
-      debugPrint('🚀 MUSK_DEBUG: Attempting to delete old avatar: $oldAvatarUrl');
+      debugPrint(
+          '🚀 MUSK_DEBUG: Attempting to delete old avatar: $oldAvatarUrl');
 
       // Extract file path from URL
       final uri = Uri.parse(oldAvatarUrl);
       final pathSegments = uri.pathSegments;
-      
+
       // Supabase URL structure: /storage/v1/object/public/user-images/avatars/userId/filename
       // We need to extract everything after 'user-images/'
       final bucketIndex = pathSegments.indexOf('user-images');
       if (bucketIndex != -1 && pathSegments.length > bucketIndex + 1) {
         final filePath = pathSegments.sublist(bucketIndex + 1).join('/');
-        debugPrint('🚀 MUSK_DEBUG: Parsed relative path for deletion: $filePath');
+        debugPrint(
+            '🚀 MUSK_DEBUG: Parsed relative path for deletion: $filePath');
         await _supabase.storage.from('user-images').remove([filePath]);
         debugPrint('🚀 MUSK_DEBUG: Old avatar deleted successfully');
       } else {
-        debugPrint('🚀 MUSK_DEBUG: Could not parse bucket path from URL: $oldAvatarUrl');
+        debugPrint(
+            '🚀 MUSK_DEBUG: Could not parse bucket path from URL: $oldAvatarUrl');
       }
     } catch (e) {
       debugPrint('🚀 MUSK_DEBUG: Error deleting old avatar: $e');
@@ -268,21 +278,24 @@ class StorageService {
   static Future<void> deleteOldCoverPhoto(String oldCoverUrl) async {
     try {
       if (oldCoverUrl.isEmpty) return;
-      debugPrint('🚀 MUSK_DEBUG: Attempting to delete old cover photo: $oldCoverUrl');
+      debugPrint(
+          '🚀 MUSK_DEBUG: Attempting to delete old cover photo: $oldCoverUrl');
 
       // Extract file path from URL
       final uri = Uri.parse(oldCoverUrl);
       final pathSegments = uri.pathSegments;
-      
+
       // Supabase URL structure: /storage/v1/object/public/user-images/covers/userId/filename
       final bucketIndex = pathSegments.indexOf('user-images');
       if (bucketIndex != -1 && pathSegments.length > bucketIndex + 1) {
         final filePath = pathSegments.sublist(bucketIndex + 1).join('/');
-        debugPrint('🚀 MUSK_DEBUG: Parsed relative path for deletion: $filePath');
+        debugPrint(
+            '🚀 MUSK_DEBUG: Parsed relative path for deletion: $filePath');
         await _supabase.storage.from('user-images').remove([filePath]);
         debugPrint('🚀 MUSK_DEBUG: Old cover photo deleted successfully');
       } else {
-        debugPrint('🚀 MUSK_DEBUG: Could not parse bucket path from URL: $oldCoverUrl');
+        debugPrint(
+            '🚀 MUSK_DEBUG: Could not parse bucket path from URL: $oldCoverUrl');
       }
     } catch (e) {
       debugPrint('🚀 MUSK_DEBUG: Error deleting old cover photo: $e');
@@ -330,4 +343,3 @@ class StorageService {
     }
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/common/app_button.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
@@ -93,8 +94,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
   void _loadExistingUserData() {
     final user = AuthService.instance.currentUser;
     if (user != null) {
-      _displayNameController.text =
-          user.userMetadata?['display_name'] ??
+      _displayNameController.text = user.userMetadata?['display_name'] ??
           user.userMetadata?['full_name'] ??
           '';
       _usernameController.text = user.userMetadata?['username'] ?? '';
@@ -311,7 +311,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                 ),
               Expanded(
                 child: Text(
-                  widget.isFirstTime ? 'Thiết lập hồ sơ' : 'Cập nhật hồ sơ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  widget.isFirstTime ? 'Thiết lập hồ sơ' : 'Cập nhật hồ sơ',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -332,7 +334,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Bước ${_currentStep + 1} / $_totalSteps', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Bước ${_currentStep + 1} / $_totalSteps',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 14,
                     ),
@@ -374,7 +378,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
         children: [
           // Step title
           Text(
-            '👤 Thông tin cơ bản', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '👤 Thông tin cơ bản',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -382,7 +388,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           ),
           SizedBox(height: 8),
           Text(
-            'Hãy cho chúng tôi biết về bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Hãy cho chúng tôi biết về bạn',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16,
               color: Colors.white.withValues(alpha: 0.8),
             ),
@@ -402,8 +410,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
             isValid: _isDisplayNameValid,
             errorText:
                 _displayNameController.text.isNotEmpty && !_isDisplayNameValid
-                ? 'Tên hiển thị phải có ít nhất 2 ký tự'
-                : null,
+                    ? 'Tên hiển thị phải có ít nhất 2 ký tự'
+                    : null,
           ),
 
           SizedBox(height: 20),
@@ -419,8 +427,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
             },
             isValid: _isUsernameValid,
             isLoading: _isUsernameChecking,
-            errorText:
-                _usernameController.text.isNotEmpty &&
+            errorText: _usernameController.text.isNotEmpty &&
                     !_isUsernameValid &&
                     !_isUsernameChecking
                 ? 'Tên người dùng không khả dụng hoặc quá ngắn'
@@ -442,7 +449,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
 
           // Role selection
           Text(
-            'Vai trò của bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Vai trò của bạn',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -481,7 +490,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
         children: [
           // Step title
           Text(
-            '📸 Ảnh đại diện', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '📸 Ảnh đại diện',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -490,7 +501,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           ),
           SizedBox(height: 8),
           Text(
-            'Thêm ảnh để mọi người dễ nhận ra bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Thêm ảnh để mọi người dễ nhận ra bạn',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16,
               color: Colors.white.withValues(alpha: 0.8),
             ),
@@ -514,8 +527,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                 child: _selectedAvatar != null
                     ? ClipOval(
                         child: kIsWeb
-                            ? Image.network(_selectedAvatar!.path, fit: BoxFit.cover)
-                            : Image.file(File(_selectedAvatar!.path), fit: BoxFit.cover),
+                            ? Image.network(_selectedAvatar!.path,
+                                fit: BoxFit.cover)
+                            : Image.file(File(_selectedAvatar!.path),
+                                fit: BoxFit.cover),
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -523,7 +538,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                           Icon(Icons.camera_alt, size: 40, color: Colors.white),
                           SizedBox(height: 8),
                           Text(
-                            'Chọn ảnh', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Chọn ảnh',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -539,7 +556,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           Text(
             _selectedAvatar != null
                 ? '✅ Ảnh đại diện đã được chọn'
-                : '⏭️ Bạn có thể bỏ qua bước này', overflow: TextOverflow.ellipsis, style: TextStyle(
+                : '⏭️ Bạn có thể bỏ qua bước này',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16,
               color: Colors.white.withValues(alpha: 0.9),
             ),
@@ -558,7 +577,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
         children: [
           // Step title
           Text(
-            '🎮 Sở thích gaming', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '🎮 Sở thích gaming',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -566,7 +587,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           ),
           SizedBox(height: 8),
           Text(
-            'Chọn các môn bạn yêu thích', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Chọn các môn bạn yêu thích',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16,
               color: Colors.white.withValues(alpha: 0.8),
             ),
@@ -609,7 +632,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                     border: Border.all(color: Colors.white, width: 1),
                   ),
                   child: Text(
-                    game, style: TextStyle(
+                    game,
+                    style: TextStyle(
                       color: isSelected ? Color(0xFF007AFF) : Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
@@ -623,7 +647,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
 
           // Skill level
           Text(
-            'Trình độ của bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Trình độ của bạn',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -680,7 +706,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
         children: [
           // Step title
           Text(
-            '✅ Xác nhận thông tin', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '✅ Xác nhận thông tin',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -688,7 +716,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           ),
           SizedBox(height: 8),
           Text(
-            'Kiểm tra lại thông tin trước khi hoàn tất', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Kiểm tra lại thông tin trước khi hoàn tất',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16,
               color: Colors.white.withValues(alpha: 0.8),
             ),
@@ -740,21 +770,25 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _displayNameController.text, style: TextStyle(
+                            _displayNameController.text,
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF007AFF),
                             ),
                           ),
                           Text(
-                            '@${_usernameController.text}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            '@${_usernameController.text}',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
                             ),
                           ),
                           if (_bioController.text.isNotEmpty)
                             Text(
-                              _bioController.text, style: TextStyle(
+                              _bioController.text,
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
                               ),
@@ -803,13 +837,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hồ sơ công khai', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Hồ sơ công khai',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        'Cho phép người khác xem hồ sơ của bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Cho phép người khác xem hồ sơ của bạn',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 12,
                         ),
@@ -838,47 +876,32 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
         children: [
           if (_currentStep > 0)
             Expanded(
-              child: OutlinedButton(
+              child: AppButton(
+                label: 'Quay lại',
+                type: AppButtonType.outline,
+                size: AppButtonSize.large,
+                customTextColor: Colors.white,
+                fullWidth: true,
                 onPressed: _previousStep,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: BorderSide(color: Colors.white, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text('Quay lại'),
               ),
             ),
-
           if (_currentStep > 0) SizedBox(width: 16),
-
           Expanded(
             flex: _currentStep > 0 ? 1 : 1,
-            child: ElevatedButton(
+            child: AppButton(
+              label:
+                  _currentStep == _totalSteps - 1 ? 'Hoàn thành' : 'Tiếp theo',
+              type: AppButtonType.primary,
+              size: AppButtonSize.large,
+              customColor: Colors.white,
+              customTextColor: const Color(0xFF007AFF), // iOS blue
+              isLoading: _isLoading,
+              fullWidth: true,
               onPressed: _canContinueFromStep(_currentStep)
                   ? (_currentStep == _totalSteps - 1
-                        ? _completeProfileSetup
-                        : _nextStep)
+                      ? _completeProfileSetup
+                      : _nextStep)
                   : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Color(0xFF007AFF),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: _isLoading
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(
-                      _currentStep == _totalSteps - 1 ? 'Hoàn tất' : 'Tiếp tục', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
             ),
           ),
         ],
@@ -901,7 +924,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label, style: TextStyle(
+          label,
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -927,8 +951,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                     ),
                   )
                 : isValid
-                ? Icon(Icons.check_circle, color: Colors.green)
-                : null,
+                    ? Icon(Icons.check_circle, color: Colors.green)
+                    : null,
             filled: true,
             fillColor: Colors.white.withValues(alpha: 0.2),
             border: OutlineInputBorder(
@@ -958,7 +982,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.2),
+          color:
+              isSelected ? Colors.white : Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white, width: 1),
         ),
@@ -972,7 +997,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
             ),
             SizedBox(height: 8),
             Text(
-              title, style: TextStyle(
+              title,
+              style: TextStyle(
                 color: isSelected ? Color(0xFF007AFF) : Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -980,7 +1006,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
               textAlign: TextAlign.center,
             ),
             Text(
-              subtitle, style: TextStyle(
+              subtitle,
+              style: TextStyle(
                 color: isSelected
                     ? Color(0xFF007AFF).withValues(alpha: 0.7)
                     : Colors.white.withValues(alpha: 0.7),
@@ -1003,12 +1030,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           SizedBox(
             width: 100,
             child: Text(
-              label, style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              label,
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
           ),
           Expanded(
             child: Text(
-              value, style: TextStyle(
+              value,
+              style: TextStyle(
                 fontSize: 14,
                 color: Color(0xFF007AFF),
                 fontWeight: FontWeight.w500,

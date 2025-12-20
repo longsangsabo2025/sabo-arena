@@ -28,7 +28,8 @@ class CachedTournamentService {
             tournamentId,
           );
           if (cached != null) {
-            ProductionLogger.info('⚡ Using fresh cached tournament data', tag: 'cached_tournament_service');
+            ProductionLogger.info('⚡ Using fresh cached tournament data',
+                tag: 'cached_tournament_service');
             return cached;
           }
         }
@@ -41,10 +42,12 @@ class CachedTournamentService {
         tournamentId,
       );
       if (cached != null) {
-        ProductionLogger.info('📴 Using cached data (offline mode)', tag: 'cached_tournament_service');
+        ProductionLogger.info('📴 Using cached data (offline mode)',
+            tag: 'cached_tournament_service');
         return cached;
       } else {
-        ProductionLogger.info('❌ No cached data available offline', tag: 'cached_tournament_service');
+        ProductionLogger.info('❌ No cached data available offline',
+            tag: 'cached_tournament_service');
         return null;
       }
     }
@@ -63,17 +66,20 @@ class CachedTournamentService {
         'tournament_$tournamentId',
       );
 
-      ProductionLogger.info('🌐 Fetched fresh tournament data from Supabase', tag: 'cached_tournament_service');
+      ProductionLogger.info('🌐 Fetched fresh tournament data from Supabase',
+          tag: 'cached_tournament_service');
       return response;
     } catch (e) {
-      ProductionLogger.info('❌ Failed to fetch tournament from Supabase: $e', tag: 'cached_tournament_service');
+      ProductionLogger.info('❌ Failed to fetch tournament from Supabase: $e',
+          tag: 'cached_tournament_service');
 
       // Fallback to cache if network fails
       final cached = await TournamentCacheService.getCachedTournament(
         tournamentId,
       );
       if (cached != null) {
-        ProductionLogger.info('⚡ Using stale cached data as fallback', tag: 'cached_tournament_service');
+        ProductionLogger.info('⚡ Using stale cached data as fallback',
+            tag: 'cached_tournament_service');
         return cached;
       }
 
@@ -104,7 +110,8 @@ class CachedTournamentService {
             tournamentId,
           );
           if (cached != null) {
-            ProductionLogger.info('⚡ Using fresh cached matches data', tag: 'cached_tournament_service');
+            ProductionLogger.info('⚡ Using fresh cached matches data',
+                tag: 'cached_tournament_service');
             // Ensure matchId is available for compatibility in cached data
             final processedCache = cached.map((match) {
               final matchData = Map<String, dynamic>.from(match);
@@ -125,7 +132,8 @@ class CachedTournamentService {
         tournamentId,
       );
       if (cached != null) {
-        ProductionLogger.info('📴 Using cached matches (offline mode)', tag: 'cached_tournament_service');
+        ProductionLogger.info('📴 Using cached matches (offline mode)',
+            tag: 'cached_tournament_service');
         // Ensure matchId is available for compatibility in cached data
         final processedCache = cached.map((match) {
           final matchData = Map<String, dynamic>.from(match);
@@ -136,7 +144,8 @@ class CachedTournamentService {
         }).toList();
         return processedCache;
       } else {
-        ProductionLogger.info('❌ No cached matches available offline', tag: 'cached_tournament_service');
+        ProductionLogger.info('❌ No cached matches available offline',
+            tag: 'cached_tournament_service');
         return [];
       }
     }
@@ -162,17 +171,20 @@ class CachedTournamentService {
       await TournamentCacheService.cacheMatches(tournamentId, matchList);
       await TournamentCacheService.setCacheTimestamp('matches_$tournamentId');
 
-      ProductionLogger.info('🌐 Fetched fresh matches data from Supabase', tag: 'cached_tournament_service');
+      ProductionLogger.info('🌐 Fetched fresh matches data from Supabase',
+          tag: 'cached_tournament_service');
       return matchList;
     } catch (e) {
-      ProductionLogger.info('❌ Failed to fetch matches from Supabase: $e', tag: 'cached_tournament_service');
+      ProductionLogger.info('❌ Failed to fetch matches from Supabase: $e',
+          tag: 'cached_tournament_service');
 
       // Fallback to cache if network fails
       final cached = await TournamentCacheService.getCachedMatches(
         tournamentId,
       );
       if (cached != null) {
-        ProductionLogger.info('⚡ Using stale cached matches as fallback', tag: 'cached_tournament_service');
+        ProductionLogger.info('⚡ Using stale cached matches as fallback',
+            tag: 'cached_tournament_service');
         return cached;
       }
 
@@ -209,7 +221,8 @@ class CachedTournamentService {
       // Update local cache immediately for UI
       await _updateMatchInCache(tournamentId, matchId, updateData);
 
-      ProductionLogger.info('📝 Stored match update for offline sync', tag: 'cached_tournament_service');
+      ProductionLogger.info('📝 Stored match update for offline sync',
+          tag: 'cached_tournament_service');
       return true;
     }
 
@@ -229,10 +242,13 @@ class CachedTournamentService {
       // This method is now ONLY for cache synchronization, not business logic
       // Callers should invoke advancement services separately if needed
 
-      ProductionLogger.info('🌐 Updated match in Supabase and cache (no advancement here)', tag: 'cached_tournament_service');
+      ProductionLogger.info(
+          '🌐 Updated match in Supabase and cache (no advancement here)',
+          tag: 'cached_tournament_service');
       return true;
     } catch (e) {
-      ProductionLogger.info('❌ Failed to update match in Supabase: $e', tag: 'cached_tournament_service');
+      ProductionLogger.info('❌ Failed to update match in Supabase: $e',
+          tag: 'cached_tournament_service');
 
       // Store as pending action for later sync
       await TournamentCacheService.storePendingAction({
@@ -245,7 +261,8 @@ class CachedTournamentService {
       // Update local cache for immediate UI update
       await _updateMatchInCache(tournamentId, matchId, updateData);
 
-      ProductionLogger.info('📝 Stored match update as pending action', tag: 'cached_tournament_service');
+      ProductionLogger.info('📝 Stored match update as pending action',
+          tag: 'cached_tournament_service');
       return true; // Return true so UI updates immediately
     }
   }
@@ -268,7 +285,8 @@ class CachedTournamentService {
           ...updateData,
         };
         await TournamentCacheService.cacheMatches(tournamentId, cachedMatches);
-        ProductionLogger.info('🔄 Updated match in cache', tag: 'cached_tournament_service');
+        ProductionLogger.info('🔄 Updated match in cache',
+            tag: 'cached_tournament_service');
       }
     }
   }
@@ -276,17 +294,21 @@ class CachedTournamentService {
   /// Sync pending actions when back online
   static Future<void> syncPendingActions() async {
     if (TournamentCacheService.isOfflineMode) {
-      ProductionLogger.info('📴 Cannot sync - still offline', tag: 'cached_tournament_service');
+      ProductionLogger.info('📴 Cannot sync - still offline',
+          tag: 'cached_tournament_service');
       return;
     }
 
     final pendingActions = await TournamentCacheService.getPendingActions();
     if (pendingActions.isEmpty) {
-      ProductionLogger.info('✅ No pending actions to sync', tag: 'cached_tournament_service');
+      ProductionLogger.info('✅ No pending actions to sync',
+          tag: 'cached_tournament_service');
       return;
     }
 
-    ProductionLogger.info('🔄 Syncing ${pendingActions.length} pending actions...', tag: 'cached_tournament_service');
+    ProductionLogger.info(
+        '🔄 Syncing ${pendingActions.length} pending actions...',
+        tag: 'cached_tournament_service');
 
     int successCount = 0;
     List<Map<String, dynamic>> failedActions = [];
@@ -300,15 +322,18 @@ class CachedTournamentService {
               .eq('id', action['match_id']);
 
           successCount++;
-          ProductionLogger.info('✅ Synced match update: ${action['match_id']}', tag: 'cached_tournament_service');
+          ProductionLogger.info('✅ Synced match update: ${action['match_id']}',
+              tag: 'cached_tournament_service');
         } else if (action['type'] == 'create_match') {
           await Supabase.instance.client.from('matches').insert(action['data']);
 
           successCount++;
-          ProductionLogger.info('✅ Synced match creation', tag: 'cached_tournament_service');
+          ProductionLogger.info('✅ Synced match creation',
+              tag: 'cached_tournament_service');
         }
       } catch (e) {
-        ProductionLogger.info('❌ Failed to sync action ${action['type']}: $e', tag: 'cached_tournament_service');
+        ProductionLogger.info('❌ Failed to sync action ${action['type']}: $e',
+            tag: 'cached_tournament_service');
         failedActions.add(action);
       }
     }
@@ -316,20 +341,24 @@ class CachedTournamentService {
     // Clear successfully synced actions, keep failed ones
     if (failedActions.isEmpty) {
       await TournamentCacheService.clearPendingActions();
-      ProductionLogger.info('🎉 All $successCount actions synced successfully', tag: 'cached_tournament_service');
+      ProductionLogger.info('🎉 All $successCount actions synced successfully',
+          tag: 'cached_tournament_service');
     } else {
       // Store only failed actions back
       await TournamentCacheService.clearPendingActions();
       for (final failed in failedActions) {
         await TournamentCacheService.storePendingAction(failed);
       }
-      ProductionLogger.info('⚠️ $successCount synced, ${failedActions.length} failed', tag: 'cached_tournament_service');
+      ProductionLogger.info(
+          '⚠️ $successCount synced, ${failedActions.length} failed',
+          tag: 'cached_tournament_service');
     }
   }
 
   /// Force refresh data from server and update cache
   static Future<void> refreshTournamentData(String tournamentId) async {
-    ProductionLogger.info('🔄 Force refreshing tournament data...', tag: 'cached_tournament_service');
+    ProductionLogger.info('🔄 Force refreshing tournament data...',
+        tag: 'cached_tournament_service');
     await loadTournament(tournamentId, forceRefresh: true);
     await loadMatches(tournamentId, forceRefresh: true);
   }

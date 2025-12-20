@@ -93,7 +93,11 @@ class _ClubPromotionHubScreenState extends State<ClubPromotionHubScreen> {
               subtitle: 'Đăng ký và cấu hình voucher cho CLB',
               icon: Icons.app_registration,
               color: Colors.blue,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ClubVoucherRegistrationSimple(clubId: widget.clubId))),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ClubVoucherRegistrationSimple(
+                          clubId: widget.clubId))),
             ),
             SizedBox(height: 1.5.h),
             _buildFeatureCard(
@@ -101,7 +105,11 @@ class _ClubPromotionHubScreenState extends State<ClubPromotionHubScreen> {
               subtitle: 'Quản lý voucher từ giải đấu',
               icon: Icons.emoji_events,
               color: Colors.amber,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ClubPrizeVoucherScreen(clubId: widget.clubId))),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          ClubPrizeVoucherScreen(clubId: widget.clubId))),
             ),
             SizedBox(height: 1.5.h),
             _buildFeatureCard(
@@ -109,7 +117,11 @@ class _ClubPromotionHubScreenState extends State<ClubPromotionHubScreen> {
               subtitle: 'Voucher tự động cho thành viên mới',
               icon: Icons.celebration,
               color: Colors.green,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ClubWelcomeCampaignScreen(clubId: widget.clubId, clubName: widget.clubName))),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ClubWelcomeCampaignScreen(
+                          clubId: widget.clubId, clubName: widget.clubName))),
             ),
             SizedBox(height: 3.h),
             _buildSectionHeader('Ưu đãi & Loyalty', Icons.loyalty),
@@ -119,7 +131,11 @@ class _ClubPromotionHubScreenState extends State<ClubPromotionHubScreen> {
               subtitle: 'Tạo chương trình khuyến mãi mới',
               icon: Icons.add_circle,
               color: Colors.purple,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ClubPromotionScreen(clubId: widget.clubId, clubName: widget.clubName))),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ClubPromotionScreen(
+                          clubId: widget.clubId, clubName: widget.clubName))),
             ),
             SizedBox(height: 1.5.h),
             _buildFeatureCard(
@@ -127,7 +143,11 @@ class _ClubPromotionHubScreenState extends State<ClubPromotionHubScreen> {
               subtitle: 'Cấu hình điểm thưởng và cấp độ',
               icon: Icons.star,
               color: Colors.orange,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => LoyaltyProgramScreen(clubId: widget.clubId))),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          LoyaltyProgramScreen(clubId: widget.clubId))),
             ),
             if (_isAdmin) ...[
               SizedBox(height: 3.h),
@@ -140,7 +160,11 @@ class _ClubPromotionHubScreenState extends State<ClubPromotionHubScreen> {
                 color: Colors.red,
                 onTap: () {
                   final userId = _supabase.auth.currentUser?.id ?? '';
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => VoucherManagementMainScreen(userId: userId, isAdmin: _isAdmin)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => VoucherManagementMainScreen(
+                              userId: userId, isAdmin: _isAdmin)));
                 },
               ),
             ],
@@ -155,20 +179,35 @@ class _ClubPromotionHubScreenState extends State<ClubPromotionHubScreen> {
       children: [
         Icon(icon, color: Theme.of(context).primaryColor, size: 24),
         SizedBox(width: 2.w),
-        Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        Text(title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
       ],
     );
   }
 
-  Widget _buildFeatureCard({required String title, required String subtitle, required IconData icon, required Color color, required VoidCallback onTap}) {
+  Widget _buildFeatureCard(
+      {required String title,
+      required String subtitle,
+      required IconData icon,
+      required Color color,
+      required VoidCallback onTap}) {
     return Card(
       elevation: 2,
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-        leading: CircleAvatar(radius: 24, backgroundColor: color.withValues(alpha: 0.1), child: Icon(icon, color: color, size: 28)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        subtitle: Text(subtitle, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+        leading: CircleAvatar(
+            radius: 24,
+            backgroundColor: color.withValues(alpha: 0.1),
+            child: Icon(icon, color: color, size: 28)),
+        title: Text(title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        subtitle: Text(subtitle,
+            style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+        trailing:
+            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
         onTap: onTap,
       ),
     );

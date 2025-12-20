@@ -222,8 +222,7 @@ class _AppCoachMarksState extends State<AppCoachMarks>
     final screenBottom20Percent = screenHeight * 0.8; // 80% từ trên xuống
     final screenRight15Percent = screenWidth * 0.85; // 85% từ trái qua
 
-    final isFAB =
-        targetRect.bottom > screenBottom20Percent &&
+    final isFAB = targetRect.bottom > screenBottom20Percent &&
         targetRect.right > screenRight15Percent;
     final isBottomTab = targetRect.bottom > screenBottom20Percent;
 
@@ -237,8 +236,7 @@ class _AppCoachMarksState extends State<AppCoachMarks>
     // Với bottom tabs hoặc FAB, LUÔN hiển thị tooltip ở phía trên
     bool canShowAbove =
         targetRect.top - tooltipHeight - safeMargin > topPadding + 100;
-    bool canShowBelow =
-        !isBottomTab &&
+    bool canShowBelow = !isBottomTab &&
         !isFAB &&
         targetRect.bottom + tooltipHeight + safeMargin <
             screenHeight - bottomSafeArea;
@@ -250,18 +248,15 @@ class _AppCoachMarksState extends State<AppCoachMarks>
       // ✨ Bottom tabs và FAB: Di chuyển tooltip LÊN CAO để tránh che bottom bar
       if (isBottomTab) {
         // Bottom tabs: Cao nhất để tránh che bottom bar - TÍNH CHÍNH XÁC cho iOS
-        tooltipTop =
-            targetRect.top -
+        tooltipTop = targetRect.top -
             tooltipHeight -
             (screenHeight * 0.08); // 8% clearance
       } else if (isFAB) {
-        tooltipTop =
-            targetRect.top -
+        tooltipTop = targetRect.top -
             tooltipHeight -
             (screenHeight * 0.07); // FAB: 7% clearance
       } else {
-        tooltipTop =
-            targetRect.top -
+        tooltipTop = targetRect.top -
             tooltipHeight -
             (screenHeight * 0.06); // Targets khác: 6%
       }
@@ -441,7 +436,8 @@ class _AppCoachMarksState extends State<AppCoachMarks>
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF6C5CE7).withValues(alpha: 0.5),
+                                color: const Color(0xFF6C5CE7)
+                                    .withValues(alpha: 0.5),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -650,11 +646,9 @@ class SpotlightPainter extends CustomPainter {
     final screenBottom20Percent = size.height * 0.8; // 80% từ trên xuống
     final screenRight15Percent = size.width * 0.85; // 85% từ trái qua
 
-    final isFAB =
-        targetRect.bottom > screenBottom20Percent &&
+    final isFAB = targetRect.bottom > screenBottom20Percent &&
         targetRect.right > screenRight15Percent;
-    final isBottomTab =
-        targetRect.bottom > screenBottom20Percent &&
+    final isBottomTab = targetRect.bottom > screenBottom20Percent &&
         targetRect.center.dx > size.width * 0.1 &&
         targetRect.center.dx < size.width * 0.9;
 
@@ -729,7 +723,8 @@ class SpotlightPainter extends CustomPainter {
     }
 
     final outerGlowPaint = Paint()
-      ..color = const Color(0xFF6C5CE7).withValues(alpha: glowOpacity * fadeValue)
+      ..color =
+          const Color(0xFF6C5CE7).withValues(alpha: glowOpacity * fadeValue)
       ..style = PaintingStyle.stroke
       ..strokeWidth = glowStrokeWidth
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, glowBlurRadius);
@@ -864,10 +859,12 @@ class CoachMarksController {
       final prefs = await SharedPreferences.getInstance();
       final hasSeenLocal = prefs.getBool(_prefKey) ?? false;
 
-      ProductionLogger.info('🎯 CoachMarks Check: hasSeenLocal = $hasSeenLocal', tag: 'app_coach_marks');
+      ProductionLogger.info('🎯 CoachMarks Check: hasSeenLocal = $hasSeenLocal',
+          tag: 'app_coach_marks');
       return hasSeenLocal;
     } catch (e) {
-      ProductionLogger.info('⚠️ CoachMarks: Error checking tutorial status: $e', tag: 'app_coach_marks');
+      ProductionLogger.info('⚠️ CoachMarks: Error checking tutorial status: $e',
+          tag: 'app_coach_marks');
       // Fallback to local prefs if Supabase fails
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_prefKey) ?? false;
@@ -879,7 +876,8 @@ class CoachMarksController {
   static Future<void> markTutorialAsSeen() async {
     // Trong dev mode, không lưu flag (để test lại được)
     if (DEV_MODE) {
-      ProductionLogger.info('🔧 DEV MODE: Skipping save tutorial flag', tag: 'app_coach_marks');
+      ProductionLogger.info('🔧 DEV MODE: Skipping save tutorial flag',
+          tag: 'app_coach_marks');
       return;
     }
 
@@ -894,19 +892,24 @@ class CoachMarksController {
             data: {...?user.userMetadata, _supabaseMetadataKey: true},
           ),
         );
-        ProductionLogger.info('✅ CoachMarks: Tutorial marked as seen (saved to Supabase metadata)',  tag: 'app_coach_marks');
+        ProductionLogger.info(
+            '✅ CoachMarks: Tutorial marked as seen (saved to Supabase metadata)',
+            tag: 'app_coach_marks');
       }
 
       // 2. Also save locally for faster access
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_prefKey, true);
-      ProductionLogger.info('✅ CoachMarks: Tutorial also saved locally', tag: 'app_coach_marks');
+      ProductionLogger.info('✅ CoachMarks: Tutorial also saved locally',
+          tag: 'app_coach_marks');
     } catch (e) {
-      ProductionLogger.info('⚠️ CoachMarks: Error saving tutorial status: $e', tag: 'app_coach_marks');
+      ProductionLogger.info('⚠️ CoachMarks: Error saving tutorial status: $e',
+          tag: 'app_coach_marks');
       // Fallback: At least save locally
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_prefKey, true);
-      ProductionLogger.info('✅ CoachMarks: Saved locally as fallback', tag: 'app_coach_marks');
+      ProductionLogger.info('✅ CoachMarks: Saved locally as fallback',
+          tag: 'app_coach_marks');
     }
   }
 
@@ -914,7 +917,8 @@ class CoachMarksController {
   static Future<void> resetTutorial() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_prefKey);
-    ProductionLogger.info('🔄 Tutorial flag reset - Tutorial sẽ hiện lại', tag: 'app_coach_marks');
+    ProductionLogger.info('🔄 Tutorial flag reset - Tutorial sẽ hiện lại',
+        tag: 'app_coach_marks');
   }
 
   /// Show tutorial if chưa xem (hoặc dev mode)
@@ -925,7 +929,8 @@ class CoachMarksController {
     final hasSeen = await hasSeenTutorial();
 
     if (DEV_MODE) {
-      ProductionLogger.info('🔧 DEV MODE: Force showing tutorial', tag: 'app_coach_marks');
+      ProductionLogger.info('🔧 DEV MODE: Force showing tutorial',
+          tag: 'app_coach_marks');
     }
 
     if (!hasSeen && context.mounted) {

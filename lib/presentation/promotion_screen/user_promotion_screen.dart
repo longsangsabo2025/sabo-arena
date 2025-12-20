@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/common/app_button.dart';
 import '../user_voucher_screen/user_voucher_screen.dart';
 // import '../club_list_screen/club_list_screen.dart'; // File not found
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -425,16 +426,17 @@ class _UserPromotionScreenState extends State<UserPromotionScreen>
             onPressed: () => Navigator.pop(context),
             child: const Text('Đóng'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Xem CLB',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             onPressed: () {
               Navigator.pop(context);
               _navigateToClubList();
             },
-            child: const Text('Xem CLB'),
           ),
         ],
       ),
     );
   }
 }
-

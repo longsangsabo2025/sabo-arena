@@ -21,14 +21,13 @@ class SingleEliminationBracket extends StatelessWidget {
     final rounds = TournamentDataGenerator.calculateSingleEliminationRounds(
       playerCount,
     );
- // Debug
+    // Debug
 
     return BracketContainer(
       title: 'Single Elimination',
       subtitle: '$playerCount players',
-      height: playerCount >= 32
-          ? 500
-          : 400, // Dynamic height based on player count
+      height:
+          playerCount >= 32 ? 500 : 400, // Dynamic height based on player count
       onFullscreenTap: onFullscreenTap,
       onInfoTap: () => _showSingleEliminationInfo(context),
       child: _buildBracketContent(context, rounds),
@@ -39,7 +38,7 @@ class SingleEliminationBracket extends StatelessWidget {
     BuildContext context,
     List<Map<String, dynamic>> rounds,
   ) {
- // Debug
+    // Debug
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -289,4 +288,3 @@ class SingleEliminationFullscreenDialog extends StatelessWidget {
     );
   }
 }
-

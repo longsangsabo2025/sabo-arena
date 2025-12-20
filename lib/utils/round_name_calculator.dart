@@ -1,7 +1,7 @@
 /// 🎯 Round Name Calculator - Shared utility for all bracket services
-/// 
+///
 /// Calculates round names based on bracket structure for consistent UI display
-/// 
+///
 /// Usage:
 /// ```dart
 /// final roundName = RoundNameCalculator.calculate(
@@ -13,7 +13,7 @@
 /// ```
 class RoundNameCalculator {
   /// Calculate round name for UI display
-  /// 
+  ///
   /// Supports:
   /// - DE16: WB R1-R3, LB R1-R5, Finals
   /// - DE32: WB R1-R5, LB R1-R9, Finals
@@ -29,7 +29,7 @@ class RoundNameCalculator {
     if (displayOrder != null && displayOrder >= 31000 && displayOrder < 34000) {
       return _calculateSaboDE32CrossFinalsName(displayOrder: displayOrder);
     }
-    
+
     // DE64 with groups (display_order >= 10000)
     if (displayOrder != null && displayOrder >= 10000) {
       return _calculateDE64RoundName(
@@ -39,7 +39,7 @@ class RoundNameCalculator {
         displayOrder: displayOrder,
       );
     }
-    
+
     // DE16/DE32 without groups (display_order < 10000)
     return _calculateStandardRoundName(
       bracketType: bracketType,
@@ -64,7 +64,7 @@ class RoundNameCalculator {
     else if (displayOrder >= 33000 && displayOrder < 34000) {
       return '🏆 Chung Kết'; // 2→1 (Grand Final)
     }
-    
+
     return null;
   }
 
@@ -85,7 +85,7 @@ class RoundNameCalculator {
         return 'Group $bracketGroup - LB R${stageRound + 3}';
       }
     }
-    
+
     // Cross finals (51xxx - 54xxx)
     if (displayOrder >= 51000 && displayOrder < 52000) {
       return 'Round of 16';
@@ -96,7 +96,7 @@ class RoundNameCalculator {
     } else if (displayOrder >= 54000) {
       return 'Grand Final';
     }
-    
+
     return null;
   }
 
@@ -110,22 +110,23 @@ class RoundNameCalculator {
     if (bracketType == 'WB') {
       return 'WB R$stageRound';
     }
-    
+
     // Losers Branch A
     if (bracketType == 'LB-A') {
       return 'LB R$stageRound';
     }
-    
+
     // Losers Branch B (continues from LB-A)
     if (bracketType == 'LB-B') {
       return 'LB R${stageRound + 3}';
     }
-    
+
     // Finals
-    if (bracketType == 'SABO' || (displayOrder != null && displayOrder >= 4000)) {
+    if (bracketType == 'SABO' ||
+        (displayOrder != null && displayOrder >= 4000)) {
       return 'Finals';
     }
-    
+
     // Fallback: try to guess from display_order
     if (displayOrder != null) {
       if (displayOrder >= 1000 && displayOrder < 2000) {
@@ -154,25 +155,25 @@ class RoundNameCalculator {
         return 'Finals';
       }
     }
-    
+
     return null;
   }
-  
+
   /// Get round category for filtering (WB, LB, Finals)
   static String? getRoundCategory(String? roundName) {
     if (roundName == null) return null;
-    
+
     if (roundName.startsWith('WB') || roundName.contains('- WB')) {
       return 'WB';
     } else if (roundName.startsWith('LB') || roundName.contains('- LB')) {
       return 'LB';
-    } else if (roundName.contains('Finals') || 
-               roundName.contains('Round of') || 
-               roundName.contains('Quarter') ||
-               roundName.contains('Semi')) {
+    } else if (roundName.contains('Finals') ||
+        roundName.contains('Round of') ||
+        roundName.contains('Quarter') ||
+        roundName.contains('Semi')) {
       return 'Finals';
     }
-    
+
     return null;
   }
 }

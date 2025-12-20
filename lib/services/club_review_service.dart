@@ -34,12 +34,14 @@ class ClubReviewService {
         final user = json['users'] as Map<String, dynamic>?;
         return ClubReview.fromJson({
           ...json,
-          'user_name': user?['display_name'] ?? user?['full_name'] ?? 'Anonymous',
+          'user_name':
+              user?['display_name'] ?? user?['full_name'] ?? 'Anonymous',
           'user_avatar': user?['avatar_url'],
         });
       }).toList();
     } catch (e) {
-      ProductionLogger.info('Error loading club reviews: $e', tag: 'club_review_service');
+      ProductionLogger.info('Error loading club reviews: $e',
+          tag: 'club_review_service');
       return [];
     }
   }
@@ -62,7 +64,8 @@ class ClubReviewService {
 
       return ClubReviewStats.fromJson(response as Map<String, dynamic>);
     } catch (e) {
-      ProductionLogger.info('Error loading review stats: $e', tag: 'club_review_service');
+      ProductionLogger.info('Error loading review stats: $e',
+          tag: 'club_review_service');
       return ClubReviewStats(
         averageRating: 0.0,
         totalReviews: 0,
@@ -74,15 +77,10 @@ class ClubReviewService {
   /// Check if user has already reviewed this club
   Future<ClubReview?> getUserReview(String clubId, String userId) async {
     try {
-      final response = await _supabase
-          .from('club_reviews')
-          .select('''
+      final response = await _supabase.from('club_reviews').select('''
             *,
             users!user_id(full_name, avatar_url)
-          ''')
-          .eq('club_id', clubId)
-          .eq('user_id', userId)
-          .maybeSingle();
+          ''').eq('club_id', clubId).eq('user_id', userId).maybeSingle();
 
       if (response == null) return null;
 
@@ -93,7 +91,8 @@ class ClubReviewService {
         'user_avatar': user?['avatar_url'],
       });
     } catch (e) {
-      ProductionLogger.info('Error checking user review: $e', tag: 'club_review_service');
+      ProductionLogger.info('Error checking user review: $e',
+          tag: 'club_review_service');
       return null;
     }
   }
@@ -116,19 +115,16 @@ class ClubReviewService {
 
       if (existing != null) {
         // Update existing review
-        await _supabase
-            .from('club_reviews')
-            .update({
-              'rating': rating,
-              'comment': comment,
-              'facility_rating': facilityRating,
-              'service_rating': serviceRating,
-              'atmosphere_rating': atmosphereRating,
-              'price_rating': priceRating,
-              'image_urls': imageUrls,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('id', existing.id);
+        await _supabase.from('club_reviews').update({
+          'rating': rating,
+          'comment': comment,
+          'facility_rating': facilityRating,
+          'service_rating': serviceRating,
+          'atmosphere_rating': atmosphereRating,
+          'price_rating': priceRating,
+          'image_urls': imageUrls,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', existing.id);
       } else {
         // Insert new review
         await _supabase.from('club_reviews').insert({
@@ -150,7 +146,8 @@ class ClubReviewService {
 
       return true;
     } catch (e) {
-      ProductionLogger.info('Error submitting review: $e', tag: 'club_review_service');
+      ProductionLogger.info('Error submitting review: $e',
+          tag: 'club_review_service');
       return false;
     }
   }
@@ -160,15 +157,13 @@ class ClubReviewService {
     try {
       final stats = await getClubReviewStats(clubId);
 
-      await _supabase
-          .from('clubs')
-          .update({
-            'rating': stats.averageRating,
-            'total_reviews': stats.totalReviews,
-          })
-          .eq('id', clubId);
+      await _supabase.from('clubs').update({
+        'rating': stats.averageRating,
+        'total_reviews': stats.totalReviews,
+      }).eq('id', clubId);
     } catch (e) {
-      ProductionLogger.info('Error updating club rating: $e', tag: 'club_review_service');
+      ProductionLogger.info('Error updating club rating: $e',
+          tag: 'club_review_service');
     }
   }
 
@@ -182,7 +177,8 @@ class ClubReviewService {
 
       return true;
     } catch (e) {
-      ProductionLogger.info('Error deleting review: $e', tag: 'club_review_service');
+      ProductionLogger.info('Error deleting review: $e',
+          tag: 'club_review_service');
       return false;
     }
   }
@@ -196,7 +192,8 @@ class ClubReviewService {
       );
       return true;
     } catch (e) {
-      ProductionLogger.info('Error marking review helpful: $e', tag: 'club_review_service');
+      ProductionLogger.info('Error marking review helpful: $e',
+          tag: 'club_review_service');
       return false;
     }
   }

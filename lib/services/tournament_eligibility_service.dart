@@ -38,8 +38,7 @@ class TournamentEligibilityService {
       issues.add(EligibilityIssue(
         type: EligibilityIssueType.tournamentFull,
         title: 'Giải đã đầy',
-        message:
-            'Giải đấu đã đủ ${tournament.maxParticipants} người tham gia.',
+        message: 'Giải đấu đã đủ ${tournament.maxParticipants} người tham gia.',
       ));
     }
 
@@ -48,7 +47,8 @@ class TournamentEligibilityService {
       if (!_meetsMinRankRequirement(user.rank, tournament.minRank!)) {
         final minRankName =
             SaboRankSystem.getRankDisplayName(tournament.minRank!);
-        final userRankName = SaboRankSystem.getRankDisplayName(user.rank ?? 'K');
+        final userRankName =
+            SaboRankSystem.getRankDisplayName(user.rank ?? 'K');
         final minRankElo = SaboRankSystem.getRankMinElo(tournament.minRank!);
         final currentElo = user.eloRating ?? 1000;
 
@@ -71,7 +71,8 @@ class TournamentEligibilityService {
       if (!_meetsMaxRankRequirement(user.rank, tournament.maxRank!)) {
         final maxRankName =
             SaboRankSystem.getRankDisplayName(tournament.maxRank!);
-        final userRankName = SaboRankSystem.getRankDisplayName(user.rank ?? 'K');
+        final userRankName =
+            SaboRankSystem.getRankDisplayName(user.rank ?? 'K');
 
         issues.add(EligibilityIssue(
           type: EligibilityIssueType.rankTooHigh,
@@ -93,7 +94,8 @@ class TournamentEligibilityService {
         type: EligibilityIssueType.accountIncomplete,
         title: 'Chưa hoàn thiện hồ sơ',
         message: 'Bạn cần điền đầy đủ thông tin cá nhân để tham gia giải đấu.',
-        guidance: 'Vui lòng cập nhật tên hiển thị, ảnh đại diện và thông tin liên hệ.',
+        guidance:
+            'Vui lòng cập nhật tên hiển thị, ảnh đại diện và thông tin liên hệ.',
         actionButtonText: 'Cập nhật hồ sơ',
         actionRoute: '/profile/edit',
       ));

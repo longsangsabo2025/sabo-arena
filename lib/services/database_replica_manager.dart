@@ -3,7 +3,7 @@ import 'package:sabo_arena/utils/production_logger.dart';
 
 /// Database Replica Manager
 /// Routes read queries to read replica, writes to primary database
-/// 
+///
 /// Benefits:
 /// - 10x read capacity
 /// - Better performance
@@ -23,7 +23,7 @@ class DatabaseReplicaManager {
     if (_cachedClient != null) {
       return _cachedClient!;
     }
-    
+
     try {
       final client = Supabase.instance.client;
       _cachedClient = client; // Cache the client
@@ -37,24 +37,24 @@ class DatabaseReplicaManager {
       rethrow;
     }
   }
-  
+
   // Read replica client (configure if using separate replica)
   SupabaseClient? _replicaClient;
-  
+
   // Configuration
   bool _useReplica = true; // Enable/disable replica usage
   int _replicaLagMs = 0; // Track replica lag
-  
+
   /// Initialize replica manager
   Future<void> initialize() async {
     // If using separate read replica, initialize here
     // For Supabase, read replicas are typically handled automatically
     // but we can route queries explicitly if needed
-    
+
     // Don't access Supabase client during initialization - it will be accessed lazily when needed
     // This allows DatabaseReplicaManager to be initialized before Supabase is ready
     // The client will be cached on first access
-    
+
     ProductionLogger.info(
       'DatabaseReplicaManager initialized (replica: $_useReplica)',
       tag: 'DatabaseReplicaManager',
@@ -90,7 +90,7 @@ class DatabaseReplicaManager {
       // Use users table for health check (profiles table may not exist)
       await readClient.from('users').select('id').limit(1);
       final duration = DateTime.now().difference(startTime);
-      
+
       if (duration.inMilliseconds > 1000) {
         ProductionLogger.warning(
           'Read replica slow: ${duration.inMilliseconds}ms',
@@ -98,7 +98,7 @@ class DatabaseReplicaManager {
         );
         return false;
       }
-      
+
       return true;
     } catch (e) {
       ProductionLogger.error(
@@ -128,8 +128,9 @@ class DatabaseReplicaManager {
       // Measure lag by comparing timestamps from primary and replica
       // This is a simplified version - adjust based on your setup
       final primaryTime = DateTime.now();
-      final replicaTime = DateTime.now(); // In real implementation, query replica
-      
+      final replicaTime =
+          DateTime.now(); // In real implementation, query replica
+
       _replicaLagMs = replicaTime.difference(primaryTime).inMilliseconds.abs();
     } catch (e) {
       ProductionLogger.warning(
@@ -145,8 +146,7 @@ class DatabaseReplicaManager {
 extension SupabaseReplicaExtension on SupabaseClient {
   /// Use this for read operations (automatically routes to replica)
   SupabaseClient get read => DatabaseReplicaManager.instance.readClient;
-  
+
   /// Use this for write operations (always uses primary)
   SupabaseClient get write => DatabaseReplicaManager.instance.writeClient;
 }
-

@@ -26,7 +26,7 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
   late TabController _tabController;
   final bool _isLoading = false;
   String? _errorMessage;
-  
+
   List<ClubPromotion> _allPromotions = [];
   List<ClubPromotion> _activePromotions = [];
   List<ClubPromotion> _upcomingPromotions = [];
@@ -67,7 +67,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
         id: '1',
         clubId: widget.clubId,
         title: 'Giảm giá 20% cho thành viên mới',
-        description: 'Ưu đãi đặc biệt dành cho thành viên đăng ký trong tháng này',
+        description:
+            'Ưu đãi đặc biệt dành cho thành viên đăng ký trong tháng này',
         imageUrl: null,
         type: PromotionType.discount,
         status: PromotionStatus.active,
@@ -124,14 +125,17 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Khuyến mãi & Ưu đãi', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Khuyến mãi & Ưu đãi',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.textPrimaryLight,
               ),
             ),
             Text(
-              widget.clubName, style: TextStyle(
+              widget.clubName,
+              style: TextStyle(
                 fontSize: 12.sp,
                 color: AppTheme.textSecondaryLight,
               ),
@@ -139,7 +143,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
           ],
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: 20, color: AppTheme.textPrimaryLight),
+          icon: Icon(Icons.arrow_back_ios,
+              size: 20, color: AppTheme.textPrimaryLight),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -184,7 +189,7 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                       child: _buildStatsCard(
                         title: 'Tổng tiết kiệm',
                         value: NumberFormat.currency(
-                          locale: 'vi_VN', 
+                          locale: 'vi_VN',
                           symbol: 'đ',
                           decimalDigits: 0,
                         ).format(_stats['total_savings'] ?? 0),
@@ -195,7 +200,7 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                   ],
                 ),
               ),
-              
+
               // Tab bar
               Container(
                 color: Colors.white,
@@ -224,13 +229,17 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                           if (_allPromotions.isNotEmpty) ...[
                             SizedBox(width: 8),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryLight.withValues(alpha: 0.1),
+                                color: AppTheme.primaryLight
+                                    .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                '${_allPromotions.length}', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp),
+                                '${_allPromotions.length}',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 11.sp),
                               ),
                             ),
                           ],
@@ -245,13 +254,17 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                           if (_activePromotions.isNotEmpty) ...[
                             SizedBox(width: 8),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.green.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                '${_activePromotions.length}', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp, color: Colors.green),
+                                '${_activePromotions.length}',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 11.sp, color: Colors.green),
                               ),
                             ),
                           ],
@@ -266,13 +279,17 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                           if (_upcomingPromotions.isNotEmpty) ...[
                             SizedBox(width: 8),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.blue.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                '${_upcomingPromotions.length}', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp, color: Colors.blue),
+                                '${_upcomingPromotions.length}',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 11.sp, color: Colors.blue),
                               ),
                             ),
                           ],
@@ -287,13 +304,17 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                           if (_expiredPromotions.isNotEmpty) ...[
                             SizedBox(width: 8),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.grey.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                '${_expiredPromotions.length}', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp, color: Colors.grey),
+                                '${_expiredPromotions.length}',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 11.sp, color: Colors.grey),
                               ),
                             ),
                           ],
@@ -341,7 +362,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
           Icon(icon, color: color, size: 16),
           SizedBox(height: 4),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.bold,
               color: color,
@@ -350,7 +372,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
             overflow: TextOverflow.ellipsis,
           ),
           Text(
-            title, style: TextStyle(
+            title,
+            style: TextStyle(
               fontSize: 10.sp,
               color: AppTheme.textSecondaryLight,
             ),
@@ -389,15 +412,20 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
     return TabBarView(
       controller: _tabController,
       children: [
-        _buildPromotionList(_allPromotions, 'Chưa có chương trình khuyến mãi nào'),
-        _buildPromotionList(_activePromotions, 'Không có khuyến mãi đang hoạt động'),
-        _buildPromotionList(_upcomingPromotions, 'Không có khuyến mãi sắp diễn ra'),
-        _buildPromotionList(_expiredPromotions, 'Không có khuyến mãi đã kết thúc'),
+        _buildPromotionList(
+            _allPromotions, 'Chưa có chương trình khuyến mãi nào'),
+        _buildPromotionList(
+            _activePromotions, 'Không có khuyến mãi đang hoạt động'),
+        _buildPromotionList(
+            _upcomingPromotions, 'Không có khuyến mãi sắp diễn ra'),
+        _buildPromotionList(
+            _expiredPromotions, 'Không có khuyến mãi đã kết thúc'),
       ],
     );
   }
 
-  Widget _buildPromotionList(List<ClubPromotion> promotions, String emptyMessage) {
+  Widget _buildPromotionList(
+      List<ClubPromotion> promotions, String emptyMessage) {
     if (promotions.isEmpty) {
       return Center(
         child: Column(
@@ -406,12 +434,15 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
             Icon(Icons.local_offer_outlined, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
-              emptyMessage, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+              emptyMessage,
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 8),
             Text(
-              'Tạo chương trình khuyến mãi mới để thu hút khách hàng', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+              'Tạo chương trình khuyến mãi mới để thu hút khách hàng',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 24),
@@ -474,7 +505,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          promotion.title, style: TextStyle(
+                          promotion.title,
+                          style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.textPrimaryLight,
@@ -482,7 +514,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                         ),
                         SizedBox(height: 4),
                         Text(
-                          promotion.description, style: TextStyle(
+                          promotion.description,
+                          style: TextStyle(
                             fontSize: 14.sp,
                             color: AppTheme.textSecondaryLight,
                           ),
@@ -510,15 +543,13 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                           PopupMenuItem(
                             child: ListTile(
                               leading: Icon(
-                                promotion.status == PromotionStatus.active 
-                                  ? Icons.pause 
-                                  : Icons.play_arrow
-                              ),
+                                  promotion.status == PromotionStatus.active
+                                      ? Icons.pause
+                                      : Icons.play_arrow),
                               title: Text(
-                                promotion.status == PromotionStatus.active 
-                                  ? 'Tạm dừng' 
-                                  : 'Kích hoạt'
-                              ),
+                                  promotion.status == PromotionStatus.active
+                                      ? 'Tạm dừng'
+                                      : 'Kích hoạt'),
                               dense: true,
                             ),
                             onTap: () => _togglePromotionStatus(promotion),
@@ -526,7 +557,9 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                           PopupMenuItem(
                             child: ListTile(
                               leading: Icon(Icons.delete, color: Colors.red),
-                              title: Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                              title: Text('Xóa',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: Colors.red)),
                               dense: true,
                             ),
                             onTap: () => _showDeleteConfirmation(promotion),
@@ -538,9 +571,9 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                   ),
                 ],
               ),
-              
+
               SizedBox(height: 12),
-              
+
               // Details
               Row(
                 children: [
@@ -551,10 +584,13 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                         if (promotion.promoCode != null) ...[
                           Row(
                             children: [
-                              Icon(Icons.confirmation_num, size: 16, color: AppTheme.primaryLight),
+                              Icon(Icons.confirmation_num,
+                                  size: 16, color: AppTheme.primaryLight),
                               SizedBox(width: 4),
                               Text(
-                                promotion.promoCode!, overflow: TextOverflow.ellipsis, style: TextStyle(
+                                promotion.promoCode!,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                   fontSize: 12.sp,
                                   fontWeight: FontWeight.w600,
                                   color: AppTheme.primaryLight,
@@ -584,7 +620,9 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                               Icon(Icons.people, size: 16, color: Colors.grey),
                               SizedBox(width: 4),
                               Text(
-                                '${promotion.currentRedemptions}/${promotion.maxRedemptions} lượt sử dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                '${promotion.currentRedemptions}/${promotion.maxRedemptions} lượt sử dụng',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                   fontSize: 12.sp,
                                   color: AppTheme.textSecondaryLight,
                                 ),
@@ -601,7 +639,9 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                     children: [
                       if (promotion.discountPercentage != null) ...[
                         Text(
-                          '${promotion.discountPercentage}% OFF', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          '${promotion.discountPercentage}% OFF',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.red,
@@ -618,13 +658,16 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                         ),
                       ] else ...[
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.green.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'MIỄN PHÍ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'MIỄN PHÍ',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
@@ -634,7 +677,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                       ],
                       SizedBox(height: 4),
                       Text(
-                        promotion.type.displayName, style: TextStyle(
+                        promotion.type.displayName,
+                        style: TextStyle(
                           fontSize: 11.sp,
                           color: AppTheme.textSecondaryLight,
                         ),
@@ -643,7 +687,7 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                   ),
                 ],
               ),
-              
+
               // Progress bar for limited promotions
               if (promotion.maxRedemptions != null) ...[
                 SizedBox(height: 12),
@@ -651,9 +695,9 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
                   value: promotion.completionPercentage / 100,
                   backgroundColor: Colors.grey.withValues(alpha: 0.2),
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    promotion.completionPercentage > 80 
-                      ? Colors.red 
-                      : AppTheme.primaryLight,
+                    promotion.completionPercentage > 80
+                        ? Colors.red
+                        : AppTheme.primaryLight,
                   ),
                 ),
               ],
@@ -667,7 +711,7 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
   Widget _buildStatusBadge(ClubPromotion promotion) {
     Color color;
     String text;
-    
+
     if (promotion.isActive) {
       color = Colors.green;
       text = 'Hoạt động';
@@ -681,7 +725,7 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
       color = Colors.orange;
       text = promotion.status.displayName;
     }
-    
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -689,7 +733,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        text, style: TextStyle(
+        text,
+        style: TextStyle(
           fontSize: 10.sp,
           fontWeight: FontWeight.w600,
           color: color,
@@ -749,7 +794,8 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Xóa khuyến mãi'),
-        content: Text('Bạn có chắc chắn muốn xóa "${promotion.title}"?\n\nThao tác này không thể hoàn tác.'),
+        content: Text(
+            'Bạn có chắc chắn muốn xóa "${promotion.title}"?\n\nThao tác này không thể hoàn tác.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -779,7 +825,7 @@ class _ClubPromotionScreenState extends State<ClubPromotionScreen>
       _expiredPromotions.removeWhere((p) => p.id == promotionId);
       _stats['active_promotions'] = _activePromotions.length;
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Đã xóa khuyến mãi thành công'),

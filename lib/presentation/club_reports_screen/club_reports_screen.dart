@@ -20,7 +20,7 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   String _selectedPeriod = 'month';
-  
+
   // Real data from analytics service
   Map<String, dynamic>? _analyticsData;
   bool _isLoading = true;
@@ -83,9 +83,12 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                      Icon(Icons.error_outline,
+                          size: 64, color: Colors.red[300]),
                       const SizedBox(height: 16),
-                      Text('Lỗi tải dữ liệu', style: TextStyle(fontSize: 18, color: Colors.grey[700])),
+                      Text('Lỗi tải dữ liệu',
+                          style:
+                              TextStyle(fontSize: 18, color: Colors.grey[700])),
                       const SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: _loadAnalytics,
@@ -140,7 +143,9 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
       child: Row(
         children: [
           const Text(
-            'Thời gian:', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            'Thời gian:',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -302,7 +307,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
         'value': _formatCurrency(totalRevenue),
         'icon': Icons.monetization_on,
         'color': AppTheme.successLight,
-        'subtitle': revenue30d > 0 ? '+${_formatCurrency(revenue30d)}' : '0 VND',
+        'subtitle':
+            revenue30d > 0 ? '+${_formatCurrency(revenue30d)}' : '0 VND',
       },
       {
         'title': 'Thành viên hoạt động',
@@ -401,7 +407,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  change, style: TextStyle(
+                  change,
+                  style: TextStyle(
                     fontSize: 12,
                     color: AppTheme.successLight,
                     fontWeight: FontWeight.w500,
@@ -412,7 +419,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
           ),
           const SizedBox(height: 12),
           Text(
-            value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            value,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
@@ -425,18 +433,19 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     final tournamentStats = _analyticsData?['tournament_stats'] ?? {};
     final memberStats = _analyticsData?['member_stats'] ?? {};
     final revenueStats = _analyticsData?['revenue_stats'] ?? {};
-    
+
     final totalTournaments = tournamentStats['total_tournaments'] ?? 0;
     final totalMembers = memberStats['total_members'] ?? 0;
-    final totalRevenue = double.tryParse(revenueStats['total_revenue']?.toString() ?? '0') ?? 0;
+    final totalRevenue =
+        double.tryParse(revenueStats['total_revenue']?.toString() ?? '0') ?? 0;
 
     return _buildChartCard(
       'Hiệu suất tổng quan',
       '📊 Tổng quan:\n'
-      '• $totalTournaments giải đấu đã tổ chức\n'
-      '• $totalMembers thành viên trong CLB\n'
-      '• ${_formatCurrency(totalRevenue)} doanh thu tích lũy\n\n'
-      '💡 Biểu đồ chi tiết sẽ được cập nhật trong phiên bản tiếp theo',
+          '• $totalTournaments giải đấu đã tổ chức\n'
+          '• $totalMembers thành viên trong CLB\n'
+          '• ${_formatCurrency(totalRevenue)} doanh thu tích lũy\n\n'
+          '💡 Biểu đồ chi tiết sẽ được cập nhật trong phiên bản tiếp theo',
       Icons.show_chart,
     );
   }
@@ -481,7 +490,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
           Text(title, style: TextStyle(fontSize: 14, color: Colors.grey[700])),
           const SizedBox(height: 8),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: color,
@@ -494,26 +504,36 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
 
   Widget _buildRevenueChart() {
     final revenueStats = _analyticsData?['revenue_stats'] ?? {};
-    final tournamentRevenue = double.tryParse(revenueStats['tournament_revenue']?.toString() ?? '0') ?? 0;
-    final reservationRevenue = double.tryParse(revenueStats['reservation_revenue']?.toString() ?? '0') ?? 0;
-    final revenue30d = double.tryParse(revenueStats['revenue_30d']?.toString() ?? '0') ?? 0;
+    final tournamentRevenue = double.tryParse(
+            revenueStats['tournament_revenue']?.toString() ?? '0') ??
+        0;
+    final reservationRevenue = double.tryParse(
+            revenueStats['reservation_revenue']?.toString() ?? '0') ??
+        0;
+    final revenue30d =
+        double.tryParse(revenueStats['revenue_30d']?.toString() ?? '0') ?? 0;
 
     return _buildChartCard(
       'Biểu đồ doanh thu',
       '💰 Phân tích doanh thu:\n'
-      '• Giải đấu: ${_formatCurrency(tournamentRevenue)}\n'
-      '• Thuê bàn: ${_formatCurrency(reservationRevenue)}\n'
-      '• 30 ngày qua: ${_formatCurrency(revenue30d)}\n\n'
-      '📈 Biểu đồ chi tiết sẽ được cập nhật trong phiên bản tiếp theo',
+          '• Giải đấu: ${_formatCurrency(tournamentRevenue)}\n'
+          '• Thuê bàn: ${_formatCurrency(reservationRevenue)}\n'
+          '• 30 ngày qua: ${_formatCurrency(revenue30d)}\n\n'
+          '📈 Biểu đồ chi tiết sẽ được cập nhật trong phiên bản tiếp theo',
       Icons.bar_chart,
     );
   }
 
   Widget _buildRevenueSources() {
     final revenueStats = _analyticsData?['revenue_stats'] ?? {};
-    final totalRevenue = double.tryParse(revenueStats['total_revenue']?.toString() ?? '0') ?? 0;
-    final tournamentRevenue = double.tryParse(revenueStats['tournament_revenue']?.toString() ?? '0') ?? 0;
-    final reservationRevenue = double.tryParse(revenueStats['reservation_revenue']?.toString() ?? '0') ?? 0;
+    final totalRevenue =
+        double.tryParse(revenueStats['total_revenue']?.toString() ?? '0') ?? 0;
+    final tournamentRevenue = double.tryParse(
+            revenueStats['tournament_revenue']?.toString() ?? '0') ??
+        0;
+    final reservationRevenue = double.tryParse(
+            revenueStats['reservation_revenue']?.toString() ?? '0') ??
+        0;
 
     double tournamentPercent = 0;
     double reservationPercent = 0;
@@ -557,9 +577,21 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     final activeMembers = memberStats['active_members_30d'] ?? 0;
 
     final stats = [
-      {'title': 'Tổng TV', 'value': '$totalMembers', 'color': AppTheme.primaryLight},
-      {'title': 'TV mới (30d)', 'value': '$newMembers30d', 'color': AppTheme.successLight},
-      {'title': 'TV hoạt động', 'value': '$activeMembers', 'color': AppTheme.accentLight},
+      {
+        'title': 'Tổng TV',
+        'value': '$totalMembers',
+        'color': AppTheme.primaryLight
+      },
+      {
+        'title': 'TV mới (30d)',
+        'value': '$newMembers30d',
+        'color': AppTheme.successLight
+      },
+      {
+        'title': 'TV hoạt động',
+        'value': '$activeMembers',
+        'color': AppTheme.accentLight
+      },
     ];
 
     return ResponsiveGrid(
@@ -599,7 +631,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: color,
@@ -607,7 +640,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            title, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            title,
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -625,10 +659,10 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     return _buildChartCard(
       'Tăng trưởng thành viên',
       '👥 Thống kê thành viên:\n'
-      '• Tổng: $totalMembers thành viên\n'
-      '• Mới (30 ngày): $newMembers30d người\n'
-      '• Hoạt động: $activeMembers người ($activityRate%)\n\n'
-      '📊 Biểu đồ xu hướng sẽ được cập nhật trong phiên bản tiếp theo',
+          '• Tổng: $totalMembers thành viên\n'
+          '• Mới (30 ngày): $newMembers30d người\n'
+          '• Hoạt động: $activeMembers người ($activityRate%)\n\n'
+          '📊 Biểu đồ xu hướng sẽ được cập nhật trong phiên bản tiếp theo',
       Icons.trending_up,
     );
   }
@@ -637,16 +671,18 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     final memberStats = _analyticsData?['member_stats'] ?? {};
     final totalMembers = memberStats['total_members'] ?? 0;
     final activeMembers = memberStats['active_members_30d'] ?? 0;
-    
+
     if (totalMembers == 0) {
       return _buildListCard('Hoạt động thành viên', [
         {'title': 'Chưa có thành viên', 'value': '0%', 'amount': '0 người'},
       ]);
     }
 
-    final activePercent = ((activeMembers / totalMembers) * 100).toStringAsFixed(1);
+    final activePercent =
+        ((activeMembers / totalMembers) * 100).toStringAsFixed(1);
     final inactiveMembers = totalMembers - activeMembers;
-    final inactivePercent = ((inactiveMembers / totalMembers) * 100).toStringAsFixed(1);
+    final inactivePercent =
+        ((inactiveMembers / totalMembers) * 100).toStringAsFixed(1);
 
     return _buildListCard('Hoạt động thành viên', [
       {
@@ -666,18 +702,18 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     final memberStats = _analyticsData?['member_stats'] ?? {};
     final totalMembers = memberStats['total_members'] ?? 0;
     final activeMembers = memberStats['active_members_30d'] ?? 0;
-    
-    final retentionRate = totalMembers > 0 
+
+    final retentionRate = totalMembers > 0
         ? ((activeMembers / totalMembers) * 100).toStringAsFixed(1)
         : '0';
 
     return _buildChartCard(
       'Tỷ lệ giữ chân thành viên',
       '🎯 Retention Rate: $retentionRate%\n\n'
-      '📍 Tỷ lệ thành viên hoạt động trong 30 ngày qua:\n'
-      '• Hoạt động: $activeMembers/$totalMembers người\n'
-      '• Tỷ lệ: $retentionRate%\n\n'
-      '💡 Biểu đồ xu hướng giữ chân sẽ được cập nhật trong phiên bản tiếp theo',
+          '📍 Tỷ lệ thành viên hoạt động trong 30 ngày qua:\n'
+          '• Hoạt động: $activeMembers/$totalMembers người\n'
+          '• Tỷ lệ: $retentionRate%\n\n'
+          '💡 Biểu đồ xu hướng giữ chân sẽ được cập nhật trong phiên bản tiếp theo',
       Icons.people_outline,
     );
   }
@@ -690,10 +726,26 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     final totalComments = engagementStats['total_comments'] ?? 0;
 
     final activities = [
-      {'title': 'Tổng bài viết', 'value': '$totalPosts bài', 'icon': Icons.article},
-      {'title': 'Bài viết 30d', 'value': '$posts30d bài', 'icon': Icons.access_time},
-      {'title': 'Tổng lượt thích', 'value': '$totalLikes', 'icon': Icons.thumb_up},
-      {'title': 'Tổng bình luận', 'value': '$totalComments', 'icon': Icons.comment},
+      {
+        'title': 'Tổng bài viết',
+        'value': '$totalPosts bài',
+        'icon': Icons.article
+      },
+      {
+        'title': 'Bài viết 30d',
+        'value': '$posts30d bài',
+        'icon': Icons.access_time
+      },
+      {
+        'title': 'Tổng lượt thích',
+        'value': '$totalLikes',
+        'icon': Icons.thumb_up
+      },
+      {
+        'title': 'Tổng bình luận',
+        'value': '$totalComments',
+        'icon': Icons.comment
+      },
     ];
 
     return ResponsiveGrid(
@@ -735,7 +787,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
           Icon(icon, color: AppTheme.primaryLight, size: 24),
           const SizedBox(height: 12),
           Text(
-            value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
@@ -779,13 +832,18 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
 
   Widget _buildTopPerformers() {
     final tournamentStats = _analyticsData?['tournament_stats'] ?? {};
-    final recentTournaments = tournamentStats['recent_tournaments'] as List<dynamic>? ?? [];
+    final recentTournaments =
+        tournamentStats['recent_tournaments'] as List<dynamic>? ?? [];
 
     if (recentTournaments.isEmpty) {
       return _buildListCardWithAction(
         'Giải đấu gần đây',
         [
-          {'title': 'Chưa có giải đấu nào', 'value': '', 'amount': 'Hãy tạo giải đấu đầu tiên'},
+          {
+            'title': 'Chưa có giải đấu nào',
+            'value': '',
+            'amount': 'Hãy tạo giải đấu đầu tiên'
+          },
         ],
         null,
       );
@@ -795,7 +853,7 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
       final name = tournament['name'] ?? 'Giải đấu không tên';
       final participants = tournament['participant_count'] ?? 0;
       final status = tournament['status'] ?? 'unknown';
-      
+
       String statusText;
       switch (status) {
         case 'completed':
@@ -825,7 +883,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TournamentHistoryScreen(clubId: widget.clubId),
+            builder: (context) =>
+                TournamentHistoryScreen(clubId: widget.clubId),
           ),
         );
       },
@@ -836,7 +895,7 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     final tournamentStats = _analyticsData?['tournament_stats'] ?? {};
     final memberStats = _analyticsData?['member_stats'] ?? {};
     final engagementStats = _analyticsData?['engagement_stats'] ?? {};
-    
+
     final tournaments30d = tournamentStats['tournaments_30d'] ?? 0;
     final newMembers30d = memberStats['new_members_30d'] ?? 0;
     final posts30d = engagementStats['posts_30d'] ?? 0;
@@ -844,10 +903,10 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     return _buildChartCard(
       'Xu hướng gần đây',
       '📈 Hoạt động 30 ngày qua:\n\n'
-      '🏆 Giải đấu: $tournaments30d giải mới\n'
-      '👤 Thành viên: $newMembers30d người mới tham gia\n'
-      '📝 Bài viết: $posts30d bài đăng mới\n\n'
-      '💡 Phân tích xu hướng chi tiết sẽ được cập nhật trong phiên bản tiếp theo',
+          '🏆 Giải đấu: $tournaments30d giải mới\n'
+          '👤 Thành viên: $newMembers30d người mới tham gia\n'
+          '📝 Bài viết: $posts30d bài đăng mới\n\n'
+          '💡 Phân tích xu hướng chi tiết sẽ được cập nhật trong phiên bản tiếp theo',
       Icons.insights,
     );
   }
@@ -875,7 +934,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
               Icon(icon, color: AppTheme.primaryLight, size: 24),
               const SizedBox(width: 12),
               Text(
-                title, style: const TextStyle(
+                title,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
@@ -892,7 +952,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
             ),
             child: Center(
               child: Text(
-                description, style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                description,
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -933,7 +994,8 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
             children: [
               Text(
                 title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               if (onViewAll != null)
                 TextButton(
@@ -1003,4 +1065,3 @@ class _ClubReportsScreenState extends State<ClubReportsScreen>
     );
   }
 }
-

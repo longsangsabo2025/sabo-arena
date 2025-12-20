@@ -145,8 +145,7 @@ class DSCheckboxTile extends StatelessWidget {
               }
             : null,
         child: Padding(
-          padding:
-              contentPadding ??
+          padding: contentPadding ??
               EdgeInsets.symmetric(
                 horizontal: DesignTokens.space16,
                 vertical: DesignTokens.space12,

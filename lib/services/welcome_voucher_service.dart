@@ -17,13 +17,11 @@ class WelcomeVoucherService {
   /// Get all welcome campaigns (admin only)
   Future<List<Map<String, dynamic>>> getAllCampaigns() async {
     try {
-      final response = await _supabase
-          .from('welcome_voucher_campaigns')
-          .select('''
+      final response =
+          await _supabase.from('welcome_voucher_campaigns').select('''
             *,
             voucher_template:voucher_templates(*)
-          ''')
-          .order('created_at', ascending: false);
+          ''').order('created_at', ascending: false);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
@@ -35,7 +33,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi lấy danh sách chiến dịch',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy danh sách chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách chiến dịch',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -70,7 +69,8 @@ class WelcomeVoucherService {
           .select()
           .single();
 
-      ProductionLogger.info('Campaign created: ${response['id']}', tag: 'WelcomeVoucher');
+      ProductionLogger.info('Campaign created: ${response['id']}',
+          tag: 'WelcomeVoucher');
       return response;
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -81,7 +81,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi tạo chiến dịch',
         ),
       );
-      ProductionLogger.error('Lỗi khi tạo chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi tạo chiến dịch',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -89,13 +90,10 @@ class WelcomeVoucherService {
   /// Update campaign status (admin only)
   Future<void> updateCampaignStatus(String campaignId, bool isActive) async {
     try {
-      await _supabase
-          .from('welcome_voucher_campaigns')
-          .update({
-            'is_active': isActive,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', campaignId);
+      await _supabase.from('welcome_voucher_campaigns').update({
+        'is_active': isActive,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', campaignId);
 
       ProductionLogger.info('Campaign status updated', tag: 'WelcomeVoucher');
     } catch (e, stackTrace) {
@@ -107,7 +105,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi cập nhật chiến dịch',
         ),
       );
-      ProductionLogger.error('Lỗi khi cập nhật chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi cập nhật chiến dịch',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -131,12 +130,10 @@ class WelcomeVoucherService {
       final clubs = List<Map<String, dynamic>>.from(clubsResponse);
 
       final pendingClubs = clubs.where((c) => c['status'] == 'pending').length;
-      final approvedClubs = clubs
-          .where((c) => c['status'] == 'approved')
-          .length;
-      final rejectedClubs = clubs
-          .where((c) => c['status'] == 'rejected')
-          .length;
+      final approvedClubs =
+          clubs.where((c) => c['status'] == 'approved').length;
+      final rejectedClubs =
+          clubs.where((c) => c['status'] == 'rejected').length;
 
       // Get issued vouchers count
       final issuedResponse = await _supabase
@@ -163,7 +160,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi lấy thống kê chiến dịch',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy thống kê chiến dịch', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy thống kê chiến dịch',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -176,18 +174,14 @@ class WelcomeVoucherService {
     String? status,
   }) async {
     try {
-      final queryBuilder = _supabase
-          .from('welcome_campaign_clubs')
-          .select('''
+      final queryBuilder = _supabase.from('welcome_campaign_clubs').select('''
             *,
             club:clubs(*),
             campaign:welcome_voucher_campaigns(*)
-          ''')
-          .eq('campaign_id', campaignId);
+          ''').eq('campaign_id', campaignId);
 
-      final query = status != null
-          ? queryBuilder.eq('status', status)
-          : queryBuilder;
+      final query =
+          status != null ? queryBuilder.eq('status', status) : queryBuilder;
 
       final response = await query.order('registered_at', ascending: false);
       return List<Map<String, dynamic>>.from(response);
@@ -200,7 +194,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi lấy danh sách đăng ký',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy danh sách đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách đăng ký',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -208,17 +203,15 @@ class WelcomeVoucherService {
   /// Approve club registration (admin only)
   Future<void> approveClubRegistration(String registrationId) async {
     try {
-      await _supabase
-          .from('welcome_campaign_clubs')
-          .update({
-            'status': 'approved',
-            'approved_by': _supabase.auth.currentUser?.id,
-            'approved_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', registrationId);
+      await _supabase.from('welcome_campaign_clubs').update({
+        'status': 'approved',
+        'approved_by': _supabase.auth.currentUser?.id,
+        'approved_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', registrationId);
 
-      ProductionLogger.info('Club registration approved', tag: 'WelcomeVoucher');
+      ProductionLogger.info('Club registration approved',
+          tag: 'WelcomeVoucher');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -228,7 +221,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi duyệt đăng ký',
         ),
       );
-      ProductionLogger.error('Lỗi khi duyệt đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi duyệt đăng ký',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -239,16 +233,14 @@ class WelcomeVoucherService {
     String reason,
   ) async {
     try {
-      await _supabase
-          .from('welcome_campaign_clubs')
-          .update({
-            'status': 'rejected',
-            'rejection_reason': reason,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', registrationId);
+      await _supabase.from('welcome_campaign_clubs').update({
+        'status': 'rejected',
+        'rejection_reason': reason,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', registrationId);
 
-      ProductionLogger.info('Club registration rejected', tag: 'WelcomeVoucher');
+      ProductionLogger.info('Club registration rejected',
+          tag: 'WelcomeVoucher');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -258,7 +250,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi từ chối đăng ký',
         ),
       );
-      ProductionLogger.error('Lỗi khi từ chối đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi từ chối đăng ký',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -288,7 +281,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi lấy danh sách chiến dịch khả dụng',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy danh sách chiến dịch khả dụng', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách chiến dịch khả dụng',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -311,7 +305,8 @@ class WelcomeVoucherService {
           .select()
           .single();
 
-      ProductionLogger.info('Club registered for campaign', tag: 'WelcomeVoucher');
+      ProductionLogger.info('Club registered for campaign',
+          tag: 'WelcomeVoucher');
       return response;
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -322,7 +317,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi đăng ký quán',
         ),
       );
-      ProductionLogger.error('Lỗi khi đăng ký quán', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi đăng ký quán',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -332,17 +328,13 @@ class WelcomeVoucherService {
     String clubId,
   ) async {
     try {
-      final response = await _supabase
-          .from('welcome_campaign_clubs')
-          .select('''
+      final response = await _supabase.from('welcome_campaign_clubs').select('''
             *,
             campaign:welcome_voucher_campaigns(
               *,
               voucher_template:voucher_templates(*)
             )
-          ''')
-          .eq('club_id', clubId)
-          .order('created_at', ascending: false);
+          ''').eq('club_id', clubId).order('created_at', ascending: false);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
@@ -354,7 +346,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi lấy danh sách đăng ký của quán',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy danh sách đăng ký của quán', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách đăng ký của quán',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -379,7 +372,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi kiểm tra đăng ký',
         ),
       );
-      ProductionLogger.error('Lỗi khi kiểm tra đăng ký', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi kiểm tra đăng ký',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       return false;
     }
   }
@@ -394,7 +388,8 @@ class WelcomeVoucherService {
         params: {'p_user_id': userId},
       );
 
-      ProductionLogger.debug('Eligibility check: $response', tag: 'WelcomeVoucher');
+      ProductionLogger.debug('Eligibility check: $response',
+          tag: 'WelcomeVoucher');
       return response as Map<String, dynamic>;
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -405,7 +400,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi kiểm tra điều kiện',
         ),
       );
-      ProductionLogger.error('Lỗi khi kiểm tra điều kiện', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi kiểm tra điều kiện',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -413,9 +409,7 @@ class WelcomeVoucherService {
   /// Get user's welcome voucher (if issued)
   Future<Map<String, dynamic>?> getUserWelcomeVoucher(String userId) async {
     try {
-      final response = await _supabase
-          .from('welcome_voucher_issued')
-          .select('''
+      final response = await _supabase.from('welcome_voucher_issued').select('''
             *,
             campaign:welcome_voucher_campaigns(*),
             voucher:user_vouchers(
@@ -423,9 +417,7 @@ class WelcomeVoucherService {
               template:voucher_templates(*),
               club:clubs(*)
             )
-          ''')
-          .eq('user_id', userId)
-          .maybeSingle();
+          ''').eq('user_id', userId).maybeSingle();
 
       return response;
     } catch (e, stackTrace) {
@@ -437,7 +429,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi lấy voucher chào mừng',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy voucher chào mừng', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy voucher chào mừng',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       return null;
     }
   }
@@ -451,7 +444,8 @@ class WelcomeVoucherService {
         params: {'user_id': userId},
       );
 
-      ProductionLogger.info('Welcome voucher manually triggered', tag: 'WelcomeVoucher');
+      ProductionLogger.info('Welcome voucher manually triggered',
+          tag: 'WelcomeVoucher');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -461,7 +455,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi cấp voucher thủ công',
         ),
       );
-      ProductionLogger.error('Lỗi khi cấp voucher thủ công', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi cấp voucher thủ công',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }
@@ -477,24 +472,20 @@ class WelcomeVoucherService {
           .select('id, is_active');
 
       final campaigns = List<Map<String, dynamic>>.from(campaignsResponse);
-      final activeCampaigns = campaigns
-          .where((c) => c['is_active'] == true)
-          .length;
+      final activeCampaigns =
+          campaigns.where((c) => c['is_active'] == true).length;
 
       // Total club registrations
-      final clubsResponse = await _supabase
-          .from('welcome_campaign_clubs')
-          .select('id, status');
+      final clubsResponse =
+          await _supabase.from('welcome_campaign_clubs').select('id, status');
 
       final clubRegs = List<Map<String, dynamic>>.from(clubsResponse);
-      final approvedClubs = clubRegs
-          .where((c) => c['status'] == 'approved')
-          .length;
+      final approvedClubs =
+          clubRegs.where((c) => c['status'] == 'approved').length;
 
       // Total vouchers issued
-      final issuedResponse = await _supabase
-          .from('welcome_voucher_issued')
-          .select('id');
+      final issuedResponse =
+          await _supabase.from('welcome_voucher_issued').select('id');
 
       final issuedCount = (issuedResponse as List).length;
 
@@ -514,7 +505,8 @@ class WelcomeVoucherService {
           context: 'Lỗi khi lấy thống kê tổng quan',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy thống kê tổng quan', error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
+      ProductionLogger.error('Lỗi khi lấy thống kê tổng quan',
+          error: e, stackTrace: stackTrace, tag: 'WelcomeVoucher');
       rethrow;
     }
   }

@@ -113,8 +113,8 @@ class _BasicReferralCodeInputState extends State<BasicReferralCodeInput> {
           color: _isValid == true
               ? Colors.green
               : _isValid == false
-              ? AppColors.error
-              : AppColors.primary.withValues(alpha: 0.3),
+                  ? AppColors.error
+                  : AppColors.primary.withValues(alpha: 0.3),
           width: 1.5,
         ),
         boxShadow: [

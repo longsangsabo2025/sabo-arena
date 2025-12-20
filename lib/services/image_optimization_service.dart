@@ -8,7 +8,7 @@ import 'package:path/path.dart' as path;
 
 /// Image Optimization Service
 /// Handles image compression, thumbnail generation, and format conversion
-/// 
+///
 /// Features:
 /// - Automatic compression before upload
 /// - Thumbnail generation (150x150, 800x800)
@@ -37,21 +37,21 @@ class ImageOptimizationService {
     bool convertToWebP = true,
   }) async {
     try {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       // Check file size
       final fileSize = await imageFile.length();
       if (fileSize > maxFileSizeBytes) {
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
       }
 
       // Get temporary directory
       final tempDir = await getTemporaryDirectory();
       final fileName = path.basenameWithoutExtension(imageFile.path);
-      final extension = convertToWebP ? '.webp' : path.extension(imageFile.path);
-      final targetPath = path.join(tempDir.path, '${fileName}_compressed$extension');
+      final extension =
+          convertToWebP ? '.webp' : path.extension(imageFile.path);
+      final targetPath =
+          path.join(tempDir.path, '${fileName}_compressed$extension');
 
       // Compress image
       final compressedFile = await FlutterImageCompress.compressAndGetFile(
@@ -64,8 +64,7 @@ class ImageOptimizationService {
       );
 
       if (compressedFile == null) {
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
         return null;
       }
 
@@ -74,13 +73,11 @@ class ImageOptimizationService {
       // final compressedSize = await compressedFileObj.length(); // Unused
       // final compressionRatio = (1 - compressedSize / fileSize) * 100;
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       return compressedFileObj;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -172,8 +169,7 @@ class ImageOptimizationService {
 
       return true;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return false;
     }
   }
@@ -184,17 +180,14 @@ class ImageOptimizationService {
       final bytes = await imageFile.readAsBytes();
       final codec = await ui.instantiateImageCodec(bytes);
       final frame = await codec.getNextFrame();
-      
+
       return {
         'width': frame.image.width,
         'height': frame.image.height,
       };
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
 }
-
-

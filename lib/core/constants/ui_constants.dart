@@ -162,9 +162,9 @@ class AppSizing {
   static EdgeInsets get cardPaddingAll => EdgeInsets.all(cardPadding);
 
   static EdgeInsets get buttonPadding => EdgeInsets.symmetric(
-    vertical: buttonPaddingV,
-    horizontal: buttonPaddingH,
-  );
+        vertical: buttonPaddingV,
+        horizontal: buttonPaddingH,
+      );
 
   // ============================================================================
   // HELPER METHODS

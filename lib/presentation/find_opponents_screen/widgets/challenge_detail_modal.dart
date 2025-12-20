@@ -36,7 +36,7 @@ class _ChallengeDetailModalState extends State<ChallengeDetailModal> {
     final scheduledTime = matchConditions['scheduled_time'];
     final spaPoints = widget.challenge['stakes_amount'] ?? 0;
     final message = widget.challenge['message']?.toString() ?? '';
-    
+
     // 🎯 Check if challenge is already accepted
     final status = widget.challenge['status']?.toString() ?? 'pending';
     final isAlreadyAccepted = status == 'accepted';
@@ -205,7 +205,7 @@ class _ChallengeDetailModalState extends State<ChallengeDetailModal> {
                   const SizedBox(height: 12),
 
                   _buildDetailRow(
-                    Icons.sports_esports,
+                    Icons.sports_baseball,
                     'Loại game',
                     gameType,
                     const Color(0xFF0866FF),
@@ -301,134 +301,134 @@ class _ChallengeDetailModalState extends State<ChallengeDetailModal> {
                   // Warning/Info Box (only show if NOT accepted)
                   if (!isAlreadyAccepted)
                     Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF9C4),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color(0xFFFBC02D),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.info_outline,
-                          color: Color(0xFFF57F17),
-                          size: 24,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF9C4),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFFFBC02D),
+                          width: 1,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            widget.isCompetitive
-                                ? 'Chấp nhận thách đấu sẽ tạo trận đấu chính thức. Bạn có chắc chắn?'
-                                : 'Chấp nhận lời mời sẽ xác nhận tham gia. Bạn có chắc chắn?',
-                            style: TextStyle(
-                              fontFamily: _getSystemFont(),
-                              fontSize: 13,
-                              color: const Color(0xFF050505),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.info_outline,
+                            color: Color(0xFFF57F17),
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              widget.isCompetitive
+                                  ? 'Chấp nhận thách đấu sẽ tạo trận đấu chính thức. Bạn có chắc chắn?'
+                                  : 'Chấp nhận lời mời sẽ xác nhận tham gia. Bạn có chắc chắn?',
+                              style: TextStyle(
+                                fontFamily: _getSystemFont(),
+                                fontSize: 13,
+                                color: const Color(0xFF050505),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
 
                   const SizedBox(height: 24),
 
                   // Action Buttons (only show if NOT accepted)
                   if (!isAlreadyAccepted)
                     Row(
-                    children: [
-                      // Decline Button
-                      Expanded(
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF0F2F5),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextButton(
-                            onPressed: _isLoading ? null : _handleDecline,
-                            style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                      children: [
+                        // Decline Button
+                        Expanded(
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF0F2F5),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
-                              'Từ chối',
-                              style: TextStyle(
-                                fontFamily: _getSystemFont(),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFFEF4444),
+                            child: TextButton(
+                              onPressed: _isLoading ? null : _handleDecline,
+                              style: TextButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                'Từ chối',
+                                style: TextStyle(
+                                  fontFamily: _getSystemFont(),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFFEF4444),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
+                        const SizedBox(width: 12),
 
-                      // Accept Button
-                      Expanded(
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: widget.isCompetitive
-                                  ? [
-                                      const Color(0xFFFF9800),
-                                      const Color(0xFFFF6F00),
-                                    ]
-                                  : [
-                                      const Color(0xFF0866FF),
-                                      const Color(0xFF0952CC),
-                                    ],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    (widget.isCompetitive
-                                            ? const Color(0xFFFF9800)
-                                            : const Color(0xFF0866FF))
-                                        .withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                        // Accept Button
+                        Expanded(
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: widget.isCompetitive
+                                    ? [
+                                        const Color(0xFFFF9800),
+                                        const Color(0xFFFF6F00),
+                                      ]
+                                    : [
+                                        const Color(0xFF0866FF),
+                                        const Color(0xFF0952CC),
+                                      ],
                               ),
-                            ],
-                          ),
-                          child: TextButton(
-                            onPressed: _isLoading ? null : _handleAccept,
-                            style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (widget.isCompetitive
+                                          ? const Color(0xFFFF9800)
+                                          : const Color(0xFF0866FF))
+                                      .withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                            child: TextButton(
+                              onPressed: _isLoading ? null : _handleAccept,
+                              style: TextButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : Text(
+                                      'Chấp nhận',
+                                      style: TextStyle(
+                                        fontFamily: _getSystemFont(),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                  )
-                                : Text(
-                                    'Chấp nhận',
-                                    style: TextStyle(
-                                      fontFamily: _getSystemFont(),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
                     ),
 
                   // 🎯 Close button if already accepted

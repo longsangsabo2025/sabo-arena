@@ -27,7 +27,6 @@ class SimpleChallengeService {
     String? rankMax, // Hạng tối đa (null = không giới hạn)
   }) async {
     try {
-
       final currentUser = _supabase.auth.currentUser;
 
       if (currentUser == null) {
@@ -36,14 +35,12 @@ class SimpleChallengeService {
 
       final userId = currentUser.id;
 
-
       // Get current user details
       final userResponse = await _supabase
           .from('users')
           .select('display_name, elo_rating')
           .eq('id', userId)
           .single();
-
 
       // Get challenged user details (skip for open challenge)
       // Map<String, dynamic>? challengedUserResponse; // Unused
@@ -56,12 +53,11 @@ class SimpleChallengeService {
             .select('display_name, elo_rating')
             .eq('id', challengedUserId)
             .single();
-      } else {
-      }
+      } else {}
 
       // Create challenge record using existing table schema
       // Map our data to the existing challenges table structure
-      
+
       // ✅ NEW LOGIC: For targeted challenges, store target user in match_conditions
       // Do NOT set challenged_id yet - only set when user accepts
       final matchConditions = {
@@ -74,10 +70,11 @@ class SimpleChallengeService {
         // ✅ Store target user ID for targeted challenges
         if (!isOpenChallenge) 'target_user_id': challengedUserId,
       };
-      
+
       Map<String, dynamic> challengeData = {
         'challenger_id': userId,
-        'challenged_id': null, // ✅ ALWAYS null initially - set when user accepts
+        'challenged_id':
+            null, // ✅ ALWAYS null initially - set when user accepts
         'challenge_type': challengeType,
         'message': message ?? '',
         'stakes_type': spaPoints > 0 ? 'spa_points' : 'none',
@@ -91,13 +88,11 @@ class SimpleChallengeService {
         // expires_at will be set automatically by database default
       };
 
-
       final challengeResponse = await _supabase
           .from('challenges')
           .insert(challengeData)
           .select()
           .single();
-
 
       // Send notification (skip for open challenge)
       if (!isOpenChallenge) {
@@ -115,8 +110,7 @@ class SimpleChallengeService {
         } catch (notificationError) {
           // Don't fail the whole challenge if notification fails
         }
-      } else {
-      }
+      } else {}
 
       return challengeResponse;
     } catch (error) {
@@ -136,13 +130,11 @@ class SimpleChallengeService {
     required int spaPoints,
   }) async {
     try {
-      final challengeTypeVi = challengeType == 'thach_dau'
-          ? 'thách đấu'
-          : 'giao lưu';
+      final challengeTypeVi =
+          challengeType == 'thach_dau' ? 'thách đấu' : 'giao lưu';
       final spaInfo = spaPoints > 0 ? ' ($spaPoints SPA)' : '';
 
-      final message =
-          '''
+      final message = '''
 🎱 Lời mời $challengeTypeVi!
 
 👤 Từ: $challengerName
@@ -208,4 +200,3 @@ Hãy vào ứng dụng để phản hồi!
     }
   }
 }
-

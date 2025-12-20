@@ -14,7 +14,6 @@ class ChatIntegrationService {
     required List<Map<String, dynamic>> prizeRecipients,
     required Map<String, dynamic> tournament,
   }) async {
-
     try {
       final tournamentTitle = tournament['title'] as String? ?? 'Tournament';
       final clubId = tournament['club_id'] as String?;
@@ -111,8 +110,10 @@ ${standings.take(5).map((s) {
         final wins = s['wins'] ?? 0;
         final losses = s['losses'] ?? 0;
         String medal = '';
-        if (pos == 1) medal = '🥇';
-        else if (pos == 2) medal = '🥈';
+        if (pos == 1)
+          medal = '🥇';
+        else if (pos == 2)
+          medal = '🥈';
         else if (pos == 3 || pos == 4) medal = '🥉';
         return '$medal #$pos: **$name** ($wins-$losses)';
       }).join('\n')}
@@ -125,7 +126,6 @@ Cảm ơn tất cả các vận động viên đã tham gia! 🙏
         message: summaryMessage,
         messageType: 'tournament_summary',
       );
-
     } catch (e) {
       // Don't rethrow - chat messages are not critical
     }
@@ -166,4 +166,3 @@ Cảm ơn tất cả các vận động viên đã tham gia! 🙏
     }
   }
 }
-

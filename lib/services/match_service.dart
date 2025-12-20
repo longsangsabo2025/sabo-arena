@@ -16,17 +16,13 @@ class MatchService {
   /// Get a single match by ID
   Future<Match?> getMatchById(String matchId) async {
     try {
-      final response = await _supabase
-          .from('matches')
-          .select('''
+      final response = await _supabase.from('matches').select('''
             *,
-            player1:users!matches_player1_id_fkey (id, display_name, full_name, avatar_url, rank),
-            player2:users!matches_player2_id_fkey (id, display_name, full_name, avatar_url, rank),
-            winner:users!matches_winner_id_fkey (display_name, full_name),
+            player1:users!matches_player1_id_fkey (id, display_name, full_name, username, avatar_url, rank),
+            player2:users!matches_player2_id_fkey (id, display_name, full_name, username, avatar_url, rank),
+            winner:users!matches_winner_id_fkey (display_name, full_name, username),
             tournament:tournaments (title)
-          ''')
-          .eq('id', matchId)
-          .maybeSingle();
+          ''').eq('id', matchId).maybeSingle();
 
       if (response == null) return null;
       return Match.fromJson(response);
@@ -49,9 +45,9 @@ class MatchService {
           .from('matches')
           .select('''
             *,
-            player1:users!matches_player1_id_fkey (display_name, full_name),
-            player2:users!matches_player2_id_fkey (display_name, full_name),
-            winner:users!matches_winner_id_fkey (display_name, full_name),
+            player1:users!matches_player1_id_fkey (display_name, full_name, username),
+            player2:users!matches_player2_id_fkey (display_name, full_name, username),
+            winner:users!matches_winner_id_fkey (display_name, full_name, username),
             tournament:tournaments (title, club_id)
           ''')
           .eq('tournament_id', tournamentId)
@@ -72,20 +68,21 @@ class MatchService {
     }
   }
 
-  Future<List<Match>> getUserMatches(String userId, {int limit = 20}) async {
+  Future<List<Match>> getUserMatches(String userId,
+      {int limit = 20, int offset = 0}) async {
     try {
       final response = await _supabase
           .from('matches')
           .select('''
             *,
-            player1:users!matches_player1_id_fkey (id, display_name, full_name, avatar_url, rank),
-            player2:users!matches_player2_id_fkey (id, display_name, full_name, avatar_url, rank),
-            winner:users!matches_winner_id_fkey (display_name, full_name),
+            player1:users!matches_player1_id_fkey (id, display_name, full_name, username, avatar_url, rank),
+            player2:users!matches_player2_id_fkey (id, display_name, full_name, username, avatar_url, rank),
+            winner:users!matches_winner_id_fkey (display_name, full_name, username),
             tournament:tournaments (title, club_id)
           ''')
           .or('player1_id.eq.$userId,player2_id.eq.$userId')
           .order('created_at', ascending: false)
-          .limit(limit);
+          .range(offset, offset + limit - 1);
 
       return response.map<Match>((json) => Match.fromJson(json)).toList();
     } catch (error) {
@@ -203,9 +200,11 @@ class MatchService {
           await UserStatsUpdateService.instance.updateUserStats(player1Id);
           await UserStatsUpdateService.instance.updateUserStats(player2Id);
 
-          ProductionLogger.info('✅ Updated stats for match players', tag: 'match_service');
+          ProductionLogger.info('✅ Updated stats for match players',
+              tag: 'match_service');
         } catch (e) {
-          ProductionLogger.info('⚠️ Could not update player stats: $e', tag: 'match_service');
+          ProductionLogger.info('⚠️ Could not update player stats: $e',
+              tag: 'match_service');
         }
       }
 
@@ -219,8 +218,7 @@ class MatchService {
             player2:users!matches_player2_id_fkey (display_name, full_name),
             winner:users!matches_winner_id_fkey (display_name, full_name),
             tournament:tournaments (title)
-          ''')
-          .single();
+          ''').single();
 
       return Match.fromJson(response);
     } catch (error) {

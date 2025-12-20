@@ -14,6 +14,72 @@ class AdminService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   // ==========================================
+  // MUSK METRICS (GOD MODE)
+  // ==========================================
+
+  Future<Map<String, dynamic>> getMuskMetrics() async {
+    try {
+      // 1. Live Ops: Active Matches
+      final activeMatchesResponse = await _supabase
+          .from('matches')
+          .select('id')
+          .eq('status', 'in_progress')
+          .count(CountOption.exact);
+      final activeMatches = activeMatchesResponse.count;
+
+      // 2. Growth: New Users (24h)
+      final yesterday =
+          DateTime.now().subtract(const Duration(hours: 24)).toIso8601String();
+      final newUsersResponse = await _supabase
+          .from('users')
+          .select('id')
+          .gte('created_at', yesterday)
+          .count(CountOption.exact);
+      final newUsers = newUsersResponse.count;
+
+      // 3. Financials: Completed Payments (Total)
+      final paymentsResponse = await _supabase
+          .from('payments')
+          .select('id')
+          .eq('status', 'completed')
+          .count(CountOption.exact);
+      final totalTxns = paymentsResponse.count;
+
+      // 4. Integrity: High ELO Users (>2000)
+      final highEloResponse = await _supabase
+          .from('users')
+          .select('id')
+          .gt('elo_rating', 2000)
+          .count(CountOption.exact);
+      final highEloCount = highEloResponse.count;
+
+      return {
+        'live_ops': {
+          'active_matches': activeMatches,
+          'online_users':
+              (activeMatches * 2) + 15, // Mock: Players + Spectators
+        },
+        'financials': {
+          'transactions': totalTxns,
+          'estimated_revenue': totalTxns * 50000, // Mock: 50k VND avg
+        },
+        'integrity': {
+          'high_elo': highEloCount,
+          'reports': 0, // Mock
+        },
+        'growth': {
+          'new_users_24h': newUsers,
+          'k_factor': 1.1, // Mock
+        }
+      };
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error fetching Musk Metrics: $e');
+      return {};
+    }
+  }
+
+  // ==========================================
   // CLUB MANAGEMENT
   // ==========================================
 
@@ -127,7 +193,6 @@ class AdminService {
         );
       }
 
-
       // Create or update club_members record with owner role
       try {
         // Check if club_members record exists
@@ -181,7 +246,6 @@ class AdminService {
           'role_updated': 'club_owner',
         },
       );
-
 
       final club = Club.fromJson(clubResponse);
 
@@ -314,17 +378,13 @@ class AdminService {
   }) async {
     try {
       // Get recent club registrations
-      final clubActivities = await _supabase
-          .from('clubs')
-          .select('''
+      final clubActivities = await _supabase.from('clubs').select('''
             id,
             name,
             approval_status,
             created_at,
             owner:users!owner_id (display_name)
-          ''')
-          .order('created_at', ascending: false)
-          .limit(limit);
+          ''').order('created_at', ascending: false).limit(limit);
 
       // Convert to activity format
       List<Map<String, dynamic>> activities = [];
@@ -366,15 +426,15 @@ class AdminService {
 
       // Check if user is admin
       final isAdmin = await isCurrentUserAdmin();
-      if (!isAdmin) throw Exception('Chỉ quản trị viên mới có quyền thực hiện hành động này');
-
+      if (!isAdmin)
+        throw Exception(
+            'Chỉ quản trị viên mới có quyền thực hiện hành động này');
 
       // Call RPC function instead of direct table operations
       final result = await _supabase.rpc(
         'admin_add_all_users_to_tournament',
         params: {'p_tournament_id': tournamentId},
       );
-
 
       // The RPC function returns a JSON object with all necessary information
       if (result is Map<String, dynamic>) {
@@ -404,15 +464,15 @@ class AdminService {
 
       // Check if user is admin
       final isAdmin = await isCurrentUserAdmin();
-      if (!isAdmin) throw Exception('Chỉ quản trị viên mới có quyền thực hiện hành động này');
-
+      if (!isAdmin)
+        throw Exception(
+            'Chỉ quản trị viên mới có quyền thực hiện hành động này');
 
       // Call RPC function instead of direct table operations
       final result = await _supabase.rpc(
         'admin_remove_all_users_from_tournament',
         params: {'p_tournament_id': tournamentId},
       );
-
 
       // The RPC function returns a JSON object with all necessary information
       if (result is Map<String, dynamic>) {
@@ -493,7 +553,8 @@ class AdminService {
           .map<AdminUserView>((json) => AdminUserView.fromJson(json))
           .toList();
     } catch (error) {
-      throw Exception('Lỗi khi lấy danh sách người dùng cho quản trị viên: $error');
+      throw Exception(
+          'Lỗi khi lấy danh sách người dùng cho quản trị viên: $error');
     }
   }
 
@@ -523,7 +584,8 @@ class AdminService {
           .map<UserProfile>((json) => UserProfile.fromJson(json))
           .toList();
     } catch (error) {
-      throw Exception('Lỗi khi lấy danh sách người dùng cho quản trị viên: $error');
+      throw Exception(
+          'Lỗi khi lấy danh sách người dùng cho quản trị viên: $error');
     }
   }
 
@@ -537,14 +599,11 @@ class AdminService {
       final admin = _supabase.auth.currentUser;
       if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
-      await _supabase
-          .from('users')
-          .update({
-            'status': 'blocked',
-            'blocked_at': DateTime.now().toIso8601String(),
-            'blocked_reason': reason,
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'status': 'blocked',
+        'blocked_at': DateTime.now().toIso8601String(),
+        'blocked_reason': reason,
+      }).eq('id', userId);
 
       await _logAdminAction(
         adminId: admin.id,
@@ -563,14 +622,11 @@ class AdminService {
       final admin = _supabase.auth.currentUser;
       if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
-      await _supabase
-          .from('users')
-          .update({
-            'status': 'active',
-            'blocked_at': null,
-            'blocked_reason': null,
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'status': 'active',
+        'blocked_at': null,
+        'blocked_reason': null,
+      }).eq('id', userId);
 
       await _logAdminAction(
         adminId: admin.id,
@@ -588,13 +644,10 @@ class AdminService {
       final admin = _supabase.auth.currentUser;
       if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
-      await _supabase
-          .from('users')
-          .update({
-            'deleted_at': DateTime.now().toIso8601String(),
-            'status': 'deleted',
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'deleted_at': DateTime.now().toIso8601String(),
+        'status': 'deleted',
+      }).eq('id', userId);
 
       await _logAdminAction(
         adminId: admin.id,
@@ -636,13 +689,10 @@ class AdminService {
       final admin = _supabase.auth.currentUser;
       if (admin == null) throw Exception('Quản trị viên chưa đăng nhập');
 
-      await _supabase
-          .from('users')
-          .update({
-            'is_verified': true,
-            'verified_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'is_verified': true,
+        'verified_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
 
       await _logAdminAction(
         adminId: admin.id,
@@ -662,8 +712,7 @@ class AdminService {
 
       await _supabase
           .from('users')
-          .update({'is_verified': false, 'verified_at': null})
-          .eq('id', userId);
+          .update({'is_verified': false, 'verified_at': null}).eq('id', userId);
 
       await _logAdminAction(
         adminId: admin.id,
@@ -751,17 +800,12 @@ class AdminService {
   Future<Map<String, dynamic>> getUserStatistics(String userId) async {
     try {
       // User basic info
-      final user = await _supabase
-          .from('users')
-          .select()
-          .eq('id', userId)
-          .single();
+      final user =
+          await _supabase.from('users').select().eq('id', userId).single();
 
       // Clubs owned
-      final clubsOwned = await _supabase
-          .from('clubs')
-          .select('id')
-          .eq('owner_id', userId);
+      final clubsOwned =
+          await _supabase.from('clubs').select('id').eq('owner_id', userId);
       final clubsCount = (clubsOwned as List).length;
 
       // Tournaments participated
@@ -785,9 +829,9 @@ class AdminService {
         'matches_played': matchesCount,
         'win_rate': user['total_wins'] > 0
             ? (user['total_wins'] /
-                      (user['total_wins'] + user['total_losses']) *
-                      100)
-                  .toStringAsFixed(1)
+                    (user['total_wins'] + user['total_losses']) *
+                    100)
+                .toStringAsFixed(1)
             : '0.0',
       };
     } catch (error) {
@@ -919,9 +963,7 @@ class AdminService {
   /// Get voucher campaign by ID
   Future<VoucherCampaign> getVoucherCampaignById(String campaignId) async {
     try {
-      final response = await _supabase
-          .from('voucher_campaigns')
-          .select('''
+      final response = await _supabase.from('voucher_campaigns').select('''
             *,
             club:clubs!club_id (
               name,
@@ -930,9 +972,7 @@ class AdminService {
                 email
               )
             )
-          ''')
-          .eq('id', campaignId)
-          .single();
+          ''').eq('id', campaignId).single();
 
       return VoucherCampaign.fromJson(response);
     } catch (error) {
@@ -1014,7 +1054,7 @@ class AdminService {
   Future<Map<String, int>> getVoucherCampaignStats() async {
     try {
       final response = await _supabase.rpc('get_voucher_campaign_stats');
-      
+
       // If RPC doesn't exist, calculate manually
       if (response == null) {
         final allCampaigns = await getVoucherCampaigns(limit: 1000);
@@ -1025,7 +1065,7 @@ class AdminService {
           'rejected': allCampaigns.where((c) => c.isRejected).length,
         };
       }
-      
+
       // Function returns array with single row, extract first element
       if (response is List && response.isNotEmpty) {
         final stats = response[0] as Map<String, dynamic>;
@@ -1033,12 +1073,12 @@ class AdminService {
           'pending': (stats['pending_count'] ?? 0) as int,
           'approved': (stats['approved_count'] ?? 0) as int,
           'rejected': (stats['rejected_count'] ?? 0) as int,
-          'total': ((stats['pending_count'] ?? 0) as int) + 
-                   ((stats['approved_count'] ?? 0) as int) + 
-                   ((stats['rejected_count'] ?? 0) as int),
+          'total': ((stats['pending_count'] ?? 0) as int) +
+              ((stats['approved_count'] ?? 0) as int) +
+              ((stats['rejected_count'] ?? 0) as int),
         };
       }
-      
+
       throw Exception('Định dạng phản hồi không mong đợi');
     } catch (error) {
       final allCampaigns = await getVoucherCampaigns(limit: 1000);
@@ -1051,4 +1091,3 @@ class AdminService {
     }
   }
 }
-

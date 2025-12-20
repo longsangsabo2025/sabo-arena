@@ -46,8 +46,7 @@ class _PostBackgroundSettingsScreenEnhancedState
 
       setState(() {
         // Load theme selection
-        _selectedThemeId =
-            prefs.getString('post_bg_theme_id') ??
+        _selectedThemeId = prefs.getString('post_bg_theme_id') ??
             PostBackgroundThemes.defaultTheme.id;
 
         // Load auto-rotate
@@ -743,9 +742,8 @@ class _PostBackgroundSettingsScreenEnhancedState
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected
-                          ? AppColors.primary
-                          : Colors.grey.shade300,
+                      color:
+                          isSelected ? AppColors.primary : Colors.grey.shade300,
                       width: isSelected ? 3 : 1,
                     ),
                     boxShadow: [
@@ -850,4 +848,3 @@ class _PostBackgroundSettingsScreenEnhancedState
     );
   }
 }
-

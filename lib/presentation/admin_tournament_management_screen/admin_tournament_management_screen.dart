@@ -303,7 +303,8 @@ class _AdminTournamentManagementScreenState
             SizedBox(width: 8),
             Expanded(
               child: Text(
-                title, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                title,
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -313,7 +314,9 @@ class _AdminTournamentManagementScreenState
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Hủy', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Hủy',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
@@ -325,16 +328,17 @@ class _AdminTournamentManagementScreenState
               onConfirm();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: title.contains('Add')
-                  ? Colors.green
-                  : Colors.orange,
+              backgroundColor:
+                  title.contains('Add') ? Colors.green : Colors.orange,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
             child: Text(
-              'Confirm', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
+              'Confirm',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -384,7 +388,9 @@ class _AdminTournamentManagementScreenState
             Icon(Icons.admin_panel_settings, size: 64, color: Colors.grey[400]),
             SizedBox(height: 2.h),
             Text(
-              'Access Denied', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Access Denied',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey[600],
@@ -393,7 +399,8 @@ class _AdminTournamentManagementScreenState
             SizedBox(height: 1.h),
             Text(
               'You need admin permissions to access this screen.',
-              textAlign: TextAlign.center, style: TextStyle(fontSize: 14.sp, color: Colors.grey[500]),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey[500]),
             ),
           ],
         ),
@@ -420,7 +427,9 @@ class _AdminTournamentManagementScreenState
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              _operationMessage!, overflow: TextOverflow.ellipsis, style: TextStyle(
+              _operationMessage!,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: _operationMessage!.startsWith('Error')
                     ? Colors.red[800]
                     : Colors.green[800],
@@ -454,7 +463,9 @@ class _AdminTournamentManagementScreenState
                     ),
                     SizedBox(width: 12),
                     Text(
-                      'Processing tournament operation...', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Processing tournament operation...',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12.sp,
                         color: Colors.blue[800],
                         fontWeight: FontWeight.w500,
@@ -489,7 +500,9 @@ class _AdminTournamentManagementScreenState
           Icon(Icons.emoji_events_outlined, size: 64, color: Colors.grey[400]),
           SizedBox(height: 2.h),
           Text(
-            'No Tournaments Found', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'No Tournaments Found',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: Colors.grey[600],
@@ -518,9 +531,8 @@ class _AdminTournamentManagementScreenState
     final maxParticipants = tournament['max_participants'] ?? 0;
     final clubName = tournament['club']?['name'] ?? 'No Club';
 
-    final canAddUsers =
-        status == 'upcoming' && currentParticipants < maxParticipants;
     final canRemoveUsers = currentParticipants > 0;
+    final canAddUsers = currentParticipants < maxParticipants;
 
     return Card(
       margin: EdgeInsets.only(bottom: 2.h),
@@ -537,14 +549,17 @@ class _AdminTournamentManagementScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        title, style: TextStyle(
+                        title,
+                        style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(height: 0.5.h),
                       Text(
-                        'Club: $clubName', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Club: $clubName',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 12.sp,
                           color: Colors.grey[600],
                         ),
@@ -581,7 +596,9 @@ class _AdminTournamentManagementScreenState
                 Icon(Icons.people, size: 16.sp, color: Colors.grey[600]),
                 SizedBox(width: 1.w),
                 Text(
-                  'Participants: $currentParticipants/$maxParticipants', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
+                  'Participants: $currentParticipants/$maxParticipants',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -595,14 +612,14 @@ class _AdminTournamentManagementScreenState
                   child: ElevatedButton.icon(
                     onPressed: canAddUsers && !_isOperationInProgress
                         ? () => _showConfirmDialog(
-                            title: '👥 Add All Users',
-                            content:
-                                'Are you sure you want to add all users to "$title"?\n\nThis action will add all registered users to the tournament.',
-                            onConfirm: () => _addAllUsersToTournament(
-                              tournament['id'],
-                              title,
-                            ),
-                          )
+                              title: '👥 Add Demo Users',
+                              content:
+                                  'Are you sure you want to add demo users to "$title"?\n\nThis action will fill the tournament with available users.',
+                              onConfirm: () => _addAllUsersToTournament(
+                                tournament['id'],
+                                title,
+                              ),
+                            )
                         : null,
                     icon: Icon(
                       _isOperationInProgress
@@ -613,7 +630,9 @@ class _AdminTournamentManagementScreenState
                     label: Text(
                       _isOperationInProgress
                           ? 'Processing...'
-                          : 'Add All Users', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp),
+                          : 'Add Demo Users',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11.sp),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: canAddUsers && !_isOperationInProgress
@@ -629,14 +648,14 @@ class _AdminTournamentManagementScreenState
                   child: ElevatedButton.icon(
                     onPressed: canRemoveUsers && !_isOperationInProgress
                         ? () => _showConfirmDialog(
-                            title: '🗑️ Remove All Users',
-                            content:
-                                'Are you sure you want to remove ALL users from "$title"?\n\n⚠️ This action cannot be undone.',
-                            onConfirm: () => _removeAllUsersFromTournament(
-                              tournament['id'],
-                              title,
-                            ),
-                          )
+                              title: '🗑️ Remove All Users',
+                              content:
+                                  'Are you sure you want to remove ALL users from "$title"?\n\n⚠️ This action cannot be undone.',
+                              onConfirm: () => _removeAllUsersFromTournament(
+                                tournament['id'],
+                                title,
+                              ),
+                            )
                         : null,
                     icon: Icon(
                       _isOperationInProgress
@@ -645,16 +664,17 @@ class _AdminTournamentManagementScreenState
                       size: 16,
                     ),
                     label: Text(
-                      _isOperationInProgress ? 'Processing...' : 'Remove All', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp),
+                      _isOperationInProgress ? 'Processing...' : 'Remove All',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11.sp),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: canRemoveUsers && !_isOperationInProgress
                           ? Colors.orange
                           : Colors.grey,
                       foregroundColor: Colors.white,
-                      elevation: canRemoveUsers && !_isOperationInProgress
-                          ? 2
-                          : 0,
+                      elevation:
+                          canRemoveUsers && !_isOperationInProgress ? 2 : 0,
                     ),
                   ),
                 ),

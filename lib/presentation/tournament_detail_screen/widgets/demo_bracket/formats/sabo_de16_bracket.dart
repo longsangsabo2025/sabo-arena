@@ -62,9 +62,13 @@ class _SaboDE16BracketState extends State<SaboDE16Bracket>
     }).toList();
 
     // Debug log
-    ProductionLogger.info('🔍 SABO DE16: Filtering type=$type, found ${filtered.length} matches',  tag: 'sabo_de16_bracket');
+    ProductionLogger.info(
+        '🔍 SABO DE16: Filtering type=$type, found ${filtered.length} matches',
+        tag: 'sabo_de16_bracket');
     if (filtered.isEmpty && widget.matches.isNotEmpty) {
-      ProductionLogger.info('⚠️ Available bracket types: ${widget.matches.map((m) => m['bracket_type']).toSet()}',  tag: 'sabo_de16_bracket');
+      ProductionLogger.info(
+          '⚠️ Available bracket types: ${widget.matches.map((m) => m['bracket_type']).toSet()}',
+          tag: 'sabo_de16_bracket');
     }
 
     return filtered;
@@ -317,8 +321,7 @@ class _SaboDE16BracketState extends State<SaboDE16Bracket>
 
   Widget _buildFinals(List<Map<String, dynamic>> matches) {
     // Sort by round_number (250, 251, 300)
-    final sortedMatches = [...matches]
-      ..sort((a, b) {
+    final sortedMatches = [...matches]..sort((a, b) {
         final aRound = a['round_number'] as int? ?? 0;
         final bRound = b['round_number'] as int? ?? 0;
         return aRound.compareTo(bRound);
@@ -481,14 +484,20 @@ class _SaboDE16BracketState extends State<SaboDE16Bracket>
             const SizedBox(height: 8),
             // Player 1
             _buildPlayerRow(
-              player1?['display_name'] ?? player1?['name'] ?? player1?['full_name'] ?? 'TBD',
+              player1?['display_name'] ??
+                  player1?['name'] ??
+                  player1?['full_name'] ??
+                  'TBD',
               winnerId == player1?['id'],
               player1?['score'] as int? ?? match['player1_score'] as int? ?? 0,
             ),
             const Divider(height: 8),
             // Player 2
             _buildPlayerRow(
-              player2?['display_name'] ?? player2?['name'] ?? player2?['full_name'] ?? 'TBD',
+              player2?['display_name'] ??
+                  player2?['name'] ??
+                  player2?['full_name'] ??
+                  'TBD',
               winnerId == player2?['id'],
               player2?['score'] as int? ?? match['player2_score'] as int? ?? 0,
             ),

@@ -13,6 +13,7 @@ import '../direct_messages_screen/direct_messages_screen.dart';
 import '../../services/user_service.dart';
 import '../../services/direct_messaging_service.dart';
 import '../../services/tournament_service.dart';
+import '../../widgets/common/app_button.dart';
 import '../../models/tournament_tab_status.dart';
 import '../../services/share_service.dart';
 import '../user_profile_screen/widgets/modern_profile_header_widget.dart';
@@ -104,7 +105,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
       if (!mounted) return;
       setState(() => _isLoading = true);
 
-
       // Load user profile
       final profile = await _userService.getUserProfileById(widget.userId);
 
@@ -127,7 +127,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
           _isLoading = false;
         });
       }
-
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -222,7 +221,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(UserFriendlyMessages.followError)));
+        ).showSnackBar(
+            SnackBar(content: Text(UserFriendlyMessages.followError)));
       }
     } finally {
       if (mounted) {
@@ -293,52 +293,35 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
       child: Row(
         children: [
-          // Follow/Unfollow button
+          // Follow/Unfollow button - iOS style
           Expanded(
             flex: 2,
-            child: ElevatedButton.icon(
+            child: AppButton(
+              label: _isFollowing ? 'Đang theo dõi' : 'Theo dõi',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              icon: _isFollowing ? Icons.person_remove : Icons.person_add,
+              iconTrailing: false,
+              customColor: _isFollowing ? Colors.grey[300] : null,
+              customTextColor: _isFollowing ? Colors.black87 : null,
+              isLoading: _isProcessing,
+              fullWidth: true,
               onPressed: _isProcessing ? null : _toggleFollow,
-              icon: Icon(
-                _isFollowing ? Icons.person_remove : Icons.person_add,
-                size: 18,
-              ),
-              label: Text(
-                _isFollowing ? 'Đang theo dõi' : 'Theo dõi', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _isFollowing
-                    ? Colors.grey[300]
-                    : AppTheme.lightTheme.colorScheme.primary,
-                foregroundColor: _isFollowing ? Colors.black87 : Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
             ),
           ),
 
           SizedBox(width: 2.w),
 
-          // Message button
+          // Message button - iOS style
           Expanded(
-            child: OutlinedButton.icon(
+            child: AppButton(
+              label: 'Nhắn tin',
+              type: AppButtonType.outline,
+              size: AppButtonSize.medium,
+              icon: Icons.message_outlined,
+              iconTrailing: false,
+              fullWidth: true,
               onPressed: _sendMessage,
-              icon: Icon(Icons.message_outlined, size: 18),
-              label: Text(
-                'Nhắn tin', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppTheme.lightTheme.colorScheme.primary,
-                side: BorderSide(
-                  color: AppTheme.lightTheme.colorScheme.primary,
-                  width: 1.5,
-                ),
-                padding: EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
             ),
           ),
         ],
@@ -361,7 +344,9 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chưa có giải đấu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Chưa có giải đấu',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[700],
@@ -380,7 +365,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
         // final cardData = _tournamentToCardData(tournament);
 
         return TournamentCardWidget(
-          // tournament: cardData, // Fix parameter name
+          tournamentObj: tournament,
           onTap: () {
             Navigator.pushNamed(
               context,
@@ -527,11 +512,15 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
               Icon(Icons.person_off_outlined, size: 80, color: Colors.grey),
               SizedBox(height: 2.h),
               Text(
-                'Không thể tải hồ sơ', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.titleLarge,
+                'Không thể tải hồ sơ',
+                overflow: TextOverflow.ellipsis,
+                style: AppTheme.lightTheme.textTheme.titleLarge,
               ),
               SizedBox(height: 1.h),
               Text(
-                'Người dùng không tồn tại.', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.bodyMedium,
+                'Người dùng không tồn tại.',
+                overflow: TextOverflow.ellipsis,
+                style: AppTheme.lightTheme.textTheme.bodyMedium,
               ),
               SizedBox(height: 4.h),
               ElevatedButton(
@@ -616,4 +605,3 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen>
     );
   }
 }
-

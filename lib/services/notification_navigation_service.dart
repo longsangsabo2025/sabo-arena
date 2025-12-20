@@ -16,7 +16,6 @@ class NotificationNavigationService {
     required String type,
     Map<String, dynamic>? data,
   }) {
-
     try {
       switch (type) {
         // Tournament related notifications
@@ -264,7 +263,8 @@ class NotificationNavigationService {
                     if (data['action'] != null) ...[
                       Row(
                         children: [
-                          const Icon(Icons.info_outline, size: 16, color: Color(0xFF65676B)),
+                          const Icon(Icons.info_outline,
+                              size: 16, color: Color(0xFF65676B)),
                           const SizedBox(width: 8),
                           const Text(
                             'Loại:',
@@ -292,7 +292,8 @@ class NotificationNavigationService {
                     if (data['screen'] != null) ...[
                       Row(
                         children: [
-                          const Icon(Icons.screen_share_outlined, size: 16, color: Color(0xFF65676B)),
+                          const Icon(Icons.screen_share_outlined,
+                              size: 16, color: Color(0xFF65676B)),
                           const SizedBox(width: 8),
                           const Text(
                             'Màn hình:',
@@ -359,11 +360,11 @@ class NotificationNavigationService {
                 ),
                 const SizedBox(width: 12),
                 // View Detail Button (if has navigation data)
-                if (data != null && 
-                    (data['tournament_id'] != null || 
-                     data['match_id'] != null || 
-                     data['challenge_id'] != null ||
-                     data['club_id'] != null)) ...[
+                if (data != null &&
+                    (data['tournament_id'] != null ||
+                        data['match_id'] != null ||
+                        data['challenge_id'] != null ||
+                        data['club_id'] != null)) ...[
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
@@ -417,7 +418,7 @@ class NotificationNavigationService {
   /// Convert technical action name to friendly Vietnamese label
   String _getActionLabel(String? action) {
     if (action == null) return 'Thông báo';
-    
+
     switch (action.toLowerCase()) {
       case 'view_tournament':
         return '🏆 Xem Giải Đấu';
@@ -441,7 +442,7 @@ class NotificationNavigationService {
   /// Convert technical screen name to friendly Vietnamese label
   String _getScreenLabel(String? screen) {
     if (screen == null) return 'Màn hình chính';
-    
+
     switch (screen.toLowerCase()) {
       case 'tournament_detail':
         return 'Chi Tiết Giải Đấu';
@@ -460,9 +461,11 @@ class NotificationNavigationService {
       case 'home':
         return 'Trang Chủ';
       default:
-        return screen.replaceAll('_', ' ').split(' ')
-          .map((word) => word[0].toUpperCase() + word.substring(1))
-          .join(' ');
+        return screen
+            .replaceAll('_', ' ')
+            .split(' ')
+            .map((word) => word[0].toUpperCase() + word.substring(1))
+            .join(' ');
     }
   }
 
@@ -525,4 +528,3 @@ class NotificationNavigationService {
     );
   }
 }
-

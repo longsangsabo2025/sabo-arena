@@ -173,9 +173,8 @@ class _AddMemberDialogState extends State<AddMemberDialog>
                   Expanded(
                     child: DSButton.tertiary(
                       text: 'Hủy',
-                      onPressed: _isLoading
-                          ? null
-                          : () => Navigator.pop(context),
+                      onPressed:
+                          _isLoading ? null : () => Navigator.pop(context),
                       size: DSButtonSize.large,
                     ),
                   ),
@@ -186,9 +185,8 @@ class _AddMemberDialogState extends State<AddMemberDialog>
                       text: _isLoading ? '' : _getActionButtonText(),
                       onPressed: _isLoading ? null : _handleAddMember,
                       size: DSButtonSize.large,
-                      leadingIcon: _isLoading
-                          ? null
-                          : Icons.person_add_outlined,
+                      leadingIcon:
+                          _isLoading ? null : Icons.person_add_outlined,
                       isLoading: _isLoading,
                     ),
                   ),
@@ -276,9 +274,8 @@ class _AddMemberDialogState extends State<AddMemberDialog>
                     _selectedMembershipType = type;
                   });
                 },
-                variant: isSelected
-                    ? DSChipVariant.filled
-                    : DSChipVariant.outlined,
+                variant:
+                    isSelected ? DSChipVariant.filled : DSChipVariant.outlined,
                 size: DSChipSize.medium,
                 leadingIcon: _getMembershipIcon(type),
               );

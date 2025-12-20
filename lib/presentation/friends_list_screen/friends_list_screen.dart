@@ -6,8 +6,10 @@ import '../../models/user_profile.dart';
 import '../../services/friends_service.dart';
 import '../../services/user_service.dart';
 import '../../widgets/avatar_with_quick_follow.dart';
+import '../../widgets/common/app_button.dart';
 import '../other_user_profile_screen/other_user_profile_screen.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 /// Friends List Screen with 3 tabs: Friends, Following, Followers
 class FriendsListScreen extends StatefulWidget {
@@ -26,13 +28,10 @@ class _FriendsListScreenState extends State<FriendsListScreen>
 
   late TabController _tabController;
 
-  List<UserProfile> _friends = [];
-  List<UserProfile> _following = [];
-  List<UserProfile> _followers = [];
-
-  bool _isLoadingFriends = true;
-  bool _isLoadingFollowing = true;
-  bool _isLoadingFollowers = true;
+  // ♾️ Infinite Scroll Pagination Controllers
+  late PagingController<int, UserProfile> _friendsPagingController;
+  late PagingController<int, UserProfile> _followingPagingController;
+  late PagingController<int, UserProfile> _followersPagingController;
 
   @override
   void initState() {
@@ -42,71 +41,117 @@ class _FriendsListScreenState extends State<FriendsListScreen>
       vsync: this,
       initialIndex: widget.initialTab,
     );
-    _loadAllData();
+
+    // Initialize paging controllers
+    _friendsPagingController =
+        PagingController<int, UserProfile>(firstPageKey: 0);
+    _followingPagingController =
+        PagingController<int, UserProfile>(firstPageKey: 0);
+    _followersPagingController =
+        PagingController<int, UserProfile>(firstPageKey: 0);
+
+    // Add page request listeners
+    _friendsPagingController.addPageRequestListener((pageKey) {
+      _fetchFriendsPage(pageKey);
+    });
+    _followingPagingController.addPageRequestListener((pageKey) {
+      _fetchFollowingPage(pageKey);
+    });
+    _followersPagingController.addPageRequestListener((pageKey) {
+      _fetchFollowersPage(pageKey);
+    });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _friendsPagingController.dispose();
+    _followingPagingController.dispose();
+    _followersPagingController.dispose();
     super.dispose();
   }
 
+  // Get current paging controller based on tab
+  PagingController<int, UserProfile> get _currentPagingController {
+    switch (_tabController.index) {
+      case 0:
+        return _friendsPagingController;
+      case 1:
+        return _followingPagingController;
+      case 2:
+        return _followersPagingController;
+      default:
+        return _friendsPagingController;
+    }
+  }
+
+  Future<void> _fetchFriendsPage(int pageKey) async {
+    try {
+      final friends = await _friendsService.getFriendsList(
+        limit: 20,
+        offset: pageKey,
+      );
+
+      final isLastPage = friends.length < 20;
+      if (isLastPage) {
+        _friendsPagingController.appendLastPage(friends);
+      } else {
+        _friendsPagingController.appendPage(friends, pageKey + friends.length);
+      }
+    } catch (error) {
+      _friendsPagingController.error = error;
+      ProductionLogger.info('Error loading friends: $error',
+          tag: 'friends_list_screen');
+    }
+  }
+
+  Future<void> _fetchFollowingPage(int pageKey) async {
+    try {
+      final following = await _friendsService.getFollowingList(
+        limit: 20,
+        offset: pageKey,
+      );
+
+      final isLastPage = following.length < 20;
+      if (isLastPage) {
+        _followingPagingController.appendLastPage(following);
+      } else {
+        _followingPagingController.appendPage(
+            following, pageKey + following.length);
+      }
+    } catch (error) {
+      _followingPagingController.error = error;
+      ProductionLogger.info('Error loading following: $error',
+          tag: 'friends_list_screen');
+    }
+  }
+
+  Future<void> _fetchFollowersPage(int pageKey) async {
+    try {
+      final followers = await _friendsService.getFollowersList(
+        limit: 20,
+        offset: pageKey,
+      );
+
+      final isLastPage = followers.length < 20;
+      if (isLastPage) {
+        _followersPagingController.appendLastPage(followers);
+      } else {
+        _followersPagingController.appendPage(
+            followers, pageKey + followers.length);
+      }
+    } catch (error) {
+      _followersPagingController.error = error;
+      ProductionLogger.info('Error loading followers: $error',
+          tag: 'friends_list_screen');
+    }
+  }
+
   Future<void> _loadAllData() async {
-    await Future.wait([_loadFriends(), _loadFollowing(), _loadFollowers()]);
-  }
-
-  Future<void> _loadFriends() async {
-    try {
-      setState(() => _isLoadingFriends = true);
-      final friends = await _friendsService.getFriendsList();
-      if (mounted) {
-        setState(() {
-          _friends = friends;
-          _isLoadingFriends = false;
-        });
-      }
-    } catch (e) {
-      ProductionLogger.info('Error loading friends: $e', tag: 'friends_list_screen');
-      if (mounted) {
-        setState(() => _isLoadingFriends = false);
-      }
-    }
-  }
-
-  Future<void> _loadFollowing() async {
-    try {
-      setState(() => _isLoadingFollowing = true);
-      final following = await _friendsService.getFollowingList();
-      if (mounted) {
-        setState(() {
-          _following = following;
-          _isLoadingFollowing = false;
-        });
-      }
-    } catch (e) {
-      ProductionLogger.info('Error loading following: $e', tag: 'friends_list_screen');
-      if (mounted) {
-        setState(() => _isLoadingFollowing = false);
-      }
-    }
-  }
-
-  Future<void> _loadFollowers() async {
-    try {
-      setState(() => _isLoadingFollowers = true);
-      final followers = await _friendsService.getFollowersList();
-      if (mounted) {
-        setState(() {
-          _followers = followers;
-          _isLoadingFollowers = false;
-        });
-      }
-    } catch (e) {
-      ProductionLogger.info('Error loading followers: $e', tag: 'friends_list_screen');
-      if (mounted) {
-        setState(() => _isLoadingFollowers = false);
-      }
-    }
+    // Refresh all paging controllers
+    _friendsPagingController.refresh();
+    _followingPagingController.refresh();
+    _followersPagingController.refresh();
   }
 
   Future<void> _toggleFollow(UserProfile user, bool isFollowing) async {
@@ -154,7 +199,7 @@ class _FriendsListScreenState extends State<FriendsListScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('Bạn bè'),
-                  if (_friends.isNotEmpty) ...[
+                  if ((_friendsPagingController.itemList?.length ?? 0) > 0) ...[
                     const SizedBox(width: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -166,7 +211,9 @@ class _FriendsListScreenState extends State<FriendsListScreen>
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        '${_friends.length}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        '${_friendsPagingController.itemList?.length ?? 0}',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -182,7 +229,8 @@ class _FriendsListScreenState extends State<FriendsListScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('Đang theo dõi'),
-                  if (_following.isNotEmpty) ...[
+                  if ((_followingPagingController.itemList?.length ?? 0) >
+                      0) ...[
                     const SizedBox(width: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -194,7 +242,9 @@ class _FriendsListScreenState extends State<FriendsListScreen>
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        '${_following.length}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        '${_followingPagingController.itemList?.length ?? 0}',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -210,7 +260,8 @@ class _FriendsListScreenState extends State<FriendsListScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('Người theo dõi'),
-                  if (_followers.isNotEmpty) ...[
+                  if ((_followersPagingController.itemList?.length ?? 0) >
+                      0) ...[
                     const SizedBox(width: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -222,7 +273,9 @@ class _FriendsListScreenState extends State<FriendsListScreen>
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        '${_followers.length}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        '${_followersPagingController.itemList?.length ?? 0}',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -248,184 +301,193 @@ class _FriendsListScreenState extends State<FriendsListScreen>
   }
 
   Widget _buildFriendsTab() {
-    if (_isLoadingFriends) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_friends.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.people_outline, size: 80, color: Colors.grey[300]),
-            SizedBox(height: 2.h),
-            Text(
-              'Chưa có bạn bè', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
-            ),
-            SizedBox(height: 1.h),
-            Text(
-              'Bạn bè = người theo dõi lẫn nhau', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.sp, color: Colors.grey[500]),
-            ),
-          ],
-        ),
-      );
-    }
-
     return RefreshIndicator(
-      onRefresh: _loadFriends,
-      child: ListView.builder(
+      onRefresh: () async => _friendsPagingController.refresh(),
+      child: PagedListView<int, UserProfile>(
+        pagingController: _friendsPagingController,
         padding: EdgeInsets.all(2.w),
-        itemCount: _friends.length,
-        itemBuilder: (context, index) {
-          final friend = _friends[index];
-          return _buildUserTile(
-            friend,
-            trailing: OutlinedButton(
-              onPressed: () => _toggleFollow(friend, true),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red,
-                side: const BorderSide(color: Colors.red),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+        builderDelegate: PagedChildBuilderDelegate<UserProfile>(
+          itemBuilder: (context, friend, index) {
+            return _buildUserTile(
+              friend,
+              trailing: AppButton(
+                label: 'Bỏ theo dõi',
+                type: AppButtonType.outline,
+                size: AppButtonSize.small,
+                customColor: Colors.red,
+                onPressed: () => _toggleFollow(friend, true),
               ),
-              child: const Text('Bỏ theo dõi'),
+            );
+          },
+          firstPageProgressIndicatorBuilder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+          newPageProgressIndicatorBuilder: (context) => const Center(
+              child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(),
+          )),
+          noItemsFoundIndicatorBuilder: (context) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.people_outline, size: 80, color: Colors.grey[300]),
+                SizedBox(height: 2.h),
+                Text(
+                  'Chưa có bạn bè',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
+                ),
+                SizedBox(height: 1.h),
+                Text(
+                  'Bạn bè = người theo dõi lẫn nhau',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12.sp, color: Colors.grey[500]),
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildFollowingTab() {
-    if (_isLoadingFollowing) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_following.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person_add_outlined, size: 80, color: Colors.grey[300]),
-            SizedBox(height: 2.h),
-            Text(
-              'Chưa theo dõi ai', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
-            ),
-          ],
-        ),
-      );
-    }
-
     return RefreshIndicator(
-      onRefresh: _loadFollowing,
-      child: ListView.builder(
+      onRefresh: () async => _followingPagingController.refresh(),
+      child: PagedListView<int, UserProfile>(
+        pagingController: _followingPagingController,
         padding: EdgeInsets.all(2.w),
-        itemCount: _following.length,
-        itemBuilder: (context, index) {
-          final user = _following[index];
-          final isFriend = _friends.any((f) => f.id == user.id);
+        builderDelegate: PagedChildBuilderDelegate<UserProfile>(
+          itemBuilder: (context, user, index) {
+            final isFriend = _friendsPagingController.itemList
+                    ?.any((f) => f.id == user.id) ??
+                false;
 
-          return _buildUserTile(
-            user,
-            trailing: isFriend
-                ? Chip(
-                    label: const Text('Bạn bè'),
-                    backgroundColor: Theme.of(
-                      context,
-                    ).primaryColor.withValues(alpha: 0.1),
-                    labelStyle: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : OutlinedButton(
-                    onPressed: () => _toggleFollow(user, true),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+            return _buildUserTile(
+              user,
+              trailing: isFriend
+                  ? Chip(
+                      label: const Text('Bạn bè'),
+                      backgroundColor: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.1),
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
                       ),
+                    )
+                  : OutlinedButton(
+                      onPressed: () => _toggleFollow(user, true),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                      ),
+                      child: const Text('Bỏ theo dõi'),
                     ),
-                    child: const Text('Bỏ theo dõi'),
-                  ),
-          );
-        },
+            );
+          },
+          firstPageProgressIndicatorBuilder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+          newPageProgressIndicatorBuilder: (context) => const Center(
+              child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(),
+          )),
+          noItemsFoundIndicatorBuilder: (context) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.person_add_outlined,
+                    size: 80, color: Colors.grey[300]),
+                SizedBox(height: 2.h),
+                Text(
+                  'Chưa theo dõi ai',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildFollowersTab() {
-    if (_isLoadingFollowers) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_followers.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.people_outline, size: 80, color: Colors.grey[300]),
-            SizedBox(height: 2.h),
-            Text(
-              'Chưa có người theo dõi', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
-            ),
-          ],
-        ),
-      );
-    }
-
     return RefreshIndicator(
-      onRefresh: _loadFollowers,
-      child: ListView.builder(
+      onRefresh: () async => _followersPagingController.refresh(),
+      child: PagedListView<int, UserProfile>(
+        pagingController: _followersPagingController,
         padding: EdgeInsets.all(2.w),
-        itemCount: _followers.length,
-        itemBuilder: (context, index) {
-          final user = _followers[index];
-          final isFriend = _friends.any((f) => f.id == user.id);
-          final isFollowing = _following.any((f) => f.id == user.id);
+        builderDelegate: PagedChildBuilderDelegate<UserProfile>(
+          itemBuilder: (context, user, index) {
+            final isFriend = _friendsPagingController.itemList
+                    ?.any((f) => f.id == user.id) ??
+                false;
+            final isFollowing = _followingPagingController.itemList
+                    ?.any((f) => f.id == user.id) ??
+                false;
 
-          return _buildUserTile(
-            user,
-            trailing: isFriend
-                ? Chip(
-                    label: const Text('Bạn bè'),
-                    backgroundColor: Theme.of(
-                      context,
-                    ).primaryColor.withValues(alpha: 0.1),
-                    labelStyle: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : isFollowing
-                ? OutlinedButton(
-                    onPressed: () => _toggleFollow(user, true),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+            return _buildUserTile(
+              user,
+              trailing: isFriend
+                  ? Chip(
+                      label: const Text('Bạn bè'),
+                      backgroundColor: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.1),
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    child: const Text('Bỏ theo dõi'),
-                  )
-                : ElevatedButton(
-                    onPressed: () => _toggleFollow(user, false),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                    ),
-                    child: const Text('Theo dõi lại'),
-                  ),
-          );
-        },
+                    )
+                  : isFollowing
+                      ? OutlinedButton(
+                          onPressed: () => _toggleFollow(user, true),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                          ),
+                          child: const Text('Bỏ theo dõi'),
+                        )
+                      : AppButton(
+                          label: 'Theo dõi lại',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.small,
+                          onPressed: () => _toggleFollow(user, false),
+                        ),
+            );
+          },
+          firstPageProgressIndicatorBuilder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+          newPageProgressIndicatorBuilder: (context) => const Center(
+              child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(),
+          )),
+          noItemsFoundIndicatorBuilder: (context) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.people_outline, size: 80, color: Colors.grey[300]),
+                SizedBox(height: 2.h),
+                Text(
+                  'Chưa có người theo dõi',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -445,7 +507,8 @@ class _FriendsListScreenState extends State<FriendsListScreen>
           },
         ),
         title: Text(
-          user.displayName, style: const TextStyle(fontWeight: FontWeight.bold),
+          user.displayName,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: user.bio != null && user.bio!.isNotEmpty
             ? Text(user.bio!, maxLines: 1, overflow: TextOverflow.ellipsis)

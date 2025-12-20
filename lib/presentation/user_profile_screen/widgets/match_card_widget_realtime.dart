@@ -4,6 +4,7 @@ import 'package:sabo_arena/utils/production_logger.dart';
 import 'package:sabo_arena/widgets/club/club_logo_widget.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
 import 'package:sabo_arena/models/match.dart';
+import '../../../widgets/common/app_button.dart';
 
 /// Match Card Widget with Real-time Updates - Phase 5-6
 /// Features:
@@ -31,7 +32,7 @@ class MatchCardWidgetRealtime extends StatefulWidget {
 class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
   final _supabase = Supabase.instance.client;
   RealtimeChannel? _realtimeChannel;
-  
+
   // Local state for real-time updates
   late Match _currentMatch;
 
@@ -65,11 +66,15 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
 
     // Only subscribe if match is in_progress
     if (!_currentMatch.isInProgress) {
-      ProductionLogger.info('⏸️ Match $matchId not in progress, skipping real-time subscription', tag: 'match_card_widget_realtime');
+      ProductionLogger.info(
+          '⏸️ Match $matchId not in progress, skipping real-time subscription',
+          tag: 'match_card_widget_realtime');
       return;
     }
 
-    ProductionLogger.info('🔔 Subscribing to real-time updates for match: $matchId', tag: 'match_card_widget_realtime');
+    ProductionLogger.info(
+        '🔔 Subscribing to real-time updates for match: $matchId',
+        tag: 'match_card_widget_realtime');
 
     try {
       _realtimeChannel = _supabase
@@ -84,15 +89,20 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
               value: matchId,
             ),
             callback: (payload) {
-              ProductionLogger.info('🔄 Real-time update received for match $matchId', tag: 'match_card_widget_realtime');
+              ProductionLogger.info(
+                  '🔄 Real-time update received for match $matchId',
+                  tag: 'match_card_widget_realtime');
               _handleMatchUpdate(payload.newRecord);
             },
           )
           .subscribe();
 
-      ProductionLogger.info('✅ Real-time subscription active for match: $matchId', tag: 'match_card_widget_realtime');
+      ProductionLogger.info(
+          '✅ Real-time subscription active for match: $matchId',
+          tag: 'match_card_widget_realtime');
     } catch (e) {
-      ProductionLogger.info('❌ Failed to subscribe to real-time updates: $e', tag: 'match_card_widget_realtime');
+      ProductionLogger.info('❌ Failed to subscribe to real-time updates: $e',
+          tag: 'match_card_widget_realtime');
     }
   }
 
@@ -109,13 +119,16 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
       );
     });
 
-    ProductionLogger.info('✅ UI updated - Score: ${_currentMatch.player1Score} - ${_currentMatch.player2Score}, Status: ${_currentMatch.status}, Live: ${_currentMatch.isLive}', tag: 'match_card_widget_realtime');
+    ProductionLogger.info(
+        '✅ UI updated - Score: ${_currentMatch.player1Score} - ${_currentMatch.player2Score}, Status: ${_currentMatch.status}, Live: ${_currentMatch.isLive}',
+        tag: 'match_card_widget_realtime');
   }
 
   /// Unsubscribe from real-time updates
   void _unsubscribeFromUpdates() {
     if (_realtimeChannel != null) {
-      ProductionLogger.info('🔕 Unsubscribing from real-time updates', tag: 'match_card_widget_realtime');
+      ProductionLogger.info('🔕 Unsubscribing from real-time updates',
+          tag: 'match_card_widget_realtime');
       _supabase.removeChannel(_realtimeChannel!);
       _realtimeChannel = null;
     }
@@ -124,16 +137,16 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
   @override
   Widget build(BuildContext context) {
     // Player info
-    final player1Name = _currentMatch.player1Profile?.fullName ?? 
-                        _currentMatch.player1Name ?? 
-                        'Player 1';
+    final player1Name = _currentMatch.player1Profile?.fullName ??
+        _currentMatch.player1Name ??
+        'Player 1';
     final player1Rank = _currentMatch.player1Profile?.rank ?? 'H';
     final player1Avatar = _currentMatch.player1Profile?.avatarUrl;
     final player1Online = false;
 
-    final player2Name = _currentMatch.player2Profile?.fullName ?? 
-                        _currentMatch.player2Name ?? 
-                        'Player 2';
+    final player2Name = _currentMatch.player2Profile?.fullName ??
+        _currentMatch.player2Name ??
+        'Player 2';
     final player2Rank = _currentMatch.player2Profile?.rank ?? 'H';
     final player2Avatar = _currentMatch.player2Profile?.avatarUrl;
     final player2Online = false;
@@ -144,25 +157,30 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
     final clubAddress = _currentMatch.club?.address;
 
     // Match info
-    final matchType = _currentMatch.matchType == 'thach_dau' ? 'Thách đấu' : 
-                      (_currentMatch.matchType == 'giao_luu' ? 'Giao lưu' : 
-                      _currentMatch.matchTypeDisplay);
-    
+    final matchType = _currentMatch.matchType == 'thach_dau'
+        ? 'Thách đấu'
+        : (_currentMatch.matchType == 'giao_luu'
+            ? 'Giao lưu'
+            : _currentMatch.matchTypeDisplay);
+
     final date = _formatDate(_currentMatch.scheduledAt);
     final time = _formatTime(_currentMatch.scheduledAt);
-    
-    final handicap = _currentMatch.metadata?['handicap'] as String? ?? 'Handicap 0.5 ván';
+
+    final handicap =
+        _currentMatch.metadata?['handicap'] as String? ?? 'Handicap 0.5 ván';
     final prize = _currentMatch.metadata?['prize'] as String? ?? '100 SPA';
-    final raceInfo = _currentMatch.metadata?['race_to'] != null 
-        ? 'Race to ${_currentMatch.metadata!['race_to']}' 
+    final raceInfo = _currentMatch.metadata?['race_to'] != null
+        ? 'Race to ${_currentMatch.metadata!['race_to']}'
         : 'Race to 7';
-    final currentTable = _currentMatch.table != null 
-        ? 'Bàn ${_currentMatch.table}' 
-        : 'Bàn 1';
+    final currentTable =
+        _currentMatch.table != null ? 'Bàn ${_currentMatch.table}' : 'Bàn 1';
 
     // Video URL for live streaming
-    final videoUrl = _currentMatch.videoUrls?.isNotEmpty == true ? _currentMatch.videoUrls!.first : null;
-    final canWatchLive = _currentMatch.isLive && videoUrl != null && videoUrl.isNotEmpty;
+    final videoUrl = _currentMatch.videoUrls?.isNotEmpty == true
+        ? _currentMatch.videoUrls!.first
+        : null;
+    final canWatchLive =
+        _currentMatch.isLive && videoUrl != null && videoUrl.isNotEmpty;
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -173,14 +191,16 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _currentMatch.isLive ? const Color(0xFFFF5722) : const Color(0xFFE0E0E0),
+            color: _currentMatch.isLive
+                ? const Color(0xFFFF5722)
+                : const Color(0xFFE0E0E0),
             width: _currentMatch.isLive ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: _currentMatch.isLive 
-                ? const Color(0xFFFF5722).withValues(alpha: 0.2) 
-                : Colors.black.withValues(alpha: 0.05),
+              color: _currentMatch.isLive
+                  ? const Color(0xFFFF5722).withValues(alpha: 0.2)
+                  : Colors.black.withValues(alpha: 0.05),
               blurRadius: _currentMatch.isLive ? 12 : 8,
               offset: const Offset(0, 2),
             ),
@@ -245,12 +265,17 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
                   children: [
                     // Date & Time - Highlighted
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                        color: Theme.of(context)
+                            .primaryColor
+                            .withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                          color: Theme.of(context)
+                              .primaryColor
+                              .withValues(alpha: 0.1),
                         ),
                       ),
                       child: Column(
@@ -388,7 +413,8 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
         );
       },
       child: Row(
-        key: ValueKey('${_currentMatch.player1Score}-${_currentMatch.player2Score}'),
+        key: ValueKey(
+            '${_currentMatch.player1Score}-${_currentMatch.player2Score}'),
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
@@ -528,29 +554,16 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
 
   /// Build "Watch Live" button
   Widget _buildWatchLiveButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: widget.onWatchLive,
-        icon: const Icon(Icons.play_circle_fill, size: 20),
-        label: const Text(
-          'XEM TRỰC TIẾP',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.5,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFF5722),
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          elevation: 4,
-        ),
-      ),
+    return AppButton(
+      label: 'XEM TRỰC TIẾP',
+      type: AppButtonType.primary,
+      size: AppButtonSize.large,
+      icon: Icons.play_circle_fill,
+      iconTrailing: false,
+      customColor: const Color(0xFFFF5722),
+      customTextColor: Colors.white,
+      fullWidth: true,
+      onPressed: widget.onWatchLive,
     );
   }
 
@@ -576,7 +589,8 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: isChallenge ? const Color(0xFFE53935) : const Color(0xFF1976D2),
+          color:
+              isChallenge ? const Color(0xFFE53935) : const Color(0xFF1976D2),
         ),
       ),
     );
@@ -729,7 +743,8 @@ class _MatchCardWidgetRealtimeState extends State<MatchCardWidgetRealtime> {
     if (dateTime == null) return 'T7 - 06/09';
     try {
       final dt = DateTime.parse(dateTime.toString());
-      final weekday = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][dt.weekday % 7];
+      final weekday =
+          ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][dt.weekday % 7];
       return '$weekday - ${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}';
     } catch (e) {
       return 'T7 - 06/09';

@@ -81,7 +81,8 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
                     const SizedBox(height: 8),
                     Text(
                       _controller.error!,
-                      style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                      style: AppTypography.bodySmall
+                          .copyWith(color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -342,7 +343,7 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
 
   void _navigateToTournamentCreate() async {
     // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
-     try {
+    try {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -352,9 +353,7 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
       final currentUser = AuthService.instance.currentUser;
       if (currentUser == null) {
         Navigator.pop(context);
-        DSSnackbar.error(
-          context: context,
-          message: "Vui lòng đăng nhập");
+        DSSnackbar.error(context: context, message: "Vui lòng đăng nhập");
         return;
       }
 
@@ -410,8 +409,7 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
         if (mounted && result != null && result is Map<String, dynamic>) {
           _controller.loadData();
           DSSnackbar.success(
-            context: context,
-            message: "Tạo giải đấu thành công");
+              context: context, message: "Tạo giải đấu thành công");
         }
       });
     } catch (e) {
@@ -429,7 +427,10 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
     Navigator.pushNamed(
       context,
       AppRoutes.clubWelcomeCampaignScreen,
-      arguments: {'clubId': widget.clubId, 'clubName': _controller.club?.name ?? 'CLB'},
+      arguments: {
+        'clubId': widget.clubId,
+        'clubName': _controller.club?.name ?? 'CLB'
+      },
     );
   }
 
@@ -554,7 +555,8 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
       final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ClubProfileEditScreenSimple(clubId: _controller.club!.id),
+          builder: (context) =>
+              ClubProfileEditScreenSimple(clubId: _controller.club!.id),
         ),
       );
 
@@ -564,14 +566,15 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
       return;
     }
 
-    final source = action == 'camera' ? ImageSource.camera : ImageSource.gallery;
+    final source =
+        action == 'camera' ? ImageSource.camera : ImageSource.gallery;
     if (!mounted) return;
     _updateCoverImage(source);
   }
 
   void _editClubProfileImage() async {
-     // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
-     final source = await showModalBottomSheet<ImageSource>(
+    // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
+    final source = await showModalBottomSheet<ImageSource>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
@@ -614,8 +617,8 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
   }
 
   Future<void> _updateCoverImage(ImageSource source) async {
-      // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
-      try {
+    // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
+    try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
         source: source,
@@ -646,7 +649,6 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       DSSnackbar.success(context: context, message: "Message");
-
     } catch (e) {
       if (mounted) {
         Navigator.pop(context);
@@ -688,7 +690,6 @@ class _ClubDashboardScreenState extends State<ClubDashboardScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       DSSnackbar.success(context: context, message: "Message");
-
     } catch (e) {
       if (mounted) {
         Navigator.pop(context);

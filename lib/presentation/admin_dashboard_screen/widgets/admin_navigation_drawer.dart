@@ -257,9 +257,8 @@ class AdminNavigationDrawer extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           item.icon,
-          color: isSelected
-              ? AppTheme.primaryLight
-              : AppTheme.textSecondaryLight,
+          color:
+              isSelected ? AppTheme.primaryLight : AppTheme.textSecondaryLight,
           size: 22,
         ),
         title: Text(
@@ -267,9 +266,8 @@ class AdminNavigationDrawer extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            color: isSelected
-                ? AppTheme.primaryLight
-                : AppTheme.textPrimaryLight,
+            color:
+                isSelected ? AppTheme.primaryLight : AppTheme.textPrimaryLight,
           ),
         ),
         onTap: () {

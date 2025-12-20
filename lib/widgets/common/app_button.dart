@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// 🎯 **AppButton** - Unified Button Component
-/// 
+///
 /// **iOS Support**: Automatically applies iOS-style (flat buttons, 12px radius) on iOS devices
 /// **Brand Color**: Uses brand teal green #1E8A6F for primary actions
 ///
@@ -120,10 +120,11 @@ class AppButton extends StatelessWidget {
   // 🎨 Primary Button (iOS-style flat on iOS, Material elevated on Android)
   Widget _buildPrimaryButton(BuildContext context) {
     final isIOS = !kIsWeb && Platform.isIOS;
-    final brandColor = customColor ?? const Color(0xFF1E8A6F); // Brand teal green
+    final brandColor =
+        customColor ?? const Color(0xFF1E8A6F); // Brand teal green
     final borderRadius = isIOS ? 12.0 : 8.0; // iOS: 12px, Android: 8px
     final elevation = isIOS ? 0.0 : 2.0; // iOS: flat, Android: elevated
-    
+
     if (isIOS) {
       // iOS-style flat button với brand color
       return Container(
@@ -148,7 +149,7 @@ class AppButton extends StatelessWidget {
         ),
       );
     }
-    
+
     // Android Material style
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
@@ -174,7 +175,7 @@ class AppButton extends StatelessWidget {
     final bgColor = customColor ?? Colors.grey[300];
     final borderRadius = isIOS ? 12.0 : 8.0;
     final elevation = isIOS ? 0.0 : 1.0;
-    
+
     if (isIOS) {
       // iOS-style flat secondary button
       return Container(
@@ -198,7 +199,7 @@ class AppButton extends StatelessWidget {
         ),
       );
     }
-    
+
     // Android Material style
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
@@ -221,9 +222,10 @@ class AppButton extends StatelessWidget {
   // 🎨 Outline Button (iOS-style với brand color)
   Widget _buildOutlineButton(BuildContext context) {
     final isIOS = !kIsWeb && Platform.isIOS;
-    final brandColor = customColor ?? const Color(0xFF1E8A6F); // Brand teal green
+    final brandColor =
+        customColor ?? const Color(0xFF1E8A6F); // Brand teal green
     final borderRadius = isIOS ? 12.0 : 8.0;
-    
+
     return OutlinedButton(
       onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
@@ -247,11 +249,12 @@ class AppButton extends StatelessWidget {
   Widget _buildTextButton(BuildContext context) {
     final isIOS = !kIsWeb && Platform.isIOS;
     // Text buttons: dùng brand color cho primary, iOS blue cho secondary links
-    final textColor = customColor ?? (type == AppButtonType.text 
-        ? const Color(0xFF007AFF) // iOS blue cho links
-        : const Color(0xFF1E8A6F)); // Brand color cho primary text buttons
+    final textColor = customColor ??
+        (type == AppButtonType.text
+            ? const Color(0xFF007AFF) // iOS blue cho links
+            : const Color(0xFF1E8A6F)); // Brand color cho primary text buttons
     final borderRadius = isIOS ? 12.0 : 8.0;
-    
+
     return TextButton(
       onPressed: isLoading ? null : onPressed,
       style: TextButton.styleFrom(

@@ -299,7 +299,9 @@ class _StaffTutorialScreenState extends State<StaffTutorialScreen> {
             ElevatedButton.icon(
               onPressed: () => _openDemoScreen(_currentPage),
               icon: Icon(_currentPage == 2 ? Icons.qr_code : Icons.dashboard),
-              label: Text(_currentPage == 2 ? 'Xem Demo Xác thực' : 'Xem Demo Dashboard'),
+              label: Text(_currentPage == 2
+                  ? 'Xem Demo Xác thực'
+                  : 'Xem Demo Dashboard'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: step['color'],
                 foregroundColor: Colors.white,

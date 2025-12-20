@@ -29,7 +29,9 @@ class DirectMessagingService {
       throw Exception('Cannot create conversation with yourself');
     }
 
-    ProductionLogger.info('[DirectMessaging] Finding room for: $currentUserId ↔ $otherUserId', tag: 'direct_messaging_service');
+    ProductionLogger.info(
+        '[DirectMessaging] Finding room for: $currentUserId ↔ $otherUserId',
+        tag: 'direct_messaging_service');
 
     // STEP 1: Get current user's rooms
     final myRooms = await _supabase
@@ -38,7 +40,9 @@ class DirectMessagingService {
         .eq('user_id', currentUserId);
 
     final myRoomIds = myRooms.map((r) => r['room_id'] as String).toList();
-    ProductionLogger.info('[DirectMessaging] Current user is in ${myRoomIds.length} rooms', tag: 'direct_messaging_service');
+    ProductionLogger.info(
+        '[DirectMessaging] Current user is in ${myRoomIds.length} rooms',
+        tag: 'direct_messaging_service');
 
     if (myRoomIds.isNotEmpty) {
       // STEP 2: Get other user's rooms
@@ -47,18 +51,20 @@ class DirectMessagingService {
           .select('room_id')
           .eq('user_id', otherUserId);
 
-      final otherUserRoomIds = otherUserRooms
-          .map((r) => r['room_id'] as String)
-          .toSet();
+      final otherUserRoomIds =
+          otherUserRooms.map((r) => r['room_id'] as String).toSet();
 
-      ProductionLogger.info('[DirectMessaging] Other user is in ${otherUserRoomIds.length} rooms',  tag: 'direct_messaging_service');
+      ProductionLogger.info(
+          '[DirectMessaging] Other user is in ${otherUserRoomIds.length} rooms',
+          tag: 'direct_messaging_service');
 
       // STEP 3: Find common rooms
-      final commonRoomIds = myRoomIds
-          .where((id) => otherUserRoomIds.contains(id))
-          .toList();
+      final commonRoomIds =
+          myRoomIds.where((id) => otherUserRoomIds.contains(id)).toList();
 
-      ProductionLogger.info('[DirectMessaging] Found ${commonRoomIds.length} common rooms', tag: 'direct_messaging_service');
+      ProductionLogger.info(
+          '[DirectMessaging] Found ${commonRoomIds.length} common rooms',
+          tag: 'direct_messaging_service');
 
       // STEP 4: Check each common room
       for (var roomId in commonRoomIds) {
@@ -76,7 +82,9 @@ class DirectMessagingService {
               .eq('room_id', roomId);
 
           if (members.length == 2) {
-            ProductionLogger.info('[DirectMessaging] ✅ Found existing room: $roomId', tag: 'direct_messaging_service');
+            ProductionLogger.info(
+                '[DirectMessaging] ✅ Found existing room: $roomId',
+                tag: 'direct_messaging_service');
             return roomId;
           }
         }
@@ -84,7 +92,8 @@ class DirectMessagingService {
     }
 
     // STEP 5: Create new room
-    ProductionLogger.info('[DirectMessaging] Creating new room...', tag: 'direct_messaging_service');
+    ProductionLogger.info('[DirectMessaging] Creating new room...',
+        tag: 'direct_messaging_service');
 
     final room = await _supabase
         .from('chat_rooms')
@@ -98,7 +107,8 @@ class DirectMessagingService {
         .single();
 
     final roomId = room['id'] as String;
-    ProductionLogger.info('[DirectMessaging] Created room: $roomId', tag: 'direct_messaging_service');
+    ProductionLogger.info('[DirectMessaging] Created room: $roomId',
+        tag: 'direct_messaging_service');
 
     // STEP 6: Add members
     await _supabase.from('chat_room_members').insert([
@@ -106,12 +116,14 @@ class DirectMessagingService {
       {'room_id': roomId, 'user_id': otherUserId, 'role': 'member'},
     ]);
 
-    ProductionLogger.info('[DirectMessaging] Added members to room', tag: 'direct_messaging_service');
+    ProductionLogger.info('[DirectMessaging] Added members to room',
+        tag: 'direct_messaging_service');
 
     // STEP 7: Wait for RLS commit
     await Future.delayed(const Duration(milliseconds: 500));
 
-    ProductionLogger.info('[DirectMessaging] ✅ Room ready: $roomId', tag: 'direct_messaging_service');
+    ProductionLogger.info('[DirectMessaging] ✅ Room ready: $roomId',
+        tag: 'direct_messaging_service');
     return roomId;
   }
 

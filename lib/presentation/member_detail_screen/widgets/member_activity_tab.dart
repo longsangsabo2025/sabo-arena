@@ -73,8 +73,8 @@ class _MemberActivityTabState extends State<MemberActivityTab>
                 Text(
                   'Chỉ số tương tác',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 Spacer(),
                 DropdownButton<String>(
@@ -173,8 +173,8 @@ class _MemberActivityTabState extends State<MemberActivityTab>
                 Text(
                   'Biểu đồ hoạt động',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ],
             ),
@@ -205,10 +205,10 @@ class _MemberActivityTabState extends State<MemberActivityTab>
                     Text(
                       'Biểu đồ hoạt động theo thời gian',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
                     ),
                   ],
                 ),
@@ -256,8 +256,8 @@ class _MemberActivityTabState extends State<MemberActivityTab>
                 Text(
                   'Hoạt động gần đây',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 Spacer(),
                 TextButton(
@@ -308,9 +308,9 @@ class _MemberActivityTabState extends State<MemberActivityTab>
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                  ),
+                        color: color,
+                        fontWeight: FontWeight.w600,
+                      ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -320,19 +320,19 @@ class _MemberActivityTabState extends State<MemberActivityTab>
           Text(
             value,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
           SizedBox(height: 4),
           Text(
             subtitle,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
-              fontSize: 10,
-            ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 10,
+                ),
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -382,10 +382,10 @@ class _MemberActivityTabState extends State<MemberActivityTab>
               Text(
                 activity.description,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
               ),
             ],
           ),
@@ -393,10 +393,10 @@ class _MemberActivityTabState extends State<MemberActivityTab>
         Text(
           _formatActivityTime(activity.timestamp),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.5),
-          ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
         ),
       ],
     );

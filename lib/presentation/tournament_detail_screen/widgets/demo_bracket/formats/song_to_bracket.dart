@@ -109,7 +109,6 @@ class SongToBracket extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-
           _buildRuleItem(
             '1️⃣',
             'Mục tiêu',
@@ -374,7 +373,6 @@ class SongToBracket extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-
           _buildLeaderboardItem(1, 'Nguyễn Văn A', 100, true),
           _buildLeaderboardItem(2, 'Trần Thị B', 87, false),
           _buildLeaderboardItem(3, 'Lê Văn C', 73, false),
@@ -393,18 +391,20 @@ class SongToBracket extends StatelessWidget {
     final color = rank == 1
         ? const Color(0xFFFFD700)
         : rank == 2
-        ? const Color(0xFFC0C0C0)
-        : rank == 3
-        ? const Color(0xFFCD7F32)
-        : const Color(0xFF65676B);
+            ? const Color(0xFFC0C0C0)
+            : rank == 3
+                ? const Color(0xFFCD7F32)
+                : const Color(0xFF65676B);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isWinner ? color.withValues(alpha: 0.1) : const Color(0xFFF0F2F5),
+        color:
+            isWinner ? color.withValues(alpha: 0.1) : const Color(0xFFF0F2F5),
         borderRadius: BorderRadius.circular(12),
-        border: isWinner ? Border.all(color: color.withValues(alpha: 0.3)) : null,
+        border:
+            isWinner ? Border.all(color: color.withValues(alpha: 0.3)) : null,
       ),
       child: Row(
         children: [

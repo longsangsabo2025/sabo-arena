@@ -32,7 +32,8 @@ class AuthNavigationController {
     try {
       // Check authentication status
       final isAuthenticated = AuthService.instance.isAuthenticated;
-      ProductionLogger.debug('Navigation: isAuthenticated = $isAuthenticated', tag: 'AuthNav');
+      ProductionLogger.debug('Navigation: isAuthenticated = $isAuthenticated',
+          tag: 'AuthNav');
 
       if (isAuthenticated) {
         await _handleAuthenticatedUser(context);
@@ -48,7 +49,8 @@ class AuthNavigationController {
           context: 'Navigation error from splash',
         ),
       );
-      ProductionLogger.error('Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
+      ProductionLogger.error('Navigation Error',
+          error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Fallback to login on any error
       if (context.mounted) {
         _safeNavigate(context, AppRoutes.loginScreen);
@@ -68,7 +70,8 @@ class AuthNavigationController {
     if (!context.mounted) return;
 
     try {
-      ProductionLogger.info('Registration Success: User $userId created', tag: 'AuthNav');
+      ProductionLogger.info('Registration Success: User $userId created',
+          tag: 'AuthNav');
 
       // Save registration completion flag
       final prefs = await SharedPreferences.getInstance();
@@ -92,7 +95,8 @@ class AuthNavigationController {
           context: 'Post-registration navigation error',
         ),
       );
-      ProductionLogger.error('Post-Registration Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
+      ProductionLogger.error('Post-Registration Navigation Error',
+          error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Fallback to login
       if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     }
@@ -109,7 +113,8 @@ class AuthNavigationController {
     if (!context.mounted) return;
 
     try {
-      ProductionLogger.info('Login Success: User $userId authenticated', tag: 'AuthNav');
+      ProductionLogger.info('Login Success: User $userId authenticated',
+          tag: 'AuthNav');
 
       // ✅ CHECK ADMIN ROLE FIRST!
       final isAdmin = await AuthService.instance.isCurrentUserAdmin();
@@ -118,7 +123,8 @@ class AuthNavigationController {
       if (isAdmin) {
         // Admin users go directly to admin dashboard
         ProductionLogger.info('Redirecting admin to dashboard', tag: 'AuthNav');
-        if (context.mounted) _safeNavigate(context, AppRoutes.adminDashboardScreen);
+        if (context.mounted)
+          _safeNavigate(context, AppRoutes.adminDashboardScreen);
         return; // Exit early for admin
       }
 
@@ -129,7 +135,8 @@ class AuthNavigationController {
       // ✨ NEW: Subscribe to real-time notifications
       try {
         await NotificationService.instance.subscribeToNotifications(userId);
-        ProductionLogger.info('Subscribed to real-time notifications', tag: 'AuthNav');
+        ProductionLogger.info('Subscribed to real-time notifications',
+            tag: 'AuthNav');
       } catch (notificationError) {
         ProductionLogger.warning(
           'Notification subscription failed (non-critical): $notificationError',
@@ -143,7 +150,8 @@ class AuthNavigationController {
       if (!kIsWeb) {
         try {
           await PushService.instance.registerForPush(userId);
-          ProductionLogger.info('Push notifications registered successfully', tag: 'AuthNav');
+          ProductionLogger.info('Push notifications registered successfully',
+              tag: 'AuthNav');
         } catch (pushError) {
           // Push notifications are optional - log but continue
           ProductionLogger.warning(
@@ -153,7 +161,8 @@ class AuthNavigationController {
           );
         }
       } else {
-        ProductionLogger.debug('Skipping push registration on web platform', tag: 'AuthNav');
+        ProductionLogger.debug('Skipping push registration on web platform',
+            tag: 'AuthNav');
       }
 
       // Send welcome notification once for first login
@@ -180,9 +189,11 @@ class AuthNavigationController {
 
       // ✅ Check if user needs initialization (regardless of isFirstLogin flag)
       final needsInitialization = await _checkIfNeedsInitialization(userId);
-      
+
       if (needsInitialization) {
-        ProductionLogger.info('User needs initialization - triggering onboarding completion', tag: 'AuthNav');
+        ProductionLogger.info(
+            'User needs initialization - triggering onboarding completion',
+            tag: 'AuthNav');
         if (context.mounted) await _handleNewUserOnboarding(context);
       } else if (isFirstLogin) {
         if (context.mounted) await _handleNewUserOnboarding(context);
@@ -198,7 +209,8 @@ class AuthNavigationController {
           context: 'CRITICAL Post-Login Navigation Error',
         ),
       );
-      ProductionLogger.error('CRITICAL Post-Login Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
+      ProductionLogger.error('CRITICAL Post-Login Navigation Error',
+          error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Only fallback to login for CRITICAL errors
       if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     }
@@ -210,22 +222,27 @@ class AuthNavigationController {
     ProductionLogger.debug('Navigation: isAdmin = $isAdmin', tag: 'AuthNav');
 
     if (isAdmin) {
-      if (context.mounted) _safeNavigate(context, AppRoutes.adminDashboardScreen);
+      if (context.mounted)
+        _safeNavigate(context, AppRoutes.adminDashboardScreen);
     } else {
       final uid = AuthService.instance.currentUser?.id;
       if (uid != null) {
         try {
           await MemberRealtimeService().initializeForUser(uid);
         } catch (e) {
-          ProductionLogger.warning('Failed to initialize realtime service', error: e, tag: 'AuthNav');
+          ProductionLogger.warning('Failed to initialize realtime service',
+              error: e, tag: 'AuthNav');
         }
 
         // ✨ NEW: Subscribe to real-time notifications (Fix for missing unread count)
         try {
           await NotificationService.instance.subscribeToNotifications(uid);
-          ProductionLogger.info('Subscribed to real-time notifications (Auto-login)', tag: 'AuthNav');
+          ProductionLogger.info(
+              'Subscribed to real-time notifications (Auto-login)',
+              tag: 'AuthNav');
         } catch (e) {
-          ProductionLogger.warning('Failed to subscribe to notifications', error: e, tag: 'AuthNav');
+          ProductionLogger.warning('Failed to subscribe to notifications',
+              error: e, tag: 'AuthNav');
         }
 
         // Register for push notifications (skip on web)
@@ -233,7 +250,8 @@ class AuthNavigationController {
           try {
             await PushService.instance.registerForPush(uid);
           } catch (e) {
-            ProductionLogger.warning('Failed to register push notifications', error: e, tag: 'AuthNav');
+            ProductionLogger.warning('Failed to register push notifications',
+                error: e, tag: 'AuthNav');
           }
         }
       }
@@ -259,14 +277,15 @@ class AuthNavigationController {
     // if (hasSeenOnboarding) {
     //   if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     // } else {
-      if (context.mounted) _safeNavigate(context, AppRoutes.onboardingScreen);
+    if (context.mounted) _safeNavigate(context, AppRoutes.onboardingScreen);
     // }
   }
 
   /// 🆕 **NEW USER ONBOARDING**
   static Future<void> _handleNewUserOnboarding(BuildContext context) async {
-    ProductionLogger.info('Starting user onboarding completion...', tag: 'AuthNav');
-    
+    ProductionLogger.info('Starting user onboarding completion...',
+        tag: 'AuthNav');
+
     try {
       // Get current user info
       final currentUser = AuthService.instance.currentUser;
@@ -286,15 +305,17 @@ class AuthNavigationController {
       );
 
       if (success) {
-        ProductionLogger.info('User initialization completed successfully', tag: 'AuthNav');
+        ProductionLogger.info('User initialization completed successfully',
+            tag: 'AuthNav');
       } else {
-        ProductionLogger.warning('User initialization partially failed (non-critical)', tag: 'AuthNav');
+        ProductionLogger.warning(
+            'User initialization partially failed (non-critical)',
+            tag: 'AuthNav');
       }
 
       // Navigate to main screen with persistent tabs
       ProductionLogger.info('Directing user to main screen', tag: 'AuthNav');
       if (context.mounted) _safeNavigate(context, AppRoutes.mainScreen);
-
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -304,7 +325,8 @@ class AuthNavigationController {
           context: 'Error during user onboarding',
         ),
       );
-      ProductionLogger.error('Error during user onboarding', error: e, stackTrace: stackTrace, tag: 'AuthNav');
+      ProductionLogger.error('Error during user onboarding',
+          error: e, stackTrace: stackTrace, tag: 'AuthNav');
       // Still navigate to main screen - initialization failures are non-critical
       if (context.mounted) _safeNavigate(context, AppRoutes.mainScreen);
     }
@@ -313,7 +335,8 @@ class AuthNavigationController {
   /// 👤 **RETURNING USER HANDLING**
   static Future<void> _handleReturningUser(BuildContext context) async {
     // 🚀 PHASE 1: Navigate to main screen with persistent tabs
-    ProductionLogger.info('Returning user: Directing to main screen', tag: 'AuthNav');
+    ProductionLogger.info('Returning user: Directing to main screen',
+        tag: 'AuthNav');
     _safeNavigate(context, AppRoutes.mainScreen);
   }
 
@@ -381,7 +404,8 @@ class AuthNavigationController {
           context: 'Logout Navigation Error',
         ),
       );
-      ProductionLogger.error('Logout Navigation Error', error: e, stackTrace: stackTrace, tag: 'AuthNav');
+      ProductionLogger.error('Logout Navigation Error',
+          error: e, stackTrace: stackTrace, tag: 'AuthNav');
       if (context.mounted) _safeNavigate(context, AppRoutes.loginScreen);
     }
   }
@@ -392,16 +416,20 @@ class AuthNavigationController {
     try {
       final initService = UserOnboardingCompletionService.instance;
       final hasCompleted = await initService.hasCompletedInitialization(userId);
-      
+
       if (!hasCompleted) {
-        ProductionLogger.info('User $userId needs initialization (status not completed)', tag: 'AuthNav');
+        ProductionLogger.info(
+            'User $userId needs initialization (status not completed)',
+            tag: 'AuthNav');
         return true;
       }
-      
-      ProductionLogger.info('User $userId has already completed initialization', tag: 'AuthNav');
+
+      ProductionLogger.info('User $userId has already completed initialization',
+          tag: 'AuthNav');
       return false;
     } catch (e) {
-      ProductionLogger.warning('Could not check initialization status', error: e, tag: 'AuthNav');
+      ProductionLogger.warning('Could not check initialization status',
+          error: e, tag: 'AuthNav');
       // If we can't check, assume initialization is needed to be safe
       return true;
     }

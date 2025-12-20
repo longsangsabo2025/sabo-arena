@@ -129,7 +129,8 @@ class UserAvatarWidget extends StatelessWidget {
     }
 
     // Handle SVG avatars (e.g. DiceBear)
-    if (url.toLowerCase().contains('.svg') || url.toLowerCase().contains('/svg')) {
+    if (url.toLowerCase().contains('.svg') ||
+        url.toLowerCase().contains('/svg')) {
       return ClipOval(
         child: FutureBuilder<String>(
           future: _fetchSvg(url),
@@ -161,10 +162,10 @@ class UserAvatarWidget extends StatelessWidget {
         fit: BoxFit.cover,
         fadeInDuration: const Duration(milliseconds: 300),
         fadeOutDuration: const Duration(milliseconds: 100),
-        placeholder: (context, url) =>
-            customPlaceholder ?? _buildPlaceholder(),
+        placeholder: (context, url) => customPlaceholder ?? _buildPlaceholder(),
         errorWidget: (context, url, error) {
-          ProductionLogger.error('❌ Avatar load error: $url - $error', error: error);
+          ProductionLogger.error('❌ Avatar load error: $url - $error',
+              error: error);
           return customErrorWidget ?? _buildDefaultAvatar();
         },
       ),

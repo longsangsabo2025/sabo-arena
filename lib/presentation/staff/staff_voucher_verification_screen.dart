@@ -18,13 +18,15 @@ class StaffVoucherVerificationScreen extends StatefulWidget {
   });
 
   @override
-  State<StaffVoucherVerificationScreen> createState() => _StaffVoucherVerificationScreenState();
+  State<StaffVoucherVerificationScreen> createState() =>
+      _StaffVoucherVerificationScreenState();
 }
 
-class _StaffVoucherVerificationScreenState extends State<StaffVoucherVerificationScreen> {
+class _StaffVoucherVerificationScreenState
+    extends State<StaffVoucherVerificationScreen> {
   final _codeController = TextEditingController();
   final _voucherService = VoucherManagementService();
-  
+
   bool _isLoading = false;
   Map<String, dynamic>? _voucherData;
   String? _errorMessage;
@@ -96,10 +98,14 @@ class _StaffVoucherVerificationScreenState extends State<StaffVoucherVerificatio
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('🎁 ${_getVoucherTypeText(_voucherData!['voucher_type'])}'),
-                  Text('💰 Giá trị: ${_formatVoucherValue(_voucherData!['voucher_value'])}'),
-                  Text('👤 Khách hàng: ${_voucherData!['users']['username'] ?? 'N/A'}'),
-                  Text('🏆 Tournament: ${_voucherData!['tournaments']?['name'] ?? 'N/A'}'),
+                  Text(
+                      '🎁 ${_getVoucherTypeText(_voucherData!['voucher_type'])}'),
+                  Text(
+                      '💰 Giá trị: ${_formatVoucherValue(_voucherData!['voucher_value'])}'),
+                  Text(
+                      '👤 Khách hàng: ${_voucherData!['users']['username'] ?? 'N/A'}'),
+                  Text(
+                      '🏆 Tournament: ${_voucherData!['tournaments']?['name'] ?? 'N/A'}'),
                 ],
               ),
             ),
@@ -369,7 +375,8 @@ class _StaffVoucherVerificationScreenState extends State<StaffVoucherVerificatio
                   color: _isUsed ? Colors.grey.shade100 : Colors.green.shade50,
                   borderRadius: BorderRadius.circular(12.sp),
                   border: Border.all(
-                    color: _isUsed ? Colors.grey.shade300 : Colors.green.shade200,
+                    color:
+                        _isUsed ? Colors.grey.shade300 : Colors.green.shade200,
                   ),
                 ),
                 child: Column(
@@ -378,35 +385,45 @@ class _StaffVoucherVerificationScreenState extends State<StaffVoucherVerificatio
                     Row(
                       children: [
                         Icon(
-                          _isUsed ? Icons.check_circle : Icons.confirmation_number,
+                          _isUsed
+                              ? Icons.check_circle
+                              : Icons.confirmation_number,
                           color: _isUsed ? Colors.grey : Colors.green.shade600,
                           size: 24.sp,
                         ),
                         SizedBox(width: 12.sp),
                         Expanded(
                           child: Text(
-                            _isUsed ? 'Voucher đã được sử dụng! ✅' : 'Voucher hợp lệ! 🎫',
+                            _isUsed
+                                ? 'Voucher đã được sử dụng! ✅'
+                                : 'Voucher hợp lệ! 🎫',
                             style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
-                              color: _isUsed ? Colors.grey.shade700 : Colors.green.shade700,
+                              color: _isUsed
+                                  ? Colors.grey.shade700
+                                  : Colors.green.shade700,
                             ),
                           ),
                         ),
                       ],
                     ),
                     SizedBox(height: 16.sp),
-                    
-                    _buildVoucherInfoRow('🎁 Loại voucher:', _getVoucherTypeText(_voucherData!['voucher_type'])),
-                    _buildVoucherInfoRow('💰 Giá trị:', _formatVoucherValue(_voucherData!['voucher_value'])),
-                    _buildVoucherInfoRow('👤 Khách hàng:', _voucherData!['users']['username'] ?? 'N/A'),
-                    _buildVoucherInfoRow('📧 Email:', _voucherData!['users']['email'] ?? 'N/A'),
-                    _buildVoucherInfoRow('🏆 Tournament:', _voucherData!['tournaments']?['name'] ?? 'N/A'),
-                    _buildVoucherInfoRow('📅 Ngày tạo:', _formatDate(_voucherData!['created_at'])),
-                    
+                    _buildVoucherInfoRow('🎁 Loại voucher:',
+                        _getVoucherTypeText(_voucherData!['voucher_type'])),
+                    _buildVoucherInfoRow('💰 Giá trị:',
+                        _formatVoucherValue(_voucherData!['voucher_value'])),
+                    _buildVoucherInfoRow('👤 Khách hàng:',
+                        _voucherData!['users']['username'] ?? 'N/A'),
+                    _buildVoucherInfoRow(
+                        '📧 Email:', _voucherData!['users']['email'] ?? 'N/A'),
+                    _buildVoucherInfoRow('🏆 Tournament:',
+                        _voucherData!['tournaments']?['name'] ?? 'N/A'),
+                    _buildVoucherInfoRow('📅 Ngày tạo:',
+                        _formatDate(_voucherData!['created_at'])),
                     if (_voucherData!['expires_at'] != null)
-                      _buildVoucherInfoRow('⏰ Hết hạn:', _formatDate(_voucherData!['expires_at'])),
-
+                      _buildVoucherInfoRow('⏰ Hết hạn:',
+                          _formatDate(_voucherData!['expires_at'])),
                     if (!_isUsed) ...[
                       SizedBox(height: 20.sp),
                       SizedBox(

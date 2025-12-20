@@ -40,33 +40,30 @@ class UserCodeService {
       final userCode = await generateUniqueUserCode(userId);
 
       // Update user profile with generated code
-      await _supabase
-          .from('users')
-          .update({
-            'user_code': userCode,
-            'qr_data': ShareService.generateUserQRData(
-              UserProfile(
-                id: userId,
-                email: '', // Temp values for QR generation
-                fullName: '',
-                displayName: '',
-                role: 'player',
-                skillLevel: 'beginner',
-                totalWins: 0,
-                totalLosses: 0,
-                totalTournaments: 0,
-                eloRating: 1000,
-                spaPoints: 0,
-                totalPrizePool: 0.0,
-                isVerified: false,
-                isActive: true,
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-              ),
-            ),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'user_code': userCode,
+        'qr_data': ShareService.generateUserQRData(
+          UserProfile(
+            id: userId,
+            email: '', // Temp values for QR generation
+            fullName: '',
+            displayName: '',
+            role: 'player',
+            skillLevel: 'beginner',
+            totalWins: 0,
+            totalLosses: 0,
+            totalTournaments: 0,
+            eloRating: 1000,
+            spaPoints: 0,
+            totalPrizePool: 0.0,
+            isVerified: false,
+            isActive: true,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+        ),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
 
       return true;
     } catch (e) {
@@ -94,13 +91,10 @@ class UserCodeService {
     try {
       final qrData = ShareService.generateUserQRData(user);
 
-      await _supabase
-          .from('users')
-          .update({
-            'qr_data': qrData,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', user.id);
+      await _supabase.from('users').update({
+        'qr_data': qrData,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', user.id);
 
       return true;
     } catch (e) {
@@ -128,13 +122,10 @@ class UserCodeService {
     try {
       final newCode = await generateUniqueUserCode(userId);
 
-      await _supabase
-          .from('users')
-          .update({
-            'user_code': newCode,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'user_code': newCode,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
 
       return newCode;
     } catch (e) {
@@ -157,4 +148,3 @@ class UserCodeService {
     }
   }
 }
-

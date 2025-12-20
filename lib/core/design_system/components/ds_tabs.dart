@@ -91,9 +91,9 @@ class DSTabs extends StatefulWidget {
     this.indicatorWeight = 2.0,
     this.labelPadding,
   }) : assert(
-         tabs != null || tabItems != null,
-         'Either tabs or tabItems must be provided',
-       );
+          tabs != null || tabItems != null,
+          'Either tabs or tabItems must be provided',
+        );
 
   @override
   State<DSTabs> createState() => _DSTabsState();
@@ -150,8 +150,7 @@ class _DSTabsState extends State<DSTabs> with SingleTickerProviderStateMixin {
         unselectedLabelColor: widget.unselectedColor ?? AppColors.textSecondary,
         labelStyle: AppTypography.labelMedium,
         unselectedLabelStyle: AppTypography.labelMedium,
-        labelPadding:
-            widget.labelPadding ??
+        labelPadding: widget.labelPadding ??
             EdgeInsets.symmetric(
               horizontal: widget.isScrollable
                   ? DesignTokens.space16
@@ -270,9 +269,9 @@ class DSTabView extends StatefulWidget {
     this.isScrollableTabs = false,
     this.enableSwipe = true,
   }) : assert(
-         tabs != null || tabItems != null,
-         'Either tabs or tabItems must be provided',
-       );
+          tabs != null || tabItems != null,
+          'Either tabs or tabItems must be provided',
+        );
 
   @override
   State<DSTabView> createState() => _DSTabViewState();
@@ -405,9 +404,8 @@ class DSSegmentedControl extends StatelessWidget {
                       color: isSelected
                           ? (selectedTextColor ?? AppColors.textPrimary)
                           : (textColor ?? AppColors.textSecondary),
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
                     ),
                   ),
                 ),

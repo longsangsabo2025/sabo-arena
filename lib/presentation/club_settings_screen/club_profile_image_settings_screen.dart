@@ -169,7 +169,9 @@ class _ClubProfileImageSettingsScreenState
           children: [
             // Profile Image Section
             Text(
-              'Ảnh đại diện', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Ảnh đại diện',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Container(
@@ -202,9 +204,8 @@ class _ClubProfileImageSettingsScreenState
                   SizedBox(height: 16),
                   // Upload button
                   ElevatedButton.icon(
-                    onPressed: _isUploadingProfile
-                        ? null
-                        : _pickAndUploadProfileImage,
+                    onPressed:
+                        _isUploadingProfile ? null : _pickAndUploadProfileImage,
                     icon: _isUploadingProfile
                         ? SizedBox(
                             width: 16,
@@ -223,7 +224,9 @@ class _ClubProfileImageSettingsScreenState
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Ảnh đại diện sẽ hiển thị trên danh sách CLB và trang hồ sơ', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    'Ảnh đại diện sẽ hiển thị trên danh sách CLB và trang hồ sơ',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -233,7 +236,9 @@ class _ClubProfileImageSettingsScreenState
 
             // Cover Image Section
             Text(
-              'Ảnh bìa', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Ảnh bìa',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Container(
@@ -266,9 +271,8 @@ class _ClubProfileImageSettingsScreenState
                   SizedBox(height: 16),
                   // Upload button
                   ElevatedButton.icon(
-                    onPressed: _isUploadingCover
-                        ? null
-                        : _pickAndUploadCoverImage,
+                    onPressed:
+                        _isUploadingCover ? null : _pickAndUploadCoverImage,
                     icon: _isUploadingCover
                         ? SizedBox(
                             width: 16,
@@ -285,7 +289,9 @@ class _ClubProfileImageSettingsScreenState
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Ảnh bìa sẽ hiển thị ở đầu trang CLB và làm nổi bật thương hiệu', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    'Ảnh bìa sẽ hiển thị ở đầu trang CLB và làm nổi bật thương hiệu',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -309,7 +315,9 @@ class _ClubProfileImageSettingsScreenState
                       Icon(Icons.lightbulb, color: Colors.blue[700]),
                       SizedBox(width: 8),
                       Text(
-                        'Mẹo để có ảnh đẹp', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Mẹo để có ảnh đẹp',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.blue[700],
                         ),
@@ -318,7 +326,9 @@ class _ClubProfileImageSettingsScreenState
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '• Ảnh đại diện: Sử dụng ảnh vuông, rõ nét khuôn mặt hoặc logo\n• Ảnh bìa: Sử dụng ảnh ngang, thể hiện không gian CLB\n• Định dạng hỗ trợ: JPG, PNG, tối đa 10MB', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.blue[700]),
+                    '• Ảnh đại diện: Sử dụng ảnh vuông, rõ nét khuôn mặt hoặc logo\n• Ảnh bìa: Sử dụng ảnh ngang, thể hiện không gian CLB\n• Định dạng hỗ trợ: JPG, PNG, tối đa 10MB',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: Colors.blue[700]),
                   ),
                 ],
               ),

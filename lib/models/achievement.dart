@@ -40,9 +40,8 @@ class Achievement {
       pointsRequired: json['points_required'] ?? 0,
       winsRequired: json['wins_required'] ?? 0,
       tournamentsRequired: json['tournaments_required'] ?? 0,
-      earnedAt: json['earned_at'] != null
-          ? DateTime.parse(json['earned_at'])
-          : null,
+      earnedAt:
+          json['earned_at'] != null ? DateTime.parse(json['earned_at']) : null,
       tournamentTitle: json['tournament']?['title'],
       isEarned: json['earned_at'] != null,
     );

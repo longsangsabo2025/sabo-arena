@@ -3,7 +3,6 @@ import 'package:sizer/sizer.dart';
 import '../../../theme/app_theme.dart';
 import '../../../services/auth_service.dart';
 import '../../../routes/app_routes.dart';
-import './admin_navigation_drawer.dart';
 import './admin_bottom_navigation.dart';
 
 class AdminScaffoldWrapper extends StatelessWidget {
@@ -29,7 +28,7 @@ class AdminScaffoldWrapper extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.backgroundLight,
       appBar: _buildAppBar(context),
-      drawer: const AdminNavigationDrawer(),
+      // drawer: const AdminNavigationDrawer(), // Removed per audit
       body: body,
       bottomNavigationBar: showBottomNavigation
           ? AdminBottomNavigation(
@@ -45,12 +44,14 @@ class AdminScaffoldWrapper extends StatelessWidget {
       backgroundColor: Colors.white,
       elevation: 2,
       shadowColor: Colors.black.withValues(alpha: 0.1),
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: Icon(Icons.menu, color: AppTheme.textPrimaryLight),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
-      ),
+      // leading: Builder( // Removed per audit
+      //   builder: (context) => IconButton(
+      //     icon: Icon(Icons.menu, color: AppTheme.textPrimaryLight),
+      //     onPressed: () => Scaffold.of(context).openDrawer(),
+      //   ),
+      // ),
+      automaticallyImplyLeading:
+          false, // Ensure no back button if not needed, or let it default if pushed
       title: Text(
         title,
         style: TextStyle(
@@ -62,11 +63,11 @@ class AdminScaffoldWrapper extends StatelessWidget {
       centerTitle: true,
       actions: [
         ...?actions,
-        IconButton(
-          icon: Icon(Icons.switch_account, color: AppTheme.textPrimaryLight),
-          onPressed: () => _showAccountSwitchDialog(context),
-          tooltip: 'Chuyển đổi tài khoản',
-        ),
+        // IconButton( // Removed per audit - redundant
+        //   icon: Icon(Icons.switch_account, color: AppTheme.textPrimaryLight),
+        //   onPressed: () => _showAccountSwitchDialog(context),
+        //   tooltip: 'Chuyển đổi tài khoản',
+        // ),
         IconButton(
           icon: Icon(Icons.refresh, color: AppTheme.textPrimaryLight),
           onPressed: () {
@@ -98,65 +99,6 @@ class AdminScaffoldWrapper extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-
-  void _showAccountSwitchDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          title: Row(
-            children: [
-              Icon(Icons.switch_account, color: AppTheme.primaryLight),
-              SizedBox(width: 8.0),
-              Text('Chuyển đổi tài khoản'),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Bạn muốn chuyển sang chế độ nào?'),
-              SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        _switchToUserMode(context);
-                      },
-                      icon: Icon(Icons.person),
-                      label: Text('Người dùng'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryLight,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(Icons.admin_panel_settings),
-                      label: Text('Admin'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 

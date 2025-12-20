@@ -100,7 +100,7 @@ class _TournamentManagementCenterScreenState
     final orientation = MediaQuery.of(context).orientation;
     final isLandscape = orientation == Orientation.landscape;
     final useWideBracketLayout = isIPad && isLandscape;
-    
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -108,7 +108,9 @@ class _TournamentManagementCenterScreenState
         elevation: 0,
         automaticallyImplyLeading: false, // Remove back button when used in tab
         title: Text(
-          'Quản lý Giải đấu', overflow: TextOverflow.ellipsis, style: AppTypography.headingSmall.copyWith(
+          'Quản lý Giải đấu',
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.headingSmall.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -124,7 +126,9 @@ class _TournamentManagementCenterScreenState
                 size: 18,
               ),
               label: Text(
-                'Tạo giải đấu', overflow: TextOverflow.ellipsis, style: AppTypography.labelMedium.copyWith(
+                'Tạo giải đấu',
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelMedium.copyWith(
                   color: AppColors.primary,
                 ),
               ),
@@ -169,8 +173,8 @@ class _TournamentManagementCenterScreenState
         // Management Panel Section with responsive bracket
         Expanded(
           child: _selectedTournament != null
-              ? (useWideBracketLayout 
-                  ? _buildWideBracketLayout() 
+              ? (useWideBracketLayout
+                  ? _buildWideBracketLayout()
                   : _buildManagementTabs())
               : _buildEmptyState(),
         ),
@@ -215,7 +219,9 @@ class _TournamentManagementCenterScreenState
             ),
             SizedBox(width: 8),
             Text(
-              'Đang tải giải đấu...', overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
+              'Đang tải giải đấu...',
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.bodySmall.copyWith(
                 // 13px - iOS secondary text
                 color: AppColors.textSecondary,
               ),
@@ -240,7 +246,9 @@ class _TournamentManagementCenterScreenState
             Icon(Icons.info_outline, size: 16, color: AppColors.textSecondary),
             SizedBox(width: 8),
             Text(
-              'Chưa có giải đấu nào', overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
+              'Chưa có giải đấu nào',
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.bodySmall.copyWith(
                 // 13px - iOS secondary text
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
@@ -285,7 +293,9 @@ class _TournamentManagementCenterScreenState
                         color: AppColors.textSecondary,
                       ),
                       hint: Text(
-                        'Chọn giải đấu...', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
+                        'Chọn giải đấu...',
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodyMedium.copyWith(
                           // 15px - iOS standard
                           color: AppColors.textSecondary,
                         ),
@@ -311,7 +321,8 @@ class _TournamentManagementCenterScreenState
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  tournament.title, style: AppTypography.bodyMedium.copyWith(
+                                  tournament.title,
+                                  style: AppTypography.bodyMedium.copyWith(
                                     // 15px - iOS list item
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -356,16 +367,16 @@ class _TournamentManagementCenterScreenState
                 size: 16,
               ),
               label: Text(
-                hasBracket ? 'Đã tạo' : 'Tạo', overflow: TextOverflow.ellipsis, style: AppTypography
+                hasBracket ? 'Đã tạo' : 'Tạo',
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography
                     .labelMedium, // 14px, SemiBold - iOS button standard
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: hasBracket
-                    ? AppColors.surfaceVariant
-                    : AppColors.primary,
-                foregroundColor: hasBracket
-                    ? AppColors.textSecondary
-                    : Colors.white,
+                backgroundColor:
+                    hasBracket ? AppColors.surfaceVariant : AppColors.primary,
+                foregroundColor:
+                    hasBracket ? AppColors.textSecondary : Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -492,7 +503,9 @@ class _TournamentManagementCenterScreenState
 
               // Title
               Text(
-                'Chưa chọn giải đấu', overflow: TextOverflow.ellipsis, style: AppTypography
+                'Chưa chọn giải đấu',
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography
                     .headingSmall, // 20px, SemiBold - iOS empty state title
               ),
               SizedBox(height: 8.sp),
@@ -500,7 +513,8 @@ class _TournamentManagementCenterScreenState
               // Description
               Text(
                 'Chọn một giải đấu từ danh sách trên\nđể quản lý thành viên, trận đấu và nhánh đấu',
-                textAlign: TextAlign.center, style: AppTypography.bodySmall.copyWith(
+                textAlign: TextAlign.center,
+                style: AppTypography.bodySmall.copyWith(
                   // 13px - iOS secondary text
                   color: AppColors.textSecondary,
                 ),
@@ -517,7 +531,9 @@ class _TournamentManagementCenterScreenState
                     },
                     icon: Icon(Icons.add_outlined, size: 20),
                     label: Text(
-                      'Tạo giải đấu mới', overflow: TextOverflow.ellipsis, style: AppTypography
+                      'Tạo giải đấu mới',
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography
                           .labelMedium, // 14px, SemiBold - iOS button
                     ),
                     style: OutlinedButton.styleFrom(
@@ -545,7 +561,6 @@ class _TournamentManagementCenterScreenState
     if (_selectedTournament == null) return;
 
     try {
-
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -579,14 +594,18 @@ class _TournamentManagementCenterScreenState
                 ),
                 SizedBox(height: 16.sp),
                 Text(
-                  'Đang tạo nhánh đấu...', overflow: TextOverflow.ellipsis, style: AppTypography.headingSmall.copyWith(
+                  'Đang tạo nhánh đấu...',
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.headingSmall.copyWith(
                     // 20px - iOS dialog title
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 SizedBox(height: 6.sp),
                 Text(
-                  'Vui lòng chờ trong khi tạo các trận đấu', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
+                  'Vui lòng chờ trong khi tạo các trận đấu',
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodyMedium.copyWith(
                     // 15px - iOS body text
                     color: AppColors.textSecondary,
                   ),
@@ -599,7 +618,6 @@ class _TournamentManagementCenterScreenState
 
       // Create bracket with error handling
       try {
-
         // First check if bracket already exists
         final existingMatches = await _supabase
             .from('matches')
@@ -644,9 +662,8 @@ class _TournamentManagementCenterScreenState
         Map<String, dynamic> result;
 
         // Extract participant IDs
-        final participantIds = participants
-            .map((p) => p['user_id'] as String)
-            .toList();
+        final participantIds =
+            participants.map((p) => p['user_id'] as String).toList();
 
         // Use UnifiedBracketService for all formats
         result = await _bracketService.createBracket(
@@ -654,7 +671,6 @@ class _TournamentManagementCenterScreenState
           format: tournamentFormat,
           participantIds: participantIds,
         );
-
 
         if (!result.containsKey('success')) {
           // Convert bracket result to success format
@@ -686,7 +702,9 @@ class _TournamentManagementCenterScreenState
                 SizedBox(width: 6.sp),
                 Expanded(
                   child: Text(
-                    'Bảng đấu bida đã tạo thành công!', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.sp),
+                    'Bảng đấu bida đã tạo thành công!',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12.sp),
                   ),
                 ),
               ],
@@ -752,4 +770,3 @@ class _TournamentManagementCenterScreenState
     }
   }
 }
-

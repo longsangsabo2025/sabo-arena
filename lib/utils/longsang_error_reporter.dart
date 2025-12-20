@@ -1,6 +1,6 @@
 /// 🔴 LONGSANG ERROR REPORTER FOR FLUTTER
 /// Auto-reports errors to longsang-admin for auto-fix
-/// 
+///
 /// USAGE:
 /// 1. Add to pubspec.yaml: http: ^1.1.0
 /// 2. In main.dart, wrap runApp with:
@@ -47,10 +47,10 @@ class LongSangErrorReporter {
   /// ```
   static void init(VoidCallback runApp, {String appName = 'flutter-app'}) {
     _appName = appName;
-    
+
     // Start queue processor
     _startQueueProcessor();
-    
+
     // Catch Flutter errors
     FlutterError.onError = (FlutterErrorDetails details) {
       FlutterError.presentError(details);
@@ -79,7 +79,8 @@ class LongSangErrorReporter {
   }
 
   /// Manual error capture
-  static void capture(dynamic error, {StackTrace? stackTrace, Map<String, dynamic>? context}) {
+  static void capture(dynamic error,
+      {StackTrace? stackTrace, Map<String, dynamic>? context}) {
     _reportError(
       type: error.runtimeType.toString(),
       message: error.toString(),
@@ -115,16 +116,16 @@ class LongSangErrorReporter {
 
   static Future<void> _processQueue() async {
     if (_isProcessing || _errorQueue.isEmpty) return;
-    
+
     // Don't send errors in debug mode to avoid CORS issues on localhost
     // and to avoid spamming the server with dev errors.
     if (kDebugMode) {
-       // final errors = List<Map<String, dynamic>>.from(_errorQueue);
-       _errorQueue.clear();
-       // for (final error in errors) {
-         // REMOVED: print('🐛 [DEBUG MODE] Error captured (not sent to server): ${error["type"]} - ${error["message"]}');
-       // }
-       return;
+      // final errors = List<Map<String, dynamic>>.from(_errorQueue);
+      _errorQueue.clear();
+      // for (final error in errors) {
+      // REMOVED: print('🐛 [DEBUG MODE] Error captured (not sent to server): ${error["type"]} - ${error["message"]}');
+      // }
+      return;
     }
 
     _isProcessing = true;

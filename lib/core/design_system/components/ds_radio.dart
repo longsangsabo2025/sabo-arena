@@ -131,8 +131,7 @@ class DSRadioTile<T> extends StatelessWidget {
               }
             : null,
         child: Padding(
-          padding:
-              contentPadding ??
+          padding: contentPadding ??
               EdgeInsets.symmetric(
                 horizontal: DesignTokens.space16,
                 vertical: DesignTokens.space12,
@@ -175,9 +174,8 @@ class DSRadioTile<T> extends StatelessWidget {
                         color: isSelected
                             ? AppColors.textPrimary
                             : AppColors.textPrimary,
-                        fontWeight: isSelected
-                            ? FontWeight.w500
-                            : FontWeight.w400,
+                        fontWeight:
+                            isSelected ? FontWeight.w500 : FontWeight.w400,
                       ),
                     ),
                     if (subtitle != null) ...[

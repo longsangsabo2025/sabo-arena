@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:sabo_arena/widgets/common/common_widgets.dart'; // Phase 4
+import 'package:sabo_arena/utils/production_logger.dart';
 
 import '../../../models/user_profile.dart';
 import '../../../services/permission_service.dart';
@@ -12,7 +13,8 @@ import '../../../widgets/user/user_avatar_widget.dart';
 class EditProfileModal extends StatefulWidget {
   final UserProfile userProfile;
   // 🚀 MUSK: Updated signature for atomic operations
-  final Future<void> Function(UserProfile profile, List<int>? avatarBytes, String? avatarName, bool removeAvatar) onSave;
+  final Future<void> Function(UserProfile profile, List<int>? avatarBytes,
+      String? avatarName, bool removeAvatar) onSave;
   final VoidCallback onCancel;
 
   const EditProfileModal({
@@ -47,11 +49,15 @@ class _EditProfileModalState extends State<EditProfileModal> {
   }
 
   void _initializeControllers() {
-    _fullNameController = TextEditingController(text: widget.userProfile.fullName);
-    _displayNameController = TextEditingController(text: widget.userProfile.displayName);
-    _phoneController = TextEditingController(text: widget.userProfile.phone ?? '');
+    _fullNameController =
+        TextEditingController(text: widget.userProfile.fullName);
+    _displayNameController =
+        TextEditingController(text: widget.userProfile.displayName);
+    _phoneController =
+        TextEditingController(text: widget.userProfile.phone ?? '');
     _bioController = TextEditingController(text: widget.userProfile.bio ?? '');
-    _locationController = TextEditingController(text: widget.userProfile.location ?? '');
+    _locationController =
+        TextEditingController(text: widget.userProfile.location ?? '');
   }
 
   @override
@@ -97,20 +103,18 @@ class _EditProfileModalState extends State<EditProfileModal> {
       final removeAvatar = _selectedAvatarPath == 'REMOVE_AVATAR';
       String? fileName;
       if (_selectedAvatarBytes != null && !removeAvatar) {
-         // FIX: Use correct extension
-         final ext = _selectedFileName != null ? path.extension(_selectedFileName!) : 
-                     (_selectedAvatarPath != null ? path.extension(_selectedAvatarPath!) : '.jpg');
-         fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
+        // FIX: Use correct extension
+        final ext = _selectedFileName != null
+            ? path.extension(_selectedFileName!)
+            : (_selectedAvatarPath != null
+                ? path.extension(_selectedAvatarPath!)
+                : '.jpg');
+        fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
       }
 
       // 🚀 MUSK: Delegate to parent/service for atomic operation
-      await widget.onSave(
-        updatedProfile, 
-        removeAvatar ? null : _selectedAvatarBytes, 
-        fileName,
-        removeAvatar
-      );
-      
+      await widget.onSave(updatedProfile,
+          removeAvatar ? null : _selectedAvatarBytes, fileName, removeAvatar);
     } catch (e) {
       if (mounted) {
         AppSnackbar.error(
@@ -151,47 +155,44 @@ class _EditProfileModalState extends State<EditProfileModal> {
             SizedBox(height: 20),
             Text(
               'Chọn ảnh đại diện',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 30),
             // 📱 MARK Z: Facebook-style image picker with better UX
             Column(
               children: [
-                // Primary action: Choose from Gallery (most common)
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: ElevatedButton.icon(
+                // Primary action: Choose from Gallery (most common) - iOS style
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: AppButton(
+                    label: 'Chọn từ thư viện ảnh',
+                    type: AppButtonType.primary,
+                    size: AppButtonSize.large,
+                    icon: Icons.photo_library,
+                    iconTrailing: false,
+                    fullWidth: true,
                     onPressed: () {
                       Navigator.pop(context);
                       _pickImageFromGallery();
                     },
-                    icon: Icon(Icons.photo_library),
-                    label: Text('Chọn từ thư viện ảnh'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
                   ),
                 ),
                 SizedBox(height: 12),
-                // Secondary action: Take Photo
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: OutlinedButton.icon(
+                // Secondary action: Take Photo - iOS style
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: AppButton(
+                    label: 'Chụp ảnh mới',
+                    type: AppButtonType.outline,
+                    size: AppButtonSize.large,
+                    icon: Icons.camera_alt,
+                    iconTrailing: false,
+                    fullWidth: true,
                     onPressed: () {
                       Navigator.pop(context);
                       _pickImageFromCamera();
                     },
-                    icon: Icon(Icons.camera_alt),
-                    label: Text('Chụp ảnh mới'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.primary,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: theme.colorScheme.primary),
-                    ),
                   ),
                 ),
                 if (widget.userProfile.avatarUrl != null) ...[
@@ -233,9 +234,11 @@ class _EditProfileModalState extends State<EditProfileModal> {
 
   Future<void> _pickImageFromCamera() async {
     // Navigator.pop(context); // 🚀 MUSK_FIX: Removed double pop (handled by caller)
-    
+
     // 📱 MARK Z: Debug logging for user action tracking
-    print('🎥 USER ACTION: _pickImageFromCamera() called - should open CAMERA');
+    ProductionLogger.info(
+        '🎥 USER ACTION: _pickImageFromCamera() called - should open CAMERA',
+        tag: 'EditProfile');
 
     try {
       final cameraGranted = await PermissionService.checkCameraPermission();
@@ -247,7 +250,9 @@ class _EditProfileModalState extends State<EditProfileModal> {
       }
 
       // 📱 MARK Z: Explicit source confirmation
-      print('🎥 CALLING ImagePicker with source: ImageSource.camera');
+      ProductionLogger.info(
+          '🎥 CALLING ImagePicker with source: ImageSource.camera',
+          tag: 'EditProfile');
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1024,
@@ -274,9 +279,11 @@ class _EditProfileModalState extends State<EditProfileModal> {
 
   Future<void> _pickImageFromGallery() async {
     // Navigator.pop(context); // 🚀 MUSK_FIX: Removed double pop (handled by caller)
-    
+
     // 📱 MARK Z: Debug logging for user action tracking
-    print('📷 USER ACTION: _pickImageFromGallery() called - should open GALLERY');
+    ProductionLogger.info(
+        '📷 USER ACTION: _pickImageFromGallery() called - should open GALLERY',
+        tag: 'EditProfile');
 
     try {
       final photosGranted = await PermissionService.checkPhotosPermission();
@@ -288,7 +295,9 @@ class _EditProfileModalState extends State<EditProfileModal> {
       }
 
       // 📱 MARK Z: Explicit source confirmation
-      print('📷 CALLING ImagePicker with source: ImageSource.gallery');
+      ProductionLogger.info(
+          '📷 CALLING ImagePicker with source: ImageSource.gallery',
+          tag: 'EditProfile');
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1024,
@@ -308,7 +317,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
         _showSuccessMessage('🖼️ Ảnh đã được chọn! Nhấn Lưu để cập nhật.');
       }
     } catch (e) {
-       // 🚀 MUSK: Removed fragile string matching.
+      // 🚀 MUSK: Removed fragile string matching.
       _showErrorMessage('Lỗi khi chọn ảnh: $e');
     }
   }
@@ -337,7 +346,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
                 _selectedAvatarPath = 'REMOVE_AVATAR';
                 _selectedAvatarBytes = null;
               });
-              _showSuccessMessage('🗑️ Ảnh đại diện đã được xóa! Nhấn Lưu để cập nhật.');
+              _showSuccessMessage(
+                  '🗑️ Ảnh đại diện đã được xóa! Nhấn Lưu để cập nhật.');
             },
           ),
         ],
@@ -362,7 +372,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
@@ -387,7 +397,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
                 ),
                 Text(
                   'Chỉnh sửa hồ sơ',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 AppButton(
                   label: 'Lưu',
@@ -433,7 +444,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
                                     : Icon(
                                         Icons.person,
                                         size: 50,
-                                        color: theme.colorScheme.onSurfaceVariant,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
                                       ),
                           ),
                           Positioned(
@@ -594,7 +606,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
             prefixIcon: Icon(icon),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
-            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            fillColor: theme.colorScheme.surfaceContainerHighest
+                .withValues(alpha: 0.3),
           ),
         ),
       ],
@@ -620,7 +633,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
           decoration: BoxDecoration(
             border: Border.all(color: theme.dividerColor),
             borderRadius: BorderRadius.circular(12),
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            color: theme.colorScheme.surfaceContainerHighest
+                .withValues(alpha: 0.3),
           ),
           child: Row(
             children: [
@@ -634,7 +648,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
                   ),
                 ),
               ),
-              Icon(Icons.lock_outlined, color: theme.colorScheme.outline, size: 18),
+              Icon(Icons.lock_outlined,
+                  color: theme.colorScheme.outline, size: 18),
             ],
           ),
         ),

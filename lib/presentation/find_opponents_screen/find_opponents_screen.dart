@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_bar_theme.dart' as app_theme;
-import '../../routes/app_routes.dart';
 import './widgets/community_tab.dart';
 import './widgets/my_challenges_tab.dart';
 import '../find_opponents_list_screen/find_opponents_list_screen.dart';

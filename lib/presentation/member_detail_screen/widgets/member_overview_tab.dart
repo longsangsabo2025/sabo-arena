@@ -75,9 +75,8 @@ class _MemberOverviewTabState extends State<MemberOverviewTab>
   Widget _buildQuickStatsSection() {
     final user = widget.user;
     final totalMatches = user.totalWins + user.totalLosses;
-    final winRate = totalMatches > 0
-        ? (user.totalWins / totalMatches * 100)
-        : 0.0;
+    final winRate =
+        totalMatches > 0 ? (user.totalWins / totalMatches * 100) : 0.0;
 
     return _buildSection(
       title: 'Thống kê nhanh',
@@ -111,7 +110,7 @@ class _MemberOverviewTabState extends State<MemberOverviewTab>
               child: _buildStatCard(
                 'Tổng trận',
                 '$totalMatches',
-                Icons.sports_esports_outlined,
+                Icons.sports_baseball_outlined,
                 Colors.blue,
               ),
             ),
@@ -193,8 +192,8 @@ class _MemberOverviewTabState extends State<MemberOverviewTab>
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
               ],
@@ -223,17 +222,16 @@ class _MemberOverviewTabState extends State<MemberOverviewTab>
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             flex: 3,
-            child:
-                valueWidget ??
+            child: valueWidget ??
                 Text(
                   value,
                   textAlign: TextAlign.right,
@@ -281,9 +279,9 @@ class _MemberOverviewTabState extends State<MemberOverviewTab>
           Text(
             value,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
           ),
         ],
       ),

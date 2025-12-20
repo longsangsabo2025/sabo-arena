@@ -38,13 +38,17 @@ class FriendsService {
 
       return theyFollowMe != null;
     } catch (e) {
-      ProductionLogger.info('Error checking if friend: $e', tag: 'friends_service');
+      ProductionLogger.info('Error checking if friend: $e',
+          tag: 'friends_service');
       return false;
     }
   }
 
   /// Get list of friends (mutual follows)
-  Future<List<UserProfile>> getFriendsList() async {
+  Future<List<UserProfile>> getFriendsList({
+    int limit = 20,
+    int offset = 0,
+  }) async {
     try {
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) return [];
@@ -55,9 +59,8 @@ class FriendsService {
           .select('following_id')
           .eq('follower_id', currentUser.id);
 
-      final followingIds = following
-          .map((f) => f['following_id'] as String)
-          .toList();
+      final followingIds =
+          following.map((f) => f['following_id'] as String).toList();
 
       if (followingIds.isEmpty) return [];
 
@@ -94,14 +97,16 @@ class FriendsService {
             )
           ''')
           .eq('following_id', currentUser.id)
-          .inFilter('follower_id', followingIds);
+          .inFilter('follower_id', followingIds)
+          .range(offset, offset + limit - 1);
 
       return friends
           .where((f) => f['users'] != null)
           .map((f) => UserProfile.fromJson(f['users']))
           .toList();
     } catch (e) {
-      ProductionLogger.info('Error getting friends list: $e', tag: 'friends_service');
+      ProductionLogger.info('Error getting friends list: $e',
+          tag: 'friends_service');
       return [];
     }
   }
@@ -117,7 +122,8 @@ class FriendsService {
       final friends = await getFriendsList();
       return friends.length;
     } catch (e) {
-      ProductionLogger.info('Error getting friends count: $e', tag: 'friends_service');
+      ProductionLogger.info('Error getting friends count: $e',
+          tag: 'friends_service');
       return 0;
     }
   }
@@ -131,9 +137,8 @@ class FriendsService {
           .select('following_id')
           .eq('follower_id', userId);
 
-      final followingIds = following
-          .map((f) => f['following_id'] as String)
-          .toList();
+      final followingIds =
+          following.map((f) => f['following_id'] as String).toList();
 
       if (followingIds.isEmpty) return 0;
 
@@ -146,7 +151,8 @@ class FriendsService {
 
       return friends.length;
     } catch (e) {
-      ProductionLogger.info('Error getting friends count for user: $e', tag: 'friends_service');
+      ProductionLogger.info('Error getting friends count for user: $e',
+          tag: 'friends_service');
       return 0;
     }
   }
@@ -184,13 +190,17 @@ class FriendsService {
         return 'none'; // No relationship
       }
     } catch (e) {
-      ProductionLogger.info('Error getting relationship status: $e', tag: 'friends_service');
+      ProductionLogger.info('Error getting relationship status: $e',
+          tag: 'friends_service');
       return 'none';
     }
   }
 
   /// Get list of followers (users who follow current user)
-  Future<List<UserProfile>> getFollowersList() async {
+  Future<List<UserProfile>> getFollowersList({
+    int limit = 20,
+    int offset = 0,
+  }) async {
     try {
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) return [];
@@ -226,20 +236,25 @@ class FriendsService {
               updated_at
             )
           ''')
-          .eq('following_id', currentUser.id);
+          .eq('following_id', currentUser.id)
+          .range(offset, offset + limit - 1);
 
       return followers
           .where((f) => f['users'] != null)
           .map((f) => UserProfile.fromJson(f['users']))
           .toList();
     } catch (e) {
-      ProductionLogger.info('Error getting followers list: $e', tag: 'friends_service');
+      ProductionLogger.info('Error getting followers list: $e',
+          tag: 'friends_service');
       return [];
     }
   }
 
   /// Get list of users that current user is following
-  Future<List<UserProfile>> getFollowingList() async {
+  Future<List<UserProfile>> getFollowingList({
+    int limit = 20,
+    int offset = 0,
+  }) async {
     try {
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) return [];
@@ -275,14 +290,16 @@ class FriendsService {
               updated_at
             )
           ''')
-          .eq('follower_id', currentUser.id);
+          .eq('follower_id', currentUser.id)
+          .range(offset, offset + limit - 1);
 
       return following
           .where((f) => f['users'] != null)
           .map((f) => UserProfile.fromJson(f['users']))
           .toList();
     } catch (e) {
-      ProductionLogger.info('Error getting following list: $e', tag: 'friends_service');
+      ProductionLogger.info('Error getting following list: $e',
+          tag: 'friends_service');
       return [];
     }
   }

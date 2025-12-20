@@ -47,7 +47,7 @@ class _VoucherManagementMainScreenState
       );
       return;
     }
-    
+
     if (widget.clubId != null) {
       // Club owner: Redirect to promotion hub
       Navigator.pushReplacement(
@@ -155,7 +155,8 @@ class VoucherQuickAccess extends StatelessWidget {
                     color: AppColors.surface.withValues(alpha: 0.2),
                     borderRadius: DesignTokens.radius(DesignTokens.radiusMD),
                   ),
-                  child: Icon(Icons.campaign, color: AppColors.textOnPrimary, size: 24),
+                  child: Icon(Icons.campaign,
+                      color: AppColors.textOnPrimary, size: 24),
                 ),
                 SizedBox(width: DesignTokens.space16),
                 Expanded(
@@ -167,10 +168,11 @@ class VoucherQuickAccess extends StatelessWidget {
                             ? 'Quản lý Voucher Campaign'
                             : 'Đăng ký Voucher Campaign',
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textOnPrimary,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textOnPrimary,
+                                ),
                       ),
                       SizedBox(height: DesignTokens.space4),
                       Text(
@@ -179,15 +181,17 @@ class VoucherQuickAccess extends StatelessWidget {
                             : 'Tạo và đăng ký campaign voucher cho club của bạn',
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textOnPrimary.withValues(alpha: 0.9),
-                          height: 1.3,
-                        ),
+                              color: AppColors.textOnPrimary
+                                  .withValues(alpha: 0.9),
+                              height: 1.3,
+                            ),
                       ),
                     ],
                   ),
                 ),
                 SizedBox(width: DesignTokens.space8),
-                Icon(Icons.arrow_forward_ios, color: AppColors.textOnPrimary, size: 16),
+                Icon(Icons.arrow_forward_ios,
+                    color: AppColors.textOnPrimary, size: 16),
               ],
             ),
           ),
@@ -219,9 +223,9 @@ class AdminVoucherBadge extends StatelessWidget {
       child: Text(
         pendingCount > 99 ? '99+' : pendingCount.toString(),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: AppColors.textOnPrimary,
-          fontWeight: FontWeight.bold,
-        ),
+              color: AppColors.textOnPrimary,
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }
@@ -265,9 +269,9 @@ class VoucherStatsPreview extends StatelessWidget {
             isAdmin ? 'Tổng quan Voucher' : 'Campaign của tôi',
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           SizedBox(height: DesignTokens.space12),
           Row(
@@ -322,15 +326,15 @@ class VoucherStatsPreview extends StatelessWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
+                color: AppColors.textSecondary,
+              ),
         ),
       ],
     );

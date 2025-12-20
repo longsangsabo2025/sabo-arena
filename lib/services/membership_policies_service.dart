@@ -29,7 +29,7 @@ class MembershipPoliciesService {
   Future<MembershipPolicy> getOrCreatePolicy(String clubId) async {
     try {
       final existing = await getClubPolicy(clubId);
-      
+
       if (existing != null) {
         return existing;
       }
@@ -45,9 +45,13 @@ class MembershipPoliciesService {
   /// Save (upsert) policy for a club
   Future<MembershipPolicy> savePolicy(MembershipPolicy policy) async {
     try {
-      ProductionLogger.info('🔵 [MembershipPoliciesService] Saving policy for club: ${policy.clubId}', tag: 'membership_policies_service');
-      ProductionLogger.info('🔵 [MembershipPoliciesService] Policy data: ${policy.toUpsertJson()}', tag: 'membership_policies_service');
-      
+      ProductionLogger.info(
+          '🔵 [MembershipPoliciesService] Saving policy for club: ${policy.clubId}',
+          tag: 'membership_policies_service');
+      ProductionLogger.info(
+          '🔵 [MembershipPoliciesService] Policy data: ${policy.toUpsertJson()}',
+          tag: 'membership_policies_service');
+
       final response = await _supabase
           .from('membership_policies')
           .upsert(
@@ -57,12 +61,15 @@ class MembershipPoliciesService {
           .select()
           .single();
 
-      ProductionLogger.info('✅ [MembershipPoliciesService] Save successful!', tag: 'membership_policies_service');
-      ProductionLogger.info('✅ [MembershipPoliciesService] Response: $response', tag: 'membership_policies_service');
-      
+      ProductionLogger.info('✅ [MembershipPoliciesService] Save successful!',
+          tag: 'membership_policies_service');
+      ProductionLogger.info('✅ [MembershipPoliciesService] Response: $response',
+          tag: 'membership_policies_service');
+
       return MembershipPolicy.fromJson(response);
     } catch (e) {
-      ProductionLogger.info('❌ [MembershipPoliciesService] Save failed: $e', tag: 'membership_policies_service');
+      ProductionLogger.info('❌ [MembershipPoliciesService] Save failed: $e',
+          tag: 'membership_policies_service');
       throw Exception('Failed to save membership policy: $e');
     }
   }

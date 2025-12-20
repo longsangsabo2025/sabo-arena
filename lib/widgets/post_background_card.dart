@@ -21,9 +21,10 @@ class PostBackgroundCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedTheme = theme ?? PostBackgroundThemes.defaultTheme;
-    
+
     // 🎯 AUTO-FIT FONT SIZE dựa trên độ dài content
-    final fontSize = _calculateFontSize(content, selectedTheme.textStyle.fontSize ?? 16);
+    final fontSize =
+        _calculateFontSize(content, selectedTheme.textStyle.fontSize ?? 16);
 
     return GestureDetector(
       onTap: onTap,
@@ -84,7 +85,7 @@ class PostBackgroundCard extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            Icons.sports_esports,
+                            Icons.sports_baseball,
                             size: 40,
                             color: Colors.white,
                           ),
@@ -99,7 +100,8 @@ class PostBackgroundCard extends StatelessWidget {
                             fit: BoxFit.scaleDown,
                             child: Container(
                               constraints: BoxConstraints(
-                                maxWidth: MediaQuery.of(context).size.width - 80,
+                                maxWidth:
+                                    MediaQuery.of(context).size.width - 80,
                               ),
                               child: Text(
                                 content,
@@ -184,13 +186,13 @@ class PostBackgroundCard extends StatelessWidget {
   /// Tính toán font size dựa trên độ dài content để tránh tràn
   double _calculateFontSize(String content, double baseFontSize) {
     final contentLength = content.length;
-    
+
     // Quy tắc:
     // - Nội dung ngắn (< 100 ký tự): font size gốc
     // - Nội dung trung bình (100-200): giảm 10%
     // - Nội dung dài (200-300): giảm 20%
     // - Nội dung rất dài (> 300): giảm 30%
-    
+
     if (contentLength < 100) {
       return baseFontSize;
     } else if (contentLength < 200) {

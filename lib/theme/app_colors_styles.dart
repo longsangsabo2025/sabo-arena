@@ -85,29 +85,29 @@ class BorderRadiusStyle {
 class CustomTextStyles {
   @Deprecated('Use AppTypography.bodyMedium')
   static TextStyle get bodyMedium => TextStyle(
-    fontSize: 14.sp,
-    fontWeight: FontWeight.w400,
-    color: AppTheme.onBackgroundLight,
-  );
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        color: AppTheme.onBackgroundLight,
+      );
 
   @Deprecated('Use AppTypography.headingXSmall')
   static TextStyle get titleMedium => TextStyle(
-    fontSize: 16.sp,
-    fontWeight: FontWeight.w500,
-    color: AppTheme.onBackgroundLight,
-  );
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+        color: AppTheme.onBackgroundLight,
+      );
 
   @Deprecated('Use AppTypography.headingSmall')
   static TextStyle get titleLarge => TextStyle(
-    fontSize: 20.sp,
-    fontWeight: FontWeight.w600,
-    color: AppTheme.onBackgroundLight,
-  );
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w600,
+        color: AppTheme.onBackgroundLight,
+      );
 
   @Deprecated('Use AppTypography.headingMedium')
   static TextStyle get headlineSmall => TextStyle(
-    fontSize: 24.sp,
-    fontWeight: FontWeight.w700,
-    color: AppTheme.onBackgroundLight,
-  );
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w700,
+        color: AppTheme.onBackgroundLight,
+      );
 }

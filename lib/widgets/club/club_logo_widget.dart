@@ -85,17 +85,22 @@ class ClubLogoWidget extends StatelessWidget {
       if (response.statusCode == 200) {
         String svgContent = response.body;
         // Clean SVG string to remove unsupported elements
-        svgContent = svgContent.replaceAll(RegExp(r'<filter[\s\S]*?<\/filter>', caseSensitive: false), '');
-        svgContent = svgContent.replaceAll(RegExp(r'<filter[^>]*\/>', caseSensitive: false), '');
-        svgContent = svgContent.replaceAll(RegExp(r'filter="[^"]*"', caseSensitive: false), '');
-        svgContent = svgContent.replaceAll(RegExp(r'<metadata[\s\S]*?<\/metadata>', caseSensitive: false), '');
-        
+        svgContent = svgContent.replaceAll(
+            RegExp(r'<filter[\s\S]*?<\/filter>', caseSensitive: false), '');
+        svgContent = svgContent.replaceAll(
+            RegExp(r'<filter[^>]*\/>', caseSensitive: false), '');
+        svgContent = svgContent.replaceAll(
+            RegExp(r'filter="[^"]*"', caseSensitive: false), '');
+        svgContent = svgContent.replaceAll(
+            RegExp(r'<metadata[\s\S]*?<\/metadata>', caseSensitive: false), '');
+
         _svgCache[url] = svgContent;
         return svgContent;
       }
       throw Exception('Failed to load SVG');
     } catch (e) {
-      ProductionLogger.error('Error loading SVG club logo', error: e, tag: 'ClubLogo');
+      ProductionLogger.error('Error loading SVG club logo',
+          error: e, tag: 'ClubLogo');
       rethrow;
     }
   }

@@ -16,7 +16,8 @@ class _DE64BracketState extends State<DE64Bracket>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this); // 4 groups + 1 cross-bracket
+    _tabController =
+        TabController(length: 5, vsync: this); // 4 groups + 1 cross-bracket
     _pageController = PageController();
 
     // Sync tab and page controller

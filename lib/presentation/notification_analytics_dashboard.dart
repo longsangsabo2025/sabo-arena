@@ -238,7 +238,8 @@ class _NotificationAnalyticsDashboardState
             Expanded(
               child: _buildStatCard(
                 'Tương tác',
-                _analytics!.engagementMetrics.averageEngagementScore.toStringAsFixed(1),
+                _analytics!.engagementMetrics.averageEngagementScore
+                    .toStringAsFixed(1),
                 '${_analytics!.engagementMetrics.totalActiveUsers} người dùng hoạt động',
                 Icons.trending_up,
                 const Color(0xFFFF6B35),

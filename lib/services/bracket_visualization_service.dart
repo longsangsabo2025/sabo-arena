@@ -33,7 +33,6 @@ class BracketVisualizationService {
     try {
       final format = bracketData['format'] ?? 'single_elimination';
 
-
       switch (format.toLowerCase()) {
         case 'single_elimination':
           return await _buildSingleEliminationBracket(
@@ -218,14 +217,21 @@ class BracketVisualizationService {
     final matchList = matches.map((m) => m as Map<String, dynamic>).toList();
 
     // Debug: Check if matches have required fields
-    ProductionLogger.info('🔍 SABO DE64 Bracket Data Check:', tag: 'bracket_visualization_service');
-    ProductionLogger.info('   Total matches: ${matchList.length}', tag: 'bracket_visualization_service');
+    ProductionLogger.info('🔍 SABO DE64 Bracket Data Check:',
+        tag: 'bracket_visualization_service');
+    ProductionLogger.info('   Total matches: ${matchList.length}',
+        tag: 'bracket_visualization_service');
     if (matchList.isNotEmpty) {
       final firstMatch = matchList.first;
-      ProductionLogger.info('   Sample match fields: ${firstMatch.keys.toList()}', tag: 'bracket_visualization_service');
-      ProductionLogger.info('   bracket_group: ${firstMatch['bracket_group']}', tag: 'bracket_visualization_service');
-      ProductionLogger.info('   bracket_type: ${firstMatch['bracket_type']}', tag: 'bracket_visualization_service');
-      ProductionLogger.info('   round_number: ${firstMatch['round_number']}', tag: 'bracket_visualization_service');
+      ProductionLogger.info(
+          '   Sample match fields: ${firstMatch.keys.toList()}',
+          tag: 'bracket_visualization_service');
+      ProductionLogger.info('   bracket_group: ${firstMatch['bracket_group']}',
+          tag: 'bracket_visualization_service');
+      ProductionLogger.info('   bracket_type: ${firstMatch['bracket_type']}',
+          tag: 'bracket_visualization_service');
+      ProductionLogger.info('   round_number: ${firstMatch['round_number']}',
+          tag: 'bracket_visualization_service');
     }
 
     return SaboDE64Bracket(matches: matchList, onMatchTap: onMatchTap);
@@ -377,7 +383,6 @@ class BracketVisualizationService {
       return type == 'FINAL' || type == 'GRAND_FINAL' || type == 'SABO';
     }).toList();
 
-
     // Build bracket tree directly without section headers (tab handles filtering)
     final allMatches = [...wbMatches, ...lbMatches, ...finalMatches];
     final rounds = _convertMatchesToRounds(allMatches);
@@ -522,7 +527,6 @@ class BracketVisualizationService {
     // Calculate standings from matches
     final standings = _calculateRoundRobinStandings(matches);
 
-
     return Container(
       padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
@@ -560,10 +564,14 @@ class BracketVisualizationService {
 
       final player1Id = match['player1_id'] as String?;
       final player2Id = match['player2_id'] as String?;
-      final player1Name =
-          player1Data['display_name'] ?? player1Data['full_name'] ?? player1Data['username'] ?? 'Player 1';
-      final player2Name =
-          player2Data['display_name'] ?? player2Data['full_name'] ?? player2Data['username'] ?? 'Player 2';
+      final player1Name = player1Data['display_name'] ??
+          player1Data['full_name'] ??
+          player1Data['username'] ??
+          'Player 1';
+      final player2Name = player2Data['display_name'] ??
+          player2Data['full_name'] ??
+          player2Data['username'] ??
+          'Player 2';
 
       // Initialize stats if needed
       playerStats[player1Id!] ??= {
@@ -770,10 +778,14 @@ class BracketVisualizationService {
           children: matches.map((match) {
             final player1Data = match['player1'] as Map<String, dynamic>?;
             final player2Data = match['player2'] as Map<String, dynamic>?;
-            final player1Name =
-                player1Data?['display_name'] ?? player1Data?['full_name'] ?? player1Data?['username'] ?? 'TBD';
-            final player2Name =
-                player2Data?['display_name'] ?? player2Data?['full_name'] ?? player2Data?['username'] ?? 'TBD';
+            final player1Name = player1Data?['display_name'] ??
+                player1Data?['full_name'] ??
+                player1Data?['username'] ??
+                'TBD';
+            final player2Name = player2Data?['display_name'] ??
+                player2Data?['full_name'] ??
+                player2Data?['username'] ??
+                'TBD';
             final status = match['status'] as String?;
             final score1 = match['player1_score'] as int? ?? 0;
             final score2 = match['player2_score'] as int? ?? 0;
@@ -1019,7 +1031,6 @@ class BracketVisualizationService {
       totalExpectedRounds = _calculateTotalRounds(firstRoundMatches);
     }
 
-
     for (int round in sortedRounds) {
       final roundData = roundMatches[round]!;
 
@@ -1034,25 +1045,30 @@ class BracketVisualizationService {
         String player2Name = 'TBD';
 
         if (player1Data != null) {
-          player1Name =
-              player1Data['display_name'] ?? player1Data['full_name'] ?? player1Data['username'] ?? 'TBD';
+          player1Name = player1Data['display_name'] ??
+              player1Data['full_name'] ??
+              player1Data['username'] ??
+              'TBD';
         }
         if (player2Data != null) {
-          player2Name =
-              player2Data['display_name'] ?? player2Data['full_name'] ?? player2Data['username'] ?? 'TBD';
+          player2Name = player2Data['display_name'] ??
+              player2Data['full_name'] ??
+              player2Data['username'] ??
+              'TBD';
         }
 
         // For Round 1 matches without players (shouldn't happen in new system)
-        if (round == 1 && (player1Data == null || player2Data == null)) {
-        }
+        if (round == 1 && (player1Data == null || player2Data == null)) {}
 
         matchCards.add({
           'player1': player1Name,
           'player2': player2Name,
-          'player1_avatar': player1Data?['avatar_url']?.toString() ?? 
-                           player1Data?['avatar']?.toString() ?? '', // TRY BOTH avatar_url AND avatar
-          'player2_avatar': player2Data?['avatar_url']?.toString() ?? 
-                           player2Data?['avatar']?.toString() ?? '', // TRY BOTH avatar_url AND avatar
+          'player1_avatar': player1Data?['avatar_url']?.toString() ??
+              player1Data?['avatar']?.toString() ??
+              '', // TRY BOTH avatar_url AND avatar
+          'player2_avatar': player2Data?['avatar_url']?.toString() ??
+              player2Data?['avatar']?.toString() ??
+              '', // TRY BOTH avatar_url AND avatar
           'score': match['status'] == 'completed'
               ? '${match['player1_score'] ?? 0}-${match['player2_score'] ?? 0}'
               : '0-0',
@@ -1136,4 +1152,3 @@ class BracketVisualizationService {
     }
   }
 }
-

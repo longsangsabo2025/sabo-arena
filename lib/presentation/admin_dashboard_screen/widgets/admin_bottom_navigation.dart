@@ -83,11 +83,13 @@ class AdminBottomNavigation extends StatelessWidget {
         break;
       case 2:
         // Tournament Management
-        Navigator.pushReplacementNamed(context, AppRoutes.adminTournamentScreen);
+        Navigator.pushReplacementNamed(
+            context, AppRoutes.adminTournamentScreen);
         break;
       case 3:
         // User Management
-        Navigator.pushReplacementNamed(context, AppRoutes.adminUserManagementScreen);
+        Navigator.pushReplacementNamed(
+            context, AppRoutes.adminUserManagementScreen);
         break;
       case 4:
         // More options

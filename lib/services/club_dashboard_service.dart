@@ -58,7 +58,8 @@ class ClubDashboardService {
         activities.add(
           ClubActivity(
             type: 'member_joined',
-            title: '${join['users']['display_name'] ?? join['users']['full_name']} đã tham gia CLB',
+            title:
+                '${join['users']['display_name'] ?? join['users']['full_name']} đã tham gia CLB',
             subtitle: 'Thành viên mới',
             timestamp: DateTime.parse(join['created_at']),
             avatar: join['users']['avatar_url'],
@@ -233,4 +234,3 @@ class ClubActivity {
     this.icon,
   });
 }
-

@@ -192,7 +192,9 @@ class ClubInfoTab extends StatelessWidget {
               Icon(Icons.access_time, size: 20, color: colorScheme.primary),
               const SizedBox(width: 12),
               Text(
-                club.openingHours != null ? _formatOpeningHours(club.openingHours!) : 'Chưa cập nhật giờ mở cửa',
+                club.openingHours != null
+                    ? _formatOpeningHours(club.openingHours!)
+                    : 'Chưa cập nhật giờ mở cửa',
                 style: TextStyle(
                   fontSize: 14,
                   color: colorScheme.onSurface.withValues(alpha: 0.8),
@@ -200,7 +202,7 @@ class ClubInfoTab extends StatelessWidget {
               ),
             ],
           ),
-          
+
           // Bottom padding
           const SizedBox(height: 40),
         ],

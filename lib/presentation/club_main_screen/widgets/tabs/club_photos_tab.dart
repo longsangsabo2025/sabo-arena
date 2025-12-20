@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/production_logger.dart';
+import '../../../../widgets/common/app_button.dart';
 
 class ClubPhotosTab extends StatelessWidget {
   final List<String> photos;
@@ -47,10 +48,13 @@ class ClubPhotosTab extends StatelessWidget {
             ),
             if (isClubOwner) ...[
               const SizedBox(height: 16),
-              ElevatedButton.icon(
+              AppButton(
+                label: 'Thêm ảnh đầu tiên',
+                type: AppButtonType.primary,
+                size: AppButtonSize.medium,
+                icon: Icons.add_photo_alternate,
+                iconTrailing: false,
                 onPressed: onAddPhoto,
-                icon: const Icon(Icons.add_photo_alternate),
-                label: const Text('Thêm ảnh đầu tiên'),
               ),
             ],
           ],
@@ -95,7 +99,9 @@ class ClubPhotosTab extends StatelessWidget {
                         );
                       },
                       errorBuilder: (context, error, stackTrace) {
-                        ProductionLogger.info('❌ Error loading photo $index: $error', tag: 'club_detail_section');
+                        ProductionLogger.info(
+                            '❌ Error loading photo $index: $error',
+                            tag: 'club_detail_section');
                         return Container(
                           color: Colors.grey[900],
                           child: Column(
@@ -182,7 +188,13 @@ class ClubPhotosTab extends StatelessWidget {
                     ]
                   : null,
             ),
-            Image.network(photoUrl, fit: BoxFit.contain),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.7,
+                maxWidth: MediaQuery.of(context).size.width,
+              ),
+              child: Image.network(photoUrl, fit: BoxFit.contain),
+            ),
           ],
         ),
       ),

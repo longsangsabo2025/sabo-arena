@@ -80,8 +80,8 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                 Text(
                   'Thống kê giải đấu',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ],
             ),
@@ -153,8 +153,8 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                 Text(
                   'Thành tích nổi bật',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ],
             ),
@@ -267,8 +267,8 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                 Text(
                   'Danh sách giải đấu',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 Spacer(),
                 TextButton(
@@ -295,10 +295,10 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                       Text(
                         'Không có giải đấu nào',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                       ),
                     ],
                   ),
@@ -340,18 +340,18 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
         Text(
           value,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
         ),
         SizedBox(height: 4),
         Text(
           title,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -392,18 +392,18 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                     Text(
                       title,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
+                          ),
                     ),
                     Spacer(),
                     Text(
                       value,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: color,
-                      ),
+                            fontWeight: FontWeight.bold,
+                            color: color,
+                          ),
                     ),
                   ],
                 ),
@@ -411,10 +411,10 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
                 ),
               ],
             ),
@@ -483,7 +483,9 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                       Expanded(
                         child: Text(
                           tournament.name,
-                          style: Theme.of(context).textTheme.bodyMedium
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
                               ?.copyWith(fontWeight: FontWeight.w500),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -523,10 +525,10 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                       Text(
                         _formatDate(tournament.startDate),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                       ),
                       SizedBox(width: 16),
                       Icon(Icons.people, size: 12, color: Colors.grey),
@@ -534,10 +536,10 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                       Text(
                         '${tournament.participants} người tham gia',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                       ),
                     ],
                   ),
@@ -553,13 +555,13 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                         SizedBox(width: 4),
                         Text(
                           'Vị trí: ${_getPlacementText(tournament.placement!)}',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: _getPlacementColor(
-                                  tournament.placement!,
-                                ),
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: _getPlacementColor(
+                                      tournament.placement!,
+                                    ),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         if (tournament.prize != null) ...[
                           SizedBox(width: 16),
@@ -571,11 +573,11 @@ class _MemberTournamentsTabState extends State<MemberTournamentsTab>
                           SizedBox(width: 4),
                           Text(
                             tournament.prize!,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                           ),
                         ],
                       ],

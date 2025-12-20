@@ -51,8 +51,8 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
 
   Widget _buildMatchStats() {
     final totalMatches = widget.memberData.activityStats.totalMatches;
-    final wins = (totalMatches * widget.memberData.activityStats.winRate)
-        .round();
+    final wins =
+        (totalMatches * widget.memberData.activityStats.winRate).round();
     final losses = totalMatches - wins;
 
     return Card(
@@ -79,8 +79,8 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                 Text(
                   'Thống kê trận đấu',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ],
             ),
@@ -93,7 +93,7 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                   child: _buildStatItem(
                     'Tổng số trận',
                     '$totalMatches',
-                    Icons.sports_esports,
+                    Icons.sports_baseball,
                     Colors.blue,
                   ),
                 ),
@@ -136,15 +136,15 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                     Text(
                       'Tỷ lệ thắng',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                     Text(
                       '${(widget.memberData.activityStats.winRate * 100).toInt()}%',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
                     ),
                   ],
                 ),
@@ -187,8 +187,8 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                 Text(
                   'Biểu đồ phong độ',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 Spacer(),
                 TextButton(
@@ -224,18 +224,18 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                     Text(
                       'Biểu đồ ELO theo thời gian',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
                     ),
                     SizedBox(height: 4),
                     Text(
                       'ELO hiện tại: ${widget.memberData.user.elo}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -316,8 +316,8 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                 Text(
                   'Lịch sử trận đấu',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 Spacer(),
                 TextButton(
@@ -344,10 +344,10 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                       Text(
                         'Không có trận đấu nào',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                       ),
                     ],
                   ),
@@ -389,18 +389,18 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
         Text(
           value,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
         ),
         SizedBox(height: 4),
         Text(
           title,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -456,8 +456,8 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                       Text(
                         'vs ${match.opponent}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                       Spacer(),
                       Container(
@@ -488,10 +488,10 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                       Text(
                         _formatMatchDate(match.date),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                       ),
                       SizedBox(width: 16),
                       Icon(Icons.emoji_events, size: 12, color: Colors.grey),
@@ -499,11 +499,11 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                       Text(
                         'ELO: ${match.eloChange > 0 ? '+' : ''}${match.eloChange}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: match.eloChange > 0
-                              ? Colors.green
-                              : Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
+                              color: match.eloChange > 0
+                                  ? Colors.green
+                                  : Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                       if (match.tournament != null) ...[
                         SizedBox(width: 16),
@@ -512,7 +512,9 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
                         Flexible(
                           child: Text(
                             match.tournament!,
-                            style: Theme.of(context).textTheme.bodySmall
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
                                 ?.copyWith(color: Colors.orange),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -593,8 +595,8 @@ class _MemberMatchesTabState extends State<MemberMatchesTab>
       final eloChange = result == MatchResult.win
           ? 15 + (index % 20)
           : result == MatchResult.loss
-          ? -(10 + (index % 15))
-          : 0;
+              ? -(10 + (index % 15))
+              : 0;
 
       return MatchRecord(
         id: 'match_$index',

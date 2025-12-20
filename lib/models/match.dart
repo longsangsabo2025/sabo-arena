@@ -12,7 +12,7 @@ class Match {
   final int? player1Score;
   final int? player2Score;
   final String
-  status; // 'scheduled', 'in_progress', 'completed', 'cancelled', 'no_show'
+      status; // 'scheduled', 'in_progress', 'completed', 'cancelled', 'no_show'
   final String? winnerId;
   final String? loserId;
   final int? bracketPosition;
@@ -23,7 +23,7 @@ class Match {
   final DateTime? completedAt;
   final int round;
   final String
-  matchType; // 'group_stage', 'quarter_final', 'semi_final', 'final', 'third_place'
+      matchType; // 'group_stage', 'quarter_final', 'semi_final', 'final', 'third_place'
   final String? venue;
   final String? table;
   final int? durationMinutes;
@@ -37,7 +37,7 @@ class Match {
   final Map<String, dynamic>? metadata;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
+
   // Expanded fields for UI
   final UserProfile? player1Profile;
   final UserProfile? player2Profile;
@@ -101,7 +101,9 @@ class Match {
       matchNumber: json['match_number'],
       scheduledAt: json['scheduled_time'] != null
           ? DateTime.parse(json['scheduled_time'])
-          : (json['scheduled_at'] != null ? DateTime.parse(json['scheduled_at']) : null),
+          : (json['scheduled_at'] != null
+              ? DateTime.parse(json['scheduled_at'])
+              : null),
       startedAt: json['started_at'] != null
           ? DateTime.parse(json['started_at'])
           : null,
@@ -131,8 +133,12 @@ class Match {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : DateTime.now(),
-      player1Profile: json['player1'] != null ? UserProfile.fromJson(json['player1']) : null,
-      player2Profile: json['player2'] != null ? UserProfile.fromJson(json['player2']) : null,
+      player1Profile: json['player1'] != null
+          ? UserProfile.fromJson(json['player1'])
+          : null,
+      player2Profile: json['player2'] != null
+          ? UserProfile.fromJson(json['player2'])
+          : null,
       club: json['club'] != null ? Club.fromJson(json['club']) : null,
       tournamentTitle: json['tournament']?['title'],
     );

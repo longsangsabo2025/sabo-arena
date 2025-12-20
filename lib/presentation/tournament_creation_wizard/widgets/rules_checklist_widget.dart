@@ -176,9 +176,8 @@ class _RulesChecklistWidgetState extends State<RulesChecklistWidget> {
 
       if (mounted) {
         setState(() {
-          _recentTemplates = templates
-              .map((json) => RuleTemplate.fromJson(json))
-              .toList();
+          _recentTemplates =
+              templates.map((json) => RuleTemplate.fromJson(json)).toList();
         });
       }
     } catch (e) {
@@ -538,7 +537,9 @@ class _RulesChecklistWidgetState extends State<RulesChecklistWidget> {
                     Icon(Icons.check_circle, color: Colors.green, size: 20),
                     SizedBox(width: 8.w),
                     Expanded(
-                      child: Text(entry.value, style: TextStyle(fontSize: 14), overflow: TextOverflow.ellipsis),
+                      child: Text(entry.value,
+                          style: TextStyle(fontSize: 14),
+                          overflow: TextOverflow.ellipsis),
                     ),
                     IconButton(
                       icon: Icon(Icons.delete_outline, color: Colors.red),
@@ -635,4 +636,3 @@ class RuleTemplate {
     );
   }
 }
-

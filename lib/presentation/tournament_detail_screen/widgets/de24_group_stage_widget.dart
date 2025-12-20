@@ -45,7 +45,7 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
   bool _areAllGroupsCompleted() {
     // Check if all 8 groups have all 3 matches completed
     if (_groupMatches.length != 8) return false;
-    
+
     for (final matches in _groupMatches.values) {
       if (matches.length != 3) return false;
       if (matches.any((m) => m['status'] != 'completed')) return false;
@@ -57,7 +57,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
     if (!_areAllGroupsCompleted()) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('⚠️ Tất cả trận vòng bảng phải hoàn thành trước!'),
+          content:
+              const Text('⚠️ Tất cả trận vòng bảng phải hoàn thành trước!'),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -69,7 +70,7 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
     try {
       final service = HardcodedSaboDE24Service(_supabase);
       await service.advanceGroupWinnersToMainStage(widget.tournamentId);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -77,7 +78,7 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
             backgroundColor: AppColors.success,
           ),
         );
-        
+
         // Reload to show updated data
         await _loadGroupData();
       }
@@ -112,10 +113,13 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
       final groupMatches = <Map<String, dynamic>>[];
       final de16Matches = <Map<String, dynamic>>[];
 
-      ProductionLogger.info('🔍 Total matches loaded: ${allMatches.length}', tag: 'de24_group_stage_widget');
+      ProductionLogger.info('🔍 Total matches loaded: ${allMatches.length}',
+          tag: 'de24_group_stage_widget');
       for (final match in allMatches) {
         final bracketType = match['bracket_type'] as String?;
-        ProductionLogger.info('  Match ${match['match_number']}: bracket_type=$bracketType, round=${match['round']}', tag: 'de24_group_stage_widget');
+        ProductionLogger.info(
+            '  Match ${match['match_number']}: bracket_type=$bracketType, round=${match['round']}',
+            tag: 'de24_group_stage_widget');
         if (bracketType == 'groups') {
           groupMatches.add(match);
         } else {
@@ -123,7 +127,9 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
           de16Matches.add(match);
         }
       }
-      ProductionLogger.info('📊 Group matches: ${groupMatches.length}, DE16 matches: ${de16Matches.length}', tag: 'de24_group_stage_widget');
+      ProductionLogger.info(
+          '📊 Group matches: ${groupMatches.length}, DE16 matches: ${de16Matches.length}',
+          tag: 'de24_group_stage_widget');
 
       // Organize group matches by group
       final groupedMatches = <String, List<Map<String, dynamic>>>{};
@@ -148,12 +154,14 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.info('Error loading group data: $e', tag: 'de24_group_stage_widget');
+      ProductionLogger.info('Error loading group data: $e',
+          tag: 'de24_group_stage_widget');
       setState(() => _isLoading = false);
     }
   }
 
-  List<Map<String, dynamic>> _calculateGroupStandings(List<Map<String, dynamic>> matches) {
+  List<Map<String, dynamic>> _calculateGroupStandings(
+      List<Map<String, dynamic>> matches) {
     final playerStats = <String, Map<String, dynamic>>{};
 
     for (final match in matches) {
@@ -167,16 +175,20 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
 
       // Initialize stats with score tracking
       for (final playerId in [player1Id, player2Id]) {
-        playerStats.putIfAbsent(playerId, () => {
-          'player_id': playerId,
-          'player': match['player1_id'] == playerId ? match['player1'] : match['player2'],
-          'wins': 0,
-          'losses': 0,
-          'points': 0,
-          'score_for': 0,
-          'score_against': 0,
-          'score_diff': 0,
-        });
+        playerStats.putIfAbsent(
+            playerId,
+            () => {
+                  'player_id': playerId,
+                  'player': match['player1_id'] == playerId
+                      ? match['player1']
+                      : match['player2'],
+                  'wins': 0,
+                  'losses': 0,
+                  'points': 0,
+                  'score_for': 0,
+                  'score_against': 0,
+                  'score_diff': 0,
+                });
       }
 
       // Update scores
@@ -208,11 +220,12 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
         // Primary: Points
         final pointsDiff = (b['points'] as int).compareTo(a['points'] as int);
         if (pointsDiff != 0) return pointsDiff;
-        
+
         // Secondary: Score difference (hiệu số)
-        final scoreDiff = (b['score_diff'] as int).compareTo(a['score_diff'] as int);
+        final scoreDiff =
+            (b['score_diff'] as int).compareTo(a['score_diff'] as int);
         if (scoreDiff != 0) return scoreDiff;
-        
+
         // Tertiary: Total score for
         return (b['score_for'] as int).compareTo(a['score_for'] as int);
       });
@@ -243,11 +256,12 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
             ),
             Tab(
               icon: Icon(Icons.emoji_events),
-              text: 'DE16 (${_de16Matches.where((m) => m['player1_id'] != null).length}/${_de16Matches.length})',
+              text:
+                  'DE16 (${_de16Matches.where((m) => m['player1_id'] != null).length}/${_de16Matches.length})',
             ),
           ],
         ),
-        
+
         // Tab Views
         Expanded(
           child: TabBarView(
@@ -255,7 +269,7 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
             children: [
               // Tab 1: Group Stage
               _buildGroupStageTab(groups),
-              
+
               // Tab 2: DE16 Main Stage
               _buildDE16Tab(),
             ],
@@ -275,15 +289,15 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
           Text(
             '📊 Group Stage - Vòng Loại',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             '8 bảng × 3 người • Top 2 mỗi bảng vào vòng trong',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 24),
 
@@ -406,7 +420,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
         children: [
           Row(
             children: [
-              Icon(Icons.emoji_events, color: AppColors.textOnPrimary, size: 32),
+              Icon(Icons.emoji_events,
+                  color: AppColors.textOnPrimary, size: 32),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -449,7 +464,9 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
                         )
                       : const Icon(Icons.arrow_forward),
                   label: Text(
-                    _isAdvancing ? 'Đang chuyển...' : 'Chuyển 16 người vào DE16',
+                    _isAdvancing
+                        ? 'Đang chuyển...'
+                        : 'Chuyển 16 người vào DE16',
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.success,
@@ -468,7 +485,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: AppColors.textOnPrimary, size: 20),
+                      Icon(Icons.info_outline,
+                          color: AppColors.textOnPrimary, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -506,9 +524,11 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
 
     // Use standings if available, otherwise show players from matches
     final hasData = standings.isNotEmpty || playersInGroup.isNotEmpty;
-    final displayList = standings.isNotEmpty 
-        ? standings 
-        : playersInGroup.values.map((p) => {'player': p, 'points': 0, 'wins': 0, 'losses': 0}).toList();
+    final displayList = standings.isNotEmpty
+        ? standings
+        : playersInGroup.values
+            .map((p) => {'player': p, 'points': 0, 'wins': 0, 'losses': 0})
+            .toList();
 
     return Card(
       elevation: 2,
@@ -521,7 +541,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.info700,
                     borderRadius: BorderRadius.circular(4),
@@ -553,7 +574,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
                   ? Center(
                       child: Text(
                         'Chưa có dữ liệu',
-                        style: TextStyle(color: AppColors.gray400, fontSize: 11),
+                        style:
+                            TextStyle(color: AppColors.gray400, fontSize: 11),
                       ),
                     )
                   : ListView.builder(
@@ -565,7 +587,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 6),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 6),
                           decoration: BoxDecoration(
                             color: isQualified
                                 ? AppColors.success50
@@ -588,7 +611,9 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
                                 width: 20,
                                 height: 20,
                                 decoration: BoxDecoration(
-                                  color: isQualified ? AppColors.success : AppColors.gray400,
+                                  color: isQualified
+                                      ? AppColors.success
+                                      : AppColors.gray400,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Center(
@@ -607,9 +632,9 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
                               // Player name
                               Expanded(
                                 child: Text(
-                                  player['player']?['display_name'] ?? 
-                                  player['player']?['full_name'] ?? 
-                                  'Unknown',
+                                  player['player']?['display_name'] ??
+                                      player['player']?['full_name'] ??
+                                      'Unknown',
                                   style: const TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
@@ -633,7 +658,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
 
                               // Points
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: AppColors.info100,
                                   borderRadius: BorderRadius.circular(3),
@@ -652,7 +678,8 @@ class _DE24GroupStageWidgetState extends State<DE24GroupStageWidget>
                               if (isQualified) ...[
                                 SizedBox(width: 4),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: AppColors.success700,
                                     borderRadius: BorderRadius.circular(3),

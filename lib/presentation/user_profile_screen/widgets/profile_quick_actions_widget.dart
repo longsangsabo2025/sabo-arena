@@ -22,8 +22,10 @@ class ProfileQuickActionsWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
-          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          top: BorderSide(
+              color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
+          bottom: BorderSide(
+              color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         ),
       ),
       child: ListView.separated(
@@ -57,8 +59,7 @@ class ProfileQuickActionsWidget extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color:
-                    action.iconBackgroundColor ??
+                color: action.iconBackgroundColor ??
                     action.iconColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
@@ -93,7 +94,10 @@ class ProfileQuickActionsWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -122,7 +126,10 @@ class ProfileQuickActionsWidget extends StatelessWidget {
               Icon(
                 Icons.chevron_right,
                 size: 20,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.6),
               ),
           ],
         ),

@@ -50,11 +50,11 @@ class DebugHelper extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pushNamed(AppRoutes.crossPlatformAuthTest);
+                Navigator.of(context)
+                    .pushNamed(AppRoutes.crossPlatformAuthTest);
               },
               icon: const Icon(Icons.login),
               label: const Text('🧪 Test Cross-Platform Auth'),
@@ -64,9 +64,7 @@ class DebugHelper extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
               ),
             ),
-            
             const SizedBox(height: 10),
-            
             ElevatedButton.icon(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.close),

@@ -3,7 +3,7 @@ class TournamentPostSettings {
   final String id;
   final String tournamentId;
   final String clubId;
-  
+
   // Auto post configuration
   final bool autoPostEnabled;
   final bool postCrossFinals;
@@ -11,17 +11,17 @@ class TournamentPostSettings {
   final bool postFinals;
   final bool postThirdPlace;
   final bool postAllRounds;
-  
+
   // Reminder settings
   final int reminderMinutesBefore;
   final bool sendReminder;
-  
+
   // Content settings
   final bool includePlayerStats;
   final bool includeTournamentInfo;
   final bool enableLiveStream;
   final bool autoPinPosts;
-  
+
   // Timestamps
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -119,10 +119,12 @@ class TournamentPostSettings {
       postFinals: postFinals ?? this.postFinals,
       postThirdPlace: postThirdPlace ?? this.postThirdPlace,
       postAllRounds: postAllRounds ?? this.postAllRounds,
-      reminderMinutesBefore: reminderMinutesBefore ?? this.reminderMinutesBefore,
+      reminderMinutesBefore:
+          reminderMinutesBefore ?? this.reminderMinutesBefore,
       sendReminder: sendReminder ?? this.sendReminder,
       includePlayerStats: includePlayerStats ?? this.includePlayerStats,
-      includeTournamentInfo: includeTournamentInfo ?? this.includeTournamentInfo,
+      includeTournamentInfo:
+          includeTournamentInfo ?? this.includeTournamentInfo,
       enableLiveStream: enableLiveStream ?? this.enableLiveStream,
       autoPinPosts: autoPinPosts ?? this.autoPinPosts,
       createdAt: createdAt ?? this.createdAt,

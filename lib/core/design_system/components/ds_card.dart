@@ -250,15 +250,12 @@ class _DSCardState extends State<DSCard> {
   @override
   Widget build(BuildContext context) {
     Widget card = GestureDetector(
-      onTapDown: _isInteractive
-          ? (_) => setState(() => _isPressed = true)
-          : null,
-      onTapUp: _isInteractive
-          ? (_) => setState(() => _isPressed = false)
-          : null,
-      onTapCancel: _isInteractive
-          ? () => setState(() => _isPressed = false)
-          : null,
+      onTapDown:
+          _isInteractive ? (_) => setState(() => _isPressed = true) : null,
+      onTapUp:
+          _isInteractive ? (_) => setState(() => _isPressed = false) : null,
+      onTapCancel:
+          _isInteractive ? () => setState(() => _isPressed = false) : null,
       onTap: _handleTap,
       onLongPress: widget.onLongPress != null ? _handleLongPress : null,
       child: MouseRegion(
@@ -382,8 +379,7 @@ class DSCardWithHeader extends StatelessWidget {
         children: [
           if (header != null) ...[
             Padding(
-              padding:
-                  headerPadding ??
+              padding: headerPadding ??
                   DesignTokens.only(
                     left: DesignTokens.space16,
                     right: DesignTokens.space16,
@@ -403,8 +399,7 @@ class DSCardWithHeader extends StatelessWidget {
             if (showDividers)
               const Divider(height: 1, thickness: 1, color: AppColors.border),
             Padding(
-              padding:
-                  footerPadding ??
+              padding: footerPadding ??
                   DesignTokens.only(
                     left: DesignTokens.space16,
                     right: DesignTokens.space16,
@@ -469,8 +464,7 @@ class DSListCard extends StatelessWidget {
       onLongPress: onLongPress,
       variant: DSCardVariant.filled,
       backgroundColor: backgroundColor ?? Colors.transparent,
-      padding:
-          padding ??
+      padding: padding ??
           DesignTokens.only(
             left: DesignTokens.space16,
             right: DesignTokens.space16,

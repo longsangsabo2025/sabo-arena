@@ -17,17 +17,18 @@ class UserService {
   UserService._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   // 🚀 MUSK: Cache for follow status to improve performance
   static final Map<String, bool> _followStatusCache = {};
   static final Map<String, DateTime> _cacheTimestamps = {};
   static const Duration _cacheExpiry = Duration(minutes: 5);
-  
+
   // Get read client (uses replica if available)
   SupabaseClient get _readClient => DatabaseReplicaManager.instance.readClient;
-  
+
   // Get write client (always uses primary)
-  SupabaseClient get _writeClient => DatabaseReplicaManager.instance.writeClient;
+  SupabaseClient get _writeClient =>
+      DatabaseReplicaManager.instance.writeClient;
 
   /// Notifier for current user profile changes
   final ValueNotifier<UserProfile?> currentUserNotifier = ValueNotifier(null);
@@ -35,14 +36,15 @@ class UserService {
   /// 🚀 MUSK: Get cached follow status if available and not expired
   bool? getCachedFollowStatus(String userId) {
     if (!_followStatusCache.containsKey(userId)) return null;
-    
+
     final timestamp = _cacheTimestamps[userId];
-    if (timestamp == null || DateTime.now().difference(timestamp) > _cacheExpiry) {
+    if (timestamp == null ||
+        DateTime.now().difference(timestamp) > _cacheExpiry) {
       _followStatusCache.remove(userId);
       _cacheTimestamps.remove(userId);
       return null;
     }
-    
+
     return _followStatusCache[userId];
   }
 
@@ -58,7 +60,8 @@ class UserService {
     _cacheTimestamps.clear();
   }
 
-  Future<UserProfile?> getCurrentUserProfile({bool forceRefresh = false}) async {
+  Future<UserProfile?> getCurrentUserProfile(
+      {bool forceRefresh = false}) async {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) {
@@ -72,7 +75,7 @@ class UserService {
         if (cached != null) {
           final profile = UserProfile.fromJson(cached);
           // Only update if different to avoid unnecessary rebuilds
-          if (currentUserNotifier.value?.id != profile.id || 
+          if (currentUserNotifier.value?.id != profile.id ||
               currentUserNotifier.value?.updatedAt != profile.updatedAt) {
             currentUserNotifier.value = profile;
           }
@@ -88,14 +91,14 @@ class UserService {
           .maybeSingle();
 
       if (response == null) return null;
-      
+
       final profile = UserProfile.fromJson(response);
-      
+
       // Cache the profile
       await CacheManager.instance.setUserProfile(user.id, response);
-      
+
       currentUserNotifier.value = profile;
-      
+
       return profile;
     } catch (error) {
       ProductionLogger.error(
@@ -107,7 +110,8 @@ class UserService {
     }
   }
 
-  Future<UserProfile> getUserProfileById(String userId, {bool forceRefresh = false}) async {
+  Future<UserProfile> getUserProfileById(String userId,
+      {bool forceRefresh = false}) async {
     try {
       // Check cache first
       if (!forceRefresh) {
@@ -130,29 +134,29 @@ class UserService {
           'User profile not found for ID: $userId, attempting auto-creation',
           tag: 'UserService',
         );
-        
+
         try {
           // Get user from auth to extract metadata
           final authUser = _supabase.auth.currentUser;
-          
+
           if (authUser != null && authUser.id == userId) {
             // Create profile for current authenticated user
             await AuthService.instance.upsertUserRecord(
-              fullName: authUser.userMetadata?['full_name'] ?? 
-                        authUser.email?.split('@')[0] ?? 
-                        'User',
+              fullName: authUser.userMetadata?['full_name'] ??
+                  authUser.email?.split('@')[0] ??
+                  'User',
               email: authUser.email,
               phone: authUser.phone,
               role: 'player',
             );
-            
+
             // Retry fetching the profile (use read replica)
             final retryResponse = await _readClient
                 .from('users')
                 .select()
                 .eq('id', userId)
                 .maybeSingle();
-                
+
             if (retryResponse != null) {
               ProductionLogger.info(
                 'Auto-created profile for user: $userId',
@@ -168,7 +172,7 @@ class UserService {
             tag: 'UserService',
           );
         }
-        
+
         throw Exception('User profile not found for ID: $userId');
       }
 
@@ -238,9 +242,10 @@ class UserService {
       throw Exception(errorInfo.message);
     }
   }
-  
+
   /// 🚀 MUSK SEARCH OPTIMIZATION - Exact username match
-  Future<List<UserProfile>> searchUsersByUsername(String query, {int limit = 5}) async {
+  Future<List<UserProfile>> searchUsersByUsername(String query,
+      {int limit = 5}) async {
     try {
       final response = await _readClient
           .from('users')
@@ -254,13 +259,15 @@ class UserService {
           .map<UserProfile>((json) => UserProfile.fromJson(json))
           .toList();
     } catch (error) {
-      ProductionLogger.error('🔍 Username search failed: $error', tag: 'user_search');
+      ProductionLogger.error('🔍 Username search failed: $error',
+          tag: 'user_search');
       return [];
     }
   }
-  
+
   /// 🚀 MUSK SEARCH OPTIMIZATION - Name-based search
-  Future<List<UserProfile>> searchUsersByName(String query, {int limit = 10}) async {
+  Future<List<UserProfile>> searchUsersByName(String query,
+      {int limit = 10}) async {
     try {
       final response = await _readClient
           .from('users')
@@ -274,13 +281,16 @@ class UserService {
           .map<UserProfile>((json) => UserProfile.fromJson(json))
           .toList();
     } catch (error) {
-      ProductionLogger.error('🔍 Name search failed: $error', tag: 'user_search');
+      ProductionLogger.error('🔍 Name search failed: $error',
+          tag: 'user_search');
       return [];
     }
   }
-  
+
   /// 🚀 MUSK SEARCH OPTIMIZATION - Similar rank suggestions
-  Future<List<UserProfile>> searchUsersBySimilarRank(String userRank, String query, {int limit = 5}) async {
+  Future<List<UserProfile>> searchUsersBySimilarRank(
+      String userRank, String query,
+      {int limit = 5}) async {
     try {
       final response = await _readClient
           .from('users')
@@ -295,7 +305,8 @@ class UserService {
           .map<UserProfile>((json) => UserProfile.fromJson(json))
           .toList();
     } catch (error) {
-      ProductionLogger.error('🔍 Rank search failed: $error', tag: 'user_search');
+      ProductionLogger.error('🔍 Rank search failed: $error',
+          tag: 'user_search');
       return [];
     }
   }
@@ -380,7 +391,7 @@ class UserService {
 
       // 🚀 MUSK: Update cache with new data to avoid replica lag
       await CacheManager.instance.setUserProfile(user.id, response);
-      
+
       // Update local notifier
       if (currentUserNotifier.value?.id == user.id) {
         currentUserNotifier.value = UserProfile.fromJson(response);
@@ -418,7 +429,7 @@ class UserService {
     } else if (avatarBytes != null && avatarFileName != null) {
       // 🚀 MUSK: Use atomic StorageService
       avatarUrl = await StorageService.uploadAvatar(
-        Uint8List.fromList(avatarBytes), 
+        Uint8List.fromList(avatarBytes),
         fileName: avatarFileName,
         oldUrl: oldUrl,
         skipDatabaseUpdate: true, // Let updateUserProfile handle the DB update
@@ -455,14 +466,14 @@ class UserService {
       // Determine content type based on extension
       String contentType = 'image/jpeg'; // Default
       final ext = fileName.split('.').last.toLowerCase();
-      if (ext == 'png') contentType = 'image/png';
-      else if (ext == 'webp') contentType = 'image/webp';
+      if (ext == 'png')
+        contentType = 'image/png';
+      else if (ext == 'webp')
+        contentType = 'image/webp';
       else if (ext == 'jpg' || ext == 'jpeg') contentType = 'image/jpeg';
 
-      await _supabase.storage
-          .from('user-images')
-          .uploadBinary(
-            filePath, 
+      await _supabase.storage.from('user-images').uploadBinary(
+            filePath,
             Uint8List.fromList(imageBytes),
             fileOptions: FileOptions(
               contentType: contentType,
@@ -470,9 +481,8 @@ class UserService {
             ),
           );
 
-      final publicUrl = _supabase.storage
-          .from('user-images')
-          .getPublicUrl(filePath);
+      final publicUrl =
+          _supabase.storage.from('user-images').getPublicUrl(filePath);
 
       return {'success': true, 'url': publicUrl, 'path': filePath};
     } catch (error) {
@@ -480,17 +490,22 @@ class UserService {
     }
   }
 
-  Future<String?> uploadAvatar(dynamic imageFile, {String? oldUrl, String? fileName}) async {
+  Future<String?> uploadAvatar(dynamic imageFile,
+      {String? oldUrl, String? fileName}) async {
     try {
       debugPrint('🚀 MUSK_DEBUG: UserService.uploadAvatar entry');
-      final publicUrl = await StorageService.uploadAvatar(imageFile, oldUrl: oldUrl, fileName: fileName);
-      
+      final publicUrl = await StorageService.uploadAvatar(imageFile,
+          oldUrl: oldUrl, fileName: fileName);
+
       if (publicUrl != null) {
-        debugPrint('🚀 MUSK_DEBUG: UserService.uploadAvatar SUCCESS: $publicUrl');
+        debugPrint(
+            '🚀 MUSK_DEBUG: UserService.uploadAvatar SUCCESS: $publicUrl');
         final user = _supabase.auth.currentUser;
         if (user != null && currentUserNotifier.value?.id == user.id) {
-          debugPrint('🚀 MUSK_DEBUG: Updating currentUserNotifier with new avatar');
-          currentUserNotifier.value = currentUserNotifier.value?.copyWith(avatarUrl: publicUrl);
+          debugPrint(
+              '🚀 MUSK_DEBUG: Updating currentUserNotifier with new avatar');
+          currentUserNotifier.value =
+              currentUserNotifier.value?.copyWith(avatarUrl: publicUrl);
         }
       } else {
         debugPrint('🚀 MUSK_DEBUG: UserService.uploadAvatar returned NULL');
@@ -503,17 +518,22 @@ class UserService {
     }
   }
 
-  Future<String?> uploadCoverPhoto(dynamic imageFile, {String? oldUrl, String? fileName}) async {
+  Future<String?> uploadCoverPhoto(dynamic imageFile,
+      {String? oldUrl, String? fileName}) async {
     try {
       debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto entry');
-      final publicUrl = await StorageService.uploadCoverPhoto(imageFile, oldUrl: oldUrl, fileName: fileName);
-      
+      final publicUrl = await StorageService.uploadCoverPhoto(imageFile,
+          oldUrl: oldUrl, fileName: fileName);
+
       if (publicUrl != null) {
-        debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto SUCCESS: $publicUrl');
+        debugPrint(
+            '🚀 MUSK_DEBUG: UserService.uploadCoverPhoto SUCCESS: $publicUrl');
         final user = _supabase.auth.currentUser;
         if (user != null && currentUserNotifier.value?.id == user.id) {
-          debugPrint('🚀 MUSK_DEBUG: Updating currentUserNotifier with new cover photo');
-          currentUserNotifier.value = currentUserNotifier.value?.copyWith(coverPhotoUrl: publicUrl);
+          debugPrint(
+              '🚀 MUSK_DEBUG: Updating currentUserNotifier with new cover photo');
+          currentUserNotifier.value =
+              currentUserNotifier.value?.copyWith(coverPhotoUrl: publicUrl);
         }
       } else {
         debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto returned NULL');
@@ -521,7 +541,8 @@ class UserService {
 
       return publicUrl;
     } catch (error) {
-      debugPrint('🚀 MUSK_DEBUG: UserService.uploadCoverPhoto EXCEPTION: $error');
+      debugPrint(
+          '🚀 MUSK_DEBUG: UserService.uploadCoverPhoto EXCEPTION: $error');
       throw Exception('Failed to upload cover photo: $error');
     }
   }
@@ -534,12 +555,12 @@ class UserService {
       // 🚀 MUSK: Atomic removal
       await _writeClient
           .from('users')
-          .update({'avatar_url': null})
-          .eq('id', user.id);
+          .update({'avatar_url': null}).eq('id', user.id);
 
       await CacheManager.instance.invalidateUser(user.id);
       if (currentUserNotifier.value?.id == user.id) {
-        currentUserNotifier.value = currentUserNotifier.value?.copyWith(avatarUrl: null);
+        currentUserNotifier.value =
+            currentUserNotifier.value?.copyWith(avatarUrl: null);
       }
     } catch (error) {
       throw Exception('Failed to remove avatar: $error');
@@ -554,12 +575,12 @@ class UserService {
       // 🚀 MUSK: Atomic removal
       await _writeClient
           .from('users')
-          .update({'cover_photo_url': null})
-          .eq('id', user.id);
+          .update({'cover_photo_url': null}).eq('id', user.id);
 
       await CacheManager.instance.invalidateUser(user.id);
       if (currentUserNotifier.value?.id == user.id) {
-        currentUserNotifier.value = currentUserNotifier.value?.copyWith(coverPhotoUrl: null);
+        currentUserNotifier.value =
+            currentUserNotifier.value?.copyWith(coverPhotoUrl: null);
       }
     } catch (error) {
       throw Exception('Failed to remove cover photo: $error');
@@ -586,9 +607,9 @@ class UserService {
       final totalMatches = matchesAsPlayer1.length + matchesAsPlayer2.length;
 
       // Tính win streak
-      final winStreak = await UserStatsUpdateService.instance
-          .calculateWinStreak(userId);
-          
+      final winStreak =
+          await UserStatsUpdateService.instance.calculateWinStreak(userId);
+
       // Get ranking
       final ranking = await getUserRanking(userId);
 
@@ -611,14 +632,15 @@ class UserService {
       // 🚀 MUSK_DEBUG: Attempting RPC call
       final response = await _supabase.rpc(
         'get_user_ranking',
-        params: {'user_id': userId},
+        params: {'user_uuid': userId},
       );
 
       return response ?? 0;
     } catch (error) {
       // 🚀 MUSK_DEBUG: RPC failed (likely missing), falling back to manual calculation
-      debugPrint('🚀 MUSK_DEBUG: get_user_ranking RPC not found or failed. Using fallback. Error: $error');
-      
+      debugPrint(
+          '🚀 MUSK_DEBUG: get_user_ranking RPC not found or failed. Using fallback. Error: $error');
+
       // Fallback: calculate ranking manually (Optimized)
       try {
         // Get user's current ELO
@@ -627,7 +649,7 @@ class UserService {
             .select('elo_rating')
             .eq('id', userId)
             .maybeSingle();
-            
+
         if (userRes == null) return 0;
         final userElo = userRes['elo_rating'] as int? ?? 0;
 
@@ -637,10 +659,11 @@ class UserService {
             .count(CountOption.exact)
             .eq('is_active', true)
             .gt('elo_rating', userElo);
-            
+
         return countRes + 1;
       } catch (fallbackError) {
-        ProductionLogger.error('Failed to get user ranking (fallback)', error: fallbackError, tag: 'UserService');
+        ProductionLogger.error('Failed to get user ranking (fallback)',
+            error: fallbackError, tag: 'UserService');
         return 0;
       }
     }
@@ -651,13 +674,9 @@ class UserService {
     int limit = 20,
   }) async {
     try {
-      final response = await _supabase
-          .from('user_follows')
-          .select('''
+      final response = await _supabase.from('user_follows').select('''
             follower:users!user_follows_follower_id_fkey (*)
-          ''')
-          .eq('following_id', userId)
-          .limit(limit);
+          ''').eq('following_id', userId).limit(limit);
 
       return response
           .map<UserProfile>((json) => UserProfile.fromJson(json['follower']))
@@ -672,13 +691,9 @@ class UserService {
     int limit = 20,
   }) async {
     try {
-      final response = await _supabase
-          .from('user_follows')
-          .select('''
+      final response = await _supabase.from('user_follows').select('''
             following:users!user_follows_following_id_fkey (*)
-          ''')
-          .eq('follower_id', userId)
-          .limit(limit);
+          ''').eq('follower_id', userId).limit(limit);
 
       return response
           .map<UserProfile>((json) => UserProfile.fromJson(json['following']))
@@ -776,7 +791,7 @@ class UserService {
           .maybeSingle();
 
       final isFollowing = response != null;
-      
+
       // Cache the result for future use
       _cacheFollowStatus(targetUserId, isFollowing);
 
@@ -806,9 +821,8 @@ class UserService {
         if (response is List && response.isNotEmpty) {
           // The response from get_nearby_players function doesn't return full user profile
           // We need to get full user profiles by user_ids
-          List<String> userIds = response
-              .map((item) => item['user_id'].toString())
-              .toList();
+          List<String> userIds =
+              response.map((item) => item['user_id'].toString()).toList();
 
           final usersResponse = await _supabase
               .from('users')
@@ -858,6 +872,7 @@ class UserService {
     required String clubId,
     String? notes,
     List<String>? evidenceUrls,
+    String? requestedRank,
   }) async {
     try {
       final user = _supabase.auth.currentUser;
@@ -885,11 +900,15 @@ class UserService {
         requestData['evidence_urls'] = evidenceUrls;
       }
 
+      if (requestedRank != null && requestedRank.isNotEmpty) {
+        requestData['requested_rank'] = requestedRank;
+      }
+
       ProductionLogger.debug(
         'Sending rank request - User: ${user.id}, Club: $clubId, Has notes: ${notes != null}, Evidence URLs: ${evidenceUrls?.length ?? 0}',
         tag: 'UserService',
       );
-      
+
       // Try INSERT directly, handle constraint error by updating existing record
       try {
         final response = await _supabase
@@ -916,19 +935,18 @@ class UserService {
           error: insertError,
           tag: 'UserService',
         );
-        
+
         // If constraint violation, update existing record instead
-        if (insertError.toString().contains('duplicate key') || 
+        if (insertError.toString().contains('duplicate key') ||
             insertError.toString().contains('unique constraint')) {
-          
           ProductionLogger.debug(
             'Updating existing request',
             tag: 'UserService',
           );
-          
+
           // Update the existing record with new timestamp and data
           requestData['requested_at'] = DateTime.now().toIso8601String();
-          
+
           final updateResponse = await _supabase
               .from('rank_requests')
               .update(requestData)
@@ -1004,9 +1022,7 @@ class UserService {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-      final response = await _supabase
-          .from('rank_requests')
-          .select('''
+      final response = await _supabase.from('rank_requests').select('''
             *,
             club:clubs (
               id,
@@ -1014,9 +1030,7 @@ class UserService {
               address,
               logo_url
             )
-          ''')
-          .eq('user_id', user.id)
-          .order('requested_at', ascending: false);
+          ''').eq('user_id', user.id).order('requested_at', ascending: false);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (error) {
@@ -1067,8 +1081,7 @@ class UserService {
 
       await _supabase
           .from('users')
-          .update({'spa_points': points})
-          .eq('id', userId);
+          .update({'spa_points': points}).eq('id', userId);
 
       return true;
     } catch (error) {
@@ -1099,8 +1112,7 @@ class UserService {
 
       await _supabase
           .from('users')
-          .update({'spa_points': newPoints})
-          .eq('id', userId);
+          .update({'spa_points': newPoints}).eq('id', userId);
 
       return true;
     } catch (error) {
@@ -1127,8 +1139,7 @@ class UserService {
 
       await _supabase
           .from('users')
-          .update({'total_prize_pool': prizeAmount})
-          .eq('id', userId);
+          .update({'total_prize_pool': prizeAmount}).eq('id', userId);
 
       return true;
     } catch (error) {
@@ -1159,8 +1170,7 @@ class UserService {
 
       await _supabase
           .from('users')
-          .update({'total_prize_pool': newPrize})
-          .eq('id', userId);
+          .update({'total_prize_pool': newPrize}).eq('id', userId);
 
       return true;
     } catch (error) {

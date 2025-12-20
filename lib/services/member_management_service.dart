@@ -21,8 +21,12 @@ class MemberManagementService {
     int? offset,
   }) async {
     try {
-      ProductionLogger.info('🔍 MemberManagementService: Getting members for club $clubId', tag: 'member_management_service');
-      ProductionLogger.info('🔍 Status filter: $status, Role filter: $membershipType', tag: 'member_management_service');
+      ProductionLogger.info(
+          '🔍 MemberManagementService: Getting members for club $clubId',
+          tag: 'member_management_service');
+      ProductionLogger.info(
+          '🔍 Status filter: $status, Role filter: $membershipType',
+          tag: 'member_management_service');
 
       var query = _supabase.from('club_members').select('*, users(*)');
 
@@ -40,7 +44,9 @@ class MemberManagementService {
       }
 
       final response = await query;
-      ProductionLogger.info('✅ MemberManagementService: Found ${response.length} members', tag: 'member_management_service');
+      ProductionLogger.info(
+          '✅ MemberManagementService: Found ${response.length} members',
+          tag: 'member_management_service');
 
       if (limit != null) {
         final startIndex = offset ?? 0;
@@ -75,8 +81,7 @@ class MemberManagementService {
         'membership_type': membershipType,
         'status': status,
         'auto_renewal': autoRenewal,
-        'permissions':
-            permissions ??
+        'permissions': permissions ??
             {
               'tournaments': true,
               'posts': true,
@@ -87,11 +92,8 @@ class MemberManagementService {
         'joined_at': DateTime.now().toIso8601String(),
       };
 
-      final response = await _supabase
-          .from('club_members')
-          .insert(data)
-          .select()
-          .single();
+      final response =
+          await _supabase.from('club_members').insert(data).select().single();
 
       return response;
     } catch (e) {
@@ -194,13 +196,10 @@ class MemberManagementService {
       );
 
       // Update request status
-      await _supabase
-          .from('membership_requests')
-          .update({
-            'status': 'approved',
-            'approved_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', requestId);
+      await _supabase.from('membership_requests').update({
+        'status': 'approved',
+        'approved_at': DateTime.now().toIso8601String(),
+      }).eq('id', requestId);
 
       return membership;
     } catch (e) {
@@ -211,13 +210,10 @@ class MemberManagementService {
   /// Reject a membership request
   static Future<void> rejectMembershipRequest(String requestId) async {
     try {
-      await _supabase
-          .from('membership_requests')
-          .update({
-            'status': 'rejected',
-            'rejected_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', requestId);
+      await _supabase.from('membership_requests').update({
+        'status': 'rejected',
+        'rejected_at': DateTime.now().toIso8601String(),
+      }).eq('id', requestId);
     } catch (e) {
       throw Exception('Error rejecting membership request: $e');
     }
@@ -229,9 +225,8 @@ class MemberManagementService {
       final members = await getClubMembers(clubId: clubId);
 
       final totalMembers = members.length;
-      final activeMembers = members
-          .where((m) => m['status'] == 'active')
-          .length;
+      final activeMembers =
+          members.where((m) => m['status'] == 'active').length;
 
       // Calculate new members this month
       final now = DateTime.now();
@@ -247,9 +242,8 @@ class MemberManagementService {
         'total_members': totalMembers,
         'active_members': activeMembers,
         'new_this_month': newThisMonth,
-        'growth_rate': totalMembers > 0
-            ? (newThisMonth / totalMembers * 100)
-            : 0.0,
+        'growth_rate':
+            totalMembers > 0 ? (newThisMonth / totalMembers * 100) : 0.0,
       };
     } catch (e) {
       throw Exception('Error fetching member analytics: $e');
@@ -412,8 +406,8 @@ class MemberManagementService {
     try {
       await _supabase
           .from('notifications')
-          .update({'read_at': DateTime.now().toIso8601String()})
-          .eq('id', notificationId);
+          .update({'read_at': DateTime.now().toIso8601String()}).eq(
+              'id', notificationId);
 
       return true;
     } catch (e) {
@@ -557,7 +551,9 @@ class MemberManagementService {
           .select('*, users(*)')
           .single();
 
-      ProductionLogger.info('✅ MemberManagementService: Successfully registered member for club $clubId',  tag: 'member_management_service');
+      ProductionLogger.info(
+          '✅ MemberManagementService: Successfully registered member for club $clubId',
+          tag: 'member_management_service');
 
       try {
         final club = await _supabase
@@ -565,9 +561,8 @@ class MemberManagementService {
             .select('name')
             .eq('id', clubId)
             .maybeSingle();
-        final clubName = (club != null
-            ? (club['name'] as String? ?? 'CLB')
-            : 'CLB');
+        final clubName =
+            (club != null ? (club['name'] as String? ?? 'CLB') : 'CLB');
         await NotificationService.instance.sendJoinedClubNotification(
           userId: currentUser.id,
           clubId: clubId,
@@ -578,7 +573,9 @@ class MemberManagementService {
       }
       return response;
     } catch (e) {
-      ProductionLogger.info('❌ MemberManagementService: Error registering member: $e', tag: 'member_management_service');
+      ProductionLogger.info(
+          '❌ MemberManagementService: Error registering member: $e',
+          tag: 'member_management_service');
       throw Exception('Error registering as member: $e');
     }
   }

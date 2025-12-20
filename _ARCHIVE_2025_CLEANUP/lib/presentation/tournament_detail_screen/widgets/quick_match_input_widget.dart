@@ -96,7 +96,7 @@ class _QuickMatchInputWidgetState extends State<QuickMatchInputWidget> {
           Row(
             children: [
               Icon(
-                Icons.sports_esports,
+                Icons.sports_baseball,
                 color: Colors.blue.shade700,
                 size: 24.sp,
               ),

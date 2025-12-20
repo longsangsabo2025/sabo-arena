@@ -48,7 +48,9 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
               icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
             ),
             title: Text(
-              'Đăng ký câu lạc bộ', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Đăng ký câu lạc bộ',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 color: colorScheme.onSurface,
@@ -59,291 +61,297 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
           body: Form(
             key: _controller.formKey,
             child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header thông tin
-                    _buildSectionHeader(
-                      'Thông tin cơ bản',
-                      'Nhập thông tin cơ bản về câu lạc bộ của bạn',
-                      Icons.business,
-                      colorScheme,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header thông tin
+                        _buildSectionHeader(
+                          'Thông tin cơ bản',
+                          'Nhập thông tin cơ bản về câu lạc bộ của bạn',
+                          Icons.business,
+                          colorScheme,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Tên câu lạc bộ
+                        _buildTextField(
+                          controller: _controller.clubNameController,
+                          label: 'Tên câu lạc bộ',
+                          hint: 'VD: Billiards Club Sài Gòn',
+                          icon: Icons.store,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Vui lòng nhập tên câu lạc bộ';
+                            }
+                            if (value.trim().length < 3) {
+                              return 'Tên câu lạc bộ phải có ít nhất 3 ký tự';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Thành phố
+                        _buildDropdownField(
+                          label: 'Thành phố',
+                          value: _controller.selectedCity,
+                          items: _controller.cities,
+                          onChanged: _controller.setCity,
+                          icon: Icons.location_city,
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Vui lòng chọn thành phố';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Địa chỉ chi tiết
+                        _buildTextField(
+                          controller: _controller.addressController,
+                          label: 'Địa chỉ chi tiết',
+                          hint: 'VD: 123 Nguyễn Huệ, Phường Bến Nghé, Quận 1',
+                          icon: Icons.location_on,
+                          maxLines: 2,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Vui lòng nhập địa chỉ';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Thông tin liên hệ
+                        _buildSectionHeader(
+                          'Thông tin liên hệ',
+                          'Thông tin để khách hàng có thể liên hệ với bạn',
+                          Icons.contact_phone,
+                          colorScheme,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Số điện thoại
+                        _buildTextField(
+                          controller: _controller.phoneController,
+                          label: 'Số điện thoại',
+                          hint: 'VD: 0901234567',
+                          icon: Icons.phone,
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Vui lòng nhập số điện thoại';
+                            }
+                            if (value.length < 10) {
+                              return 'Số điện thoại phải có ít nhất 10 số';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Email
+                        _buildTextField(
+                          controller: _controller.emailController,
+                          label: 'Email',
+                          hint: 'VD: contact@billiards.com',
+                          icon: Icons.email,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Vui lòng nhập email';
+                            }
+                            if (!RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            ).hasMatch(value)) {
+                              return 'Email không hợp lệ';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Website (optional)
+                        _buildTextField(
+                          controller: _controller.websiteController,
+                          label: 'Website (tùy chọn)',
+                          hint: 'VD: https://billiards.com',
+                          icon: Icons.language,
+                          keyboardType: TextInputType.url,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Xác thực quyền sở hữu
+                        _buildSectionHeader(
+                          'Xác thực quyền sở hữu',
+                          'Cung cấp hình ảnh để xác minh bạn là chủ sở hữu',
+                          Icons.verified_user,
+                          colorScheme,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildImageUploadField(
+                          label: 'Giấy phép kinh doanh',
+                          file: _controller.businessLicenseImage,
+                          onTap: _controller.pickBusinessLicenseImage,
+                          colorScheme: colorScheme,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        _buildImageUploadField(
+                          label: 'CCCD/CMND (Mặt trước)',
+                          file: _controller.identityCardImage,
+                          onTap: _controller.pickIdentityCardImage,
+                          colorScheme: colorScheme,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Mô tả
+                        _buildSectionHeader(
+                          'Mô tả câu lạc bộ',
+                          'Giới thiệu về câu lạc bộ, dịch vụ và đặc điểm nổi bật',
+                          Icons.description,
+                          colorScheme,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildTextField(
+                          controller: _controller.descriptionController,
+                          label: 'Mô tả',
+                          hint:
+                              'Giới thiệu về câu lạc bộ, lịch sử, dịch vụ và những điều đặc biệt...',
+                          icon: Icons.notes,
+                          maxLines: 4,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Vui lòng nhập mô tả câu lạc bộ';
+                            }
+                            if (value.trim().length < 20) {
+                              return 'Mô tả phải có ít nhất 20 ký tự';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Tiện ích
+                        _buildSectionHeader(
+                          'Tiện ích & Dịch vụ',
+                          'Chọn các tiện ích có sẵn tại câu lạc bộ',
+                          Icons.star,
+                          colorScheme,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildAmenitiesSelection(colorScheme),
+
+                        const SizedBox(height: 24),
+
+                        // Giờ hoạt động
+                        _buildSectionHeader(
+                          'Giờ hoạt động',
+                          'Thiết lập giờ mở cửa của câu lạc bộ',
+                          Icons.access_time,
+                          colorScheme,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildOperatingHours(colorScheme),
+
+                        const SizedBox(height: 32),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-
-                    // Tên câu lạc bộ
-                    _buildTextField(
-                      controller: _controller.clubNameController,
-                      label: 'Tên câu lạc bộ',
-                      hint: 'VD: Billiards Club Sài Gòn',
-                      icon: Icons.store,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Vui lòng nhập tên câu lạc bộ';
-                        }
-                        if (value.trim().length < 3) {
-                          return 'Tên câu lạc bộ phải có ít nhất 3 ký tự';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Thành phố
-                    _buildDropdownField(
-                      label: 'Thành phố',
-                      value: _controller.selectedCity,
-                      items: _controller.cities,
-                      onChanged: _controller.setCity,
-                      icon: Icons.location_city,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Vui lòng chọn thành phố';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Địa chỉ chi tiết
-                    _buildTextField(
-                      controller: _controller.addressController,
-                      label: 'Địa chỉ chi tiết',
-                      hint: 'VD: 123 Nguyễn Huệ, Phường Bến Nghé, Quận 1',
-                      icon: Icons.location_on,
-                      maxLines: 2,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Vui lòng nhập địa chỉ';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Thông tin liên hệ
-                    _buildSectionHeader(
-                      'Thông tin liên hệ',
-                      'Thông tin để khách hàng có thể liên hệ với bạn',
-                      Icons.contact_phone,
-                      colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Số điện thoại
-                    _buildTextField(
-                      controller: _controller.phoneController,
-                      label: 'Số điện thoại',
-                      hint: 'VD: 0901234567',
-                      icon: Icons.phone,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Vui lòng nhập số điện thoại';
-                        }
-                        if (value.length < 10) {
-                          return 'Số điện thoại phải có ít nhất 10 số';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Email
-                    _buildTextField(
-                      controller: _controller.emailController,
-                      label: 'Email',
-                      hint: 'VD: contact@billiards.com',
-                      icon: Icons.email,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Vui lòng nhập email';
-                        }
-                        if (!RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                        ).hasMatch(value)) {
-                          return 'Email không hợp lệ';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Website (optional)
-                    _buildTextField(
-                      controller: _controller.websiteController,
-                      label: 'Website (tùy chọn)',
-                      hint: 'VD: https://billiards.com',
-                      icon: Icons.language,
-                      keyboardType: TextInputType.url,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Xác thực quyền sở hữu
-                    _buildSectionHeader(
-                      'Xác thực quyền sở hữu',
-                      'Cung cấp hình ảnh để xác minh bạn là chủ sở hữu',
-                      Icons.verified_user,
-                      colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-
-                    _buildImageUploadField(
-                      label: 'Giấy phép kinh doanh',
-                      file: _controller.businessLicenseImage,
-                      onTap: _controller.pickBusinessLicenseImage,
-                      colorScheme: colorScheme,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    _buildImageUploadField(
-                      label: 'CCCD/CMND (Mặt trước)',
-                      file: _controller.identityCardImage,
-                      onTap: _controller.pickIdentityCardImage,
-                      colorScheme: colorScheme,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Mô tả
-                    _buildSectionHeader(
-                      'Mô tả câu lạc bộ',
-                      'Giới thiệu về câu lạc bộ, dịch vụ và đặc điểm nổi bật',
-                      Icons.description,
-                      colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-
-                    _buildTextField(
-                      controller: _controller.descriptionController,
-                      label: 'Mô tả',
-                      hint:
-                          'Giới thiệu về câu lạc bộ, lịch sử, dịch vụ và những điều đặc biệt...',
-                      icon: Icons.notes,
-                      maxLines: 4,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Vui lòng nhập mô tả câu lạc bộ';
-                        }
-                        if (value.trim().length < 20) {
-                          return 'Mô tả phải có ít nhất 20 ký tự';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Tiện ích
-                    _buildSectionHeader(
-                      'Tiện ích & Dịch vụ',
-                      'Chọn các tiện ích có sẵn tại câu lạc bộ',
-                      Icons.star,
-                      colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-
-                    _buildAmenitiesSelection(colorScheme),
-
-                    const SizedBox(height: 24),
-
-                    // Giờ hoạt động
-                    _buildSectionHeader(
-                      'Giờ hoạt động',
-                      'Thiết lập giờ mở cửa của câu lạc bộ',
-                      Icons.access_time,
-                      colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-
-                    _buildOperatingHours(colorScheme),
-
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
-            ),
-
-            // Bottom buttons
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                border: Border(
-                  top: BorderSide(
-                    color: colorScheme.outline.withValues(alpha: 0.2),
                   ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _controller.isLoading
-                          ? null
-                          : () => Navigator.of(context).pop(),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: BorderSide(color: colorScheme.outline),
+
+                // Bottom buttons
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    border: Border(
+                      top: BorderSide(
+                        color: colorScheme.outline.withValues(alpha: 0.2),
                       ),
-                      child: Text(
-                        'Hủy', overflow: TextOverflow.ellipsis, style: TextStyle(
-                          fontSize: 16,
-                          color: colorScheme.onSurface,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: _controller.isLoading
+                              ? null
+                              : () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: colorScheme.outline),
+                          ),
+                          child: Text(
+                            'Hủy',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _controller.isLoading ? null : _submitForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: _controller.isLoading
-                          ? SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  colorScheme.onPrimary,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: _controller.isLoading ? null : _submitForm,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: _controller.isLoading
+                              ? SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      colorScheme.onPrimary,
+                                    ),
+                                  ),
+                                )
+                              : const Text(
+                                  'Đăng ký câu lạc bộ',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            )
-                          : const Text(
-                              'Đăng ký câu lạc bộ', overflow: TextOverflow.ellipsis, style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      );
+          ),
+        );
       },
     );
   }
@@ -369,7 +377,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              title, style: TextStyle(
+              title,
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: colorScheme.onSurface,
@@ -381,7 +390,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
         Padding(
           padding: const EdgeInsets.only(left: 48),
           child: Text(
-            subtitle, style: TextStyle(
+            subtitle,
+            style: TextStyle(
               fontSize: 14,
               color: colorScheme.onSurface.withValues(alpha: 0.7),
               height: 1.3,
@@ -509,7 +519,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  entry.key, style: TextStyle(
+                  entry.key,
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: colorScheme.onSurface,
@@ -535,7 +546,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          entry.value, style: TextStyle(
+                          entry.value,
+                          style: TextStyle(
                             fontSize: 16,
                             color: colorScheme.onSurface,
                           ),
@@ -567,10 +579,12 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
       final startParts = parts[0].split(':');
       final endParts = parts[1].split(':');
       if (startParts.length == 2) {
-        startTime = TimeOfDay(hour: int.parse(startParts[0]), minute: int.parse(startParts[1]));
+        startTime = TimeOfDay(
+            hour: int.parse(startParts[0]), minute: int.parse(startParts[1]));
       }
       if (endParts.length == 2) {
-        endTime = TimeOfDay(hour: int.parse(endParts[0]), minute: int.parse(endParts[1]));
+        endTime = TimeOfDay(
+            hour: int.parse(endParts[0]), minute: int.parse(endParts[1]));
       }
     }
 
@@ -586,7 +600,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
               hourMinuteTextColor: Theme.of(context).colorScheme.primary,
               dayPeriodTextColor: Theme.of(context).colorScheme.primary,
               dialHandColor: Theme.of(context).colorScheme.primary,
-              dialBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              dialBackgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
           child: child!,
@@ -610,7 +625,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
               hourMinuteTextColor: Theme.of(context).colorScheme.primary,
               dayPeriodTextColor: Theme.of(context).colorScheme.primary,
               dialHandColor: Theme.of(context).colorScheme.primary,
-              dialBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              dialBackgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
           child: child!,
@@ -627,7 +643,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
       return '$hour:$minute';
     }
 
-    final newTimeRange = '${formatTime(newStartTime)} - ${formatTime(newEndTime)}';
+    final newTimeRange =
+        '${formatTime(newStartTime)} - ${formatTime(newEndTime)}';
     _controller.updateOperatingHours(day, newTimeRange);
   }
 
@@ -662,14 +679,16 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
         icon: Icon(Icons.check_circle, color: Colors.green, size: 48),
         title: const Text(
           'Đăng ký CLB thành công!',
-          textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
               'Câu lạc bộ của bạn đã được gửi để xét duyệt.',
-              textAlign: TextAlign.center, style: TextStyle(fontSize: 14),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
             Container(
@@ -683,7 +702,9 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Bước tiếp theo:', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Bước tiếp theo:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Colors.blue.shade800,
                     ),
@@ -711,7 +732,9 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
               Navigator.of(context).pop(); // Go back to previous screen
             },
             child: Text(
-              'Quay lại', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey.shade600),
+              'Quay lại',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey.shade600),
             ),
           ),
           ElevatedButton(
@@ -744,7 +767,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label, style: TextStyle(
+          label,
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: colorScheme.onSurface.withValues(alpha: 0.8),
@@ -802,7 +826,8 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Nhấn để tải ảnh lên', style: TextStyle(
+                        'Nhấn để tải ảnh lên',
+                        style: TextStyle(
                           color: colorScheme.primary,
                           fontWeight: FontWeight.w500,
                         ),
@@ -825,4 +850,3 @@ class _ClubRegistrationScreenState extends State<ClubRegistrationScreen> {
     );
   }
 }
-

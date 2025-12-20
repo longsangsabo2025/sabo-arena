@@ -50,7 +50,9 @@ class SocialService {
           isPublic: json['is_public'] ?? true,
           createdAt: DateTime.parse(json['created_at']),
           updatedAt: DateTime.parse(json['updated_at']),
-          userName: userProfile?['display_name'] ?? userProfile?['full_name'] ?? userProfile?['username'],
+          userName: userProfile?['display_name'] ??
+              userProfile?['full_name'] ??
+              userProfile?['username'],
           userAvatar: userProfile?['avatar_url'],
           userRank: RankMigrationHelper.getNewDisplayName(
             userProfile?['rank'] as String?,
@@ -110,7 +112,7 @@ class SocialService {
 
       final userProfile = response['users'];
       final clubProfile = response['clubs'];
-      
+
       return Post(
         id: response['id'],
         userId: response['user_id'],
@@ -131,7 +133,9 @@ class SocialService {
         isPublic: response['is_public'] ?? true,
         createdAt: DateTime.parse(response['created_at']),
         updatedAt: DateTime.parse(response['updated_at']),
-        userName: userProfile?['display_name'] ?? userProfile?['full_name'] ?? userProfile?['username'],
+        userName: userProfile?['display_name'] ??
+            userProfile?['full_name'] ??
+            userProfile?['username'],
         userAvatar: userProfile?['avatar_url'],
         userRank: RankMigrationHelper.getNewDisplayName(
           userProfile?['rank'] as String?,
@@ -223,16 +227,13 @@ class SocialService {
       final filePath =
           'posts/${user.id}/${DateTime.now().millisecondsSinceEpoch}_$fileName';
 
-      await _supabase.storage
-          .from('public-content')
-          .uploadBinary(
+      await _supabase.storage.from('public-content').uploadBinary(
             filePath,
             Uint8List.fromList(imageBytes),
           ); // Convert List<int> to Uint8List
 
-      final publicUrl = _supabase.storage
-          .from('public-content')
-          .getPublicUrl(filePath);
+      final publicUrl =
+          _supabase.storage.from('public-content').getPublicUrl(filePath);
 
       return publicUrl;
     } catch (error) {
@@ -280,7 +281,9 @@ class SocialService {
           isPublic: json['is_public'] ?? true,
           createdAt: DateTime.parse(json['created_at']),
           updatedAt: DateTime.parse(json['updated_at']),
-          userName: userProfile?['display_name'] ?? userProfile?['full_name'] ?? userProfile?['username'],
+          userName: userProfile?['display_name'] ??
+              userProfile?['full_name'] ??
+              userProfile?['username'],
           userAvatar: userProfile?['avatar_url'],
           userRank: RankMigrationHelper.getNewDisplayName(
             userProfile?['rank'] as String?,

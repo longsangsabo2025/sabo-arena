@@ -11,13 +11,13 @@ class AppBarTheme {
   // Font cho tiêu đề AppBar - SF Pro (iOS) / Roboto (Android)
   // Sử dụng system font để tránh lỗi font trên iOS
   static TextStyle get titleStyle => TextStyle(
-    fontFamily: _getFontFamily(),
-    fontSize: 18,
-    fontWeight: FontWeight.w700, // Bold
-    color: primaryGreen,
-    letterSpacing: -0.3, // Negative spacing cho iOS style
-    height: 1.2,
-  );
+        fontFamily: _getFontFamily(),
+        fontSize: 18,
+        fontWeight: FontWeight.w700, // Bold
+        color: primaryGreen,
+        letterSpacing: -0.3, // Negative spacing cho iOS style
+        height: 1.2,
+      );
 
   // Lấy font family phù hợp với platform
   static String _getFontFamily() {
@@ -73,8 +73,7 @@ class AppBarTheme {
       backgroundColor: Colors.white,
       elevation: 0.5,
       shadowColor: Colors.black.withValues(alpha: 0.1),
-      leading:
-          leading ??
+      leading: leading ??
           IconButton(
             icon: const Icon(Icons.arrow_back, color: primaryGreen),
             onPressed: () => Navigator.pop(context),

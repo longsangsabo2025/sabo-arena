@@ -11,17 +11,18 @@ class AiImageService {
   static const String _kieApiUrl = 'https://api.kie.ai/api/v1/jobs';
 
   /// Upload image to imgbb and get URL
-  static Future<String> uploadToImgbb(Uint8List imageBytes, String fileName) async {
+  static Future<String> uploadToImgbb(
+      Uint8List imageBytes, String fileName) async {
     final uri = Uri.parse('https://api.imgbb.com/1/upload?key=$_imgbbApiKey');
-    
+
     // Use base64 encoding for simpler upload
     final base64Image = base64Encode(imageBytes);
-    
+
     final response = await http.post(uri, body: {
       'image': base64Image,
       'name': fileName,
     });
-    
+
     if (response.statusCode != 200) {
       throw Exception('Failed to upload image: ${response.statusCode}');
     }
@@ -119,7 +120,8 @@ class AiImageService {
   }) async {
     // Step 1: Upload to imgbb
     onProgress?.call('Uploading image...');
-    final imageUrl = await uploadToImgbb(imageBytes, 'input_${DateTime.now().millisecondsSinceEpoch}.png');
+    final imageUrl = await uploadToImgbb(
+        imageBytes, 'input_${DateTime.now().millisecondsSinceEpoch}.png');
 
     // Step 2: Create task
     onProgress?.call('Creating AI task...');
@@ -136,11 +138,11 @@ class AiImageService {
     while (DateTime.now().difference(startTime) < timeout) {
       attempts++;
       onProgress?.call('Processing... (${attempts * 5}s)');
-      
+
       await Future.delayed(pollInterval);
-      
+
       final result = await checkTaskStatus(taskId);
-      
+
       if (result.state != AiImageState.generating) {
         return result;
       }

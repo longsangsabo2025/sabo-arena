@@ -8,12 +8,10 @@ class ClubNotificationScreen extends StatefulWidget {
   const ClubNotificationScreen({super.key, this.clubId});
 
   @override
-  State<ClubNotificationScreen> createState() =>
-      _ClubNotificationScreenState();
+  State<ClubNotificationScreen> createState() => _ClubNotificationScreenState();
 }
 
-class _ClubNotificationScreenState
-    extends State<ClubNotificationScreen> {
+class _ClubNotificationScreenState extends State<ClubNotificationScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Form Controllers

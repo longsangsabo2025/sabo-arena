@@ -219,7 +219,6 @@ class PaymentErrorHandler {
           rethrow;
         }
 
-
         await Future.delayed(delay);
         delay = Duration(
           milliseconds: (delay.inMilliseconds * backoffMultiplier).round(),
@@ -302,4 +301,3 @@ class PaymentErrorHandler {
     }
   }
 }
-

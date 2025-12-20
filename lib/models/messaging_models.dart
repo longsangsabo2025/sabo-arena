@@ -66,17 +66,15 @@ class MessageModel {
           : null,
       isEdited: json['is_edited'] as bool? ?? false,
       status: MessageStatus.fromString(json['status'] as String? ?? 'sent'),
-      reactions:
-          (json['reactions'] as List?)
+      reactions: (json['reactions'] as List?)
               ?.map((r) => MessageReaction.fromJson(r))
               .toList() ??
           [],
       replyToMessage: json['reply_to'] != null
           ? MessageModel.fromJson(json['reply_to'])
           : null,
-      sender: json['sender'] != null
-          ? UserProfile.fromJson(json['sender'])
-          : null,
+      sender:
+          json['sender'] != null ? UserProfile.fromJson(json['sender']) : null,
       isEncrypted: json['is_encrypted'] as bool? ?? false,
       mentionedUserIds: List<String>.from(json['mentioned_user_ids'] ?? []),
       isForwarded: json['is_forwarded'] as bool? ?? false,
@@ -247,8 +245,7 @@ class ChatModel {
       description: json['description'] as String?,
       type: ChatType.fromString(json['type'] as String),
       avatarUrl: json['avatar_url'] as String?,
-      participants:
-          (json['participants'] as List?)
+      participants: (json['participants'] as List?)
               ?.map((p) => ChatParticipant.fromJson(p))
               .toList() ??
           [],
@@ -544,8 +541,8 @@ class ChatSettings {
       disappearingMessages: json['disappearing_messages'] as bool? ?? false,
       disappearingMessagesDuration:
           json['disappearing_messages_duration'] != null
-          ? Duration(seconds: json['disappearing_messages_duration'] as int)
-          : null,
+              ? Duration(seconds: json['disappearing_messages_duration'] as int)
+              : null,
       readReceipts: json['read_receipts'] as bool? ?? true,
       typingIndicators: json['typing_indicators'] as bool? ?? true,
       maxParticipants: json['max_participants'] as int? ?? 256,

@@ -106,14 +106,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 24),
                 Text(
                   'Tạo mật khẩu mới',
-                  textAlign: TextAlign.center, style: theme.textTheme.headlineSmall?.copyWith(
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'Tạo mật khẩu mạnh và dễ nhớ cho tài khoản của bạn',
-                  textAlign: TextAlign.center, style: theme.textTheme.bodyLarge?.copyWith(
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     color: Colors.grey[600],
                   ),
                 ),
@@ -196,7 +198,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Yêu cầu mật khẩu:', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Yêu cầu mật khẩu:',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.blue[900],
                         ),
@@ -227,7 +231,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
-                            'Đặt lại mật khẩu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Đặt lại mật khẩu',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -251,7 +257,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              text, style: TextStyle(fontSize: 13, color: Colors.blue[900]),
+              text,
+              style: TextStyle(fontSize: 13, color: Colors.blue[900]),
             ),
           ),
         ],

@@ -94,7 +94,8 @@ class TableReservationService {
           context: 'Error getting available slots',
         ),
       );
-      ProductionLogger.error('Error getting available slots', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error getting available slots',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -142,7 +143,8 @@ class TableReservationService {
           .select()
           .single();
 
-      ProductionLogger.info('Reservation created: ${response['id']}', tag: 'TableReservation');
+      ProductionLogger.info('Reservation created: ${response['id']}',
+          tag: 'TableReservation');
 
       return TableReservation.fromJson(response);
     } catch (e, stackTrace) {
@@ -154,7 +156,8 @@ class TableReservationService {
           context: 'Error creating reservation',
         ),
       );
-      ProductionLogger.error('Error creating reservation', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error creating reservation',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -162,20 +165,17 @@ class TableReservationService {
   /// Get reservations for a user
   Future<List<TableReservation>> getUserReservations(String userId) async {
     try {
-      final response = await _supabase
-          .from('table_reservations')
-          .select('''
+      final response = await _supabase.from('table_reservations').select('''
             *,
             club:clubs(*)
-          ''')
-          .eq('user_id', userId)
-          .order('start_time', ascending: false);
+          ''').eq('user_id', userId).order('start_time', ascending: false);
 
       final reservations = (response as List)
           .map((json) => TableReservation.fromJson(json))
           .toList();
 
-      ProductionLogger.debug('Found ${reservations.length} user reservations', tag: 'TableReservation');
+      ProductionLogger.debug('Found ${reservations.length} user reservations',
+          tag: 'TableReservation');
       return reservations;
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -186,7 +186,8 @@ class TableReservationService {
           context: 'Error getting user reservations',
         ),
       );
-      ProductionLogger.error('Error getting user reservations', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error getting user reservations',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -209,7 +210,8 @@ class TableReservationService {
           .eq('id', reservationId)
           .eq('user_id', userId);
 
-      ProductionLogger.info('Reservation cancelled: $reservationId', tag: 'TableReservation');
+      ProductionLogger.info('Reservation cancelled: $reservationId',
+          tag: 'TableReservation');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -219,7 +221,8 @@ class TableReservationService {
           context: 'Error cancelling reservation',
         ),
       );
-      ProductionLogger.error('Error cancelling reservation', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error cancelling reservation',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -227,14 +230,10 @@ class TableReservationService {
   /// Get reservation by ID
   Future<TableReservation> getReservationById(String id) async {
     try {
-      final response = await _supabase
-          .from('table_reservations')
-          .select('''
+      final response = await _supabase.from('table_reservations').select('''
             *,
             club:clubs(*)
-          ''')
-          .eq('id', id)
-          .single();
+          ''').eq('id', id).single();
 
       return TableReservation.fromJson(response);
     } catch (e, stackTrace) {
@@ -246,7 +245,8 @@ class TableReservationService {
           context: 'Error getting reservation',
         ),
       );
-      ProductionLogger.error('Error getting reservation', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error getting reservation',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -263,13 +263,10 @@ class TableReservationService {
     List<String>? statuses,
   }) async {
     try {
-      var query = _supabase
-          .from('table_reservations')
-          .select('''
+      var query = _supabase.from('table_reservations').select('''
             *,
             club:clubs(*)
-          ''')
-          .eq('club_id', clubId);
+          ''').eq('club_id', clubId);
 
       if (startDate != null) {
         query = query.gte('start_time', startDate.toIso8601String());
@@ -289,7 +286,8 @@ class TableReservationService {
           .map((json) => TableReservation.fromJson(json))
           .toList();
 
-      ProductionLogger.debug('Found ${reservations.length} club reservations', tag: 'TableReservation');
+      ProductionLogger.debug('Found ${reservations.length} club reservations',
+          tag: 'TableReservation');
       return reservations;
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
@@ -300,7 +298,8 @@ class TableReservationService {
           context: 'Error getting club reservations',
         ),
       );
-      ProductionLogger.error('Error getting club reservations', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error getting club reservations',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -308,16 +307,14 @@ class TableReservationService {
   /// Confirm a reservation (club owner)
   Future<void> confirmReservation(String reservationId, String ownerId) async {
     try {
-      await _supabase
-          .from('table_reservations')
-          .update({
-            'status': 'confirmed',
-            'confirmed_at': DateTime.now().toIso8601String(),
-            'confirmed_by': ownerId,
-          })
-          .eq('id', reservationId);
+      await _supabase.from('table_reservations').update({
+        'status': 'confirmed',
+        'confirmed_at': DateTime.now().toIso8601String(),
+        'confirmed_by': ownerId,
+      }).eq('id', reservationId);
 
-      ProductionLogger.info('Reservation confirmed: $reservationId', tag: 'TableReservation');
+      ProductionLogger.info('Reservation confirmed: $reservationId',
+          tag: 'TableReservation');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -327,7 +324,8 @@ class TableReservationService {
           context: 'Error confirming reservation',
         ),
       );
-      ProductionLogger.error('Error confirming reservation', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error confirming reservation',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -339,17 +337,15 @@ class TableReservationService {
     String reason,
   ) async {
     try {
-      await _supabase
-          .from('table_reservations')
-          .update({
-            'status': 'cancelled',
-            'cancelled_at': DateTime.now().toIso8601String(),
-            'cancelled_by': ownerId,
-            'cancellation_reason': reason,
-          })
-          .eq('id', reservationId);
+      await _supabase.from('table_reservations').update({
+        'status': 'cancelled',
+        'cancelled_at': DateTime.now().toIso8601String(),
+        'cancelled_by': ownerId,
+        'cancellation_reason': reason,
+      }).eq('id', reservationId);
 
-      ProductionLogger.info('Reservation rejected: $reservationId', tag: 'TableReservation');
+      ProductionLogger.info('Reservation rejected: $reservationId',
+          tag: 'TableReservation');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -359,7 +355,8 @@ class TableReservationService {
           context: 'Error rejecting reservation',
         ),
       );
-      ProductionLogger.error('Error rejecting reservation', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error rejecting reservation',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -369,10 +366,11 @@ class TableReservationService {
     try {
       await _supabase
           .from('table_reservations')
-          .update({'status': 'completed', 'payment_status': 'fully_paid'})
-          .eq('id', reservationId);
+          .update({'status': 'completed', 'payment_status': 'fully_paid'}).eq(
+              'id', reservationId);
 
-      ProductionLogger.info('Reservation marked as completed: $reservationId', tag: 'TableReservation');
+      ProductionLogger.info('Reservation marked as completed: $reservationId',
+          tag: 'TableReservation');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -382,7 +380,8 @@ class TableReservationService {
           context: 'Error marking as completed',
         ),
       );
-      ProductionLogger.error('Error marking as completed', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error marking as completed',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -392,10 +391,10 @@ class TableReservationService {
     try {
       await _supabase
           .from('table_reservations')
-          .update({'status': 'no_show'})
-          .eq('id', reservationId);
+          .update({'status': 'no_show'}).eq('id', reservationId);
 
-      ProductionLogger.info('Reservation marked as no-show: $reservationId', tag: 'TableReservation');
+      ProductionLogger.info('Reservation marked as no-show: $reservationId',
+          tag: 'TableReservation');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -405,7 +404,8 @@ class TableReservationService {
           context: 'Error marking as no-show',
         ),
       );
-      ProductionLogger.error('Error marking as no-show', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error marking as no-show',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }
@@ -417,10 +417,8 @@ class TableReservationService {
     DateTime? endDate,
   }) async {
     try {
-      var query = _supabase
-          .from('table_reservations')
-          .select()
-          .eq('club_id', clubId);
+      var query =
+          _supabase.from('table_reservations').select().eq('club_id', clubId);
 
       if (startDate != null) {
         query = query.gte('start_time', startDate.toIso8601String());
@@ -435,18 +433,14 @@ class TableReservationService {
 
       // Calculate stats
       final total = reservations.length;
-      final pending = reservations
-          .where((r) => r['status'] == 'pending')
-          .length;
-      final confirmed = reservations
-          .where((r) => r['status'] == 'confirmed')
-          .length;
-      final completed = reservations
-          .where((r) => r['status'] == 'completed')
-          .length;
-      final cancelled = reservations
-          .where((r) => r['status'] == 'cancelled')
-          .length;
+      final pending =
+          reservations.where((r) => r['status'] == 'pending').length;
+      final confirmed =
+          reservations.where((r) => r['status'] == 'confirmed').length;
+      final completed =
+          reservations.where((r) => r['status'] == 'completed').length;
+      final cancelled =
+          reservations.where((r) => r['status'] == 'cancelled').length;
 
       double totalRevenue = 0;
       double expectedRevenue = 0;
@@ -466,9 +460,8 @@ class TableReservationService {
         tableUtil[tableNum] = (tableUtil[tableNum] ?? 0) + 1;
       }
 
-      final avgBooking = total > 0
-          ? (totalRevenue + expectedRevenue) / total
-          : 0.0;
+      final avgBooking =
+          total > 0 ? (totalRevenue + expectedRevenue) / total : 0.0;
 
       return ReservationStats(
         totalReservations: total,
@@ -482,7 +475,8 @@ class TableReservationService {
         tableUtilization: tableUtil,
       );
     } catch (e) {
-      ProductionLogger.warning('Error getting club stats', error: e, tag: 'TableReservation');
+      ProductionLogger.warning('Error getting club stats',
+          error: e, tag: 'TableReservation');
       return ReservationStats.empty();
     }
   }
@@ -512,7 +506,8 @@ class TableReservationService {
       return response as bool? ?? false;
     } catch (e) {
       // Fallback to manual check if RPC fails
-      ProductionLogger.warning('RPC failed, using fallback check', error: e, tag: 'TableReservation');
+      ProductionLogger.warning('RPC failed, using fallback check',
+          error: e, tag: 'TableReservation');
 
       final conflicts = await _supabase
           .from('table_reservations')
@@ -550,7 +545,8 @@ class TableReservationService {
 
       return pricePerHour * duration;
     } catch (e) {
-      ProductionLogger.warning('Error calculating price', error: e, tag: 'TableReservation');
+      ProductionLogger.warning('Error calculating price',
+          error: e, tag: 'TableReservation');
       return 0;
     }
   }
@@ -576,7 +572,8 @@ class TableReservationService {
           .update(updateData)
           .eq('id', reservationId);
 
-      ProductionLogger.info('Payment status updated: ${status.value}', tag: 'TableReservation');
+      ProductionLogger.info('Payment status updated: ${status.value}',
+          tag: 'TableReservation');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -586,7 +583,8 @@ class TableReservationService {
           context: 'Error updating payment status',
         ),
       );
-      ProductionLogger.error('Error updating payment status', error: e, stackTrace: stackTrace, tag: 'TableReservation');
+      ProductionLogger.error('Error updating payment status',
+          error: e, stackTrace: stackTrace, tag: 'TableReservation');
       rethrow;
     }
   }

@@ -9,6 +9,7 @@ import 'package:sabo_arena/services/supabase_service.dart';
 import 'package:sizer/sizer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
+import '../../widgets/common/app_button.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
 
@@ -18,7 +19,7 @@ class TableReservationScreen extends StatefulWidget {
   final Club club;
 
   const TableReservationScreen({Key? key, required this.club})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<TableReservationScreen> createState() => _TableReservationScreenState();
@@ -98,9 +99,8 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
       final startTime = _selectedTimeSlot!.startTime;
       final endTime = _selectedTimeSlot!.endTime;
       final totalPrice = widget.club.pricePerHour! * _selectedDuration;
-      final depositAmount = _paymentMethod == 'deposit'
-          ? totalPrice * 0.3
-          : 0.0;
+      final depositAmount =
+          _paymentMethod == 'deposit' ? totalPrice * 0.3 : 0.0;
 
       final request = ReservationRequest(
         clubId: widget.club.id,
@@ -163,8 +163,8 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
         title: Text(
           'Đặt Bàn',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         centerTitle: true,
       ),
@@ -225,7 +225,10 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                       width: 60,
                       height: 60,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Icon(Icons.business, size: 28, color: AppColors.gray400),
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.business,
+                          size: 28,
+                          color: AppColors.gray400),
                     )
                   : Icon(Icons.business, size: 28, color: AppColors.gray400),
             ),
@@ -239,17 +242,21 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                 Text(
                   widget.club.name,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.location_on, size: 14, color: AppColors.textSecondary),
+                    Icon(Icons.location_on,
+                        size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        widget.club.address ?? 'Chưa có địa chỉ', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        widget.club.address ?? 'Chưa có địa chỉ',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 13, color: AppColors.textSecondary),
                         maxLines: 1,
                       ),
                     ),
@@ -266,7 +273,8 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    widget.club.priceDisplay, style: TextStyle(
+                    widget.club.priceDisplay,
+                    style: TextStyle(
                       fontSize: 12,
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,
@@ -358,7 +366,9 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Chọn Giờ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Chọn Giờ',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
                           fontWeight: FontWeight.w500,
@@ -434,7 +444,9 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Chọn Ngày', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Chọn Ngày',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 13,
                               color: AppColors.textSecondary,
                               fontWeight: FontWeight.w500,
@@ -541,8 +553,12 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
       );
     } catch (e) {
       // Không tìm thấy slot → không hiện selector
-      ProductionLogger.info('⚠️ Không tìm thấy slot cho ${_selectedTimeSlot!.startTime}', tag: 'table_reservation_screen');
-      ProductionLogger.info('📋 Available slots: ${_availableSlots.map((s) => s.startTime).toList()}', tag: 'table_reservation_screen');
+      ProductionLogger.info(
+          '⚠️ Không tìm thấy slot cho ${_selectedTimeSlot!.startTime}',
+          tag: 'table_reservation_screen');
+      ProductionLogger.info(
+          '📋 Available slots: ${_availableSlots.map((s) => s.startTime).toList()}',
+          tag: 'table_reservation_screen');
       return const SizedBox.shrink();
     }
 
@@ -579,7 +595,9 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
               ),
               const SizedBox(width: 10),
               Text(
-                'Chọn Bàn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Chọn Bàn',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -608,15 +626,15 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                       color: !isAvailable
                           ? AppColors.gray100
                           : isSelected
-                          ? AppColors.primary
-                          : AppColors.surface,
+                              ? AppColors.primary
+                              : AppColors.surface,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: !isAvailable
                             ? AppColors.gray300
                             : isSelected
-                            ? AppColors.primary
-                            : AppColors.gray300,
+                                ? AppColors.primary
+                                : AppColors.gray300,
                         width: 1.5,
                       ),
                     ),
@@ -624,25 +642,30 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '$tableNum', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          '$tableNum',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: !isAvailable
                                 ? AppColors.gray400
                                 : isSelected
-                                ? AppColors.textOnPrimary
-                                : AppColors.textPrimary,
+                                    ? AppColors.textOnPrimary
+                                    : AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          isAvailable ? 'Trống' : 'Đã đặt', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          isAvailable ? 'Trống' : 'Đã đặt',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 10,
                             color: !isAvailable
                                 ? AppColors.gray400
                                 : isSelected
-                                ? AppColors.textOnPrimary.withValues(alpha: 0.7)
-                                : AppColors.textSecondary,
+                                    ? AppColors.textOnPrimary
+                                        .withValues(alpha: 0.7)
+                                    : AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -687,10 +710,13 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Giá/giờ:', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                'Giá/giờ:',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
               Text(
-                widget.club.priceDisplay, style: const TextStyle(
+                widget.club.priceDisplay,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -702,10 +728,14 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Thời gian:', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                'Thời gian:',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
               Text(
-                '${_selectedDuration}h', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                '${_selectedDuration}h',
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -720,7 +750,9 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Tổng tiền:', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                'Tổng tiền:',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               Text(
                 '${totalPrice.toInt().toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ',')}đ',
@@ -751,7 +783,8 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
                   color: AppColors.gray100,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.edit_note, color: AppColors.textSecondary, size: 18),
+                child: Icon(Icons.edit_note,
+                    color: AppColors.textSecondary, size: 18),
               ),
               const SizedBox(width: 10),
               Text(
@@ -803,34 +836,13 @@ class _TableReservationScreenState extends State<TableReservationScreen> {
       child: SizedBox(
         width: double.infinity,
         height: 52,
-        child: ElevatedButton(
+        child: AppButton(
+          label: 'Đặt bàn',
+          type: AppButtonType.primary,
+          size: AppButtonSize.large,
+          isLoading: _isBooking,
+          fullWidth: true,
           onPressed: _isBooking ? null : _bookTable,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textOnPrimary,
-            elevation: 0,
-            shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            disabledBackgroundColor: AppColors.gray300,
-          ),
-          child: _isBooking
-              ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: AppColors.textOnPrimary,
-                    strokeWidth: 2.5,
-                  ),
-                )
-              : const Text(
-                  'XÁC NHẬN ĐẶT BÀN', overflow: TextOverflow.ellipsis, style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
         ),
       ),
     );

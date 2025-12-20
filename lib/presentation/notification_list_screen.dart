@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/design_system/design_system.dart';
-import '../core/performance/performance_widgets.dart';
 import '../services/notification_service.dart';
 import '../services/notification_navigation_service.dart';
 import '../models/notification_models.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 /// Modern Notification List Screen - Facebook 2025 Style with Real Data
 class NotificationListScreen extends StatefulWidget {
@@ -23,53 +23,85 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   final NotificationNavigationService _navigationService =
       NotificationNavigationService.instance;
   String _selectedFilter = 'Tất cả';
-  List<NotificationModel> _notifications = [];
-  bool _isLoading = true;
+
+  // ♾️ Infinite Scroll Pagination Controllers
+  late PagingController<int, NotificationModel> _allPagingController;
+  late PagingController<int, NotificationModel> _unreadPagingController;
+  late PagingController<int, NotificationModel> _readPagingController;
 
   @override
   void initState() {
     super.initState();
-    _loadNotifications();
+
+    // Initialize paging controllers
+    _allPagingController =
+        PagingController<int, NotificationModel>(firstPageKey: 0);
+    _unreadPagingController =
+        PagingController<int, NotificationModel>(firstPageKey: 0);
+    _readPagingController =
+        PagingController<int, NotificationModel>(firstPageKey: 0);
+
+    // Add page request listeners
+    _allPagingController.addPageRequestListener((pageKey) {
+      _fetchNotificationsPage(pageKey, null);
+    });
+    _unreadPagingController.addPageRequestListener((pageKey) {
+      _fetchNotificationsPage(pageKey, false);
+    });
+    _readPagingController.addPageRequestListener((pageKey) {
+      _fetchNotificationsPage(pageKey, true);
+    });
+  }
+
+  // Get current paging controller based on selected filter
+  PagingController<int, NotificationModel> get _currentPagingController {
+    if (_selectedFilter == 'Tất cả') {
+      return _allPagingController;
+    } else if (_selectedFilter == 'Chưa đọc') {
+      return _unreadPagingController;
+    } else {
+      return _readPagingController;
+    }
+  }
+
+  // Fetch notifications page with pagination
+  Future<void> _fetchNotificationsPage(int pageKey, bool? isRead) async {
+    final controller = isRead == null
+        ? _allPagingController
+        : isRead == false
+            ? _unreadPagingController
+            : _readPagingController;
+
+    try {
+      final notifications = await _notificationService.getNotifications(
+        isRead: isRead,
+        limit: 20,
+        offset: pageKey,
+        isClubContext: widget.isClubContext,
+      );
+
+      final isLastPage = notifications.length < 20;
+      if (isLastPage) {
+        controller.appendLastPage(notifications);
+      } else {
+        controller.appendPage(notifications, pageKey + notifications.length);
+      }
+    } catch (error) {
+      controller.error = error;
+    }
   }
 
   Future<void> _loadNotifications() async {
-    if (!mounted) return;
-    setState(() => _isLoading = true);
+    // Refresh current paging controller
+    _currentPagingController.refresh();
+  }
 
-    try {
-      List<NotificationModel> notifications;
-
-      if (_selectedFilter == 'Tất cả') {
-        notifications = await _notificationService.getNotifications(
-          limit: 50,
-          isClubContext: widget.isClubContext,
-        );
-      } else if (_selectedFilter == 'Chưa đọc') {
-        notifications = await _notificationService.getNotifications(
-          isRead: false,
-          limit: 50,
-          isClubContext: widget.isClubContext,
-        );
-      } else {
-        // Đã đọc
-        notifications = await _notificationService.getNotifications(
-          isRead: true,
-          limit: 50,
-          isClubContext: widget.isClubContext,
-        );
-      }
-
-      if (mounted) {
-        setState(() {
-          _notifications = notifications;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+  @override
+  void dispose() {
+    _allPagingController.dispose();
+    _unreadPagingController.dispose();
+    _readPagingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -125,7 +157,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           ),
         ),
         // Mark all as read button
-        if (_notifications.any((n) => !n.isRead))
+        if (_currentPagingController.itemList?.any((n) => !n.isRead) ?? false)
           Container(
             margin: const EdgeInsets.only(right: 4),
             child: TextButton(
@@ -207,9 +239,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.2,
-                      color: isSelected
-                          ? Colors.white
-                          : const Color(0xFF050505),
+                      color:
+                          isSelected ? Colors.white : const Color(0xFF050505),
                     ),
                   ),
                 ),
@@ -222,26 +253,49 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   }
 
   Widget _buildNotificationList() {
-    if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF0866FF)),
-      );
-    }
-
-    if (_notifications.isEmpty) {
-      return _buildEmptyState();
-    }
-
     return RefreshIndicator(
       onRefresh: _loadNotifications,
       color: const Color(0xFF0866FF),
-      child: OptimizedListView(
-        padding: const EdgeInsets.only(top: 4),
-        itemCount: _notifications.length,
-        itemBuilder: (context, index) {
-          final notification = _notifications[index];
-          return _buildNotificationItem(notification);
-        },
+      child: PagedListView<int, NotificationModel>(
+        pagingController: _currentPagingController,
+        builderDelegate: PagedChildBuilderDelegate<NotificationModel>(
+          itemBuilder: (context, notification, index) {
+            return _buildNotificationItem(notification);
+          },
+          firstPageProgressIndicatorBuilder: (context) => const Center(
+            child: CircularProgressIndicator(color: Color(0xFF0866FF)),
+          ),
+          newPageProgressIndicatorBuilder: (context) => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(color: Color(0xFF0866FF)),
+            ),
+          ),
+          firstPageErrorIndicatorBuilder: (context) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline,
+                    size: 48, color: Color(0xFF65676B)),
+                const SizedBox(height: 16),
+                const Text(
+                  'Không thể tải thông báo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF050505),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: _loadNotifications,
+                  child: const Text('Thử lại'),
+                ),
+              ],
+            ),
+          ),
+          noItemsFoundIndicatorBuilder: (context) => _buildEmptyState(),
+        ),
       ),
     );
   }
@@ -498,4 +552,3 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     );
   }
 }
-

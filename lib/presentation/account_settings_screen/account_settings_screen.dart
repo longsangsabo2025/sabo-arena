@@ -7,7 +7,11 @@ import '../../core/design_system/design_system.dart';
 import '../../core/device/device_info.dart';
 import '../../models/user_profile.dart';
 import '../../services/user_service.dart';
+import '../../services/privacy_service.dart';
+import '../../services/user_blocks_service.dart';
+import '../../services/account_management_service.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/common/app_button.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   final UserProfile userProfile;
@@ -22,11 +26,16 @@ class AccountSettingsScreen extends StatefulWidget {
 }
 
 class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
-  // Note: AuthService removed as it was unused - use AuthService.instance directly when needed
   final UserService _userService = UserService.instance;
+  final PrivacyService _privacyService = PrivacyService.instance;
+  final AccountManagementService _accountService =
+      AccountManagementService.instance;
 
   bool _isLoading = false;
   String _selectedCategory = 'personal_info'; // For master-detail layout
+
+  // Privacy settings state
+  UserPrivacySettings? _privacySettings;
 
   // Controllers for editable fields
   final TextEditingController _fullNameController = TextEditingController();
@@ -38,6 +47,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   void initState() {
     super.initState();
     _initializeControllers();
+    _loadPrivacySettings();
   }
 
   void _initializeControllers() {
@@ -45,6 +55,27 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     _emailController.text = widget.userProfile.email;
     _phoneController.text = widget.userProfile.phone ?? '';
     _locationController.text = widget.userProfile.location ?? '';
+  }
+
+  Future<void> _loadPrivacySettings() async {
+    try {
+      final settings = await _privacyService.getMyPrivacySettings();
+      if (mounted) {
+        setState(() {
+          _privacySettings = settings;
+        });
+      }
+    } catch (e) {
+      // Default to public profile if error
+      if (mounted) {
+        setState(() {
+          _privacySettings = UserPrivacySettings(
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+        });
+      }
+    }
   }
 
   @override
@@ -120,56 +151,64 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   // Single column layout for iPhone/iPad portrait
   Widget _buildSingleColumnLayout() {
     return SingleChildScrollView(
-              padding: EdgeInsets.all(4.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Account Info Section
-                  _buildSectionHeader('Thông tin cá nhân'),
-                  SizedBox(height: 2.h),
-                  _buildInfoCard(),
+      padding: EdgeInsets.all(4.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Account Info Section
+          _buildSectionHeader('Thông tin cá nhân'),
+          SizedBox(height: 2.h),
+          _buildInfoCard(),
 
-                  SizedBox(height: 3.h),
+          SizedBox(height: 3.h),
 
-                  // Security Section
-                  _buildSectionHeader('Bảo mật'),
-                  SizedBox(height: 2.h),
-                  _buildSecurityCard(),
+          // Security Section
+          _buildSectionHeader('Bảo mật'),
+          SizedBox(height: 2.h),
+          _buildSecurityCard(),
 
-                  SizedBox(height: 3.h),
+          SizedBox(height: 3.h),
 
-                  // Privacy Section
-                  _buildSectionHeader('Quyền riêng tư'),
-                  SizedBox(height: 2.h),
-                  _buildPrivacyCard(),
+          // Privacy Section
+          _buildSectionHeader('Quyền riêng tư'),
+          SizedBox(height: 2.h),
+          _buildPrivacyCard(),
 
-                  SizedBox(height: 3.h),
+          SizedBox(height: 3.h),
 
-                  // Account Status
-                  _buildSectionHeader('Trạng thái tài khoản'),
-                  SizedBox(height: 2.h),
-                  _buildAccountStatusCard(),
+          // Account Status
+          _buildSectionHeader('Trạng thái tài khoản'),
+          SizedBox(height: 2.h),
+          _buildAccountStatusCard(),
 
-                  SizedBox(height: 3.h),
+          SizedBox(height: 3.h),
 
-                  // Danger Zone
-                  _buildSectionHeader('Vùng nguy hiểm', color: AppColors.error),
-                  SizedBox(height: 2.h),
-                  _buildDangerZoneCard(),
+          // Danger Zone
+          _buildSectionHeader('Vùng nguy hiểm', color: AppColors.error),
+          SizedBox(height: 2.h),
+          _buildDangerZoneCard(),
 
-                  SizedBox(height: 4.h),
-                ],
-              ),
-            );
+          SizedBox(height: 4.h),
+        ],
+      ),
+    );
   }
 
   // Category list for master panel
   Widget _buildCategoryList() {
     final categories = [
-      {'id': 'personal_info', 'icon': Icons.person, 'title': 'Thông tin cá nhân'},
+      {
+        'id': 'personal_info',
+        'icon': Icons.person,
+        'title': 'Thông tin cá nhân'
+      },
       {'id': 'security', 'icon': Icons.security, 'title': 'Bảo mật'},
       {'id': 'privacy', 'icon': Icons.privacy_tip, 'title': 'Quyền riêng tư'},
-      {'id': 'account_status', 'icon': Icons.info, 'title': 'Trạng thái tài khoản'},
+      {
+        'id': 'account_status',
+        'icon': Icons.info,
+        'title': 'Trạng thái tài khoản'
+      },
       {'id': 'danger_zone', 'icon': Icons.warning, 'title': 'Vùng nguy hiểm'},
     ];
 
@@ -181,21 +220,27 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         final isDangerZone = category['id'] == 'danger_zone';
 
         return Container(
-          color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.08) : null,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.08)
+              : null,
           child: ListTile(
             leading: Icon(
               category['icon'] as IconData,
-              color: isDangerZone 
-                  ? AppColors.error 
-                  : (isSelected ? Theme.of(context).colorScheme.primary : AppColors.textSecondary),
+              color: isDangerZone
+                  ? AppColors.error
+                  : (isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : AppColors.textSecondary),
             ),
             title: Text(
               category['title'] as String,
               style: TextStyle(
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isDangerZone 
-                    ? AppColors.error 
-                    : (isSelected ? Theme.of(context).colorScheme.primary : AppColors.textPrimary),
+                color: isDangerZone
+                    ? AppColors.error
+                    : (isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : AppColors.textPrimary),
               ),
             ),
             onTap: () {
@@ -371,7 +416,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             label: 'Hồ sơ công khai',
             icon: Icons.public,
             trailing: Switch(
-              value: true, // TODO: Get from profile settings
+              value: _privacySettings?.profilePublic ?? true,
               onChanged: (value) => _togglePublicProfile(value),
             ),
           ),
@@ -380,7 +425,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             label: 'Hiển thị email',
             icon: Icons.email_outlined,
             trailing: Switch(
-              value: false, // TODO: Get from profile settings
+              value: _privacySettings?.showEmail ?? false,
               onChanged: (value) => _toggleShowEmail(value),
             ),
           ),
@@ -389,7 +434,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             label: 'Hiển thị số điện thoại',
             icon: Icons.phone_outlined,
             trailing: Switch(
-              value: false, // TODO: Get from profile settings
+              value: _privacySettings?.showPhone ?? false,
               onChanged: (value) => _toggleShowPhone(value),
             ),
           ),
@@ -676,10 +721,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
   String _formatDate(DateTime? date) {
     if (date == null) return 'Không xác định';
-    
+
     final now = DateTime.now();
     final diff = now.difference(date);
-    
+
     if (diff.inDays == 0) {
       if (diff.inHours == 0) {
         if (diff.inMinutes == 0) {
@@ -719,14 +764,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Xác nhận',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Tính năng đang phát triển')),
               );
             },
-            child: Text('Xác nhận'),
           ),
         ],
       ),
@@ -747,79 +794,182 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  void _togglePublicProfile(bool value) {
-    // TODO: Implement profile privacy settings update via UserService
-    // Need to add updatePrivacySettings() method in UserService
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tính năng đang phát triển'),
-      ),
-    );
+  void _togglePublicProfile(bool value) async {
+    setState(() => _isLoading = true);
+    try {
+      final updated = await _privacyService.updatePrivacySettings(
+        profilePublic: value,
+      );
+      if (mounted) {
+        setState(() {
+          _privacySettings = updated;
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              value
+                  ? 'Hồ sơ của bạn giờ đây công khai'
+                  : 'Hồ sơ của bạn đã được ẩn',
+            ),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
-  void _toggleShowEmail(bool value) {
-    // TODO: Implement email visibility settings update via UserService
-    // Need to add updatePrivacySettings() method in UserService
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tính năng đang phát triển'),
-      ),
-    );
+  void _toggleShowEmail(bool value) async {
+    setState(() => _isLoading = true);
+    try {
+      final updated = await _privacyService.updatePrivacySettings(
+        showEmail: value,
+      );
+      if (mounted) {
+        setState(() {
+          _privacySettings = updated;
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              value ? 'Email giờ đây hiển thị công khai' : 'Email đã được ẩn',
+            ),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
-  void _toggleShowPhone(bool value) {
-    // TODO: Implement phone visibility settings update via UserService
-    // Need to add updatePrivacySettings() method in UserService
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          value
-              ? 'Số điện thoại sẽ hiển thị công khai'
-              : 'Số điện thoại đã được ẩn',
-        ),
-      ),
-    );
+  void _toggleShowPhone(bool value) async {
+    setState(() => _isLoading = true);
+    try {
+      final updated = await _privacyService.updatePrivacySettings(
+        showPhone: value,
+      );
+      if (mounted) {
+        setState(() {
+          _privacySettings = updated;
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              value
+                  ? 'Số điện thoại sẽ hiển thị công khai'
+                  : 'Số điện thoại đã được ẩn',
+            ),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
   void _viewBlockedUsers() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: Text('Danh sách chặn')),
-          body: Center(
-            child: Text('Tính năng đang phát triển'),
-          ),
-        ),
+        builder: (context) => _BlockedUsersScreen(),
       ),
     );
   }
 
   void _deactivateAccount() {
+    final TextEditingController reasonController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Vô hiệu hóa tài khoản'),
-        content: Text(
-          'Bạn có chắc muốn vô hiệu hóa tài khoản? Tài khoản của bạn sẽ bị ẩn và bạn có thể kích hoạt lại sau.',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Bạn có chắc muốn vô hiệu hóa tài khoản? Tài khoản của bạn sẽ bị ẩn và bạn có thể kích hoạt lại sau.',
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(
+                labelText: 'Lý do (không bắt buộc)',
+                hintText: 'Tại sao bạn muốn vô hiệu hóa tài khoản?',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('Hủy'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Tính năng đang phát triển'),
-                  backgroundColor: AppColors.warning,
-                ),
-              );
+          AppButton(
+            label: 'Vô hiệu hóa',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            customColor: AppColors.warning,
+            onPressed: () async {
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              navigator.pop();
+              setState(() => _isLoading = true);
+
+              try {
+                await _accountService.deactivateAccount(
+                  reason: reasonController.text.trim().isEmpty
+                      ? null
+                      : reasonController.text.trim(),
+                );
+                // User will be signed out, navigate to login
+                if (mounted) {
+                  navigator.popUntil((route) => route.isFirst);
+                }
+              } catch (e) {
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text('Lỗi: ${e.toString()}'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
-            child: Text('Vô hiệu hóa'),
           ),
         ],
       ),
@@ -845,13 +995,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Xóa tài khoản',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            customColor: AppColors.error,
+            customTextColor: Colors.white,
             onPressed: () {
               Navigator.pop(context);
               _confirmDeleteAccount();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: Text('Xóa tài khoản'),
           ),
         ],
       ),
@@ -859,8 +1012,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   void _confirmDeleteAccount() {
-    final TextEditingController confirmController = TextEditingController();
-    
+    final TextEditingController passwordController = TextEditingController();
+    final TextEditingController reasonController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -869,14 +1023,27 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Nhập "XOA TAI KHOAN" để xác nhận:'),
-            SizedBox(height: 16),
+            Text('Nhập mật khẩu để xác nhận:'),
+            SizedBox(height: 12),
             TextField(
-              controller: confirmController,
+              controller: passwordController,
+              obscureText: true,
               decoration: InputDecoration(
-                hintText: 'XOA TAI KHOAN',
+                hintText: 'Mật khẩu',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
+              ),
+            ),
+            SizedBox(height: 16),
+            Text('Lý do xóa tài khoản (không bắt buộc):'),
+            SizedBox(height: 12),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(
+                hintText: 'Tại sao bạn muốn xóa tài khoản?',
                 border: OutlineInputBorder(),
               ),
+              maxLines: 3,
             ),
           ],
         ),
@@ -885,27 +1052,53 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text('Hủy'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              if (confirmController.text.trim() == 'XOA TAI KHOAN') {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+          AppButton(
+            label: 'Xác nhận xóa',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            customColor: AppColors.error,
+            customTextColor: Colors.white,
+            onPressed: () async {
+              final password = passwordController.text.trim();
+              final messenger = ScaffoldMessenger.of(context);
+              final navigator = Navigator.of(context);
+
+              if (password.isEmpty) {
+                messenger.showSnackBar(
                   SnackBar(
-                    content: Text('Tính năng đang phát triển'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Vui lòng nhập chính xác để xác nhận'),
+                    content: Text('Vui lòng nhập mật khẩu'),
                     backgroundColor: AppColors.warning,
                   ),
                 );
+                return;
+              }
+
+              navigator.pop();
+              setState(() => _isLoading = true);
+
+              try {
+                await _accountService.deleteAccountPermanently(
+                  password: password,
+                  reason: reasonController.text.trim().isEmpty
+                      ? null
+                      : reasonController.text.trim(),
+                );
+                // User will be signed out, navigate to login
+                if (mounted) {
+                  navigator.popUntil((route) => route.isFirst);
+                }
+              } catch (e) {
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: Text('Xác nhận xóa'),
           ),
         ],
       ),
@@ -958,8 +1151,8 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                         ? Icons.visibility_off
                         : Icons.visibility,
                   ),
-                  onPressed: () =>
-                      setState(() => _showCurrentPassword = !_showCurrentPassword),
+                  onPressed: () => setState(
+                      () => _showCurrentPassword = !_showCurrentPassword),
                 ),
               ),
             ),
@@ -1007,15 +1200,12 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
           onPressed: _isLoading ? null : () => Navigator.pop(context),
           child: Text('Hủy'),
         ),
-        ElevatedButton(
+        AppButton(
+          label: 'Đổi mật khẩu',
+          type: AppButtonType.primary,
+          size: AppButtonSize.medium,
+          isLoading: _isLoading,
           onPressed: _isLoading ? null : _changePassword,
-          child: _isLoading
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text('Đổi mật khẩu'),
         ),
       ],
     );
@@ -1027,7 +1217,9 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
     final confirmPassword = _confirmPasswordController.text.trim();
 
     // Validation
-    if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+    if (currentPassword.isEmpty ||
+        newPassword.isEmpty ||
+        confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Vui lòng điền đầy đủ thông tin'),
@@ -1060,6 +1252,21 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
     setState(() => _isLoading = true);
 
     try {
+      // STEP 1: Verify current password by re-authenticating
+      final user = Supabase.instance.client.auth.currentUser;
+      final email = user?.email;
+
+      if (email == null) {
+        throw Exception('Không thể xác thực. Vui lòng đăng nhập lại.');
+      }
+
+      // Re-authenticate with current password to verify it's correct
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: currentPassword,
+      );
+
+      // STEP 2: If re-auth successful, update to new password
       await Supabase.instance.client.auth.updateUser(
         UserAttributes(password: newPassword),
       );
@@ -1076,6 +1283,31 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
               ],
             ),
             backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        String errorMessage = 'Lỗi: ${e.message}';
+
+        // Handle specific auth errors
+        if (e.message.contains('Invalid login credentials') ||
+            e.message.contains('invalid_credentials')) {
+          errorMessage = 'Mật khẩu hiện tại không đúng';
+        } else if (e.message.contains('Email not confirmed')) {
+          errorMessage = 'Email chưa được xác thực';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error, color: AppColors.textOnPrimary),
+                SizedBox(width: 8),
+                Flexible(child: Text(errorMessage)),
+              ],
+            ),
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -1099,5 +1331,180 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
         setState(() => _isLoading = false);
       }
     }
+  }
+}
+
+// Blocked Users Screen
+class _BlockedUsersScreen extends StatefulWidget {
+  @override
+  State<_BlockedUsersScreen> createState() => _BlockedUsersScreenState();
+}
+
+class _BlockedUsersScreenState extends State<_BlockedUsersScreen> {
+  final UserBlocksService _blocksService = UserBlocksService.instance;
+  bool _isLoading = true;
+  List<BlockedUser> _blockedUsers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBlockedUsers();
+  }
+
+  Future<void> _loadBlockedUsers() async {
+    setState(() => _isLoading = true);
+    try {
+      final users = await _blocksService.getBlockedUsers();
+      if (mounted) {
+        setState(() {
+          _blockedUsers = users;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _unblockUser(BlockedUser user) async {
+    try {
+      await _blocksService.unblockUser(user.blockedUserId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đã bỏ chặn ${user.blockedUserName}'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+        _loadBlockedUsers(); // Reload list
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Danh sách chặn'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _blockedUsers.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.block,
+                        size: 64,
+                        color: AppColors.textTertiary,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Chưa có người dùng bị chặn',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.separated(
+                  itemCount: _blockedUsers.length,
+                  separatorBuilder: (context, index) => Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final user = _blockedUsers[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: user.blockedUserAvatar != null
+                            ? NetworkImage(user.blockedUserAvatar!)
+                            : null,
+                        child: user.blockedUserAvatar == null
+                            ? Text(user.blockedUserName[0].toUpperCase())
+                            : null,
+                      ),
+                      title: Text(user.blockedUserName),
+                      subtitle: Text(
+                        'Chặn lúc: ${_formatDate(user.blockedAt)}',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      trailing: TextButton(
+                        onPressed: () => _showUnblockConfirmation(user),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.error,
+                        ),
+                        child: Text('Bỏ chặn'),
+                      ),
+                    );
+                  },
+                ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+
+    if (diff.inDays > 365) {
+      return '${(diff.inDays / 365).floor()} năm trước';
+    } else if (diff.inDays > 30) {
+      return '${(diff.inDays / 30).floor()} tháng trước';
+    } else if (diff.inDays > 0) {
+      return '${diff.inDays} ngày trước';
+    } else if (diff.inHours > 0) {
+      return '${diff.inHours} giờ trước';
+    } else if (diff.inMinutes > 0) {
+      return '${diff.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
+  void _showUnblockConfirmation(BlockedUser user) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Bỏ chặn người dùng'),
+        content: Text('Bạn có chắc muốn bỏ chặn ${user.blockedUserName}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _unblockUser(user);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.error,
+            ),
+            child: Text('Bỏ chặn'),
+          ),
+        ],
+      ),
+    );
   }
 }

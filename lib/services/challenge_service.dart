@@ -32,7 +32,9 @@ class ChallengeService {
       }
 
       // 🔍 STEP 1: Validate challenge using rules service (only for targeted challenges)
-      if (challengeType == 'thach_dau' && spaPoints > 0 && challengedUserId.isNotEmpty) {
+      if (challengeType == 'thach_dau' &&
+          spaPoints > 0 &&
+          challengedUserId.isNotEmpty) {
         final validationResult = await _rulesService.validateChallenge(
           challengerId: currentUser.id,
           challengedId: challengedUserId,
@@ -57,7 +59,7 @@ class ChallengeService {
       // Get current user details
       final userResponse = await _supabase
           .from('users')
-          .select('display_name, elo_rating, ranking')
+          .select('display_name, username, elo_rating, ranking')
           .eq('id', currentUser.id)
           .single();
 
@@ -65,7 +67,7 @@ class ChallengeService {
       if (challengedUserId.isNotEmpty) {
         await _supabase
             .from('users')
-            .select('display_name, elo_rating, ranking')
+            .select('display_name, username, elo_rating, ranking')
             .eq('id', challengedUserId)
             .single();
       }
@@ -73,7 +75,9 @@ class ChallengeService {
       // 🎯 STEP 2: Create challenge in database with enhanced data
       Map<String, dynamic> challengeData = {
         'challenger_id': currentUser.id,
-        'challenged_id': challengedUserId.isEmpty ? null : challengedUserId, // null for open challenges
+        'challenged_id': challengedUserId.isEmpty
+            ? null
+            : challengedUserId, // null for open challenges
         'challenge_type': challengeType,
         'game_type': gameType,
         'scheduled_time': scheduledTime.toIso8601String(),
@@ -85,14 +89,15 @@ class ChallengeService {
         'rank_max': rankMax,
         'message': message ?? '',
         'status': 'pending',
-        'expires_at': DateTime.now()
-            .add(const Duration(days: 7))
-            .toIso8601String(),
+        'expires_at':
+            DateTime.now().add(const Duration(days: 7)).toIso8601String(),
         'created_at': DateTime.now().toIso8601String(),
       };
 
       // Add handicap details for competitive challenges (only for targeted challenges)
-      if (challengeType == 'thach_dau' && spaPoints > 0 && challengedUserId.isNotEmpty) {
+      if (challengeType == 'thach_dau' &&
+          spaPoints > 0 &&
+          challengedUserId.isNotEmpty) {
         final validationResult = await _rulesService.validateChallenge(
           challengerId: currentUser.id,
           challengedId: challengedUserId,
@@ -170,9 +175,8 @@ class ChallengeService {
             },
             'message': message ?? 'Lời mời hẹn lịch chơi bida',
             'status': 'pending',
-            'expires_at': DateTime.now()
-                .add(const Duration(days: 30))
-                .toIso8601String(),
+            'expires_at':
+                DateTime.now().add(const Duration(days: 30)).toIso8601String(),
             'created_at': DateTime.now().toIso8601String(),
           })
           .select()
@@ -204,15 +208,11 @@ class ChallengeService {
 
       // Update BOTH challenged_id AND status in one atomic operation
       // This ensures the match has 2 users AND is marked as accepted
-      await _supabase
-          .from('challenges')
-          .update({
-            'challenged_id': currentUser.id, // Set the second player
-            'status': 'accepted', // Mark as accepted (ready for Community tab)
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', challengeId);
-
+      await _supabase.from('challenges').update({
+        'challenged_id': currentUser.id, // Set the second player
+        'status': 'accepted', // Mark as accepted (ready for Community tab)
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', challengeId);
 
       // Get challenge details to send notification back to challenger
       final challenge = await _supabase
@@ -240,14 +240,11 @@ class ChallengeService {
   /// Decline a challenge
   Future<void> declineChallenge(String challengeId, {String? reason}) async {
     try {
-      await _supabase
-          .from('challenges')
-          .update({
-            'status': 'declined',
-            'declined_at': DateTime.now().toIso8601String(),
-            'decline_reason': reason,
-          })
-          .eq('id', challengeId);
+      await _supabase.from('challenges').update({
+        'status': 'declined',
+        'declined_at': DateTime.now().toIso8601String(),
+        'decline_reason': reason,
+      }).eq('id', challengeId);
 
       // Get challenge details to send notification back to challenger
       final challenge = await _supabase
@@ -285,8 +282,8 @@ class ChallengeService {
 
       var query = _supabase.from('challenges').select('''
             *,
-            challenger:users!challenger_id(id, display_name, club, elo_rating),
-            challenged:users!challenged_id(id, display_name, club, elo_rating)
+            challenger:users!challenger_id(id, display_name, username, club, elo_rating),
+            challenged:users!challenged_id(id, display_name, username, club, elo_rating)
           ''');
 
       if (type == 'sent') {
@@ -324,8 +321,7 @@ class ChallengeService {
         ? '⚔️ Thách đấu mới!'
         : '🎱 Lời mời giao lưu!';
 
-    final message =
-        '''
+    final message = '''
 $challengerName đã ${challengeType == 'thach_dau' ? 'thách đấu' : 'mời giao lưu'} bạn!
 
 🎮 Loại game: $gameType
@@ -356,8 +352,7 @@ Hãy vào ứng dụng để chấp nhận hoặc từ chối!
     required DateTime scheduledDate,
     required String timeSlot,
   }) async {
-    final message =
-        '''
+    final message = '''
 📅 Lời mời hẹn lịch chơi bida!
 
 👤 Từ: $senderName ($senderClub)
@@ -396,4 +391,3 @@ Hãy vào ứng dụng để xác nhận lịch hẹn!
     return '$weekday, ${date.day}/${date.month}/${date.year}';
   }
 }
-

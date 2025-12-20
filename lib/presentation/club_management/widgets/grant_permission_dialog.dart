@@ -158,7 +158,8 @@ class _GrantPermissionDialogState extends State<GrantPermissionDialog> {
                         ),
                         Text(
                           role.description,
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style:
+                              const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ],
                     ),

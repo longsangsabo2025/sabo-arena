@@ -365,9 +365,8 @@ class _DSButtonState extends State<DSButton> {
     return GestureDetector(
       onTapDown: _isDisabled ? null : (_) => setState(() => _isPressed = true),
       onTapUp: _isDisabled ? null : (_) => setState(() => _isPressed = false),
-      onTapCancel: _isDisabled
-          ? null
-          : () => setState(() => _isPressed = false),
+      onTapCancel:
+          _isDisabled ? null : () => setState(() => _isPressed = false),
       onTap: _handleTap,
       onLongPress: widget.onLongPress != null ? _handleLongPress : null,
       child: AnimatedScale(
@@ -549,9 +548,8 @@ class _DSIconButtonState extends State<DSIconButton> {
     Widget button = GestureDetector(
       onTapDown: _isDisabled ? null : (_) => setState(() => _isPressed = true),
       onTapUp: _isDisabled ? null : (_) => setState(() => _isPressed = false),
-      onTapCancel: _isDisabled
-          ? null
-          : () => setState(() => _isPressed = false),
+      onTapCancel:
+          _isDisabled ? null : () => setState(() => _isPressed = false),
       onTap: _handleTap,
       child: AnimatedScale(
         scale: _isPressed ? 0.95 : 1.0,

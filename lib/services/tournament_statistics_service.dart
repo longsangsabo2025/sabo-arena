@@ -22,7 +22,6 @@ class TournamentStatisticsService {
     String tournamentId,
   ) async {
     try {
-
       final results = await Future.wait([
         _getBasicStats(tournamentId),
         _getParticipantAnalytics(tournamentId),
@@ -87,9 +86,8 @@ class TournamentStatisticsService {
       'fill_rate': (participantCount / tournament['max_participants']) * 100,
       'total_matches': matchCount,
       'completed_matches': completedMatches,
-      'completion_rate': matchCount > 0
-          ? (completedMatches / matchCount) * 100
-          : 0,
+      'completion_rate':
+          matchCount > 0 ? (completedMatches / matchCount) * 100 : 0,
       'entry_fee': tournament['entry_fee'],
       'prize_pool': tournament['prize_pool'],
       'duration_hours': duration?.inHours,
@@ -103,9 +101,8 @@ class TournamentStatisticsService {
   Future<Map<String, dynamic>> _getParticipantAnalytics(
     String tournamentId,
   ) async {
-    final participants = await _supabase
-        .from('tournament_participants')
-        .select('''
+    final participants =
+        await _supabase.from('tournament_participants').select('''
           id,
           registered_at,
           payment_status,
@@ -117,8 +114,7 @@ class TournamentStatisticsService {
             club_id,
             clubs(name)
           )
-        ''')
-        .eq('tournament_id', tournamentId);
+        ''').eq('tournament_id', tournamentId);
 
     if (participants.isEmpty) {
       return {
@@ -178,9 +174,7 @@ class TournamentStatisticsService {
 
   /// Get match analytics and patterns
   Future<Map<String, dynamic>> _getMatchAnalytics(String tournamentId) async {
-    final matches = await _supabase
-        .from('matches')
-        .select('''
+    final matches = await _supabase.from('matches').select('''
           id,
           round_number,
           player1_score,
@@ -190,8 +184,7 @@ class TournamentStatisticsService {
           start_time,
           end_time,
           scheduled_time
-        ''')
-        .eq('tournament_id', tournamentId);
+        ''').eq('tournament_id', tournamentId);
 
     if (matches.isEmpty) {
       return {
@@ -204,9 +197,8 @@ class TournamentStatisticsService {
       };
     }
 
-    final completedMatches = matches
-        .where((m) => m['status'] == 'completed')
-        .toList();
+    final completedMatches =
+        matches.where((m) => m['status'] == 'completed').toList();
     final durations = <int>[];
     final scorePatterns = <String, int>{};
     final roundDistribution = <int, int>{};
@@ -264,9 +256,8 @@ class TournamentStatisticsService {
   Future<Map<String, dynamic>> _getPerformanceMetrics(
     String tournamentId,
   ) async {
-    final participantsWithStats = await _supabase
-        .from('tournament_participants')
-        .select('''
+    final participantsWithStats =
+        await _supabase.from('tournament_participants').select('''
           id,
           final_position,
           matches_won,
@@ -277,8 +268,7 @@ class TournamentStatisticsService {
             elo_rating,
             skill_level
           )
-        ''')
-        .eq('tournament_id', tournamentId);
+        ''').eq('tournament_id', tournamentId);
 
     if (participantsWithStats.isEmpty) {
       return {
@@ -379,9 +369,8 @@ class TournamentStatisticsService {
     // - Social shares and mentions
 
     return {
-      'participant_engagement_rate': participantsCount > 0
-          ? 85.0
-          : 0.0, // Based on participant count
+      'participant_engagement_rate':
+          participantsCount > 0 ? 85.0 : 0.0, // Based on participant count
       'social_mentions': 0, // Placeholder
       'spectator_count': 0, // Placeholder
       'notification_engagement': {'sent': 0, 'opened': 0, 'clicked': 0},
@@ -429,9 +418,8 @@ class TournamentStatisticsService {
         query = query.lte('start_date', endDate.toIso8601String());
       }
 
-      final tournaments = await query
-          .order('start_date', ascending: false)
-          .limit(limit);
+      final tournaments =
+          await query.order('start_date', ascending: false).limit(limit);
 
       // Analyze trends
       final monthlyData = <String, Map<String, dynamic>>{};
@@ -454,8 +442,7 @@ class TournamentStatisticsService {
           };
         }
 
-        final fillRate =
-            tournament['current_participants'] /
+        final fillRate = tournament['current_participants'] /
             tournament['max_participants'] *
             100;
         monthlyData[monthKey]!['tournament_count'] += 1;
@@ -556,8 +543,7 @@ class TournamentStatisticsService {
     final mean = values.reduce((a, b) => a + b) / values.length;
     final variance =
         values.map((x) => math.pow(x - mean, 2)).reduce((a, b) => a + b) /
-        values.length;
+            values.length;
     return math.sqrt(variance);
   }
 }
-

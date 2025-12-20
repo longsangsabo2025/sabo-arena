@@ -63,51 +63,30 @@ class TournamentHeaderWidget extends StatelessWidget {
             ],
           ),
           child: PopupMenuButton<String>(
+            tooltip: 'Hiển thị menu',
             icon: const Icon(
-              Icons.more_horiz,
+              Icons.more_vert,
               color: Color(0xFF050505),
-              size: 20,
+              size: 24,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             itemBuilder: (context) => [
+              // Share tournament
               PopupMenuItem(
                 value: 'share',
                 child: Row(
                   children: [
-                    Icon(Icons.share, size: 18, color: Color(0xFF65676B)),
+                    Icon(Icons.share, size: 20, color: Color(0xFF1877F2)),
                     SizedBox(width: 12),
                     Text(
-                      'Chia sẻ',
-                      style: TextStyle(fontSize: 15, color: Color(0xFF050505), overflow: TextOverflow.ellipsis),
-                    ),
-                  ],
-                ),
-              ),
-              if (canEditCover) // Only show for club owners
-                PopupMenuItem(
-                  value: 'prize_vouchers',
-                  child: Row(
-                    children: [
-                      Icon(Icons.card_giftcard, size: 18, color: Color(0xFF65676B)),
-                      SizedBox(width: 12),
-                      Text(
-                        'Voucher giải thưởng',
-                        style: TextStyle(fontSize: 15, color: Color(0xFF050505), overflow: TextOverflow.ellipsis),
+                      'Chia sẻ giải đấu',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF050505),
                       ),
-                    ],
-                  ),
-                ),
-              PopupMenuItem(
-                value: 'manage',
-                child: Row(
-                  children: [
-                    Icon(Icons.settings, size: 18, color: Color(0xFF65676B)),
-                    SizedBox(width: 12),
-                    Text(
-                      'Quản lý',
-                      style: TextStyle(fontSize: 15, color: Color(0xFF050505), overflow: TextOverflow.ellipsis),
                     ),
                   ],
                 ),
@@ -123,7 +102,8 @@ class TournamentHeaderWidget extends StatelessWidget {
           children: [
             // Cover Image
             CustomImageWidget(
-              imageUrl: tournament.coverImageUrl ?? "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3",
+              imageUrl: tournament.coverImageUrl ??
+                  "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3",
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
@@ -134,7 +114,10 @@ class TournamentHeaderWidget extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.7)
+                  ],
                 ),
               ),
             ),
@@ -209,8 +192,7 @@ class TournamentHeaderWidget extends StatelessWidget {
                               if (tournament.clubLogo != null)
                                 ClipOval(
                                   child: CustomImageWidget(
-                                    imageUrl:
-                                        tournament.clubLogo!,
+                                    imageUrl: tournament.clubLogo!,
                                     width: 20,
                                     height: 20,
                                     fit: BoxFit.cover,
@@ -232,8 +214,7 @@ class TournamentHeaderWidget extends StatelessWidget {
                                 ),
                               const SizedBox(width: 6),
                               Text(
-                                tournament.clubName ??
-                                    "CLB",
+                                tournament.clubName ?? "CLB",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 13,

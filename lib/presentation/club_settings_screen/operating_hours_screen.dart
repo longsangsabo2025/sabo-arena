@@ -91,10 +91,12 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Lịch hoạt động hàng tuần', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Lịch hoạt động hàng tuần',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -130,7 +132,8 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        dayNames[day] ?? day, style: TextStyle(
+                        dayNames[day] ?? day,
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: AppTheme.textPrimaryLight,
@@ -204,7 +207,9 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
                         flex: 4,
                         child: Center(
                           child: Text(
-                            'Đóng cửa', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Đóng cửa',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               color: AppTheme.textSecondaryLight,
                               fontStyle: FontStyle.italic,
                             ),
@@ -230,10 +235,12 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Giờ nghỉ trưa', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppTheme.textPrimaryLight,
-                fontWeight: FontWeight.w600,
-              ),
+              'Giờ nghỉ trưa',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppTheme.textPrimaryLight,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             IconButton(
               onPressed: _addBreakTime,
@@ -262,7 +269,9 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chưa có giờ nghỉ trưa', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Chưa có giờ nghỉ trưa',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -270,7 +279,9 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Nhấn + để thêm giờ nghỉ trưa', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Nhấn + để thêm giờ nghỉ trưa',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -343,10 +354,12 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Ngày nghỉ lễ', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppTheme.textPrimaryLight,
-                fontWeight: FontWeight.w600,
-              ),
+              'Ngày nghỉ lễ',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppTheme.textPrimaryLight,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             IconButton(
               onPressed: _addHoliday,
@@ -375,7 +388,9 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chưa có ngày nghỉ lễ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Chưa có ngày nghỉ lễ',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -383,7 +398,9 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Nhấn + để thêm ngày nghỉ lễ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Nhấn + để thêm ngày nghỉ lễ',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -472,7 +489,9 @@ class _OperatingHoursScreenState extends State<OperatingHoursScreen> {
           onTap: _saveOperatingHours,
           child: const Center(
             child: Text(
-              'Lưu cài đặt', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lưu cài đặt',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

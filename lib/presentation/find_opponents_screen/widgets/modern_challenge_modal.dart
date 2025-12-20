@@ -15,7 +15,7 @@ class ModernChallengeModal extends StatefulWidget {
   final String challengeType; // 'thach_dau' or 'giao_luu'
   final VoidCallback? onSendChallenge;
   final List<UserProfile>?
-  availableFriends; // For private mode friend selection
+      availableFriends; // For private mode friend selection
 
   const ModernChallengeModal({
     super.key,
@@ -37,7 +37,7 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
   final TextEditingController _messageController = TextEditingController();
   bool _isLoading = false;
   List<String> _locations = [];
-  
+
   // ✅ NEW: Club selection (REQUIRED for challenges)
   List<Club> _clubs = [];
   Club? _selectedClub;
@@ -68,7 +68,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
   final UserService _userService = UserService.instance;
 
   // Check if this modal is opened for a specific opponent (from card)
-  bool get _isTargetedChallenge => widget.player['id'] != null && widget.player['id'].toString().isNotEmpty;
+  bool get _isTargetedChallenge =>
+      widget.player['id'] != null && widget.player['id'].toString().isNotEmpty;
 
   @override
   void initState() {
@@ -78,10 +79,9 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
     // If player is provided, auto-select them for private mode and LOCK it
     if (_isTargetedChallenge) {
       _selectedFriendId = widget.player['id'];
-      _selectedFriendName =
-          widget.player['fullName'] ?? 
-          widget.player['display_name'] ?? 
-          widget.player['username'] ?? 
+      _selectedFriendName = widget.player['fullName'] ??
+          widget.player['display_name'] ??
+          widget.player['username'] ??
           'Đối thủ';
       _isOpenMode = false; // LOCKED to private mode
     }
@@ -91,14 +91,14 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
     try {
       // ✅ Load clubs as objects (not just names)
       final clubs = await OpponentClubService.instance.getActiveClubs();
-      
+
       if (mounted) {
         setState(() {
           _clubs = clubs;
           // ✅ Auto-select first club if available
           _selectedClub = clubs.isNotEmpty ? clubs.first : null;
           _selectedLocation = _selectedClub?.name ?? 'CLB SABO ARENA';
-          
+
           // Keep old location list for backward compatibility
           _locations = clubs.map((club) => club.name).toList();
           _locations.add('Khác (ghi chú)');
@@ -261,19 +261,19 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              widget.challengeType == 'thach_dau' 
-                ? const Color(0xFFFF9800).withValues(alpha: 0.1)
-                : const Color(0xFF0866FF).withValues(alpha: 0.1),
               widget.challengeType == 'thach_dau'
-                ? const Color(0xFFFF9800).withValues(alpha: 0.05)
-                : const Color(0xFF0866FF).withValues(alpha: 0.05),
+                  ? const Color(0xFFFF9800).withValues(alpha: 0.1)
+                  : const Color(0xFF0866FF).withValues(alpha: 0.1),
+              widget.challengeType == 'thach_dau'
+                  ? const Color(0xFFFF9800).withValues(alpha: 0.05)
+                  : const Color(0xFF0866FF).withValues(alpha: 0.05),
             ],
           ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: widget.challengeType == 'thach_dau'
-              ? const Color(0xFFFF9800).withValues(alpha: 0.3)
-              : const Color(0xFF0866FF).withValues(alpha: 0.3),
+                ? const Color(0xFFFF9800).withValues(alpha: 0.3)
+                : const Color(0xFF0866FF).withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -284,19 +284,19 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
             Row(
               children: [
                 Icon(
-                  widget.challengeType == 'thach_dau' 
-                    ? Icons.emoji_events 
-                    : Icons.groups,
+                  widget.challengeType == 'thach_dau'
+                      ? Icons.emoji_events
+                      : Icons.groups,
                   size: 18,
                   color: widget.challengeType == 'thach_dau'
-                    ? const Color(0xFFFF9800)
-                    : const Color(0xFF0866FF),
+                      ? const Color(0xFFFF9800)
+                      : const Color(0xFF0866FF),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  widget.challengeType == 'thach_dau' 
-                    ? 'Gửi thách đấu đến:'
-                    : 'Gửi lời mời giao lưu đến:',
+                  widget.challengeType == 'thach_dau'
+                      ? 'Gửi thách đấu đến:'
+                      : 'Gửi lời mời giao lưu đến:',
                   style: TextStyle(
                     fontFamily: _getSystemFont(),
                     fontSize: 13,
@@ -307,7 +307,7 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Opponent Info
             Row(
               children: [
@@ -321,9 +321,9 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                   ),
                   child: Center(
                     child: Text(
-                      (widget.player['display_name']?.toString() ?? 
-                       widget.player['fullName']?.toString() ?? 
-                       'S')
+                      (widget.player['display_name']?.toString() ??
+                              widget.player['fullName']?.toString() ??
+                              'S')
                           .substring(0, 1)
                           .toUpperCase(),
                       style: TextStyle(
@@ -343,9 +343,9 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.player['display_name']?.toString() ?? 
-                        widget.player['fullName']?.toString() ?? 
-                        'Unknown',
+                        widget.player['display_name']?.toString() ??
+                            widget.player['fullName']?.toString() ??
+                            'Unknown',
                         style: TextStyle(
                           fontFamily: _getSystemFont(),
                           fontSize: 16,
@@ -359,9 +359,11 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                         children: [
                           if (widget.player['rank'] != null) ...[
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF0866FF).withValues(alpha: 0.1),
+                                color: const Color(0xFF0866FF)
+                                    .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -396,7 +398,7 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
         ),
       );
     }
-    
+
     // Original card for open challenges
     return Container(
       padding: const EdgeInsets.all(16),
@@ -597,9 +599,9 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _selectedClub == null 
-            ? Colors.red.withValues(alpha: 0.5)  // ❌ Highlight if not selected
-            : const Color(0xFFCED0D4),
+          color: _selectedClub == null
+              ? Colors.red.withValues(alpha: 0.5) // ❌ Highlight if not selected
+              : const Color(0xFFCED0D4),
           width: _selectedClub == null ? 2 : 1,
         ),
       ),
@@ -608,7 +610,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
           DropdownButtonFormField<Club>(
             initialValue: _selectedClub,
             decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               border: InputBorder.none,
               // ✅ Show error hint if no club selected
               helperText: _selectedClub == null ? '⚠️ Bắt buộc chọn CLB' : null,
@@ -661,7 +664,7 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                           color: Color(0xFF00695C),
                         ),
                       ),
-                    
+
                     // Club info
                     Expanded(
                       child: Column(
@@ -806,7 +809,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: const Color(0xFFFF9800).withValues(alpha: 0.3),
+                              color: const Color(0xFFFF9800)
+                                  .withValues(alpha: 0.3),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -1017,7 +1021,7 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
       final currentUser = await _userService.getCurrentUserProfile();
       final currentUserRank = currentUser?.rank;
       final opponentRank = widget.player['rank'] as String?;
-      
+
       if (currentUserRank != null && opponentRank != null) {
         final rulesService = ChallengeRulesService.instance;
         if (!rulesService.canChallenge(currentUserRank, opponentRank)) {
@@ -1082,8 +1086,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
       final challengedUserId = _isOpenMode
           ? '' // Empty = OPEN challenge
           : (_selectedFriendId ??
-                widget.player['id'] ??
-                ''); // Use selected friend or widget player ID
+              widget.player['id'] ??
+              ''); // Use selected friend or widget player ID
 
       // 4. Send challenge with club ID
       await SimpleChallengeService.instance.sendChallenge(
@@ -1176,9 +1180,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                       fontFamily: _getSystemFont(),
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: _isOpenMode
-                          ? Colors.white
-                          : const Color(0xFF050505),
+                      color:
+                          _isOpenMode ? Colors.white : const Color(0xFF050505),
                     ),
                   ),
                 ],
@@ -1208,9 +1211,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                   Icon(
                     Icons.lock_person,
                     size: 20,
-                    color: !_isOpenMode
-                        ? Colors.white
-                        : const Color(0xFF65676B),
+                    color:
+                        !_isOpenMode ? Colors.white : const Color(0xFF65676B),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -1219,9 +1221,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                       fontFamily: _getSystemFont(),
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: !_isOpenMode
-                          ? Colors.white
-                          : const Color(0xFF050505),
+                      color:
+                          !_isOpenMode ? Colors.white : const Color(0xFF050505),
                     ),
                   ),
                 ],
@@ -1255,7 +1256,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                     color: Colors.purple.shade100,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.person, color: Colors.purple.shade700, size: 28),
+                  child: Icon(Icons.person,
+                      color: Colors.purple.shade700, size: 28),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -1306,10 +1308,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                 context: context,
                 builder: (context) => UserSearchDialog(
                   currentUser: currentUser,
-                  excludeUserIds: widget.availableFriends
-                      ?.map((f) => f.id)
-                      .toList() ??
-                      [],
+                  excludeUserIds:
+                      widget.availableFriends?.map((f) => f.id).toList() ?? [],
                 ),
               );
 
@@ -1342,7 +1342,8 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.person_search, color: Colors.white, size: 24),
+                  const Icon(Icons.person_search,
+                      color: Colors.white, size: 24),
                   const SizedBox(width: 12),
                   const Text(
                     'Tìm đối thủ',
@@ -1356,10 +1357,10 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
               ),
             ),
           ),
-        
+
         // Additional option: Show friend list button
-        if (_selectedFriendId == null && 
-            widget.availableFriends != null && 
+        if (_selectedFriendId == null &&
+            widget.availableFriends != null &&
             widget.availableFriends!.isNotEmpty) ...[
           const SizedBox(height: 12),
           GestureDetector(
@@ -1450,7 +1451,7 @@ class _ModernChallengeModalState extends State<ModernChallengeModal> {
                 itemCount: widget.availableFriends!.length,
                 itemBuilder: (context, index) {
                   final friend = widget.availableFriends![index];
-                  
+
                   return ListTile(
                     onTap: () => Navigator.pop(context, friend),
                     contentPadding: const EdgeInsets.symmetric(

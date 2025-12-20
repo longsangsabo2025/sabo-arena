@@ -95,11 +95,12 @@ class _WelcomeVoucherPopupState extends State<WelcomeVoucherPopup>
               ),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                   // Trophy icon
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -299,6 +300,6 @@ class _WelcomeVoucherPopupState extends State<WelcomeVoucherPopup>
           ),
         ),
       ),
-    );
+    ));
   }
 }

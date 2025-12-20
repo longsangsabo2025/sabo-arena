@@ -148,7 +148,8 @@ class TournamentFormats {
     'sabo_de64': {
       'name': 'Sabo Double Elimination (DE64)',
       'nameVi': 'Loại kép Sabo (DE64)',
-      'description': 'SABO Arena DE64 with Enhanced LB-B System + Cross-Bracket Finals',
+      'description':
+          'SABO Arena DE64 with Enhanced LB-B System + Cross-Bracket Finals',
       'descriptionVi': 'DE64 Sabo Arena với LB-B nâng cấp + chung kết chéo',
       'minPlayers': 64,
       'maxPlayers': 64,

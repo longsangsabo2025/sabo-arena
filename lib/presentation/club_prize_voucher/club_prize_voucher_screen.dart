@@ -19,7 +19,8 @@ class ClubPrizeVoucherScreen extends StatefulWidget {
 }
 
 class _ClubPrizeVoucherScreenState extends State<ClubPrizeVoucherScreen> {
-  final TournamentPrizeVoucherService _service = TournamentPrizeVoucherService();
+  final TournamentPrizeVoucherService _service =
+      TournamentPrizeVoucherService();
   List<Map<String, dynamic>> _prizeVouchers = [];
   bool _isLoading = true;
 
@@ -101,7 +102,8 @@ class _ClubPrizeVoucherScreenState extends State<ClubPrizeVoucherScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.lightbulb_outline, color: Colors.green[700], size: 5.w),
+                      Icon(Icons.lightbulb_outline,
+                          color: Colors.green[700], size: 5.w),
                       SizedBox(width: 2.w),
                       Text(
                         'Cách tạo Prize Voucher:',
@@ -254,9 +256,11 @@ class _ClubPrizeVoucherScreenState extends State<ClubPrizeVoucherScreen> {
     );
   }
 
-  Widget _buildTournamentGroup(String tournamentId, List<Map<String, dynamic>> vouchers) {
-    final tournamentName = vouchers.first['tournament_name'] as String? ?? 'Giải đấu';
-    
+  Widget _buildTournamentGroup(
+      String tournamentId, List<Map<String, dynamic>> vouchers) {
+    final tournamentName =
+        vouchers.first['tournament_name'] as String? ?? 'Giải đấu';
+
     return Container(
       margin: EdgeInsets.only(bottom: 4.w),
       decoration: BoxDecoration(
@@ -325,7 +329,8 @@ class _ClubPrizeVoucherScreenState extends State<ClubPrizeVoucherScreen> {
 
   Widget _buildVoucherItem(Map<String, dynamic> voucher) {
     final position = voucher['position'] as int;
-    final positionLabel = voucher['position_label'] as String? ?? 'Top $position';
+    final positionLabel =
+        voucher['position_label'] as String? ?? 'Top $position';
     final value = (voucher['voucher_value'] as num?)?.toDouble() ?? 0;
     final codePrefix = voucher['code_prefix'] as String? ?? 'PRIZE';
     final validDays = voucher['valid_days'] as int? ?? 30;
@@ -417,4 +422,3 @@ class _ClubPrizeVoucherScreenState extends State<ClubPrizeVoucherScreen> {
     }
   }
 }
-

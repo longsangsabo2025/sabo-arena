@@ -4,7 +4,7 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'notification_service.dart';
-// ELON_MODE_AUTO_FIX
+import 'package:sabo_arena/utils/production_logger.dart';
 
 /// Universal service quản lý progression cho tất cả tournament formats
 class UniversalMatchProgressionService {
@@ -31,7 +31,6 @@ class UniversalMatchProgressionService {
     String? notes,
   }) async {
     try {
-
       // 1. Update match result in database
       await _updateMatchInDatabase(matchId, winnerId, loserId, scores, notes);
 
@@ -48,23 +47,21 @@ class UniversalMatchProgressionService {
         // final tournament = await _getTournamentInfo(tournamentId); // Unused
         // final bracketFormat = tournament['bracket_format']; // Unused
 
-
-        // 4. Execute HARDCODED advancement using winner_advances_to
-        final advancementResult = await _advanceWinner(
+        // 4. Execute HARDCODED advancement using winner_advances_to and loser_advances_to
+        final advancementResult = await _advanceWinnerAndLoser(
           completedMatchId: matchId,
           winnerId: winnerId,
+          loserId: loserId,
         );
 
         if (advancementResult['success']) {
-        } else {
-        }
+        } else {}
 
         // Convert to expected format
         final formattedResult = {
           'advancement_count': advancementResult['success'] ? 1 : 0,
           'advancement_details': [advancementResult],
         };
-
 
         // 5. Check tournament completion
         final isComplete = await _checkTournamentCompletion(tournamentId);
@@ -471,17 +468,14 @@ class UniversalMatchProgressionService {
     Map<String, int> scores,
     String? notes,
   ) async {
-    await _supabase
-        .from('matches')
-        .update({
-          'winner_id': winnerId,
-          'player1_score': scores['player1'] ?? 0,
-          'player2_score': scores['player2'] ?? 0,
-          'status': 'completed',
-          'end_time': DateTime.now().toIso8601String(),
-          'notes': notes,
-        })
-        .eq('id', matchId);
+    await _supabase.from('matches').update({
+      'winner_id': winnerId,
+      'player1_score': scores['player1'] ?? 0,
+      'player2_score': scores['player2'] ?? 0,
+      'status': 'completed',
+      'end_time': DateTime.now().toIso8601String(),
+      'notes': notes,
+    }).eq('id', matchId);
   }
 
   /// Get tournament info
@@ -518,9 +512,8 @@ class UniversalMatchProgressionService {
         .select('status')
         .eq('tournament_id', tournamentId);
 
-    final completedMatches = allMatches
-        .where((m) => m['status'] == 'completed')
-        .length;
+    final completedMatches =
+        allMatches.where((m) => m['status'] == 'completed').length;
     final totalMatches = allMatches.length;
 
     final isComplete = totalMatches > 0 && completedMatches == totalMatches;
@@ -528,8 +521,7 @@ class UniversalMatchProgressionService {
     if (isComplete) {
       await _supabase
           .from('tournaments')
-          .update({'status': 'completed'})
-          .eq('id', tournamentId);
+          .update({'status': 'completed'}).eq('id', tournamentId);
     }
 
     return isComplete;
@@ -584,57 +576,98 @@ class UniversalMatchProgressionService {
 
   // ==================== INTERNAL ADVANCEMENT LOGIC ====================
 
-  /// Advance winner sau khi match completed
-  Future<Map<String, dynamic>> _advanceWinner({
+  /// Advance winner AND loser after match completed
+  Future<Map<String, dynamic>> _advanceWinnerAndLoser({
     required String completedMatchId,
     required String winnerId,
+    required String loserId,
   }) async {
     try {
-
-      // 1. Get completed match info including winner_advances_to
+      // 1. Get completed match info including advancement paths
       final completedMatch = await _supabase
           .from('matches')
           .select(
-            'id, match_number, round_number, winner_advances_to, tournament_id',
+            'id, match_number, round_number, winner_advances_to, loser_advances_to, tournament_id',
           )
           .eq('id', completedMatchId)
           .single();
 
       final winnerAdvancesTo = completedMatch['winner_advances_to'] as int?;
+      final loserAdvancesTo = completedMatch['loser_advances_to'] as int?;
       final tournamentId = completedMatch['tournament_id'] as String;
 
-      if (winnerAdvancesTo == null) {
+      Map<String, dynamic> result = {
+        'success': true,
+        'is_final': false,
+        'winner_advanced': false,
+        'loser_advanced': false,
+        'details': [],
+      };
 
+      // --- ADVANCE WINNER ---
+      if (winnerAdvancesTo != null) {
+        final winnerResult = await _advancePlayerToMatch(
+          tournamentId: tournamentId,
+          targetMatchNumber: winnerAdvancesTo,
+          playerId: winnerId,
+          type: 'winner',
+        );
+        result['winner_advanced'] = winnerResult['success'];
+        (result['details'] as List).add(winnerResult);
+      } else {
+        // If no winner advancement, check if it's the final
         // Update tournament with winner
-        await _supabase
-            .from('tournaments')
-            .update({
-              'winner_id': winnerId,
-              'status': 'completed',
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('id', tournamentId);
-
-        return {
-          'success': true,
-          'is_final': true,
-          'tournament_winner': winnerId,
-          'message': 'Tournament completed! Winner: $winnerId',
-        };
+        await _supabase.from('tournaments').update({
+          'winner_id': winnerId,
+          'status': 'completed',
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', tournamentId);
+        result['is_final'] = true;
+        result['tournament_winner'] = winnerId;
       }
 
+      // --- ADVANCE LOSER (Double Elimination) ---
+      if (loserAdvancesTo != null) {
+        final loserResult = await _advancePlayerToMatch(
+          tournamentId: tournamentId,
+          targetMatchNumber: loserAdvancesTo,
+          playerId: loserId,
+          type: 'loser',
+        );
+        result['loser_advanced'] = loserResult['success'];
+        (result['details'] as List).add(loserResult);
+      }
 
-      // 2. Find target match
+      return result;
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  /// Helper to advance a player to a specific match number
+  Future<Map<String, dynamic>> _advancePlayerToMatch({
+    required String tournamentId,
+    required int targetMatchNumber,
+    required String playerId,
+    required String type, // 'winner' or 'loser'
+  }) async {
+    try {
+      // Find target match by match_number OR display_order
+      // This supports both legacy formats (match_number) and new SABO formats (display_order)
       final targetMatches = await _supabase
           .from('matches')
           .select(
             'id, match_number, round_number, player1_id, player2_id, status',
           )
           .eq('tournament_id', tournamentId)
-          .eq('match_number', winnerAdvancesTo);
+          .or('match_number.eq.$targetMatchNumber,display_order.eq.$targetMatchNumber');
 
       if (targetMatches.isEmpty) {
-        throw Exception('Target match $winnerAdvancesTo not found!');
+        return {
+          'success': false,
+          'error':
+              'Target match $targetMatchNumber not found (checked match_number and display_order)',
+        };
       }
 
       final targetMatch = targetMatches.first;
@@ -642,56 +675,74 @@ class UniversalMatchProgressionService {
       final player1Id = targetMatch['player1_id'] as String?;
       final player2Id = targetMatch['player2_id'] as String?;
 
-      // 3. Determine which slot to fill
+      // Determine which slot to fill
       Map<String, dynamic> updateData = {};
       String slot = '';
 
       if (player1Id == null) {
-        updateData['player1_id'] = winnerId;
+        updateData['player1_id'] = playerId;
         slot = 'Player 1';
       } else if (player2Id == null) {
-        updateData['player2_id'] = winnerId;
+        updateData['player2_id'] = playerId;
         slot = 'Player 2';
       } else {
+        // Check if player is already in the match (idempotency)
+        if (player1Id == playerId || player2Id == playerId) {
+          return {
+            'success': true,
+            'message': 'Player already in match $targetMatchNumber',
+          };
+        }
         return {
           'success': false,
-          'error': 'Target match $winnerAdvancesTo is already full',
+          'error': 'Target match $targetMatchNumber is already full',
         };
       }
 
-      // 4. Update target match
+      // Update target match
       await _supabase
           .from('matches')
           .update(updateData)
           .eq('id', targetMatchId);
 
-
-      // 5. Check if target match is now ready (both players assigned)
+      // Check if target match is now ready
       final updatedTargetMatch = await _supabase
           .from('matches')
           .select('player1_id, player2_id')
           .eq('id', targetMatchId)
           .single();
 
-      final isTargetReady =
-          updatedTargetMatch['player1_id'] != null &&
-          updatedTargetMatch['player2_id'] != null;
+      final p1 = updatedTargetMatch['player1_id'] as String?;
+      final p2 = updatedTargetMatch['player2_id'] as String?;
+
+      // ⚡ ELON FIX: A player CANNOT play against themselves
+      if (p1 != null && p2 != null && p1 == p2) {
+        ProductionLogger.error(
+          'CRITICAL BUG PREVENTED: Player $p1 would face themselves in match $targetMatchNumber!',
+          tag: 'UniversalMatchProgression',
+        );
+        return {
+          'success': false,
+          'error': 'Invalid advancement: Player cannot face themselves',
+          'critical_bug_prevented': true,
+        };
+      }
+
+      final isTargetReady = p1 != null && p2 != null && p1 != p2;
 
       if (isTargetReady) {
         await _supabase
             .from('matches')
-            .update({'status': 'in_progress'})
+            .update({'status': 'pending'}) // Ready to play
             .eq('id', targetMatchId);
-
       }
 
       return {
         'success': true,
-        'is_final': false,
-        'advanced_to_match': winnerAdvancesTo,
+        'advanced_to_match': targetMatchNumber,
         'target_match_ready': isTargetReady,
         'slot_filled': slot,
-        'message': 'Winner advanced to Match $winnerAdvancesTo as $slot',
+        'type': type,
       };
     } catch (e) {
       return {'success': false, 'error': e.toString()};
@@ -717,4 +768,3 @@ class AdvancementRule {
     return 'AdvancementRule(match: $matchNumber, round: $roundNumber, winner→$winnerAdvancesTo, loser→$loserAdvancesTo)';
   }
 }
-

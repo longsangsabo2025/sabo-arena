@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../widgets/common/app_button.dart';
 
 /// Dialog để CLB owner nhập tỷ số cho trận đấu
 class ScoreInputDialog extends StatefulWidget {
@@ -21,7 +22,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
   late TextEditingController _player2ScoreController;
   bool _isLoading = false;
   String? _winnerId;
-  
+
   // Debounce timer để tránh lag khi nhập
   Timer? _debounceTimer;
 
@@ -29,16 +30,18 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
   void initState() {
     super.initState();
     // Initialize with current scores if any
-    final p1Score = widget.match['player1_score'] ?? widget.match['player1Score'] ?? 0;
-    final p2Score = widget.match['player2_score'] ?? widget.match['player2Score'] ?? 0;
-    
+    final p1Score =
+        widget.match['player1_score'] ?? widget.match['player1Score'] ?? 0;
+    final p2Score =
+        widget.match['player2_score'] ?? widget.match['player2Score'] ?? 0;
+
     _player1ScoreController = TextEditingController(text: p1Score.toString());
     _player2ScoreController = TextEditingController(text: p2Score.toString());
-    
+
     // Dùng listener thay vì onChanged để tránh rebuild liên tục
     _player1ScoreController.addListener(_onScoreChanged);
     _player2ScoreController.addListener(_onScoreChanged);
-    
+
     _calculateWinner();
   }
 
@@ -51,7 +54,7 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
     _player2ScoreController.dispose();
     super.dispose();
   }
-  
+
   // Debounce để chỉ update sau 300ms không nhập
   void _onScoreChanged() {
     _debounceTimer?.cancel();
@@ -117,24 +120,28 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
   @override
   Widget build(BuildContext context) {
     // 🎯 Helper function to get player name with intelligent fallback
-    String _getPlayerName(Map<String, dynamic>? playerData, String fallbackLabel) {
+    String _getPlayerName(
+        Map<String, dynamic>? playerData, String fallbackLabel) {
       if (playerData == null) return fallbackLabel;
-      
+
       // Try display_name first (preferred)
-      if (playerData['display_name'] != null && playerData['display_name'].toString().trim().isNotEmpty) {
+      if (playerData['display_name'] != null &&
+          playerData['display_name'].toString().trim().isNotEmpty) {
         return playerData['display_name'];
       }
-      
+
       // Try full_name
-      if (playerData['full_name'] != null && playerData['full_name'].toString().trim().isNotEmpty) {
+      if (playerData['full_name'] != null &&
+          playerData['full_name'].toString().trim().isNotEmpty) {
         return playerData['full_name'];
       }
-      
+
       // Try username
-      if (playerData['username'] != null && playerData['username'].toString().trim().isNotEmpty) {
+      if (playerData['username'] != null &&
+          playerData['username'].toString().trim().isNotEmpty) {
         return '@${playerData['username']}';
       }
-      
+
       // Try email (show first part before @)
       if (playerData['email'] != null) {
         final email = playerData['email'].toString();
@@ -142,23 +149,23 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
           return email.split('@')[0];
         }
       }
-      
+
       // Last resort: show partial ID
       if (playerData['id'] != null) {
         final id = playerData['id'].toString();
         return 'User ${id.substring(0, 8)}...';
       }
-      
+
       return fallbackLabel;
     }
-    
+
     // Try multiple field names for player 1 (with cascading fallback)
     String player1Name = widget.match['player1Name']?.toString() ?? '';
     if (player1Name.isEmpty) {
       final player1Data = widget.match['player1'] ?? widget.match['challenger'];
       player1Name = _getPlayerName(player1Data, 'Player 1');
     }
-    
+
     // Try multiple field names for player 2 (with cascading fallback)
     String player2Name = widget.match['player2Name']?.toString() ?? '';
     if (player2Name.isEmpty) {
@@ -213,7 +220,10 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                           'Cập nhật kết quả trận đấu',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -222,7 +232,10 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.6),
                   ),
                 ],
               ),
@@ -329,57 +342,25 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: _isLoading ? null : () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                      ),
-                      child: Text(
-                        'Hủy',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
+                    child: AppButton(
+                      label: 'Hủy',
+                      type: AppButtonType.outline,
+                      size: AppButtonSize.medium,
+                      fullWidth: true,
+                      onPressed:
+                          _isLoading ? null : () => Navigator.pop(context),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton(
+                    child: AppButton(
+                      label: 'Xác nhận',
+                      type: AppButtonType.primary,
+                      size: AppButtonSize.medium,
+                      isLoading: _isLoading,
+                      fullWidth: true,
                       onPressed: _isLoading ? null : _submitScore,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Text(
-                              'Lưu tỷ số',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                     ),
                   ),
                 ],
@@ -443,11 +424,13 @@ class _ScoreInputDialogState extends State<ScoreInputDialog> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),

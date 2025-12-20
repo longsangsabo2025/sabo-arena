@@ -42,16 +42,17 @@ class UserProfileController extends ChangeNotifier {
   // Initialize
   void init({String? userId}) {
     loadUserProfile(userId: userId);
-    
+
     // Only load private data if it's the current user
-    final isCurrentUser = userId == null || userId == _authService.currentUser?.id;
-    
+    final isCurrentUser =
+        userId == null || userId == _authService.currentUser?.id;
+
     if (isCurrentUser) {
       loadClubManagementAccess();
       loadUnreadMessageCount();
       loadUnreadNotificationCount();
     }
-    
+
     loadTournaments(); // This might need adjustment to load target user's tournaments
 
     // Listen to follow events
@@ -80,21 +81,24 @@ class UserProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadUserProfile({String? userId, bool forceRefresh = false}) async {
+  Future<void> loadUserProfile(
+      {String? userId, bool forceRefresh = false}) async {
     try {
       isLoading = true;
       notifyListeners();
 
       final targetUserId = userId ?? _authService.currentUser?.id;
-      
+
       if (targetUserId != null) {
         try {
-          userProfile = await _userService.getUserProfileById(targetUserId, forceRefresh: forceRefresh);
+          userProfile = await _userService.getUserProfileById(targetUserId,
+              forceRefresh: forceRefresh);
           await _loadProfileData(userProfile!.id);
         } catch (e) {
           // Auto-create profile logic only for current user
           if (userId == null || userId == _authService.currentUser?.id) {
-            ProductionLogger.info('⚠️ Profile not found, creating new profile...');
+            ProductionLogger.info(
+                '⚠️ Profile not found, creating new profile...');
             final currentUser = _authService.currentUser;
             if (currentUser != null) {
               await _authService.upsertUserRecord(
@@ -105,7 +109,8 @@ class UserProfileController extends ChangeNotifier {
                 phone: currentUser.phone,
                 role: 'player',
               );
-              userProfile = await _userService.getUserProfileById(currentUser.id, forceRefresh: true);
+              userProfile = await _userService
+                  .getUserProfileById(currentUser.id, forceRefresh: true);
               await _loadProfileData(userProfile!.id);
             }
           } else {
@@ -125,7 +130,7 @@ class UserProfileController extends ChangeNotifier {
     try {
       final followCounts = await _userService.getUserFollowCounts(userId);
       userStats = await _userService.getUserStats(userId);
-      
+
       socialData = UserSocialStats(
         followersCount: followCounts['followers'] ?? 0,
         followingCount: followCounts['following'] ?? 0,
@@ -182,7 +187,8 @@ class UserProfileController extends ChangeNotifier {
           await _clubPermissionService.hasClubManagementAccess(currentUser.id);
       notifyListeners();
     } catch (e) {
-      ProductionLogger.error('❌ Error checking club management access: $e', error: e);
+      ProductionLogger.error('❌ Error checking club management access: $e',
+          error: e);
     }
   }
 
@@ -191,7 +197,8 @@ class UserProfileController extends ChangeNotifier {
       unreadMessageCount = await _messagingService.getUnreadMessageCount();
       notifyListeners();
     } catch (e) {
-      ProductionLogger.error('❌ Error loading unread message count: $e', error: e);
+      ProductionLogger.error('❌ Error loading unread message count: $e',
+          error: e);
     }
   }
 
@@ -201,7 +208,8 @@ class UserProfileController extends ChangeNotifier {
           await _notificationService.getUnreadNotificationCount();
       notifyListeners();
     } catch (e) {
-      ProductionLogger.error('❌ Error loading unread notification count: $e', error: e);
+      ProductionLogger.error('❌ Error loading unread notification count: $e',
+          error: e);
     }
   }
 

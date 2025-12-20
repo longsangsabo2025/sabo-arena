@@ -11,7 +11,7 @@ class ReservationManagementScreen extends StatefulWidget {
   final String clubId;
 
   const ReservationManagementScreen({Key? key, required this.clubId})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<ReservationManagementScreen> createState() =>
@@ -137,7 +137,9 @@ class _ReservationManagementScreenState
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Quản lý đặt bàn', overflow: TextOverflow.ellipsis, style: AppTypography.headingMedium.copyWith(
+          'Quản lý đặt bàn',
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.headingMedium.copyWith(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
             fontFamily: '.SF Pro Display',
@@ -166,27 +168,30 @@ class _ReservationManagementScreenState
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _errorMessage != null
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64, color: AppColors.error),
-                  SizedBox(height: 16),
-                  Text(_errorMessage!, overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium),
-                  SizedBox(height: 16),
-                  DSButton(text: 'Thử lại', onPressed: _loadReservations),
-                ],
-              ),
-            )
-          : TabBarView(
-              controller: _tabController,
-              children: [
-                _buildReservationList(_pendingReservations, 'pending'),
-                _buildReservationList(_confirmedReservations, 'confirmed'),
-                _buildReservationList(_completedReservations, 'completed'),
-                _buildReservationList(_cancelledReservations, 'cancelled'),
-              ],
-            ),
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline,
+                          size: 64, color: AppColors.error),
+                      SizedBox(height: 16),
+                      Text(_errorMessage!,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.bodyMedium),
+                      SizedBox(height: 16),
+                      DSButton(text: 'Thử lại', onPressed: _loadReservations),
+                    ],
+                  ),
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildReservationList(_pendingReservations, 'pending'),
+                    _buildReservationList(_confirmedReservations, 'confirmed'),
+                    _buildReservationList(_completedReservations, 'completed'),
+                    _buildReservationList(_cancelledReservations, 'cancelled'),
+                  ],
+                ),
     );
   }
 
@@ -206,7 +211,9 @@ class _ReservationManagementScreenState
             ),
             SizedBox(height: 16),
             Text(
-              'Không có đặt bàn nào', overflow: TextOverflow.ellipsis, style: AppTypography.bodyLarge.copyWith(
+              'Không có đặt bàn nào',
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.bodyLarge.copyWith(
                 color: AppColors.textSecondary,
                 fontFamily: '.SF Pro Display',
               ),
@@ -275,7 +282,8 @@ class _ReservationManagementScreenState
                     Icon(statusIcon, color: statusColor, size: 20),
                     SizedBox(width: 8),
                     Text(
-                      reservation.status.displayName, style: AppTypography.labelMedium.copyWith(
+                      reservation.status.displayName,
+                      style: AppTypography.labelMedium.copyWith(
                         color: statusColor,
                         fontWeight: FontWeight.w600,
                         fontFamily: '.SF Pro Text',
@@ -290,7 +298,9 @@ class _ReservationManagementScreenState
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'Bàn ${reservation.tableNumber}', overflow: TextOverflow.ellipsis, style: AppTypography.labelMedium.copyWith(
+                    'Bàn ${reservation.tableNumber}',
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelMedium.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                       fontFamily: '.SF Pro Text',
@@ -314,7 +324,9 @@ class _ReservationManagementScreenState
                 ),
                 SizedBox(width: 8),
                 Text(
-                  reservation.user?.fullName ?? 'N/A', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
+                  reservation.user?.fullName ?? 'N/A',
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodyMedium.copyWith(
                     fontFamily: '.SF Pro Text',
                   ),
                 ),
@@ -376,7 +388,9 @@ class _ReservationManagementScreenState
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      reservation.notes!, overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(
+                      reservation.notes!,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                         fontStyle: FontStyle.italic,
                         fontFamily: '.SF Pro Text',
@@ -428,5 +442,4 @@ class _ReservationManagementScreenState
       ),
     );
   }
-
 }

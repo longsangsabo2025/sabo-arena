@@ -161,8 +161,8 @@ class _VenueAutocompleteFieldState extends State<VenueAutocompleteField> {
               color: widget.errorText != null
                   ? Colors.red
                   : widget.isValid && _controller.text.isNotEmpty
-                  ? Colors.green
-                  : Colors.grey.shade300,
+                      ? Colors.green
+                      : Colors.grey.shade300,
               width: widget.errorText != null ? 2 : 1,
             ),
           ),
@@ -195,8 +195,7 @@ class _VenueAutocompleteFieldState extends State<VenueAutocompleteField> {
                 onChanged: (value) {
                   widget.onChanged(value);
                   setState(() {
-                    _showSuggestions =
-                        value.isEmpty ||
+                    _showSuggestions = value.isEmpty ||
                         _suggestions.any(
                           (s) => s.toLowerCase().contains(value.toLowerCase()),
                         );
@@ -221,11 +220,10 @@ class _VenueAutocompleteFieldState extends State<VenueAutocompleteField> {
                     itemCount: _suggestions.length,
                     itemBuilder: (context, index) {
                       final suggestion = _suggestions[index];
-                      final isMatch =
-                          _controller.text.isNotEmpty &&
+                      final isMatch = _controller.text.isNotEmpty &&
                           suggestion.toLowerCase().contains(
-                            _controller.text.toLowerCase(),
-                          );
+                                _controller.text.toLowerCase(),
+                              );
 
                       if (_controller.text.isNotEmpty && !isMatch) {
                         return const SizedBox.shrink();
@@ -307,4 +305,3 @@ class _VenueAutocompleteFieldState extends State<VenueAutocompleteField> {
     );
   }
 }
-

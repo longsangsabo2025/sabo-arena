@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../widgets/common/app_button.dart';
 import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../services/challenge_list_service.dart';
@@ -7,7 +8,6 @@ import '../../../widgets/loading_state_widget.dart';
 import '../../../widgets/empty_state_widget.dart';
 import '../../../widgets/error_state_widget.dart';
 import '../../../core/design_system/design_system.dart';
-import './challenge_card_widget_redesign.dart';
 import './challenge_detail_modal.dart';
 import './create_spa_challenge_modal.dart';
 import './schedule_match_modal.dart';
@@ -25,7 +25,7 @@ class CompetitiveChallengesTab extends StatefulWidget {
       _CompetitiveChallengesTabState();
 }
 
-class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab> 
+class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     with SingleTickerProviderStateMixin {
   final ChallengeListService _challengeService = ChallengeListService.instance;
   List<Map<String, dynamic>> _challenges = [];
@@ -34,7 +34,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
   // int _currentSubTab = 0;
   bool _showTooltip = false;
   Timer? _tooltipTimer;
-  
+
   // Sub-tab controller
   late TabController _subTabController;
 
@@ -79,11 +79,11 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
       // This includes: pending, accepted, in_progress, completed
       final supabase = Supabase.instance.client;
       final currentUserId = supabase.auth.currentUser?.id;
-      
+
       if (currentUserId == null) {
         throw Exception('Vui lòng đăng nhập');
       }
-      
+
       final challenges = await supabase
           .from('challenges')
           .select('''
@@ -110,14 +110,13 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
             )
           ''')
           .eq('challenge_type', 'thach_dau')
-          .eq('challenged_id', currentUserId) // ✅ CHỈ lấy challenges MÀ USER LÀ NGƯỜI NHẬN (không phải người gửi)
+          .eq('challenged_id',
+              currentUserId) // ✅ CHỈ lấy challenges MÀ USER LÀ NGƯỜI NHẬN (không phải người gửi)
           .order('created_at', ascending: false)
           .then((response) => response as List<dynamic>)
           .then((list) => list.cast<Map<String, dynamic>>());
 
-      for (var i = 0; i < challenges.length && i < 3; i++) {
-      }
-
+      for (var i = 0; i < challenges.length && i < 3; i++) {}
 
       if (mounted) {
         setState(() {
@@ -163,28 +162,33 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
 
       // ✅ Filter out past matches (older than 24h)
       if (status != 'in_progress') {
-        final scheduledTimeStr = challenge['scheduled_time'] as String? ?? 
-                                (challenge['match_conditions'] is Map ? challenge['match_conditions']['scheduled_time'] : null) as String?;
-        
+        final scheduledTimeStr = challenge['scheduled_time'] as String? ??
+            (challenge['match_conditions'] is Map
+                ? challenge['match_conditions']['scheduled_time']
+                : null) as String?;
+
         if (scheduledTimeStr != null) {
           final scheduledTime = DateTime.tryParse(scheduledTimeStr);
           if (scheduledTime != null) {
             // If scheduled time is older than 24 hours, hide it
-            if (scheduledTime.isBefore(DateTime.now().subtract(const Duration(hours: 24)))) {
+            if (scheduledTime
+                .isBefore(DateTime.now().subtract(const Duration(hours: 24)))) {
               return false;
             }
           }
         }
-        
+
         // Also check created_at for pending challenges that are too old (e.g. > 30 days)
         if (status == 'pending') {
-           final createdAtStr = challenge['created_at'] as String?;
-           if (createdAtStr != null) {
-             final createdAt = DateTime.tryParse(createdAtStr);
-             if (createdAt != null && createdAt.isBefore(DateTime.now().subtract(const Duration(days: 30)))) {
-               return false;
-             }
-           }
+          final createdAtStr = challenge['created_at'] as String?;
+          if (createdAtStr != null) {
+            final createdAt = DateTime.tryParse(createdAtStr);
+            if (createdAt != null &&
+                createdAt.isBefore(
+                    DateTime.now().subtract(const Duration(days: 30)))) {
+              return false;
+            }
+          }
         }
       }
 
@@ -232,7 +236,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
               indicatorColor: Theme.of(context).primaryColor,
             ),
           ),
-          
+
           // Sub-tabs content
           Expanded(
             child: TabBarView(
@@ -240,7 +244,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
               children: [
                 // Ready tab
                 _buildChallengesList(readyChallenges, 'Ready'),
-                
+
                 // Complete tab
                 _buildChallengesList(completedChallenges, 'Complete'),
               ],
@@ -273,8 +277,8 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     );
   }
 
-  Widget _buildChallengesList(List<Map<String, dynamic>> challenges, String tabName) {
-
+  Widget _buildChallengesList(
+      List<Map<String, dynamic>> challenges, String tabName) {
     if (_isLoading) {
       return const LoadingStateWidget(message: 'Đang tải thách đấu...');
     }
@@ -289,7 +293,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     if (challenges.isEmpty) {
       return EmptyStateWidget(
         icon: tabName == 'Ready' ? Icons.schedule : Icons.check_circle,
-        message: tabName == 'Ready' 
+        message: tabName == 'Ready'
             ? 'Không có thách đấu đang chờ'
             : 'Chưa có thách đấu hoàn thành',
         subtitle: tabName == 'Ready'
@@ -300,7 +304,6 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
       );
     }
 
-    
     return RefreshIndicator(
       onRefresh: _loadChallenges,
       child: ListView.builder(
@@ -308,7 +311,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
         itemCount: challenges.length,
         itemBuilder: (context, index) {
           final challenge = challenges[index];
-          
+
           // Convert to match data for MatchCardWidget
           final matchData = ChallengeToMatchConverter.convert(
             challenge,
@@ -329,33 +332,33 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     final status = challenge['status'] as String? ?? 'pending';
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
     final challengedId = challenge['challenged_id'] as String?;
-    
+
     // Only show buttons for pending challenges where I am the challenged user
     if (status == 'pending' && currentUserId == challengedId) {
       return Row(
         children: [
           Expanded(
-            child: ElevatedButton(
+            child: AppButton(
+              label: 'Nhận thách đấu',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              customColor: const Color(0xFF00695C), // Brand teal green
+              customTextColor: Colors.white,
+              fullWidth: true,
               onPressed: () => _acceptChallenge(challenge),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00695C),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text(
-                'Nhận thách đấu',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: OutlinedButton(
+            child: AppButton(
+              label: 'Hẹn lịch',
+              type: AppButtonType.outline,
+              size: AppButtonSize.medium,
+              customColor: const Color(0xFF00695C), // Brand teal green
+              fullWidth: true,
               onPressed: () {
-                final challenger = challenge['challenger'] as Map<String, dynamic>?;
+                final challenger =
+                    challenge['challenger'] as Map<String, dynamic>?;
                 if (challenger != null) {
                   showModalBottomSheet(
                     context: context,
@@ -368,18 +371,6 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
                   );
                 }
               },
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF00695C),
-                side: const BorderSide(color: Color(0xFF00695C)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text(
-                'Hẹn lịch',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
             ),
           ),
         ],
@@ -398,7 +389,7 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
       );
 
       await _challengeService.acceptChallenge(challenge['id']);
-      
+
       if (mounted) {
         Navigator.pop(context); // Hide loading
         ScaffoldMessenger.of(context).showSnackBar(
@@ -432,11 +423,10 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     final currentUser = UserProfile.fromJson(currentUserData);
 
     // Get challenge-eligible opponents
-    final opponentsData = await _challengeService
-        .getChallengeEligibleOpponents();
-    final opponents = opponentsData
-        .map((data) => UserProfile.fromJson(data))
-        .toList();
+    final opponentsData =
+        await _challengeService.getChallengeEligibleOpponents();
+    final opponents =
+        opponentsData.map((data) => UserProfile.fromJson(data)).toList();
 
     if (!mounted) return;
 
@@ -451,4 +441,3 @@ class _CompetitiveChallengesTabState extends State<CompetitiveChallengesTab>
     );
   }
 }
-

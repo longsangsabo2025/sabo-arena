@@ -24,7 +24,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   final UserService _userService = UserService.instance;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  
+
   // 🚀 MUSK OPTIMIZATIONS
   Timer? _debounceTimer;
   final Map<String, List<UserProfile>> _searchCache = {};
@@ -53,7 +53,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   /// 🚀 MUSK DEBOUNCED SEARCH - No spam, intelligent caching
   void _debouncedSearch(String value) {
     _debounceTimer?.cancel();
-    
+
     if (value.trim().isEmpty) {
       setState(() {
         _searchResults = [];
@@ -61,14 +61,14 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
       });
       return;
     }
-    
+
     if (value.trim().length < 2) return;
-    
+
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       _performSmartSearch(value.trim());
     });
   }
-  
+
   /// Smart search với caching và intelligent suggestions
   Future<void> _performSmartSearch(String query) async {
     // Check cache first
@@ -80,56 +80,57 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
       });
       return;
     }
-    
+
     setState(() {
       _isSearching = true;
     });
-    
+
     try {
       // Multiple search strategies
       final List<UserProfile> results = [];
-      
+
       // 1. Exact username match (highest priority)
       final exactMatch = await _userService.searchUsersByUsername(query);
       results.addAll(exactMatch);
-      
-      // 2. Partial name match 
+
+      // 2. Partial name match
       if (results.length < 10) {
         final nameMatches = await _userService.searchUsersByName(query);
-        results.addAll(nameMatches.where((u) => !results.any((r) => r.id == u.id)));
+        results.addAll(
+            nameMatches.where((u) => !results.any((r) => r.id == u.id)));
       }
-      
+
       // 3. Similar rank suggestions (if user has rank)
       if (results.length < 5 && widget.currentUser?.rank != null) {
         final rankMatches = await _userService.searchUsersBySimilarRank(
-          widget.currentUser!.rank!, 
+          widget.currentUser!.rank!,
           query,
         );
-        results.addAll(rankMatches.where((u) => !results.any((r) => r.id == u.id)));
+        results.addAll(
+            rankMatches.where((u) => !results.any((r) => r.id == u.id)));
       }
-      
+
       // Filter exclusions
       final filteredResults = results.where((user) {
         if (user.id == widget.currentUser?.id) return false;
         if (widget.excludeUserIds?.contains(user.id) ?? false) return false;
         return true;
       }).toList();
-      
+
       // Cache results
       _searchCache[query.toLowerCase()] = filteredResults;
-      
+
       // Add to recent searches
       if (!_recentSearches.contains(query)) {
         _recentSearches.insert(0, query);
         if (_recentSearches.length > 10) _recentSearches.removeLast();
       }
-      
+
       setState(() {
         _searchResults = filteredResults;
         _isSearching = false;
         _hasSearched = true;
       });
-      
     } catch (e) {
       ProductionLogger.error('🔍 Smart search failed: $e', tag: 'user_search');
       setState(() {
@@ -151,25 +152,29 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
     try {
       // Get users with similar rank (±2 ranks)
       final allUsers = await _userService.searchUsers('');
-      
+
       final currentRank = widget.currentUser!.rank ?? 'Beginner';
-      
+
       // Filter: similar rank, exclude current user and excluded IDs
-      final suggested = allUsers.where((user) {
-        if (user.id == widget.currentUser!.id) return false;
-        if (widget.excludeUserIds?.contains(user.id) ?? false) return false;
-        
-        // Simple rank similarity check
-        final userRank = user.rank ?? 'Beginner';
-        return userRank == currentRank; // Same rank for now
-      }).take(6).toList(); // Limit to 6 suggestions
+      final suggested = allUsers
+          .where((user) {
+            if (user.id == widget.currentUser!.id) return false;
+            if (widget.excludeUserIds?.contains(user.id) ?? false) return false;
+
+            // Simple rank similarity check
+            final userRank = user.rank ?? 'Beginner';
+            return userRank == currentRank; // Same rank for now
+          })
+          .take(6)
+          .toList(); // Limit to 6 suggestions
 
       setState(() {
         _suggestedUsers = suggested;
         _isLoadingSuggestions = false;
       });
     } catch (e) {
-      ProductionLogger.info('Error loading suggested users: $e', tag: 'user_search_dialog');
+      ProductionLogger.info('Error loading suggested users: $e',
+          tag: 'user_search_dialog');
       setState(() {
         _isLoadingSuggestions = false;
       });
@@ -207,7 +212,8 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
         _hasSearched = true;
       });
     } catch (e) {
-      ProductionLogger.info('Error searching users: $e', tag: 'user_search_dialog');
+      ProductionLogger.info('Error searching users: $e',
+          tag: 'user_search_dialog');
       setState(() {
         _searchResults = [];
         _isSearching = false;
@@ -556,7 +562,8 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
           child: _isLoadingSuggestions
               ? const Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1E88E5)),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF1E88E5)),
                   ),
                 )
               : _suggestedUsers.isEmpty

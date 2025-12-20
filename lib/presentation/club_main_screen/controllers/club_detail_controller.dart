@@ -18,7 +18,7 @@ class ClubDetailController extends ChangeNotifier {
 
   // State
   bool _isDisposed = false;
-  
+
   // Follow & Membership Status
   bool isFollowing = false;
   bool isFollowLoading = false;
@@ -34,7 +34,8 @@ class ClubDetailController extends ChangeNotifier {
   List<Tournament> tournaments = [];
   bool isLoadingTournaments = false;
   String? tournamentsError;
-  String tournamentFilter = 'Tất cả'; // 'Tất cả', 'Sắp tới', 'Đang diễn ra', 'Đã kết thúc'
+  String tournamentFilter =
+      'Tất cả'; // 'Tất cả', 'Sắp tới', 'Đang diễn ra', 'Đã kết thúc'
 
   // Photos Data
   List<String> photos = [];
@@ -81,7 +82,8 @@ class ClubDetailController extends ChangeNotifier {
     } catch (e) {
       isLoadingMembers = false;
       membersError = _getFriendlyErrorMessage(e);
-      ProductionLogger.error('Error loading members', error: e, tag: 'ClubDetailController');
+      ProductionLogger.error('Error loading members',
+          error: e, tag: 'ClubDetailController');
     }
     _safeNotifyListeners();
   }
@@ -103,7 +105,8 @@ class ClubDetailController extends ChangeNotifier {
     } catch (e) {
       isLoadingTournaments = false;
       tournamentsError = e.toString();
-      ProductionLogger.error('Error loading tournaments', error: e, tag: 'ClubDetailController');
+      ProductionLogger.error('Error loading tournaments',
+          error: e, tag: 'ClubDetailController');
     }
     _safeNotifyListeners();
   }
@@ -128,7 +131,7 @@ class ClubDetailController extends ChangeNotifier {
           .from('tournaments')
           .delete()
           .eq('id', tournament.id);
-      
+
       // Refresh list
       await loadTournaments();
     } catch (e) {
@@ -145,12 +148,14 @@ class ClubDetailController extends ChangeNotifier {
 
       final participants = participantsResponse as List;
       final hasPaidUsers = participants.any(
-        (p) => p['payment_status'] == 'paid' || p['payment_status'] == 'completed',
+        (p) =>
+            p['payment_status'] == 'paid' || p['payment_status'] == 'completed',
       );
-      
+
       return !hasPaidUsers;
     } catch (e) {
-      ProductionLogger.error('Error checking tournament deletion', error: e, tag: 'ClubDetailController');
+      ProductionLogger.error('Error checking tournament deletion',
+          error: e, tag: 'ClubDetailController');
       return false;
     }
   }
@@ -178,7 +183,8 @@ class ClubDetailController extends ChangeNotifier {
       isLoadingPhotos = false;
       photosError = e.toString();
       photos = [];
-      ProductionLogger.error('Error loading photos', error: e, tag: 'ClubDetailController');
+      ProductionLogger.error('Error loading photos',
+          error: e, tag: 'ClubDetailController');
     }
     _safeNotifyListeners();
   }
@@ -194,15 +200,13 @@ class ClubDetailController extends ChangeNotifier {
         quality: 85,
         format: CompressFormat.jpeg,
       );
-      
+
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = 'clubs/${club.id}/photos/$fileName';
 
       // Upload compressed image to Supabase Storage
-      await Supabase.instance.client.storage
-          .from('club-photos')
-          .uploadBinary(
-            filePath, 
+      await Supabase.instance.client.storage.from('club-photos').uploadBinary(
+            filePath,
             compressedBytes,
             fileOptions: const FileOptions(
               contentType: 'image/jpeg',
@@ -241,12 +245,14 @@ class ClubDetailController extends ChangeNotifier {
       // Try to delete from storage
       try {
         final uri = Uri.parse(photoUrl);
-        final path = uri.pathSegments.skip(uri.pathSegments.length - 3).join('/');
+        final path =
+            uri.pathSegments.skip(uri.pathSegments.length - 3).join('/');
         await Supabase.instance.client.storage
             .from('club-photos')
             .remove([path]);
       } catch (storageError) {
-        ProductionLogger.warning('Error deleting photo from storage', error: storageError, tag: 'ClubDetailController');
+        ProductionLogger.warning('Error deleting photo from storage',
+            error: storageError, tag: 'ClubDetailController');
       }
 
       // Refresh photos
@@ -265,7 +271,8 @@ class ClubDetailController extends ChangeNotifier {
       isFollowing = status;
       _safeNotifyListeners();
     } catch (error) {
-      ProductionLogger.error('Error checking follow status', error: error, tag: 'ClubDetailController');
+      ProductionLogger.error('Error checking follow status',
+          error: error, tag: 'ClubDetailController');
     }
   }
 
@@ -284,7 +291,8 @@ class ClubDetailController extends ChangeNotifier {
       isCurrentUserMember = response != null;
       _safeNotifyListeners();
     } catch (error) {
-      ProductionLogger.error('Error checking membership status', error: error, tag: 'ClubDetailController');
+      ProductionLogger.error('Error checking membership status',
+          error: error, tag: 'ClubDetailController');
     }
   }
 
@@ -296,7 +304,8 @@ class ClubDetailController extends ChangeNotifier {
       isClubOwner = club.ownerId == currentUser.id;
       _safeNotifyListeners();
     } catch (error) {
-      ProductionLogger.error('Error checking owner status', error: error, tag: 'ClubDetailController');
+      ProductionLogger.error('Error checking owner status',
+          error: error, tag: 'ClubDetailController');
     }
   }
 
@@ -315,7 +324,7 @@ class ClubDetailController extends ChangeNotifier {
         success = await _clubService.followClub(club.id);
         if (success) isFollowing = true;
       }
-      
+
       isFollowLoading = false;
       _safeNotifyListeners();
       return success;

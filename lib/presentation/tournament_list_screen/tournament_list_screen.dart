@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/core/app_export.dart' hide AppColors, AppTypography;
 import 'package:sabo_arena/core/design_system/design_system.dart';
-import 'package:sabo_arena/core/performance/performance_widgets.dart';
 import 'package:sabo_arena/core/keyboard/keyboard_shortcuts.dart';
 import '../../theme/app_bar_theme.dart' as app_theme;
 import 'package:sabo_arena/models/tournament.dart';
@@ -23,6 +22,7 @@ import 'package:sabo_arena/services/share_service.dart';
 import 'package:sabo_arena/models/club_role.dart';
 import 'package:sabo_arena/widgets/error_state_widget.dart';
 import 'package:sabo_arena/widgets/empty_state_widget.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import 'package:sabo_arena/core/design_system/skeleton_widgets.dart';
 import 'package:sabo_arena/core/device/device_info.dart';
@@ -43,7 +43,6 @@ class _TournamentListScreenState extends State<TournamentListScreen>
   late TabController _tabController;
   final TournamentService _tournamentService = TournamentService.instance;
   final ClubPermissionService _permissionService = ClubPermissionService();
-  bool _isLoading = true;
   TournamentTabStatus _selectedTab = TournamentTabStatus.upcoming;
   Map<String, dynamic> _currentFilters = {
     'locationRadius': 10.0,
@@ -55,12 +54,14 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     'hasPrizePool': false,
   };
 
-  List<Tournament> _allTournaments = [];
-  String? _errorMessage;
-  
+  // ♾️ Infinite Scroll Pagination Controllers
+  late PagingController<int, Tournament> _upcomingPagingController;
+  late PagingController<int, Tournament> _livePagingController;
+  late PagingController<int, Tournament> _completedPagingController;
+
   // 📱 iPad Master-Detail Layout State
   Tournament? _selectedTournament;
-  
+
   // ⚡ Realtime Subscription
   RealtimeChannel? _subscription;
 
@@ -69,10 +70,28 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_onTabChanged);
-    _loadTournaments();
+
+    // Initialize paging controllers
+    _upcomingPagingController =
+        PagingController<int, Tournament>(firstPageKey: 1);
+    _livePagingController = PagingController<int, Tournament>(firstPageKey: 1);
+    _completedPagingController =
+        PagingController<int, Tournament>(firstPageKey: 1);
+
+    // Add page request listeners
+    _upcomingPagingController.addPageRequestListener((pageKey) {
+      _fetchTournamentsPage(pageKey, TournamentTabStatus.upcoming);
+    });
+    _livePagingController.addPageRequestListener((pageKey) {
+      _fetchTournamentsPage(pageKey, TournamentTabStatus.live);
+    });
+    _completedPagingController.addPageRequestListener((pageKey) {
+      _fetchTournamentsPage(pageKey, TournamentTabStatus.completed);
+    });
+
     _subscribeToRealtime();
   }
-  
+
   void _subscribeToRealtime() {
     _subscription = Supabase.instance.client
         .channel('public:tournaments')
@@ -81,60 +100,66 @@ class _TournamentListScreenState extends State<TournamentListScreen>
           schema: 'public',
           table: 'tournaments',
           callback: (payload) {
-            ProductionLogger.info('🏆 Tournament update received: ${payload.eventType}');
-            // Debounce reload to avoid spam
-            _loadTournaments();
+            ProductionLogger.info(
+                '🏆 Tournament update received: ${payload.eventType}');
+            // Refresh current tab
+            _currentPagingController.refresh();
           },
         )
         .subscribe();
   }
 
-  Future<void> _loadTournaments() async {
-    if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  // Get the current paging controller based on selected tab
+  PagingController<int, Tournament> get _currentPagingController {
+    switch (_selectedTab) {
+      case TournamentTabStatus.upcoming:
+        return _upcomingPagingController;
+      case TournamentTabStatus.live:
+        return _livePagingController;
+      case TournamentTabStatus.completed:
+        return _completedPagingController;
+      case TournamentTabStatus.cancelled:
+        // Cancelled tournaments show in completed tab
+        return _completedPagingController;
+    }
+  }
+
+  // Get tournaments for current controller
+  List<Tournament> get _currentTournaments =>
+      _currentPagingController.itemList ?? [];
+
+  // Fetch tournaments page with pagination
+  Future<void> _fetchTournamentsPage(
+      int pageKey, TournamentTabStatus status) async {
+    final controller = status == TournamentTabStatus.upcoming
+        ? _upcomingPagingController
+        : status == TournamentTabStatus.live
+            ? _livePagingController
+            : _completedPagingController;
 
     try {
-      // 🚀 ELON MUSK AUDIT: Server-side sorting & filtering
       final tournaments = await _tournamentService.getTournaments(
-        status: _selectedTab,
+        status: status,
+        page: pageKey,
+        pageSize: 15,
       );
 
-      // Client-side sorting to ensure "Nearest/Newest" is top
-      tournaments.sort((a, b) {
-        if (_selectedTab == TournamentTabStatus.upcoming) {
-           // ELON FIX: Sort by start date Descending (Newest/Furthest first) as requested
-           return b.startDate.compareTo(a.startDate);
-        } else if (_selectedTab == TournamentTabStatus.live) {
-           // Most recently started first (Descending)
-           return b.startDate.compareTo(a.startDate);
-        } else {
-           // Completed: Most recently ended first (Descending)
-           // Fallback to startDate if endDate is null
-           final endA = a.endDate ?? a.startDate;
-           final endB = b.endDate ?? b.startDate;
-           return endB.compareTo(endA);
-        }
-      });
-
-      if (mounted) {
-        setState(() {
-          _allTournaments = tournaments;
-          _isLoading = false;
-        });
+      final isLastPage = tournaments.length < 15;
+      if (isLastPage) {
+        controller.appendLastPage(tournaments);
+      } else {
+        controller.appendPage(tournaments, pageKey + 1);
       }
-    } catch (e) {
-      // Show error if data loading fails
-      if (mounted) {
-        setState(() {
-          _allTournaments = [];
-          _isLoading = false;
-          _errorMessage = 'Không thể tải dữ liệu giải đấu: $e';
-        });
-      }
+    } catch (error) {
+      controller.error = error;
+      ProductionLogger.error('Failed to fetch tournaments: $error',
+          tag: 'TournamentList');
     }
+  }
+
+  Future<void> _loadTournaments() async {
+    // Refresh current paging controller
+    _currentPagingController.refresh();
   }
 
   @override
@@ -142,6 +167,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     _subscription?.unsubscribe();
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
+    _upcomingPagingController.dispose();
+    _livePagingController.dispose();
+    _completedPagingController.dispose();
     super.dispose();
   }
 
@@ -150,25 +178,24 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       return;
     }
     final newTab = [
-      TournamentTabStatus.upcoming, 
-      TournamentTabStatus.live, 
+      TournamentTabStatus.upcoming,
+      TournamentTabStatus.live,
       TournamentTabStatus.completed
     ][_tabController.index];
-    
+
     if (newTab != _selectedTab) {
       setState(() {
         _selectedTab = newTab;
       });
-      _loadTournaments();
+      // No need to reload - PagingController auto-loads on first access
     }
   }
 
   // _handleNavigation removed as it was unused
 
-
   List<Tournament> get _filteredTournaments {
-    // Temporarily simplified to fix dead_null_aware_expression warnings
-    return _allTournaments;
+    // Use current paging controller's items
+    return _currentTournaments;
   }
 
   @override
@@ -188,105 +215,115 @@ class _TournamentListScreenState extends State<TournamentListScreen>
           centerTitle: false,
           actions: [
             // Create Tournament Icon (Club Owner only)
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline_rounded, size: 24),
-            tooltip: 'Tạo giải đấu',
-            color: AppColors.info600,
-            onPressed: () => _handleCreateTournament(context),
-          ),
-          // Register Rank Icon
-          IconButton(
-            icon: const Icon(Icons.military_tech_outlined, size: 24),
-            tooltip: 'Đăng ký hạng',
-            color: AppColors.info600,
-            onPressed: () => _handleRegisterRank(context),
-          ),
-          IconButton(
-            icon: const Icon(Icons.account_tree_outlined, size: 22),
-            tooltip: 'Demo Bảng Đấu',
-            color: AppColors.textSecondary,
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const DemoBracketScreen(),
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline_rounded, size: 24),
+              tooltip: 'Tạo giải đấu',
+              color: AppColors.info600,
+              onPressed: () => _handleCreateTournament(context),
+            ),
+            // Register Rank Icon
+            IconButton(
+              icon: const Icon(Icons.military_tech_outlined, size: 24),
+              tooltip: 'Đăng ký hạng',
+              color: AppColors.info600,
+              onPressed: () => _handleRegisterRank(context),
+            ),
+            // Leaderboard/Ranking Icon
+            IconButton(
+              icon: const Icon(Icons.leaderboard_outlined, size: 22),
+              tooltip: 'Bảng xếp hạng',
+              color: AppColors.textSecondary,
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRoutes.leaderboardScreen),
+            ),
+            IconButton(
+              icon: const Icon(Icons.account_tree_outlined, size: 22),
+              tooltip: 'Demo Bảng Đấu',
+              color: AppColors.textSecondary,
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DemoBracketScreen(),
+                ),
               ),
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.search_outlined, size: 22),
-            tooltip: 'Tìm kiếm',
-            color: AppColors.textSecondary,
-            onPressed: () => _showSearch(context),
-          ),
-          const SizedBox(width: 8),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(76),
-          child: Column(
-            children: [
-              Divider(height: 0.5, thickness: 0.5, color: AppColors.divider),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                color: AppColors.surface,
-                child: TabBar(
-                  controller: _tabController,
-                  tabs: [
-                    Tab(
-                      icon: const Icon(Icons.schedule_outlined, size: 20),
-                      text: 'Sắp diễn ra',
-                      height: 60,
-                    ),
-                    Tab(
-                      icon: const Icon(Icons.sensors_outlined, size: 20),
-                      text: 'Đang diễn ra',
-                      height: 60,
-                    ),
-                    Tab(
-                      icon: const Icon(Icons.check_circle_outline, size: 20),
-                      text: 'Đã kết thúc',
-                      height: 60,
-                    ),
-                  ],
-                  labelColor: AppColors.primary,
-                  unselectedLabelColor: AppColors.textSecondary,
-                  indicatorColor: AppColors.primary,
-                  indicatorWeight: 2,
-                  labelStyle: AppTypography.labelMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: context.scaleFont(13),
+            IconButton(
+              icon: const Icon(Icons.search_outlined, size: 22),
+              tooltip: 'Tìm kiếm',
+              color: AppColors.textSecondary,
+              onPressed: () => _showSearch(context),
+            ),
+            const SizedBox(width: 8),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(76),
+            child: Column(
+              children: [
+                Divider(height: 0.5, thickness: 0.5, color: AppColors.divider),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                  unselectedLabelStyle: AppTypography.labelMedium.copyWith(
-                    fontSize: context.scaleFont(13),
+                  color: AppColors.surface,
+                  child: TabBar(
+                    controller: _tabController,
+                    tabs: [
+                      Tab(
+                        icon: const Icon(Icons.schedule_outlined, size: 20),
+                        text: 'Sắp diễn ra',
+                        height: 60,
+                      ),
+                      Tab(
+                        icon: const Icon(Icons.sensors_outlined, size: 20),
+                        text: 'Đang diễn ra',
+                        height: 60,
+                      ),
+                      Tab(
+                        icon: const Icon(Icons.check_circle_outline, size: 20),
+                        text: 'Đã kết thúc',
+                        height: 60,
+                      ),
+                    ],
+                    labelColor: AppColors.primary,
+                    unselectedLabelColor: AppColors.textSecondary,
+                    indicatorColor: AppColors.primary,
+                    indicatorWeight: 2,
+                    labelStyle: AppTypography.labelMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: context.scaleFont(13),
+                    ),
+                    unselectedLabelStyle: AppTypography.labelMedium.copyWith(
+                      fontSize: context.scaleFont(13),
+                    ),
+                    dividerColor: Colors.transparent,
                   ),
-                  dividerColor: Colors.transparent,
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: _buildBody(),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: FloatingActionButton.extended(
-          heroTag: 'tournament_list_filter',
-          onPressed: () => _showFilterBottomSheet(context),
-          backgroundColor: AppColors.primary,
-          elevation: 4,
-          icon: const Icon(Icons.tune_outlined, size: 20),
-          label: Text(
-            'Lọc', overflow: TextOverflow.ellipsis, style: AppTypography.labelMedium.copyWith(
-              color: AppColors.textOnPrimary,
-              fontWeight: FontWeight.w600,
+              ],
             ),
           ),
         ),
-      ),
-      // 🎯 PHASE 1: Bottom navigation moved to PersistentTabScaffold
-      // No bottomNavigationBar here to prevent duplicate navigation bars
+        body: _buildBody(),
+        floatingActionButton: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: FloatingActionButton.extended(
+            heroTag: 'tournament_list_filter',
+            onPressed: () => _showFilterBottomSheet(context),
+            backgroundColor: AppColors.primary,
+            elevation: 4,
+            icon: const Icon(Icons.tune_outlined, size: 20),
+            label: Text(
+              'Lọc',
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.labelMedium.copyWith(
+                color: AppColors.textOnPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        // 🎯 PHASE 1: Bottom navigation moved to PersistentTabScaffold
+        // No bottomNavigationBar here to prevent duplicate navigation bars
       ),
     );
   }
@@ -294,23 +331,24 @@ class _TournamentListScreenState extends State<TournamentListScreen>
   Widget _buildBody() {
     // 📱 iPad Landscape: Facebook-style Master-Detail Layout
     final isIPad = DeviceInfo.isIPad(context);
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final showMasterDetail = isIPad && isLandscape;
-    
+
     if (showMasterDetail) {
       return Row(
         children: [
           // Master Panel (List - 40% width, max 420px like Facebook)
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.4 > 420 
-              ? 420 
-              : MediaQuery.of(context).size.width * 0.4,
+            width: MediaQuery.of(context).size.width * 0.4 > 420
+                ? 420
+                : MediaQuery.of(context).size.width * 0.4,
             child: _buildTournamentList(),
           ),
-          
+
           // Divider
           VerticalDivider(width: 1, thickness: 1, color: AppColors.divider),
-          
+
           // Detail Panel (60% width)
           Expanded(
             child: _buildDetailPanel(),
@@ -318,56 +356,63 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         ],
       );
     }
-    
+
     // 📱 Portrait: Standard Full-Width List
     return _buildTournamentList();
   }
-  
+
   Widget _buildTournamentList() {
     final isIPad = DeviceInfo.isIPad(context);
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final showMasterDetail = isIPad && isLandscape;
-    
-    if (_isLoading) {
-      return const TournamentListSkeleton();
-    }
-    if (_errorMessage != null) {
-      return RefreshableErrorStateWidget(
-        errorMessage: _errorMessage,
-        onRefresh: _loadTournaments,
-        title: 'Không thể tải dữ liệu',
-        description: 'Đã xảy ra lỗi khi tải danh sách giải đấu',
-        showErrorDetails: true,
-      );
-    }
-    if (_filteredTournaments.isEmpty) {
-      return _buildEmptyState();
-    }
+
     return RefreshIndicator(
       onRefresh: _loadTournaments,
-      child: OptimizedListView(
-        itemCount: _filteredTournaments.length,
-        itemBuilder: (context, index) {
-          final tournament = _filteredTournaments[index];
-          
-          // Highlight selected tournament on iPad landscape
-          final isSelected = showMasterDetail && _selectedTournament?.id == tournament.id;
-          
-          // Check ownership
-          final currentUserId = AuthService.instance.currentUser?.id;
-          final isOwner = currentUserId != null && currentUserId == tournament.clubOwnerId;
+      child: PagedListView<int, Tournament>(
+        pagingController: _currentPagingController,
+        builderDelegate: PagedChildBuilderDelegate<Tournament>(
+          itemBuilder: (context, tournament, index) {
+            // Highlight selected tournament on iPad landscape
+            final isSelected =
+                showMasterDetail && _selectedTournament?.id == tournament.id;
 
-          // Define callbacks if owner
-          final VoidCallback? onHide = isOwner ? () => _handleHideTournament(tournament) : null;
-          final VoidCallback? onDelete = isOwner ? () => _handleDeleteTournament(tournament) : null;
+            // Check ownership
+            final currentUserId = AuthService.instance.currentUser?.id;
+            final isOwner = currentUserId != null &&
+                currentUserId == tournament.clubOwnerId;
 
-          // Use eligibility-enabled card for upcoming tournaments only
-          if (_selectedTab == TournamentTabStatus.upcoming) {
+            // Define callbacks if owner
+            final VoidCallback? onHide =
+                isOwner ? () => _handleHideTournament(tournament) : null;
+            final VoidCallback? onDelete =
+                isOwner ? () => _handleDeleteTournament(tournament) : null;
+
+            // Use eligibility-enabled card for upcoming tournaments only
+            if (_selectedTab == TournamentTabStatus.upcoming) {
+              return Container(
+                color: isSelected
+                    ? AppColors.primary.withValues(alpha: 0.08)
+                    : null,
+                child: TournamentCardWithEligibility(
+                  tournament: tournament,
+                  tournamentCardData: _convertTournamentToCardData(tournament),
+                  onTap: () => _handleTournamentTap(tournament),
+                  onDetailTap: () => _handleTournamentTap(tournament),
+                  onResultTap: () => _handleTournamentResultTap(tournament),
+                  onShareTap: () => _shareTournament(tournament),
+                  onHide: onHide,
+                  onDelete: onDelete,
+                ),
+              );
+            }
+
+            // Use regular card for live/completed tournaments
             return Container(
-              color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : null,
-              child: TournamentCardWithEligibility(
-                tournament: tournament,
-                tournamentCardData: _convertTournamentToCardData(tournament),
+              color:
+                  isSelected ? AppColors.primary.withValues(alpha: 0.08) : null,
+              child: TournamentCardWidget(
+                tournamentObj: tournament,
                 onTap: () => _handleTournamentTap(tournament),
                 onDetailTap: () => _handleTournamentTap(tournament),
                 onResultTap: () => _handleTournamentResultTap(tournament),
@@ -376,26 +421,29 @@ class _TournamentListScreenState extends State<TournamentListScreen>
                 onDelete: onDelete,
               ),
             );
-          }
-          
-          // Use regular card for live/completed tournaments
-          return Container(
-            color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : null,
-            child: TournamentCardWidget(
-              // tournament: _convertTournamentToCardData(tournament), // Fix parameter
-              onTap: () => _handleTournamentTap(tournament),
-              onDetailTap: () => _handleTournamentTap(tournament),
-              onResultTap: () => _handleTournamentResultTap(tournament),
-              onShareTap: () => _shareTournament(tournament),
-              onHide: onHide,
-              onDelete: onDelete,
+          },
+          firstPageProgressIndicatorBuilder: (context) =>
+              const TournamentListSkeleton(),
+          newPageProgressIndicatorBuilder: (context) => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
             ),
-          );
-        },
+          ),
+          firstPageErrorIndicatorBuilder: (context) =>
+              RefreshableErrorStateWidget(
+            errorMessage: _currentPagingController.error?.toString(),
+            onRefresh: _loadTournaments,
+            title: 'Không thể tải dữ liệu',
+            description: 'Đã xảy ra lỗi khi tải danh sách giải đấu',
+            showErrorDetails: true,
+          ),
+          noItemsFoundIndicatorBuilder: (context) => _buildEmptyState(),
+        ),
       ),
     );
   }
-  
+
   Widget _buildDetailPanel() {
     if (_selectedTournament == null) {
       return Center(
@@ -425,7 +473,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         ),
       );
     }
-    
+
     // Show tournament detail in detail panel
     // TODO: Replace with actual TournamentDetailScreen content
     return SingleChildScrollView(
@@ -441,7 +489,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             ),
           ),
           SizedBox(height: context.space16),
-          
+
           // Tournament Details
           _buildDetailRow(
             Icons.location_on_outlined,
@@ -458,22 +506,21 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             'Số người tham gia',
             '${_selectedTournament!.currentParticipants}/${_selectedTournament!.maxParticipants}',
           ),
-          
+
           SizedBox(height: context.space24),
-          
+
           // Action buttons
           Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
+                child: AppButton(
+                  label: 'Xem chi tiết đầy đủ',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.large,
+                  icon: Icons.info_outline,
+                  iconTrailing: false,
+                  fullWidth: true,
                   onPressed: () => _navigateToDetail(_selectedTournament!),
-                  icon: Icon(Icons.info_outline),
-                  label: Text('Xem chi tiết đầy đủ'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textOnPrimary,
-                    padding: EdgeInsets.symmetric(vertical: context.space16),
-                  ),
                 ),
               ),
             ],
@@ -482,7 +529,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       ),
     );
   }
-  
+
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Padding(
       padding: EdgeInsets.only(bottom: context.space12),
@@ -512,12 +559,13 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       ),
     );
   }
-  
+
   void _handleTournamentTap(Tournament tournament) {
     final isIPad = DeviceInfo.isIPad(context);
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final showMasterDetail = isIPad && isLandscape;
-    
+
     if (showMasterDetail) {
       // iPad landscape: Update detail panel
       setState(() {
@@ -531,9 +579,10 @@ class _TournamentListScreenState extends State<TournamentListScreen>
 
   void _handleTournamentResultTap(Tournament tournament) {
     final isIPad = DeviceInfo.isIPad(context);
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final showMasterDetail = isIPad && isLandscape;
-    
+
     if (showMasterDetail) {
       // iPad landscape: Update detail panel and maybe switch tab in detail panel?
       // For now just select it
@@ -551,7 +600,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     // Determine game type icon number (8, 9, or 10) based on gameFormat
     String iconNumber = '9'; // Default
     final gameFormat = tournament.gameFormat.toLowerCase();
-    
+
     // Check for 10-ball first (most specific)
     if (gameFormat.contains('10')) {
       iconNumber = '10';
@@ -560,7 +609,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     } else if (gameFormat.contains('9')) {
       iconNumber = '9';
     }
-    
+
     // Debug log to verify icon number
 
     // Format date
@@ -617,6 +666,23 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       mangCount = 1; // Default to single elimination
     }
 
+    // Format skill level display using minRank/maxRank
+    String skillLevelDisplay;
+    if (tournament.minRank != null && tournament.maxRank != null) {
+      if (tournament.minRank == tournament.maxRank) {
+        skillLevelDisplay = 'Hạng ${tournament.minRank}';
+      } else {
+        skillLevelDisplay =
+            'Hạng ${tournament.minRank} - ${tournament.maxRank}';
+      }
+    } else if (tournament.minRank != null) {
+      skillLevelDisplay = 'Hạng ${tournament.minRank} trở lên';
+    } else if (tournament.maxRank != null) {
+      skillLevelDisplay = 'Hạng ${tournament.maxRank} trở xuống';
+    } else {
+      skillLevelDisplay = tournament.skillLevelRequired ?? 'Tất cả';
+    }
+
     return {
       'name': tournament.title,
       'date': dateStr,
@@ -624,33 +690,37 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       'playersCount':
           '${tournament.currentParticipants}/${tournament.maxParticipants}',
       'prizePool': _formatPrize(tournament.prizePool),
-      'rating': tournament.skillLevelRequired ?? 'Tất cả',
+      'rating': skillLevelDisplay,
       'iconNumber': iconNumber,
       'clubLogo': tournament.clubLogo,
       'clubName': tournament.clubName ?? 'CLB',
       'mangCount': mangCount,
       'isLive': tournament.status == 'ongoing',
       'status': status,
-      'tournamentType': tournament.tournamentType, // Pass raw type for card logic
+      'tournamentType':
+          tournament.tournamentType, // Pass raw type for card logic
       // NEW ENHANCEMENT FIELDS
       'entryFee': tournament.entryFee > 0
           ? _formatPrize(tournament.entryFee)
           : 'Miễn phí',
       'registrationDeadline': tournament.registrationDeadline.toIso8601String(),
       'prizeBreakdown': _getPrizeBreakdown(tournament),
-      'venue': tournament.venueAddress ?? tournament.clubAddress ?? '${tournament.clubName}',
+      'venue': tournament.venueAddress ??
+          tournament.clubAddress ??
+          '${tournament.clubName}',
     };
   }
 
   /// Get prize breakdown from custom distribution or calculate from pool
   Map<String, String>? _getPrizeBreakdown(Tournament tournament) {
     if (tournament.prizePool <= 0) return null;
-    
+
     // Check for custom distribution
     final prizeDistribution = tournament.prizeDistribution;
     if (prizeDistribution != null) {
       // ✅ NEW: Check for text-based format (first, second, third keys with text values)
-      if (prizeDistribution.containsKey('first') && prizeDistribution['first'] is String) {
+      if (prizeDistribution.containsKey('first') &&
+          prizeDistribution['first'] is String) {
         return {
           'first': prizeDistribution['first'] as String,
           if (prizeDistribution['second'] != null)
@@ -663,7 +733,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             'fifth_to_eighth': prizeDistribution['fifth_to_eighth'] as String,
         };
       }
-      
+
       // Array-based format (distribution array)
       if (prizeDistribution['distribution'] != null) {
         final customDistribution = prizeDistribution['distribution'] as List?;
@@ -671,21 +741,24 @@ class _TournamentListScreenState extends State<TournamentListScreen>
           // Use custom amounts
           return {
             if (customDistribution.isNotEmpty)
-              'first': _formatPrize((customDistribution[0]['cashAmount'] ?? 0).toDouble()),
+              'first': _formatPrize(
+                  (customDistribution[0]['cashAmount'] ?? 0).toDouble()),
             if (customDistribution.length > 1)
-              'second': _formatPrize((customDistribution[1]['cashAmount'] ?? 0).toDouble()),
+              'second': _formatPrize(
+                  (customDistribution[1]['cashAmount'] ?? 0).toDouble()),
             if (customDistribution.length > 2)
-              'third': _formatPrize((customDistribution[2]['cashAmount'] ?? 0).toDouble()),
+              'third': _formatPrize(
+                  (customDistribution[2]['cashAmount'] ?? 0).toDouble()),
           };
         }
       }
     }
-    
+
     // Fallback to percentage-based calculation
     return {
-      'first': _formatPrize(tournament.prizePool * 0.5),  // 50% for 1st
+      'first': _formatPrize(tournament.prizePool * 0.5), // 50% for 1st
       'second': _formatPrize(tournament.prizePool * 0.3), // 30% for 2nd
-      'third': _formatPrize(tournament.prizePool * 0.2),  // 20% for 3rd
+      'third': _formatPrize(tournament.prizePool * 0.2), // 20% for 3rd
     };
   }
 
@@ -703,7 +776,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     Navigator.pushNamed(
       context,
       AppRoutes.tournamentDetailScreen,
-      arguments: showResults 
+      arguments: showResults
           ? {'tournamentId': tournament.id, 'showResults': true}
           : tournament.id,
     );
@@ -753,8 +826,10 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         duration: const Duration(seconds: 2),
       );
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('❌ Error sharing tournament: $e', tag: 'tournament_list_screen');
-      
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error sharing tournament: $e',
+            tag: 'tournament_list_screen');
+
       if (!mounted) return;
       Navigator.pop(context); // Close loading dialog
 
@@ -782,9 +857,10 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         emptyMessage = 'Chưa có giải đấu nào kết thúc';
         emptyIcon = Icons.history_outlined;
         break;
-      default:
-        emptyMessage = 'Không có giải đấu nào';
-        emptyIcon = Icons.inbox_outlined;
+      case TournamentTabStatus.cancelled:
+        emptyMessage = 'Không có giải đấu bị hủy';
+        emptyIcon = Icons.cancel_outlined;
+        break;
     }
 
     return RefreshableEmptyStateWidget(
@@ -830,12 +906,16 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       final currentUser = AuthService.instance.currentUser;
 
       if (kDebugMode) {
-        ProductionLogger.info('🔍 DEBUG: Starting _handleCreateTournament', tag: 'tournament_list_screen');
-        ProductionLogger.info('👤 DEBUG: Current user ID: ${currentUser?.id}', tag: 'tournament_list_screen');
+        ProductionLogger.info('🔍 DEBUG: Starting _handleCreateTournament',
+            tag: 'tournament_list_screen');
+        ProductionLogger.info('👤 DEBUG: Current user ID: ${currentUser?.id}',
+            tag: 'tournament_list_screen');
       }
 
       if (currentUser == null) {
-        if (kDebugMode) ProductionLogger.info('❌ DEBUG: No user logged in', tag: 'tournament_list_screen');
+        if (kDebugMode)
+          ProductionLogger.info('❌ DEBUG: No user logged in',
+              tag: 'tournament_list_screen');
         _showLoginRequiredDialog(context);
         return;
       }
@@ -849,13 +929,17 @@ class _TournamentListScreenState extends State<TournamentListScreen>
       );
 
       // 3. Check if user owns any club
-      if (kDebugMode) ProductionLogger.info('🔍 DEBUG: Checking owned club...', tag: 'tournament_list_screen');
+      if (kDebugMode)
+        ProductionLogger.info('🔍 DEBUG: Checking owned club...',
+            tag: 'tournament_list_screen');
       final ownedClub = await ClubService.instance.getClubByOwnerId(
         currentUser.id,
       );
 
       if (kDebugMode) {
-        ProductionLogger.info('🏢 DEBUG: Owned club: ${ownedClub?.name} (ID: ${ownedClub?.id})',  tag: 'tournament_list_screen');
+        ProductionLogger.info(
+            '🏢 DEBUG: Owned club: ${ownedClub?.name} (ID: ${ownedClub?.id})',
+            tag: 'tournament_list_screen');
       }
 
       if (ownedClub != null) {
@@ -864,8 +948,11 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         Navigator.pop(context); // Close loading dialog
 
         if (kDebugMode) {
-          ProductionLogger.info('✅ DEBUG: User is club owner - granting access', tag: 'tournament_list_screen');
-          ProductionLogger.info('🚀 DEBUG: Navigating to TournamentCreationWizard...', tag: 'tournament_list_screen');
+          ProductionLogger.info('✅ DEBUG: User is club owner - granting access',
+              tag: 'tournament_list_screen');
+          ProductionLogger.info(
+              '🚀 DEBUG: Navigating to TournamentCreationWizard...',
+              tag: 'tournament_list_screen');
         }
 
         // DIRECT NAVIGATION FOR OWNER - No permission checks needed
@@ -877,7 +964,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
           ),
         ).then((result) {
           if (result != null) {
-            if (kDebugMode) ProductionLogger.info('✅ DEBUG: Tournament created successfully', tag: 'tournament_list_screen');
+            if (kDebugMode)
+              ProductionLogger.info('✅ DEBUG: Tournament created successfully',
+                  tag: 'tournament_list_screen');
             _loadTournaments(); // Refresh tournament list
           }
         });
@@ -906,7 +995,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         duration: const Duration(seconds: 3),
       );
 
-      if (kDebugMode) ProductionLogger.info('❌ Error in _handleCreateTournament: $e', tag: 'tournament_list_screen');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error in _handleCreateTournament: $e',
+            tag: 'tournament_list_screen');
     }
   }
 
@@ -937,14 +1028,18 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             final club = await ClubService.instance.getClubById(clubId);
             clubsWithPermission.add(club);
           } catch (e) {
-            if (kDebugMode) ProductionLogger.info('⚠️ Could not load club $clubId: $e', tag: 'tournament_list_screen');
+            if (kDebugMode)
+              ProductionLogger.info('⚠️ Could not load club $clubId: $e',
+                  tag: 'tournament_list_screen');
           }
         }
       }
 
       return clubsWithPermission;
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('❌ Error getting user clubs with permission: $e', tag: 'tournament_list_screen');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error getting user clubs with permission: $e',
+            tag: 'tournament_list_screen');
       return [];
     }
   }
@@ -957,7 +1052,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.all(24),
         title: Text(
-          'Chọn câu lạc bộ', overflow: TextOverflow.ellipsis, style: TextStyle(
+          'Chọn câu lạc bộ',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             fontSize: context.scaleFont(18),
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -977,7 +1074,8 @@ class _TournamentListScreenState extends State<TournamentListScreen>
                   child: Icon(Icons.groups, color: AppColors.info600),
                 ),
                 title: Text(
-                  club.name, style: TextStyle(
+                  club.name,
+                  style: TextStyle(
                     fontSize: context.scaleFont(15),
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -985,7 +1083,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
                 ),
                 subtitle: club.address != null
                     ? Text(
-                        club.address!, overflow: TextOverflow.ellipsis, style: TextStyle(
+                        club.address!,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: context.scaleFont(13),
                           color: AppColors.textSecondary,
                         ),
@@ -1013,7 +1113,7 @@ class _TournamentListScreenState extends State<TournamentListScreen>
   // ignore: unused_element
   String _getRoleDisplayName(ClubRole? role) {
     if (role == null) return 'Không có';
-    
+
     switch (role) {
       case ClubRole.owner:
         return 'Chủ CLB';
@@ -1053,7 +1153,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Cần đăng nhập', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Cần đăng nhập',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: context.scaleFont(18),
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -1062,7 +1164,8 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             const SizedBox(height: 8),
             Text(
               'Bạn cần đăng nhập để sử dụng tính năng này.',
-              textAlign: TextAlign.center, style: TextStyle(
+              textAlign: TextAlign.center,
+              style: TextStyle(
                 fontSize: context.scaleFont(15),
                 fontWeight: FontWeight.w400,
                 color: AppColors.textSecondary,
@@ -1128,7 +1231,9 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Cần đăng ký CLB', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Cần đăng ký CLB',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: context.scaleFont(18),
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -1137,7 +1242,8 @@ class _TournamentListScreenState extends State<TournamentListScreen>
             const SizedBox(height: 8),
             Text(
               'Bạn cần đăng ký và trở thành chủ câu lạc bộ để có thể tạo giải đấu.',
-              textAlign: TextAlign.center, style: TextStyle(
+              textAlign: TextAlign.center,
+              style: TextStyle(
                 fontSize: context.scaleFont(15),
                 fontWeight: FontWeight.w400,
                 color: AppColors.textSecondary,
@@ -1177,9 +1283,8 @@ class _TournamentListScreenState extends State<TournamentListScreen>
   }
 
   void _showSearch(BuildContext context) {
-    final tournamentsForSearch = _filteredTournaments
-        .map(_tournamentToMap)
-        .toList();
+    final tournamentsForSearch =
+        _filteredTournaments.map(_tournamentToMap).toList();
 
     showSearch<String>(
       context: context,
@@ -1272,4 +1377,3 @@ class _TournamentListScreenState extends State<TournamentListScreen>
     }
   }
 }
-

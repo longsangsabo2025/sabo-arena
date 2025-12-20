@@ -7,6 +7,7 @@ import '../club_promotion_hub/club_promotion_hub_screen.dart';
 import '../tournament_management_center/tournament_management_center_screen.dart';
 import '../club_settings_screen/club_settings_screen.dart';
 import '../staff/staff_main_screen.dart';
+import '../club/club_match_management_screen.dart';
 import '../../services/club_service.dart';
 
 /// Main screen wrapper for Club Owner with persistent bottom navigation
@@ -68,13 +69,31 @@ class _ClubOwnerMainScreenState extends State<ClubOwnerMainScreen> {
       appBar: AppBar(
         title: Text(
           'Menu',
-          style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              color: Colors.black87, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.sports_baseball, color: Colors.orange),
+            title: Text('Trận đấu'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ClubMatchManagementScreen(
+                    clubId: widget.clubId,
+                    clubName: _clubName,
+                  ),
+                ),
+              );
+            },
+          ),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.card_giftcard, color: Colors.blue),
             title: Text('Khuyến mãi'),
@@ -117,7 +136,8 @@ class _ClubOwnerMainScreenState extends State<ClubOwnerMainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ClubSettingsScreen(clubId: widget.clubId),
+                  builder: (context) =>
+                      ClubSettingsScreen(clubId: widget.clubId),
                 ),
               );
             },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/layout/responsive.dart';
 import '../../../core/app_export.dart';
 import '../../../widgets/custom_icon_widget.dart';
+import '../../../widgets/common/app_button.dart';
 
 class TournamentFilterBottomSheet extends StatefulWidget {
   final Map<String, dynamic> currentFilters;
@@ -126,20 +127,12 @@ class _TournamentFilterBottomSheetState
               ),
             ),
             child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _applyFilters,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: Gaps.md),
-                  ),
-                  child: Text(
-                    'Áp dụng bộ lọc',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+              child: AppButton(
+                label: 'Áp dụng bộ lọc',
+                type: AppButtonType.primary,
+                size: AppButtonSize.large,
+                fullWidth: true,
+                onPressed: _applyFilters,
               ),
             ),
           ),
@@ -405,8 +398,8 @@ class _TournamentFilterBottomSheetState
     String label,
     String value,
   ) {
-    final isSelected = (_filters['entryFeeRange'] as List<String>? ?? [])
-        .contains(value);
+    final isSelected =
+        (_filters['entryFeeRange'] as List<String>? ?? []).contains(value);
 
     return FilterChip(
       label: Text(label),
@@ -448,8 +441,8 @@ class _TournamentFilterBottomSheetState
       selected: isSelected,
       onSelected: (selected) {
         setState(() {
-          final formats = (_filters['formats'] as List<String>? ?? <String>[])
-              .toList();
+          final formats =
+              (_filters['formats'] as List<String>? ?? <String>[]).toList();
           if (selected) {
             formats.add(value);
           } else {
@@ -473,8 +466,8 @@ class _TournamentFilterBottomSheetState
     String label,
     String value,
   ) {
-    final isSelected = (_filters['skillLevels'] as List<String>? ?? [])
-        .contains(value);
+    final isSelected =
+        (_filters['skillLevels'] as List<String>? ?? []).contains(value);
 
     return FilterChip(
       label: Text(label),

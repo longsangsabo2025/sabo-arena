@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/utils/sabo_rank_system.dart';
+import '../../widgets/common/app_button.dart';
 
 /// Screen hiển thị lịch sử thay đổi Rank của user
 class RankHistoryScreen extends StatefulWidget {
@@ -73,14 +74,17 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Lịch sử Rank', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lịch sử Rank',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
-              widget.userName, style: const TextStyle(
+              widget.userName,
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -103,12 +107,15 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          textAlign: TextAlign.center, style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton(
+                        AppButton(
+                          label: 'Thử lại',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.medium,
                           onPressed: _loadRankHistory,
-                          child: const Text('Thử lại'),
                         ),
                       ],
                     ),
@@ -123,14 +130,18 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
                               size: 60, color: Colors.grey[400]),
                           const SizedBox(height: 16),
                           Text(
-                            'Chưa có lịch sử thăng/giáng hạng', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Chưa có lịch sử thăng/giáng hạng',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[600],
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Tham gia giải đấu để thăng hạng!', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Tham gia giải đấu để thăng hạng!',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[500],
                             ),
@@ -229,7 +240,8 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
                       Icon(changeIcon, size: 20, color: Colors.white),
                       const SizedBox(width: 8),
                       Text(
-                        changeText, style: const TextStyle(
+                        changeText,
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -298,7 +310,8 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            rankCode, style: const TextStyle(
+                            rankCode,
+                            style: const TextStyle(
                               fontSize: 36,
                               fontWeight: FontWeight.w900,
                               color: Colors.white,
@@ -311,7 +324,8 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
 
                       // Rank Name
                       Text(
-                        rankName, style: TextStyle(
+                        rankName,
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
                           color: rankColor,
@@ -334,7 +348,9 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
                           ),
                         ),
                         child: Text(
-                          'ELO: $rankMinElo-$rankMaxElo', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'ELO: $rankMinElo-$rankMaxElo',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: rankColor,
@@ -362,7 +378,9 @@ class _RankHistoryScreenState extends State<RankHistoryScreen> {
                           size: 20, color: Colors.grey[700]),
                       const SizedBox(width: 8),
                       Text(
-                        'ELO tại thời điểm: ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'ELO tại thời điểm: ',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[700],
                           fontWeight: FontWeight.w500,

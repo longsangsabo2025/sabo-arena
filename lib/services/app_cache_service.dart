@@ -4,18 +4,18 @@ import 'package:sabo_arena/utils/production_logger.dart';
 // ELON_MODE_AUTO_FIX
 
 /// 🎯 FACEBOOK/INSTAGRAM APPROACH: Multi-layer Cache System
-/// 
+///
 /// CACHE STRATEGY:
 /// Layer 1: Memory Cache (instant access, lost on app restart)
 /// Layer 2: Disk Cache (persistent, survives app restart)
 /// Layer 3: Network (fallback)
-/// 
+///
 /// BENEFITS:
 /// ✅ Instant data display (no loading spinner)
 /// ✅ Works offline
 /// ✅ Reduces API calls
 /// ✅ Better user experience
-/// 
+///
 /// USAGE:
 /// ```dart
 /// // Save data
@@ -24,7 +24,7 @@ import 'package:sabo_arena/utils/production_logger.dart';
 ///   data: posts,
 ///   ttl: Duration(minutes: 5),
 /// );
-/// 
+///
 /// // Get data
 /// final cachedPosts = await AppCacheService.instance.getCache('nearby_posts');
 /// if (cachedPosts != null) {
@@ -44,12 +44,12 @@ class AppCacheService {
 
   // Layer 1: Memory Cache (fast access)
   final Map<String, _CacheEntry> _memoryCache = {};
-  
+
   // Layer 2: Disk Cache (persistent)
   SharedPreferences? _prefs;
-  
+
   static const String _cachePrefix = 'app_cache_';
-  
+
   // 📊 PHASE 3: Performance Monitoring
   int _cacheHits = 0;
   int _cacheMisses = 0;
@@ -68,10 +68,10 @@ class AppCacheService {
     try {
       final now = DateTime.now();
       final expiry = now.add(ttl);
-      
+
       // Layer 1: Memory cache
       _memoryCache[key] = _CacheEntry(data: data, expiry: expiry);
-      
+
       // Layer 2: Disk cache
       if (_prefs == null) await initialize();
       final jsonData = jsonEncode({
@@ -79,9 +79,9 @@ class AppCacheService {
         'expiry': expiry.millisecondsSinceEpoch,
       });
       await _prefs!.setString('$_cachePrefix$key', jsonData);
-      
     } catch (e) {
-      ProductionLogger.warning('Failed to set cache for key: $key', error: e, tag: 'AppCacheService');
+      ProductionLogger.warning('Failed to set cache for key: $key',
+          error: e, tag: 'AppCacheService');
     }
   }
 
@@ -95,14 +95,14 @@ class AppCacheService {
         _memoryCacheHits++;
         return memoryEntry.data;
       }
-      
+
       // Layer 2: Check disk cache
       if (_prefs == null) await initialize();
       final jsonData = _prefs!.getString('$_cachePrefix$key');
       if (jsonData != null) {
         final decoded = jsonDecode(jsonData);
         final expiry = DateTime.fromMillisecondsSinceEpoch(decoded['expiry']);
-        
+
         if (DateTime.now().isBefore(expiry)) {
           // Valid cache, restore to memory
           final data = decoded['data'];
@@ -115,7 +115,7 @@ class AppCacheService {
           await removeCache(key);
         }
       }
-      
+
       _cacheMisses++;
       return null;
     } catch (e) {
@@ -140,7 +140,7 @@ class AppCacheService {
   Future<void> clearAll() async {
     _memoryCache.clear();
     if (_prefs == null) await initialize();
-    
+
     final keys = _prefs!.getKeys();
     for (final key in keys) {
       if (key.startsWith(_cachePrefix)) {
@@ -166,13 +166,14 @@ class AppCacheService {
         return expiry.difference(DateTime.now());
       }
     } catch (e) {
-      ProductionLogger.warning('Failed to get cache age for key: $key', error: e, tag: 'AppCacheService');
+      ProductionLogger.warning('Failed to get cache age for key: $key',
+          error: e, tag: 'AppCacheService');
     }
     return null;
   }
 
   /// Cache specific data types with smart TTL
-  
+
   /// Cache posts (5 minutes TTL)
   Future<void> cachePosts(String type, List<dynamic> posts) async {
     await setCache(
@@ -188,7 +189,8 @@ class AppCacheService {
   }
 
   /// Cache user profile (30 minutes TTL)
-  Future<void> cacheUserProfile(String userId, Map<String, dynamic> profile) async {
+  Future<void> cacheUserProfile(
+      String userId, Map<String, dynamic> profile) async {
     await setCache(
       key: 'profile_$userId',
       data: profile,
@@ -202,7 +204,8 @@ class AppCacheService {
   }
 
   /// Cache club data (15 minutes TTL)
-  Future<void> cacheClubData(String clubId, Map<String, dynamic> clubData) async {
+  Future<void> cacheClubData(
+      String clubId, Map<String, dynamic> clubData) async {
     await setCache(
       key: 'club_$clubId',
       data: clubData,
@@ -228,21 +231,26 @@ class AppCacheService {
     final data = await getCache('tournaments');
     return data != null ? List<dynamic>.from(data) : null;
   }
-  
+
   /// 📊 PHASE 3: Performance Monitoring
   /// Print cache statistics for debugging and optimization
   void printCacheStats() {
     final totalRequests = _cacheHits + _cacheMisses;
     if (totalRequests == 0) {
-      ProductionLogger.info('📊 Cache Stats: No requests yet', tag: 'AppCacheService');
+      ProductionLogger.info('📊 Cache Stats: No requests yet',
+          tag: 'AppCacheService');
       return;
     }
-    
+
     final hitRate = (_cacheHits / totalRequests * 100).toStringAsFixed(1);
-    ProductionLogger.info('📊 Cache Stats: Hits: $_cacheHits ($hitRate%), Misses: $_cacheMisses', tag: 'AppCacheService');
-    ProductionLogger.info('   Memory Hits: $_memoryCacheHits, Disk Hits: $_diskCacheHits', tag: 'AppCacheService');
+    ProductionLogger.info(
+        '📊 Cache Stats: Hits: $_cacheHits ($hitRate%), Misses: $_cacheMisses',
+        tag: 'AppCacheService');
+    ProductionLogger.info(
+        '   Memory Hits: $_memoryCacheHits, Disk Hits: $_diskCacheHits',
+        tag: 'AppCacheService');
   }
-  
+
   /// Reset cache statistics
   void resetStats() {
     _cacheHits = 0;
@@ -261,4 +269,3 @@ class _CacheEntry {
 
   bool get isExpired => DateTime.now().isAfter(expiry);
 }
-

@@ -36,26 +36,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (_usePhone) {
         // ✅ Improved phone OTP handling
         String phoneNumber = _phoneController.text.trim();
-        
+
         // Format phone number properly
         if (!phoneNumber.startsWith('0')) {
           phoneNumber = '0$phoneNumber';
         }
-        
-        
+
         final result = await AuthService.instance.sendPhoneOTP(phoneNumber);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Đã gửi mã OTP đến số điện thoại $phoneNumber', overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white),
+                'Đã gửi mã OTP đến số điện thoại $phoneNumber',
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 3),
             ),
           );
-          
+
           // Navigate to OTP verification screen
           Navigator.of(context).pushNamed(
             '/otp-verification',
@@ -69,14 +70,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       } else {
         // ✅ Improved email reset handling
         final email = _emailController.text.trim();
-        
+
         await AuthService.instance.resetPassword(email);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Đã gửi liên kết đặt lại mật khẩu đến $email. Vui lòng kiểm tra hộp thư của bạn.', overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white),
+                'Đã gửi liên kết đặt lại mật khẩu đến $email. Vui lòng kiểm tra hộp thư của bạn.',
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 4),
@@ -86,27 +89,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         }
       }
     } catch (e) {
-      
       if (mounted) {
         String errorMessage = e.toString().replaceAll('Exception: ', '');
-        
+
         // ✅ Better error messages for common cases
-        if (errorMessage.contains('not found') || errorMessage.contains('invalid')) {
+        if (errorMessage.contains('not found') ||
+            errorMessage.contains('invalid')) {
           if (_usePhone) {
             errorMessage = 'Không tìm thấy tài khoản với số điện thoại này';
           } else {
             errorMessage = 'Không tìm thấy tài khoản với email này';
           }
         } else if (errorMessage.contains('rate limit')) {
-          errorMessage = 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút';
+          errorMessage =
+              'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút';
         } else if (errorMessage.toLowerCase().contains('otp')) {
           errorMessage = 'Lỗi gửi OTP: $errorMessage';
         }
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              errorMessage, style: const TextStyle(color: Colors.white),
+              errorMessage,
+              style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
@@ -154,14 +159,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   const SizedBox(height: 24),
                   Text(
                     'Đặt lại mật khẩu',
-                    textAlign: TextAlign.center, style: theme.textTheme.headlineSmall?.copyWith(
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Nhập email hoặc số điện thoại đã đăng ký của bạn. Chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.',
-                    textAlign: TextAlign.center, style: theme.textTheme.bodyLarge?.copyWith(
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       color: Colors.grey[600],
                     ),
                   ),
@@ -179,7 +186,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             onTap: () {
                               setState(() => _usePhone = false);
                               // ✅ Focus email field when switching to email
-                              Future.delayed(const Duration(milliseconds: 100), () {
+                              Future.delayed(const Duration(milliseconds: 100),
+                                  () {
                                 _emailFocusNode.requestFocus();
                               });
                             },
@@ -203,7 +211,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Email', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                    'Email',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
                                       color: !_usePhone
                                           ? Colors.white
                                           : Colors.grey[600],
@@ -238,7 +248,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Điện thoại', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                    'Điện thoại',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
                                       color: _usePhone
                                           ? Colors.white
                                           : Colors.grey[600],
@@ -290,7 +302,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         }
                         return null;
                       },
-                      onFieldSubmitted: (_) => _sendResetLink(), // ✅ Submit on Enter
+                      onFieldSubmitted: (_) =>
+                          _sendResetLink(), // ✅ Submit on Enter
                     )
                   else
                     TextFormField(
@@ -316,7 +329,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             width: 2,
                           ),
                         ),
-                        errorStyle: const TextStyle(fontSize: 12), // ✅ Better error display
+                        errorStyle: const TextStyle(
+                            fontSize: 12), // ✅ Better error display
                       ),
                       keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.done,
@@ -325,8 +339,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           return 'Vui lòng nhập số điện thoại';
                         }
                         // ✅ Fix: Better phone validation
-                        final cleanedPhone = value.replaceAll(RegExp(r'[^0-9]'), '');
-                        if (cleanedPhone.length < 9 || cleanedPhone.length > 10) {
+                        final cleanedPhone =
+                            value.replaceAll(RegExp(r'[^0-9]'), '');
+                        if (cleanedPhone.length < 9 ||
+                            cleanedPhone.length > 10) {
                           return 'Số điện thoại phải có 9-10 chữ số';
                         }
                         if (!cleanedPhone.startsWith('0')) {
@@ -334,7 +350,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         }
                         return null;
                       },
-                      onFieldSubmitted: (_) => _sendResetLink(), // ✅ Submit on Enter
+                      onFieldSubmitted: (_) =>
+                          _sendResetLink(), // ✅ Submit on Enter
                     ),
                   const SizedBox(height: 32),
                   SizedBox(
@@ -360,7 +377,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  _usePhone ? 'Gửi mã OTP' : 'Gửi liên kết', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                                  _usePhone ? 'Gửi mã OTP' : 'Gửi liên kết',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -378,4 +397,3 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     ); // Close GestureDetector
   }
 }
-

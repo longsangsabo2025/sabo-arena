@@ -281,7 +281,8 @@ class AppSnackbar {
 /// context.showInfo('Thông tin');
 /// ```
 extension AppSnackbarExtension on BuildContext {
-  void showSuccess(String message, {String? actionLabel, VoidCallback? onActionPressed}) {
+  void showSuccess(String message,
+      {String? actionLabel, VoidCallback? onActionPressed}) {
     AppSnackbar.success(
       context: this,
       message: message,
@@ -290,7 +291,8 @@ extension AppSnackbarExtension on BuildContext {
     );
   }
 
-  void showError(String message, {String? actionLabel, VoidCallback? onActionPressed}) {
+  void showError(String message,
+      {String? actionLabel, VoidCallback? onActionPressed}) {
     AppSnackbar.error(
       context: this,
       message: message,
@@ -299,7 +301,8 @@ extension AppSnackbarExtension on BuildContext {
     );
   }
 
-  void showWarning(String message, {String? actionLabel, VoidCallback? onActionPressed}) {
+  void showWarning(String message,
+      {String? actionLabel, VoidCallback? onActionPressed}) {
     AppSnackbar.warning(
       context: this,
       message: message,
@@ -308,7 +311,8 @@ extension AppSnackbarExtension on BuildContext {
     );
   }
 
-  void showInfo(String message, {String? actionLabel, VoidCallback? onActionPressed}) {
+  void showInfo(String message,
+      {String? actionLabel, VoidCallback? onActionPressed}) {
     AppSnackbar.info(
       context: this,
       message: message,

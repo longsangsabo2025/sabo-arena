@@ -15,228 +15,448 @@ class AchievementCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final bool isCompleted = achievement.isCompleted;
+    final double progress = achievement.progressPercentage;
+
+    return Container(
       margin: EdgeInsets.zero,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12.sp),
-        child: Container(
-          padding: EdgeInsets.all(16.sp),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  // Achievement Icon
-                  Container(
-                    width: 48.sp,
-                    height: 48.sp,
-                    decoration: BoxDecoration(
-                      color: achievement.isCompleted
-                          ? Colors.amber.withValues(
-                              alpha: 0.2,
-                            )
-                          : Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8.sp),
-                    ),
-                    child: Icon(
-                      achievement.isCompleted
-                          ? Icons.emoji_events
-                          : Icons.emoji_events_outlined,
-                      color: achievement.isCompleted
-                          ? Colors.amber
-                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                      size: 24.sp,
-                    ),
-                  ),
-
-                  SizedBox(width: 12.sp),
-
-                  // Achievement Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          achievement.title,
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimaryLight,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          achievement.description,
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: AppTheme.textSecondaryLight,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Status Badge
-                  if (achievement.isCompleted)
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.sp),
+        gradient: LinearGradient(
+          colors: isCompleted
+              ? [Colors.amber[50]!, Colors.orange[50]!]
+              : [Colors.grey[50]!, Colors.grey[50]!],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: isCompleted ? Colors.amber[200]! : Colors.grey[200]!,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isCompleted
+                ? Colors.amber.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16.sp),
+          child: Padding(
+            padding: EdgeInsets.all(16.sp),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    // Achievement Icon with animation-ready styling
                     Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 8.sp,
-                        vertical: 4.sp,
-                      ),
+                      width: 48.sp,
+                      height: 48.sp,
                       decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4.sp),
+                        gradient: isCompleted
+                            ? LinearGradient(
+                                colors: [
+                                  Colors.amber[400]!,
+                                  Colors.orange[400]!
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : LinearGradient(
+                                colors: [Colors.grey[300]!, Colors.grey[200]!],
+                              ),
+                        borderRadius: BorderRadius.circular(12.sp),
+                        boxShadow: isCompleted
+                            ? [
+                                BoxShadow(
+                                  color: Colors.amber.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : [],
                       ),
-                      child: Text(
-                        'Hoàn thành',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.green,
+                      child: Icon(
+                        isCompleted
+                            ? Icons.emoji_events_rounded
+                            : Icons.emoji_events_outlined,
+                        color: isCompleted ? Colors.white : Colors.grey[500],
+                        size: 24.sp,
+                      ),
+                    ),
+
+                    SizedBox(width: 12.sp),
+
+                    // Achievement Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            achievement.title,
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimaryLight,
+                              letterSpacing: -0.2,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4.sp),
+                          Text(
+                            achievement.description,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppTheme.textSecondaryLight,
+                              height: 1.3,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(width: 8.sp),
+
+                    // Status Badge
+                    if (isCompleted)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.sp,
+                          vertical: 5.sp,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.green[400]!, Colors.teal[400]!],
+                          ),
+                          borderRadius: BorderRadius.circular(16.sp),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withValues(alpha: 0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle_rounded,
+                              size: 14.sp,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 4.sp),
+                            Text(
+                              'Hoàn thành',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                ],
-              ),
+                  ],
+                ),
 
-              SizedBox(height: 12.sp),
+                SizedBox(height: 16.sp),
 
-              // Progress Bar
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Tiến độ',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: AppTheme.textSecondaryLight,
-                        ),
-                      ),
-                      Text(
-                        '${achievement.progressCurrent}/${achievement.progressRequired}',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
-                          color: achievement.isCompleted
-                              ? Colors.green
-                              : AppTheme.textSecondaryLight,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 4.sp),
-
-                  LinearProgressIndicator(
-                    value: achievement.progressPercentage,
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      achievement.isCompleted
-                          ? Colors.green
-                          : AppTheme.primaryLight,
-                    ),
-                    minHeight: 6.sp,
-                  ),
-                ],
-              ),
-
-              // Achievement Type & Completion Date
-              SizedBox(height: 8.sp),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 6.sp,
-                      vertical: 2.sp,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getTypeColor().withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4.sp),
-                    ),
-                    child: Text(
-                      _getTypeText(),
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
-                        color: _getTypeColor(),
-                      ),
-                    ),
-                  ),
-
-                  if (achievement.isCompleted &&
-                      achievement.completedAt != null)
-                    Text(
-                      'Hoàn thành: ${achievement.completedAt!.day}/${achievement.completedAt!.month}',
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: AppTheme.textSecondaryLight,
-                      ),
-                    ),
-                ],
-              ),
-
-              // Rewards Info
-              if (achievement.isCompleted &&
-                  achievement.rewardVoucherIds?.isNotEmpty == true)
+                // Progress Section with better styling
                 Container(
-                  margin: EdgeInsets.only(top: 8.sp),
-                  padding: EdgeInsets.all(8.sp),
+                  padding: EdgeInsets.all(12.sp),
                   decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6.sp),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.sp),
+                    border: Border.all(
+                      color:
+                          isCompleted ? Colors.green[200]! : Colors.grey[200]!,
+                      width: 1,
+                    ),
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.local_offer, size: 16.sp, color: Colors.green),
-                      SizedBox(width: 6.sp),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Tiến độ hoàn thành',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppTheme.textSecondaryLight,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.sp,
+                              vertical: 4.sp,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isCompleted
+                                  ? Colors.green[50]
+                                  : Colors.grey[100],
+                              borderRadius: BorderRadius.circular(6.sp),
+                            ),
+                            child: Text(
+                              '${achievement.progressCurrent}/${achievement.progressRequired}',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.bold,
+                                color: isCompleted
+                                    ? Colors.green[700]
+                                    : AppTheme.textPrimaryLight,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 8.sp),
+
+                      // Styled progress bar
+                      Stack(
+                        children: [
+                          Container(
+                            height: 8.sp,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(4.sp),
+                            ),
+                          ),
+                          FractionallySizedBox(
+                            widthFactor: progress,
+                            child: Container(
+                              height: 8.sp,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: isCompleted
+                                      ? [Colors.green[400]!, Colors.teal[400]!]
+                                      : [
+                                          AppTheme.primaryLight,
+                                          AppTheme.primaryLight
+                                              .withValues(alpha: 0.7),
+                                        ],
+                                ),
+                                borderRadius: BorderRadius.circular(4.sp),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: isCompleted
+                                        ? Colors.green.withValues(alpha: 0.3)
+                                        : AppTheme.primaryLight
+                                            .withValues(alpha: 0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 6.sp),
+
+                      // Progress percentage
                       Text(
-                        'Đã nhận ${achievement.rewardVoucherIds!.length} voucher',
+                        '${(progress * 100).toInt()}% hoàn thành',
                         style: TextStyle(
                           fontSize: 11.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.green,
+                          color: AppTheme.textSecondaryLight,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     ],
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
+
+                // Achievement Type & Rewards in one row
+                if (achievement.isCompleted) ...[
+                  SizedBox(height: 12.sp),
+                  Container(
+                    padding: EdgeInsets.all(12.sp),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.green[50]!, Colors.teal[50]!],
+                      ),
+                      borderRadius: BorderRadius.circular(10.sp),
+                      border: Border.all(
+                        color: Colors.green[200]!,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.card_giftcard_rounded,
+                          size: 24.sp,
+                          color: Colors.green[600],
+                        ),
+                        SizedBox(width: 12.sp),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Phần thưởng đã nhận',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.green[700],
+                                ),
+                              ),
+                              SizedBox(height: 2.sp),
+                              Text(
+                                '${achievement.rewardVoucherIds?.length ?? 0} voucher khuyến mãi',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green[800],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (achievement.completedAt != null)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.sp,
+                              vertical: 4.sp,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6.sp),
+                            ),
+                            child: Text(
+                              '${achievement.completedAt!.day}/${achievement.completedAt!.month}',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ] else ...[
+                  SizedBox(height: 12.sp),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.sp,
+                          vertical: 6.sp,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              _getTypeColor().withValues(alpha: 0.2),
+                              _getTypeColor().withValues(alpha: 0.1),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(8.sp),
+                          border: Border.all(
+                            color: _getTypeColor().withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _getTypeIcon(),
+                              size: 14.sp,
+                              color: _getTypeColor(),
+                            ),
+                            SizedBox(width: 4.sp),
+                            Text(
+                              _getTypeText(),
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.bold,
+                                color: _getTypeColor(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Spacer(),
+                      Text(
+                        'Tiếp tục phấn đấu!',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: AppTheme.textSecondaryLight,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ], // Closes Column children
+            ), // Closes Column
+          ), // Closes Padding
+        ), // Closes InkWell
+      ), // Closes Material
+    ); // Closes Container
   }
 
   Color _getTypeColor() {
     switch (achievement.type) {
       case AchievementType.matchesPlayed:
       case AchievementType.matchesWon:
-        return Colors.blue;
+        return Colors.blue[600]!;
       case AchievementType.tournamentsJoined:
       case AchievementType.tournamentsWon:
-        return Colors.purple;
+        return Colors.purple[600]!;
       case AchievementType.clubVisits:
-        return Colors.orange;
+        return Colors.orange[600]!;
       case AchievementType.consecutiveDays:
-        return Colors.green;
+        return Colors.green[600]!;
       case AchievementType.spendingMilestone:
-        return Colors.amber;
+        return Colors.amber[700]!;
       case AchievementType.socialEngagement:
-        return Colors.pink;
+        return Colors.pink[600]!;
       case AchievementType.referralSuccess:
-        return Colors.teal;
+        return Colors.teal[600]!;
       case AchievementType.skillImprovement:
-        return Colors.indigo;
+        return Colors.indigo[600]!;
+    }
+  }
+
+  IconData _getTypeIcon() {
+    switch (achievement.type) {
+      case AchievementType.matchesPlayed:
+        return Icons.sports_esports_rounded;
+      case AchievementType.matchesWon:
+        return Icons.emoji_events_rounded;
+      case AchievementType.tournamentsJoined:
+        return Icons.event_rounded;
+      case AchievementType.tournamentsWon:
+        return Icons.military_tech_rounded;
+      case AchievementType.clubVisits:
+        return Icons.store_rounded;
+      case AchievementType.consecutiveDays:
+        return Icons.calendar_today_rounded;
+      case AchievementType.spendingMilestone:
+        return Icons.savings_rounded;
+      case AchievementType.socialEngagement:
+        return Icons.people_rounded;
+      case AchievementType.referralSuccess:
+        return Icons.share_rounded;
+      case AchievementType.skillImprovement:
+        return Icons.trending_up_rounded;
     }
   }
 

@@ -126,7 +126,8 @@ class DashboardStatsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String label, String value, {required IconData icon, required Color color, int index = 0}) {
+  Widget _buildStatCard(String label, String value,
+      {required IconData icon, required Color color, int index = 0}) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 300 + (index * 80)),
       curve: DesignTokens.curveEmphasized,

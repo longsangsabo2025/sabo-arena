@@ -2391,23 +2391,23 @@ const CHALLENGE_BETS = {
 
 ---
 
-#### **Rank Values:**
+#### **Rank Values (UPDATED 2025):**
 
 ```
-K:1, K+:2, I:3, I+:4, H:5, H+:6, G:7, G+:8,
-F:9, F+:10, E:11, E+:12
+K:1, I:2, H:3, H+:4, G:5, G+:6, F:7, F+:8, E:9, D:10, C:11
 ```
 
+**Note:** K+ and I+ removed in 2025 migration. System now uses 10 ranks.
 
 ---
 
 #### **Handicap Examples (300 SPA bet):**
 
 - K vs K (diff=0): No handicap → Race to 14
-- K vs K+ (diff=1): K gets +1.5 → K starts 1.5-0
-- K vs I (diff=2): K gets +2.0 → K starts 2-0
-- K vs I+ (diff=3): K gets +3.5 → K starts 3.5-0
-- K vs H (diff=4): K gets +4.0 → K starts 4-0
+- K vs I (diff=1): K gets +1.5 → K starts 1.5-0
+- K vs H (diff=2): K gets +2.0 → K starts 2-0
+- K vs H+ (diff=3): K gets +3.5 → K starts 3.5-0
+- K vs G (diff=4): K gets +4.0 → K starts 4-0
 
 
 ---

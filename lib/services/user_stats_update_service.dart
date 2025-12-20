@@ -13,7 +13,6 @@ class UserStatsUpdateService {
   /// Cập nhật toàn bộ thống kê của user từ database
   Future<void> updateUserStats(String userId) async {
     try {
-
       // 1. Đếm số trận thắng
       final winsResponse = await _supabase
           .from('matches')
@@ -59,18 +58,14 @@ class UserStatsUpdateService {
       // final currentWinStreak = await calculateWinStreak(userId); // Unused
 
       // 7. Cập nhật vào database
-      await _supabase
-          .from('users')
-          .update({
-            'total_wins': totalWins.toInt(),
-            'total_losses': totalLosses.toInt(),
-            'total_tournaments': totalTournaments.toInt(),
-            'spa_points': totalSpaPoints.toInt(),
-            'total_prize_pool': totalPrizePool.toInt(),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
-
+      await _supabase.from('users').update({
+        'total_wins': totalWins.toInt(),
+        'total_losses': totalLosses.toInt(),
+        'total_tournaments': totalTournaments.toInt(),
+        'spa_points': totalSpaPoints.toInt(),
+        'total_prize_pool': totalPrizePool.toInt(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
     } catch (e) {
       throw Exception('Failed to update user stats: $e');
     }
@@ -95,9 +90,8 @@ class UserStatsUpdateService {
           .select('user_id')
           .eq('tournament_id', tournamentId);
 
-      final userIds = participantsResponse
-          .map((p) => p['user_id'] as String)
-          .toList();
+      final userIds =
+          participantsResponse.map((p) => p['user_id'] as String).toList();
 
       await updateMultipleUserStats(userIds);
     } catch (e) {
@@ -174,4 +168,3 @@ class UserStatsUpdateService {
     }
   }
 }
-

@@ -4,7 +4,7 @@ import 'dart:async';
 
 /// Cost Monitoring Service
 /// Tracks resource usage to estimate costs and set up alerts
-/// 
+///
 /// Tracks:
 /// - Database queries (cost per query)
 /// - Storage usage (cost per GB)
@@ -21,7 +21,8 @@ class CostMonitoringService {
   static const double _costPerQuery = 0.000001; // $0.000001 per query (example)
   static const double _costPerGBStorage = 0.021; // $0.021 per GB/month
   static const double _costPerGBBandwidth = 0.09; // $0.09 per GB
-  static const double _costPerSubscription = 0.0001; // $0.0001 per subscription/hour
+  static const double _costPerSubscription =
+      0.0001; // $0.0001 per subscription/hour
 
   // Usage tracking
   int _totalQueries = 0;
@@ -37,8 +38,7 @@ class CostMonitoringService {
   void initialize() {
     // Reset daily usage at midnight
     _scheduleDailyReset();
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Schedule daily reset
@@ -130,7 +130,8 @@ class CostMonitoringService {
     final today = _getTodayUsage();
 
     final queryCost = today.queries * _costPerQuery;
-    final storageCost = (today.storageGB / 30) * _costPerGBStorage; // Daily portion
+    final storageCost =
+        (today.storageGB / 30) * _costPerGBStorage; // Daily portion
     final bandwidthCost = today.bandwidthGB * _costPerGBBandwidth;
     final subscriptionCost = today.subscriptionHours * _costPerSubscription;
 
@@ -219,7 +220,8 @@ class CostMonitoringService {
 
     // Check for high bandwidth usage
     if (today.bandwidthGB > 10) {
-      alerts.add('⚠️ High bandwidth usage today: ${today.bandwidthGB.toStringAsFixed(2)}GB');
+      alerts.add(
+          '⚠️ High bandwidth usage today: ${today.bandwidthGB.toStringAsFixed(2)}GB');
     }
 
     return alerts;
@@ -228,13 +230,10 @@ class CostMonitoringService {
   /// Print cost report
   void printCostReport() {
     if (kDebugMode) {
-
       // ignore: unused_local_variable
       final breakdown = getCostBreakdown();
 
       // costBreakdown and usage variables removed - only used in debug logs
-
-
     }
   }
 
@@ -260,5 +259,3 @@ class DailyUsage {
     required this.subscriptionHours,
   });
 }
-
-

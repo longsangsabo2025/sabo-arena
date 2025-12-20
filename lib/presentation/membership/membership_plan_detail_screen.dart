@@ -25,7 +25,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Gói ${planData['title']}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+          'Gói ${planData['title']}',
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
             color: Color(0xFF1C1E21),
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -64,7 +66,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                         Icon(planData['icon'], size: 48, color: Colors.white),
                         const SizedBox(height: 16),
                         Text(
-                          'Gói ${planData['title']}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                          'Gói ${planData['title']}',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 28,
                             fontWeight: FontWeight.w700,
@@ -72,7 +76,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          planData['description'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                          planData['description'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 16,
                             height: 1.4,
@@ -93,14 +99,18 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                planData['price'], overflow: TextOverflow.ellipsis, style: const TextStyle(
+                                planData['price'],
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               Text(
-                                planData['period'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                                planData['period'],
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.8),
                                   fontSize: 14,
                                 ),
@@ -132,7 +142,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Tính năng của gói ${planData['title']}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                          'Tính năng của gói ${planData['title']}',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             color: Color(0xFF1C1E21),
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
@@ -150,7 +162,8 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                                       width: 24,
                                       height: 24,
                                       decoration: BoxDecoration(
-                                        color: (planData['color'] as Color).withValues(
+                                        color: (planData['color'] as Color)
+                                            .withValues(
                                           alpha: 0.1,
                                         ),
                                         shape: BoxShape.circle,
@@ -172,7 +185,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            feature['title'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                                            feature['title'],
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
                                               color: feature['available']
                                                   ? const Color(0xFF1C1E21)
                                                   : Colors.grey,
@@ -184,7 +199,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                                               null) ...[
                                             const SizedBox(height: 4),
                                             Text(
-                                              feature['description'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                                              feature['description'],
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
                                                 color: feature['available']
                                                     ? const Color(0xFF65676B)
                                                     : Colors.grey,
@@ -227,9 +244,8 @@ class MembershipPlanDetailScreen extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: planType == 'free'
-                    ? null
-                    : () => _handleSubscribe(context),
+                onPressed:
+                    planType == 'free' ? null : () => _handleSubscribe(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: planData['color'],
                   foregroundColor: Colors.white,
@@ -241,7 +257,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
                 child: Text(
                   planType == 'free'
                       ? 'Gói hiện tại'
-                      : 'Đăng ký gói ${planData['title']}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                      : 'Đăng ký gói ${planData['title']}',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -251,7 +269,9 @@ class MembershipPlanDetailScreen extends StatelessWidget {
             if (planType != 'free') ...[
               const SizedBox(height: 12),
               Text(
-                'Có thể hủy bất cứ lúc nào • Không có phí ẩn', overflow: TextOverflow.ellipsis, style: TextStyle(color: const Color(0xFF65676B), fontSize: 14),
+                'Có thể hủy bất cứ lúc nào • Không có phí ẩn',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: const Color(0xFF65676B), fontSize: 14),
               ),
             ],
           ],

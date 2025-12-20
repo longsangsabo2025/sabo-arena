@@ -5,7 +5,7 @@ import '../../theme/app_theme.dart';
 import '../user/user_widgets.dart';
 
 /// Shareable Profile Card - Optimized for 4:5 ratio (Instagram/Facebook)
-/// 
+///
 /// Aspect Ratio: 0.8 (4:5)
 /// Recommended Size: 1080x1350px
 class ShareableProfileCard extends StatelessWidget {
@@ -38,7 +38,7 @@ class ShareableProfileCard extends StatelessWidget {
           children: [
             // Background Pattern
             _buildBackgroundPattern(),
-            
+
             // Content
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
@@ -46,24 +46,24 @@ class ShareableProfileCard extends StatelessWidget {
                 children: [
                   // Header with Logo
                   _buildHeader(),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // User Avatar & Name
                   _buildUserInfo(),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Stats Grid
                   _buildStatsGrid(),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Achievements
                   _buildAchievements(),
-                  
+
                   const Spacer(),
-                  
+
                   // QR Code & Call to Action
                   _buildFooter(),
                 ],
@@ -129,7 +129,7 @@ class ShareableProfileCard extends StatelessWidget {
             ),
           ],
         ),
-        
+
         // Badge
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -172,9 +172,9 @@ class ShareableProfileCard extends StatelessWidget {
             size: 120,
           ),
         ),
-        
+
         SizedBox(height: 2.h),
-        
+
         // Name
         Center(
           child: UserDisplayNameText(
@@ -189,9 +189,9 @@ class ShareableProfileCard extends StatelessWidget {
             ),
           ),
         ),
-        
+
         SizedBox(height: 1.h),
-        
+
         // Rank Badge
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -208,7 +208,8 @@ class ShareableProfileCard extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.workspace_premium, color: Colors.white, size: 20),
+              const Icon(Icons.workspace_premium,
+                  color: Colors.white, size: 20),
               const SizedBox(width: 6),
               Text(
                 user.rank ?? 'Rank K',

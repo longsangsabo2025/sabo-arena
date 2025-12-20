@@ -61,12 +61,12 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
     try {
       // Load matches for each status
       // Tab "Chờ" = accepted (đã chấp nhận, chờ bắt đầu)
-      final pending =
-          await _matchService.getClubMatches(clubId: widget.clubId, status: 'accepted');
-      final inProgress =
-          await _matchService.getClubMatches(clubId: widget.clubId, status: 'in_progress');
-      final completed =
-          await _matchService.getClubMatches(clubId: widget.clubId, status: 'completed');
+      final pending = await _matchService.getClubMatches(
+          clubId: widget.clubId, status: 'accepted');
+      final inProgress = await _matchService.getClubMatches(
+          clubId: widget.clubId, status: 'in_progress');
+      final completed = await _matchService.getClubMatches(
+          clubId: widget.clubId, status: 'completed');
 
       setState(() {
         _matches['pending'] = pending; // Key 'pending' nhưng data là 'accepted'
@@ -110,7 +110,7 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
     );
 
     if (!mounted) return;
-    
+
     if (!canInputScore) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +131,6 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
 
     if (result != null) {
       try {
-        
         await _matchService.updateMatchScore(
           matchId: match['id'],
           player1Score: result['player1Score']!,
@@ -151,8 +150,7 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
           );
         }
       }
-    } else {
-    }
+    } else {}
   }
 
   // Future<void> _completeMatch(Map<String, dynamic> match) async {
@@ -222,7 +220,7 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
 
   // Future<void> _toggleLiveStream(Map<String, dynamic> match) async {
   //   final isLive = match['is_live'] == true;
-  //   
+  //
   //   if (isLive) {
   //     // Disable live stream
   //     try {
@@ -243,7 +241,7 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
   //   } else {
   //     // Enable live stream - show dialog to input video URL
   //     final videoUrlController = TextEditingController();
-  //     
+  //
   //     final result = await showDialog<bool>(
   //       context: context,
   //       builder: (context) => AlertDialog(
@@ -320,17 +318,20 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
     // Challenges use challenger/challenged instead of player1/player2
     final player1 = challenge['challenger'] ?? {};
     final player2 = challenge['challenged'] ?? {};
-    
+
     final player1Rank = player1['rank'] as String?; // NULL = chưa xác minh
     final player2Rank = player2['rank'] as String?; // NULL = chưa xác minh
-    
+
     // Get player names with fallback: full_name → display_name → 'Player X'
-    final player1Name = player1['full_name'] ?? player1['display_name'] ?? 'Player 1';
-    final player2Name = player2['full_name'] ?? player2['display_name'] ?? 'Player 2';
-    
+    final player1Name =
+        player1['full_name'] ?? player1['display_name'] ?? 'Player 1';
+    final player2Name =
+        player2['full_name'] ?? player2['display_name'] ?? 'Player 2';
+
     return {
       'id': challenge['id'],
-      'clubId': challenge['location'] ?? widget.clubId, // location stores club info
+      'clubId':
+          challenge['location'] ?? widget.clubId, // location stores club info
       'player1Id': player1['id'],
       'player2Id': player2['id'],
       'player1Name': player1Name,
@@ -343,16 +344,18 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
       'player2Online': player2['is_online'] ?? false,
       'clubName': widget.clubName,
       'status': _mapStatus(challenge['status']),
-      'matchType': _mapMatchType(challenge['challenge_type']), // challenge_type not match_type
+      'matchType': _mapMatchType(
+          challenge['challenge_type']), // challenge_type not match_type
       'score1': challenge['player1_score']?.toString() ?? '0',
       'score2': challenge['player2_score']?.toString() ?? '0',
       'date': _formatDate(challenge['created_at']),
       'time': _formatTime(challenge['created_at']),
       'prize': _formatPrize(challenge),
-      'raceInfo': 'Race to ${challenge['race_to'] ?? 7}', // race_to is direct column
+      'raceInfo':
+          'Race to ${challenge['race_to'] ?? 7}', // race_to is direct column
       'handicap': _calculateHandicap(player1Rank, player2Rank),
       'winnerId': challenge['winner_id'],
-      
+
       // ✅ Add original challenge data for dialog
       'challenger': player1,
       'challenged': player2,
@@ -365,27 +368,27 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
     if (rank1 == null || rank2 == null) {
       return 'Chưa xác định';
     }
-    
+
     // SABO rank order: C > D > E > F > G+ > G > H+ > H > I+ > I > K+ > K
+    // MIGRATED 2025: Removed K+ and I+ - Updated rank values for 10-rank system
     const rankValues = {
-      'C': 11,   // Vô địch (2100 ELO)
-      'D': 10,   // Huyền Thoại (2000 ELO)
-      'E': 9,    // Cao thủ (1900 ELO)
-      'F': 8,    // Chuyên gia (1800 ELO)
-      'G+': 7,   // Thợ cả (1700 ELO)
-      'G': 6,    // Thợ giỏi (1600 ELO)
-      'H+': 5,   // Thợ chính (1500 ELO)
-      'H': 4,    // Thợ 1 (1400 ELO)
-      'I+': 3,   // Thợ 2 (1300 ELO)
-      'I': 2,    // Thợ 3 (1200 ELO)
-      'K+': 1,   // Học việc (1100 ELO)
-      'K': 0,    // Người mới (1000 ELO)
+      'C': 10, // Vô địch (1900+ ELO)
+      'D': 9, // Huyền thoại (1900-1999 ELO)
+      'E': 8, // Cao thủ (1800-1899 ELO)
+      'F+': 7, // Chuyên gia+ (1700-1799 ELO)
+      'F': 6, // Chuyên gia (1600-1699 ELO)
+      'G+': 5, // Thợ cả (1500-1599 ELO)
+      'G': 4, // Thợ giỏi (1400-1499 ELO)
+      'H+': 3, // Thợ chính (1300-1399 ELO)
+      'H': 2, // Thợ 1 (1200-1299 ELO)
+      'I': 1, // Thợ 3 (1100-1199 ELO)
+      'K': 0, // Người mới (1000-1099 ELO)
     };
-    
+
     final value1 = rankValues[rank1.toUpperCase()] ?? 0;
     final value2 = rankValues[rank2.toUpperCase()] ?? 0;
     final diff = (value1 - value2).abs();
-    
+
     if (diff == 0) {
       return 'Không cược';
     } else if (diff == 1) {
@@ -450,7 +453,7 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
   String _formatPrize(Map<String, dynamic> match) {
     final stakesType = match['stakes_type'];
     final amount = match['spa_stakes_amount'] ?? 0;
-    
+
     if (stakesType == 'spa_points' && amount > 0) {
       return '$amount SPA';
     }
@@ -472,7 +475,9 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
             Icon(Icons.sports_tennis, size: 64, color: Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
-              'Chưa có trận đấu nào', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600]),
+              'Chưa có trận đấu nào',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey[600]),
             ),
           ],
         ),
@@ -487,7 +492,7 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
         itemBuilder: (context, index) {
           final originalMatch = matches[index];
           final convertedMatch = _convertMatchForCard(originalMatch);
-          
+
           // 🎨 Use beautiful MatchCardWidget
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
@@ -497,7 +502,8 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
               onTap: () {
                 // TODO: Navigate to match detail screen
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Chi tiết trận đấu - Coming soon!')),
+                  const SnackBar(
+                      content: Text('Chi tiết trận đấu - Coming soon!')),
                 );
               },
             ),
@@ -516,7 +522,8 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
           children: [
             const Text('Quản lý trận đấu'),
             Text(
-              widget.clubName, style: const TextStyle(fontSize: 14),
+              widget.clubName,
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -546,4 +553,3 @@ class _ClubMatchManagementScreenState extends State<ClubMatchManagementScreen>
     );
   }
 }
-

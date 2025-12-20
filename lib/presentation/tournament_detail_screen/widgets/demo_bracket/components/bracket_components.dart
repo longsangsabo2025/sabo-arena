@@ -148,8 +148,7 @@ class MatchCard extends StatelessWidget {
     final player2IsWinner = isCompleted && winnerId == player2Id;
 
     // Debug print to see actual data
-    if (isCompleted) {
-    }
+    if (isCompleted) {}
 
     return Container(
       width: 180, // TĂNG từ 160 lên 180 để có chỗ cho avatar lớn hơn
@@ -283,9 +282,8 @@ class PlayerRow extends StatelessWidget {
   Widget build(BuildContext context) {
     // Debug: Log avatar URLs to verify they're being fetched
     if (avatarUrl != null && avatarUrl!.isNotEmpty) {
-    } else {
-    }
-    
+    } else {}
+
     return Row(
       children: [
         // Avatar with fallback to initials - LARGER & MORE VISIBLE
@@ -293,9 +291,7 @@ class PlayerRow extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: isWinner
-                  ? const Color(0xFF2E86AB)
-                  : Colors.grey.shade300,
+              color: isWinner ? const Color(0xFF2E86AB) : Colors.grey.shade300,
               width: 2,
             ),
             boxShadow: [
@@ -377,12 +373,12 @@ class RoundColumn extends StatelessWidget {
     // Vòng 3 (roundIndex=2): spacing tăng gấp 4
     // ...
     final double baseSpacing = isFullscreen == true ? 8.0 : 4.0;
-    
+
     // Công thức: baseSpacing * 2^roundIndex
     // Nhưng giới hạn tối đa để tránh quá lớn
     final multiplier = 1 << roundIndex!; // 2^roundIndex
     final calculatedSpacing = baseSpacing * multiplier;
-    
+
     // Giới hạn spacing tối đa để tránh layout vỡ
     const double maxSpacing = 128.0;
     return calculatedSpacing > maxSpacing ? maxSpacing : calculatedSpacing;
@@ -390,8 +386,7 @@ class RoundColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLast =
-        roundIndex != null &&
+    final isLast = roundIndex != null &&
         totalRounds != null &&
         roundIndex == totalRounds! - 1;
     final spacing = _calculateMatchSpacing(); // Dùng spacing động
@@ -411,7 +406,8 @@ class RoundColumn extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: const Color(0xFF2E86AB),
-              borderRadius: BorderRadius.circular(isFullscreen == true ? 12 : 10),
+              borderRadius:
+                  BorderRadius.circular(isFullscreen == true ? 12 : 10),
             ),
             child: Text(
               title,
@@ -573,4 +569,3 @@ class ConnectorPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
-

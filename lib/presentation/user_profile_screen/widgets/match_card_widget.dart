@@ -5,6 +5,7 @@ import '../../../services/match_service.dart'; // Import Match model
 // ELON_MODE_AUTO_FIX
 import 'package:sabo_arena/widgets/club/club_logo_widget.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
+import '../../../widgets/common/app_button.dart';
 
 /// Match Card Widget - Hiển thị thông tin trận đấu theo thiết kế mới
 /// Design: 2 players (left vs right) với match info ở giữa
@@ -24,8 +25,9 @@ class MatchCardWidget extends StatefulWidget {
     this.onShareTap,
     this.onInputScore,
     this.bottomAction,
-  }) : assert(matchMap != null || matchObj != null, 'Either matchMap or matchObj must be provided');
-  
+  }) : assert(matchMap != null || matchObj != null,
+            'Either matchMap or matchObj must be provided');
+
   @override
   State<MatchCardWidget> createState() => _MatchCardWidgetState();
 }
@@ -41,12 +43,13 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
     super.initState();
     _checkScoreInputPermission();
   }
-  
+
   Future<void> _checkScoreInputPermission() async {
     try {
       // Get club_id from match data
-      final clubId = widget.matchObj?.clubId ?? widget.matchMap?['clubId'] as String?;
-      
+      final clubId =
+          widget.matchObj?.clubId ?? widget.matchMap?['clubId'] as String?;
+
       if (clubId == null || clubId.isEmpty) {
         // No club → no permission needed
         if (mounted) {
@@ -57,7 +60,7 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
         }
         return;
       }
-      
+
       // Get current user
       final currentUser = await _userService.getCurrentUserProfile();
       if (currentUser == null) {
@@ -69,10 +72,11 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
         }
         return;
       }
-      
+
       // ✅ Check if user is CLB owner
-      final isOwner = await _permissionService.isClubOwner(clubId, currentUser.id);
-      
+      final isOwner =
+          await _permissionService.isClubOwner(clubId, currentUser.id);
+
       if (mounted) {
         setState(() {
           _canInputScore = isOwner;
@@ -103,7 +107,7 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
     final String? player2Rank;
     final String? player2Avatar;
     final bool player2Online;
-    
+
     if (widget.matchObj != null) {
       final m = widget.matchObj!;
       player1Id = m.player1Id;
@@ -148,7 +152,7 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
     final String prize;
     final String raceInfo;
     final String currentTable;
-    
+
     // Winner info
     final String? winnerId;
 
@@ -159,10 +163,10 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
       clubName = null; // Match model doesn't have clubName directly yet
       clubLogo = null;
       clubAddress = null;
-      
+
       status = m.status;
       matchType = null; // Not in Match model
-      
+
       if (m.scheduledTime != null) {
         // Format date/time
         // We need intl here, but let's assume it's imported or use basic string
@@ -170,13 +174,15 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
         // But wait, intl is likely available. Let's try to use it if possible or stick to basic.
         // Actually, let's use basic formatting for now to be safe and fast.
         final dt = m.scheduledTime!;
-        date = "${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}";
-        time = "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
+        date =
+            "${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}";
+        time =
+            "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
       } else {
         date = 'T7 - 06/09';
         time = '19:00';
       }
-      
+
       score1 = m.player1Score.toString();
       score2 = m.player2Score.toString();
       handicap = m.notes ?? 'Handicap 0.5 ván';
@@ -189,7 +195,7 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
       clubName = m['clubName'] as String?;
       clubLogo = m['clubLogo'] as String?;
       clubAddress = m['clubAddress'] as String?;
-      
+
       status = m['status'] as String? ?? 'ready';
       matchType = m['matchType'] as String?;
       date = m['date'] as String? ?? 'T7 - 06/09';
@@ -279,12 +285,17 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
                   children: [
                     // Date & Time - Highlighted
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                        color: Theme.of(context)
+                            .primaryColor
+                            .withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                          color: Theme.of(context)
+                              .primaryColor
+                              .withValues(alpha: 0.1),
                         ),
                       ),
                       child: Column(
@@ -449,7 +460,7 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
                 ),
               ),
             ],
-            
+
             // ✅ NEW: Score Input Button (CLB Owner only)
             if (_canInputScore && widget.onInputScore != null) ...[
               const SizedBox(height: 12),
@@ -469,32 +480,19 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
                     ),
                   ],
                 ),
-                child: ElevatedButton.icon(
+                child: AppButton(
+                  label: 'Nhập tỷ số',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.medium,
+                  icon: Icons.edit_note,
+                  iconTrailing: false,
+                  customColor: Colors.transparent,
+                  customTextColor: Colors.white,
                   onPressed: widget.onInputScore,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  icon: const Icon(
-                    Icons.edit_note,
-                    size: 20,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Nhập tỷ số',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
                 ),
               ),
             ],
-            
+
             // ✅ Loading indicator while checking permission
             if (_isCheckingPermission) ...[
               const SizedBox(height: 8),
@@ -504,7 +502,8 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
                   height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00695C)),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF00695C)),
                   ),
                 ),
               ),
@@ -579,7 +578,8 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
       decoration: BoxDecoration(
         color: isChallenge
             ? const Color(0xFFE53935).withValues(alpha: 0.1) // Đỏ cho thách đấu
-            : const Color(0xFF1976D2).withValues(alpha: 0.1), // Xanh cho giao lưu
+            : const Color(0xFF1976D2)
+                .withValues(alpha: 0.1), // Xanh cho giao lưu
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isChallenge
@@ -693,9 +693,11 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: isWinner ? FontWeight.w800 : FontWeight.w700,
-              color: isWaiting 
+              color: isWaiting
                   ? const Color(0xFF9E9E9E) // Grey for waiting
-                  : (isWinner ? const Color(0xFFF57F17) : const Color(0xFF212121)),
+                  : (isWinner
+                      ? const Color(0xFFF57F17)
+                      : const Color(0xFF212121)),
               fontStyle: isWaiting ? FontStyle.italic : FontStyle.normal,
             ),
             textAlign: TextAlign.center,
@@ -822,4 +824,3 @@ class _MatchCardWidgetState extends State<MatchCardWidget> {
     );
   }
 }
-

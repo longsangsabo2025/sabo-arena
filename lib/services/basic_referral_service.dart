@@ -110,10 +110,8 @@ class BasicReferralService {
       });
 
       // Update code usage count
-      await _supabase
-          .from('referral_codes')
-          .update({'current_uses': currentUses + 1})
-          .eq('id', codeResponse['id']);
+      await _supabase.from('referral_codes').update(
+          {'current_uses': currentUses + 1}).eq('id', codeResponse['id']);
 
       // Award SPA to both users
       await awardSpaToUser(codeResponse['user_id'], referrerReward);
@@ -146,11 +144,10 @@ class BasicReferralService {
       // Update user SPA balance
       await _supabase
           .from('users')
-          .update({'spa_balance': newSpa})
-          .eq('id', userId);
-
+          .update({'spa_balance': newSpa}).eq('id', userId);
     } catch (e) {
-      ProductionLogger.error('Failed to add SPA reward', error: e, tag: 'BasicReferralService');
+      ProductionLogger.error('Failed to add SPA reward',
+          error: e, tag: 'BasicReferralService');
     }
   }
 
@@ -236,4 +233,3 @@ class BasicReferralService {
     }
   }
 }
-

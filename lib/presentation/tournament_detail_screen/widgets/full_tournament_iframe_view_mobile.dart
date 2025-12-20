@@ -14,7 +14,8 @@ class FullTournamentIframeView extends StatefulWidget {
   });
 
   @override
-  State<FullTournamentIframeView> createState() => _FullTournamentIframeViewState();
+  State<FullTournamentIframeView> createState() =>
+      _FullTournamentIframeViewState();
 }
 
 class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
@@ -44,16 +45,18 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
     // Build URL with proper format
     final url = 'https://saboarena.com/tournament/${widget.tournamentId}/full';
     _debugUrl = url;
-    
-    ProductionLogger.info('🌐 Loading Full Tournament URL: $url', tag: 'full_tournament_iframe_view_mobile');
-    
+
+    ProductionLogger.info('🌐 Loading Full Tournament URL: $url',
+        tag: 'full_tournament_iframe_view_mobile');
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0xFF0F172A)) // Dark background
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
-            ProductionLogger.info('📄 Page started: $url', tag: 'full_tournament_iframe_view_mobile');
+            ProductionLogger.info('📄 Page started: $url',
+                tag: 'full_tournament_iframe_view_mobile');
             if (mounted) {
               setState(() {
                 _isLoading = true;
@@ -62,7 +65,8 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
             }
           },
           onPageFinished: (String url) {
-            ProductionLogger.info('✅ Page finished: $url', tag: 'full_tournament_iframe_view_mobile');
+            ProductionLogger.info('✅ Page finished: $url',
+                tag: 'full_tournament_iframe_view_mobile');
             if (mounted) {
               setState(() {
                 _isLoading = false;
@@ -70,12 +74,17 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
             }
           },
           onWebResourceError: (WebResourceError error) {
-            ProductionLogger.info('❌ WebView Error:', tag: 'full_tournament_iframe_view_mobile');
-            ProductionLogger.info('   Type: ${error.errorType}', tag: 'full_tournament_iframe_view_mobile');
-            ProductionLogger.info('   Code: ${error.errorCode}', tag: 'full_tournament_iframe_view_mobile');
-            ProductionLogger.info('   Description: ${error.description}', tag: 'full_tournament_iframe_view_mobile');
-            ProductionLogger.info('   URL: ${error.url}', tag: 'full_tournament_iframe_view_mobile');
-            
+            ProductionLogger.info('❌ WebView Error:',
+                tag: 'full_tournament_iframe_view_mobile');
+            ProductionLogger.info('   Type: ${error.errorType}',
+                tag: 'full_tournament_iframe_view_mobile');
+            ProductionLogger.info('   Code: ${error.errorCode}',
+                tag: 'full_tournament_iframe_view_mobile');
+            ProductionLogger.info('   Description: ${error.description}',
+                tag: 'full_tournament_iframe_view_mobile');
+            ProductionLogger.info('   URL: ${error.url}',
+                tag: 'full_tournament_iframe_view_mobile');
+
             if (mounted) {
               setState(() {
                 _isLoading = false;
@@ -88,7 +97,9 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
             }
           },
           onHttpError: (HttpResponseError error) {
-            ProductionLogger.info('🔴 HTTP Error: ${error.response?.statusCode}', tag: 'full_tournament_iframe_view_mobile');
+            ProductionLogger.info(
+                '🔴 HTTP Error: ${error.response?.statusCode}',
+                tag: 'full_tournament_iframe_view_mobile');
           },
         ),
       )
@@ -120,7 +131,8 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              ProductionLogger.info('🔄 Manual reload triggered', tag: 'full_tournament_iframe_view_mobile');
+              ProductionLogger.info('🔄 Manual reload triggered',
+                  tag: 'full_tournament_iframe_view_mobile');
               _controller.reload();
             },
             tooltip: 'Tải lại',
@@ -173,23 +185,29 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.error_outline, size: 72, color: Colors.red[700]),
+                          Icon(Icons.error_outline,
+                              size: 72, color: Colors.red[700]),
                           const SizedBox(height: 16),
                           Text(
                             _errorMessage!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14, color: Colors.red[900], fontFamily: 'monospace'),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.red[900],
+                                fontFamily: 'monospace'),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'URL: $_debugUrl',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey[700]),
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton.icon(
                             onPressed: () {
-                              ProductionLogger.info('🔄 Retry button pressed', tag: 'full_tournament_iframe_view_mobile');
+                              ProductionLogger.info('🔄 Retry button pressed',
+                                  tag: 'full_tournament_iframe_view_mobile');
                               _controller.reload();
                             },
                             icon: const Icon(Icons.refresh),

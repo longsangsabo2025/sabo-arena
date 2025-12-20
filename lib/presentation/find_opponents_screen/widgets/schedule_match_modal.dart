@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../core/design_system/design_system.dart';
 import '../../../widgets/common/app_button.dart';
 import '../../../widgets/common/app_snackbar.dart';
 import '../../../services/challenge_service.dart';

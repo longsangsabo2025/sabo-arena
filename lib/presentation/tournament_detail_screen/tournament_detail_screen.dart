@@ -24,6 +24,7 @@ import './widgets/payment_options_dialog.dart';
 import '../tournament_management_center/widgets/bracket_management_tab.dart';
 import './widgets/tournament_header_widget.dart';
 import '../tournament_prize_voucher/tournament_prize_voucher_setup_screen.dart';
+import '../../widgets/common/app_button.dart';
 import 'package:sabo_arena/utils/production_logger.dart';
 
 import 'widgets/tabs/tournament_detail_overview_tab.dart';
@@ -57,8 +58,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   String? _tournamentId;
   UserProfile? _currentUser;
   EligibilityResult? _eligibilityResult;
-
-
 
   // Tournament rules - default fallback if not provided by API
   final List<String> _tournamentRules = [
@@ -144,7 +143,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       try {
         _currentUser = await UserService.instance.getCurrentUserProfile();
       } catch (e) {
-        ProductionLogger.warning('Failed to load current user', error: e, tag: 'TournamentDetailScreen');
+        ProductionLogger.warning('Failed to load current user',
+            error: e, tag: 'TournamentDetailScreen');
       }
 
       // Check eligibility
@@ -159,7 +159,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       // Convert tournament model to UI data format
       _convertTournamentToUIData();
 
-
       setState(() {
         _isLoading = false;
       });
@@ -173,17 +172,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
 
   void _convertTournamentToUIData() {
     if (_tournament == null) return;
-
-
   }
-
-
-
-
-
-
-
-
 
   @override
   void dispose() {
@@ -213,21 +202,27 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
             Icon(Icons.error_outline, size: 64, color: AppColors.gray400),
             const SizedBox(height: 16),
             Text(
-              'Không thể tải thông tin giải đấu', overflow: TextOverflow.ellipsis, style: Theme.of(
+              'Không thể tải thông tin giải đấu',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 8),
             Text(
-              _error!, overflow: TextOverflow.ellipsis, style: Theme.of(
+              _error!,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: AppColors.textTertiary),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
+            AppButton(
+              label: 'Thử lại',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
               onPressed: _loadTournamentData,
-              child: const Text('Thử lại'),
             ),
           ],
         ),
@@ -248,7 +243,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   Widget _buildResponsiveBody() {
     final isIPad = DeviceInfo.isIPad(context);
     final maxWidth = isIPad ? 1200.0 : double.infinity; // Wider for brackets
-    
+
     final bodyWidget = Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),
@@ -317,7 +312,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
         ), // NestedScrollView
       ), // ConstrainedBox
     ); // Center
-    
+
     return Scaffold(
       body: bodyWidget,
       floatingActionButton: _buildFloatingActionButton(),
@@ -332,11 +327,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       eligibilityResult: _eligibilityResult,
       tournament: _tournament!,
       isRegistered: _isRegistered,
-      onRegisterTap: _eligibilityResult?.isEligible == true 
-          ? _handleRegistration 
-          : null,
+      onRegisterTap:
+          _eligibilityResult?.isEligible == true ? _handleRegistration : null,
       onRegisterWithPayment: _eligibilityResult?.isEligible == true
-          ? (paymentMethod) => _performRegistration(paymentMethod: paymentMethod)
+          ? (paymentMethod) =>
+              _performRegistration(paymentMethod: paymentMethod)
           : null,
       onWithdrawTap: _handleWithdrawal,
     );
@@ -376,9 +371,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
     // Don't show button if tournament data is not loaded
     if (_tournament == null) return null;
 
-    final isDeadlinePassed = DateTime.now().isAfter(_tournament!.registrationDeadline);
-    final isFull = _tournament!.currentParticipants >= _tournament!.maxParticipants;
-    
+    final isDeadlinePassed =
+        DateTime.now().isAfter(_tournament!.registrationDeadline);
+    final isFull =
+        _tournament!.currentParticipants >= _tournament!.maxParticipants;
+
     // Determine button state
     String buttonText;
     Color buttonColor;
@@ -418,7 +415,7 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
         return Transform.scale(
           scale: value,
           child: Opacity(
-            opacity: value,
+            opacity: value.clamp(0.0, 1.0),
             child: FloatingActionButton.extended(
               heroTag: 'tournament_detail_action',
               onPressed: onPressed,
@@ -431,7 +428,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
               ),
               icon: Icon(buttonIcon, size: 20),
               label: Text(
-                buttonText, style: const TextStyle(
+                buttonText,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.2,
@@ -477,7 +475,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
             ),
             const SizedBox(height: 24),
             const Text(
-              'Đăng ký của bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Đăng ký của bạn',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -558,7 +558,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title, style: const TextStyle(
+                    title,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
@@ -566,7 +567,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    subtitle, style: const TextStyle(
+                    subtitle,
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       color: AppColors.textSecondary,
@@ -584,13 +586,13 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
 
   void _handlePayment() {
     // TODO: Implement payment logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tính năng thanh toán đang được phát triển'),
-          backgroundColor: AppColors.info600,
-        ),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Tính năng thanh toán đang được phát triển'),
+        backgroundColor: AppColors.info600,
+      ),
+    );
+  }
 
   void _showRegistrationDetails() {
     // TODO: Show detailed registration info
@@ -647,7 +649,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
 
       _showMessage('✅ Đã chia sẻ giải đấu!');
     } catch (e) {
-      
       if (!mounted) return;
       Navigator.pop(context); // Close loading dialog
 
@@ -656,7 +657,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   void _handleRegistration() {
-
     if (_tournament == null) {
       _showMessage('Không thể tải thông tin giải đấu', isError: true);
       return;
@@ -671,7 +671,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
         entryFee: _tournament!.entryFee,
         clubId: _tournament?.clubId ?? '',
         onPaymentConfirmed: (paymentMethod) async {
-
           // Perform registration with selected payment method
           await _performRegistration(paymentMethod: paymentMethod);
         },
@@ -680,7 +679,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   Future<void> _performRegistration({String? paymentMethod}) async {
-
     try {
       // Show loading message
       _showMessage('Đang xử lý đăng ký...', duration: 2);
@@ -690,7 +688,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
         _tournamentId!,
         paymentMethod: paymentMethod ?? '0', // Use provided method or default
       );
-
 
       if (success && mounted) {
         // Update UI state
@@ -705,21 +702,22 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
         String successMessage;
         if (paymentMethod == '1') {
           // Bank transfer - needs club confirmation
-          successMessage = 'Đăng ký thành công! Vui lòng chờ CLB xác nhận thanh toán.';
+          successMessage =
+              'Đăng ký thành công! Vui lòng chờ CLB xác nhận thanh toán.';
         } else if (paymentMethod == '0') {
           // Cash payment at venue
-          successMessage = 'Đăng ký thành công! Vui lòng thanh toán tại quán khi đến thi đấu.';
+          successMessage =
+              'Đăng ký thành công! Vui lòng thanh toán tại quán khi đến thi đấu.';
         } else {
           // Default message
           successMessage = 'Đăng ký thành công!';
         }
-        
+
         _showMessage(
           successMessage,
           isError: false,
           duration: 5,
         );
-
       } else {
         throw Exception('Registration service returned false');
       }
@@ -753,23 +751,34 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Xác nhận rút lui', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          'Xác nhận rút lui',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         content: Text(
-          'Bạn có chắc chắn muốn rút lui khỏi giải đấu này? Lệ phí đã đóng sẽ được hoàn trả 80%.', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium,
+          'Bạn có chắc chắn muốn rút lui khỏi giải đấu này? Lệ phí đã đóng sẽ được hoàn trả 80%.',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Hủy', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              'Hủy',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Rút lui',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            customColor: Theme.of(context).colorScheme.error,
+            customTextColor: Theme.of(context).colorScheme.onError,
             onPressed: () {
               final scaffoldMessenger = ScaffoldMessenger.of(context);
               Navigator.pop(context);
@@ -780,9 +789,12 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                 scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Đã rút lui khỏi giải đấu thành công', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                      ),
+                      'Đã rút lui khỏi giải đấu thành công',
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onInverseSurface,
+                          ),
                     ),
                     backgroundColor:
                         Theme.of(context).colorScheme.inverseSurface,
@@ -790,14 +802,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: Text(
-              'Rút lui', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onError,
-              ),
-            ),
           ),
         ],
       ),
@@ -805,7 +809,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
   }
 
   void _handleViewAllParticipants() {
-    final participantsData = {}; // _convertParticipantsToUIData() // Temporarily disabled;
+    final participantsData =
+        {}; // _convertParticipantsToUIData() // Temporarily disabled;
 
     showModalBottomSheet(
       context: context,
@@ -828,8 +833,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                     height: 4,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.outline.withValues(
-                        alpha: 0.3,
-                      ),
+                            alpha: 0.3,
+                          ),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -837,8 +842,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                   Text(
                     'Danh sách tham gia (${participantsData.length})',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ],
               ),
@@ -856,7 +861,9 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
                             .withValues(alpha: 0.2),
                         width: 1,
                       ),
@@ -865,7 +872,11 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                       children: [
                         Expanded(
                           child: Text(
-                            '${index + 1}', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium
+                            '${index + 1}',
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.primary,
@@ -895,11 +906,18 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                participant["name"] as String, style: Theme.of(context).textTheme.bodyLarge
+                                participant["name"] as String,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
                                     ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                'Rank ${participant["rank"]} • ${participant["elo"]} ELO', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall
+                                'Rank ${participant["rank"]} • ${participant["elo"]} ELO',
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
                                     ?.copyWith(
                                       color: Theme.of(context)
                                           .colorScheme
@@ -1073,7 +1091,8 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
                 title: const Text('Chụp ảnh'),
                 onTap: () async {
                   final picker = ImagePicker();
-                  final image = await picker.pickImage(source: ImageSource.camera);
+                  final image =
+                      await picker.pickImage(source: ImageSource.camera);
                   if (context.mounted) {
                     Navigator.pop(context, image);
                   }
@@ -1081,11 +1100,13 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
               ),
               // Gallery option
               ListTile(
-                leading: const Icon(Icons.photo_library, color: AppColors.info600),
+                leading:
+                    const Icon(Icons.photo_library, color: AppColors.info600),
                 title: const Text('Chọn từ thư viện'),
                 onTap: () async {
                   final picker = ImagePicker();
-                  final image = await picker.pickImage(source: ImageSource.gallery);
+                  final image =
+                      await picker.pickImage(source: ImageSource.gallery);
                   if (context.mounted) {
                     Navigator.pop(context, image);
                   }
@@ -1113,9 +1134,10 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
     try {
       // Read file bytes
       final bytes = await result.readAsBytes();
-      
+
       // Upload and update cover
-      final updatedTournament = await _tournamentService.uploadAndUpdateTournamentCover(
+      final updatedTournament =
+          await _tournamentService.uploadAndUpdateTournamentCover(
         _tournament!.id,
         bytes,
         result.name,
@@ -1128,7 +1150,6 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
         // Update UI
         setState(() {
           _tournament = updatedTournament;
-
         });
 
         // Show success message
@@ -1174,4 +1195,3 @@ class _TournamentDetailScreenState extends State<TournamentDetailScreen>
     }
   }
 }
-

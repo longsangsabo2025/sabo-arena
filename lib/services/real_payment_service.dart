@@ -41,7 +41,8 @@ class RealPaymentService {
       return response;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error creating payment record: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error creating payment record: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -54,13 +55,12 @@ class RealPaymentService {
     String? qrImageUrl,
   }) async {
     try {
-      await _supabase
-          .from('payments')
-          .update({'qr_data': qrData, 'qr_image_url': qrImageUrl})
-          .eq('id', paymentId);
+      await _supabase.from('payments').update(
+          {'qr_data': qrData, 'qr_image_url': qrImageUrl}).eq('id', paymentId);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error updating payment QR: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error updating payment QR: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -73,23 +73,19 @@ class RealPaymentService {
     Map<String, dynamic>? webhookData,
   }) async {
     try {
-      await _supabase
-          .from('payments')
-          .update({
-            'status': 'completed',
-            'transaction_id': transactionId,
-            'webhook_data': webhookData != null
-                ? json.encode(webhookData)
-                : null,
-            'completed_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', paymentId);
+      await _supabase.from('payments').update({
+        'status': 'completed',
+        'transaction_id': transactionId,
+        'webhook_data': webhookData != null ? json.encode(webhookData) : null,
+        'completed_at': DateTime.now().toIso8601String(),
+      }).eq('id', paymentId);
 
       // Cập nhật số dư CLB nếu cần
       await _updateClubBalance(paymentId);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error confirming payment: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error confirming payment: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -115,7 +111,8 @@ class RealPaymentService {
       );
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error updating club balance: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error updating club balance: $e',
+            tag: 'real_payment_service');
       }
     }
   }
@@ -128,14 +125,11 @@ class RealPaymentService {
     int offset = 0,
   }) async {
     try {
-      var queryBuilder = _supabase
-          .from('payments')
-          .select('''
+      var queryBuilder = _supabase.from('payments').select('''
             id, amount, description, status, payment_method,
             created_at, completed_at, transaction_id,
             users:user_id(full_name, phone)
-          ''')
-          .eq('club_id', clubId);
+          ''').eq('club_id', clubId);
 
       if (userId != null) {
         queryBuilder = queryBuilder.eq('user_id', userId);
@@ -148,7 +142,8 @@ class RealPaymentService {
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error getting payment history: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error getting payment history: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -161,8 +156,7 @@ class RealPaymentService {
     DateTime? toDate,
   }) async {
     try {
-      final from =
-          fromDate?.toIso8601String() ??
+      final from = fromDate?.toIso8601String() ??
           DateTime.now().subtract(const Duration(days: 30)).toIso8601String();
       final to = toDate?.toIso8601String() ?? DateTime.now().toIso8601String();
 
@@ -174,7 +168,8 @@ class RealPaymentService {
       return response;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error getting payment stats: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error getting payment stats: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -198,24 +193,23 @@ class RealPaymentService {
         'bank_enabled': bankEnabled,
         'ewallet_enabled': ewalletEnabled,
         'vnpay_enabled': vnpayEnabled,
-        'bank_accounts': bankAccounts != null
-            ? json.encode(bankAccounts)
-            : '[]',
-        'ewallet_accounts': ewalletAccounts != null
-            ? json.encode(ewalletAccounts)
-            : '[]',
+        'bank_accounts':
+            bankAccounts != null ? json.encode(bankAccounts) : '[]',
+        'ewallet_accounts':
+            ewalletAccounts != null ? json.encode(ewalletAccounts) : '[]',
         'vnpay_config': vnpayConfig != null ? json.encode(vnpayConfig) : null,
         'updated_at': DateTime.now().toIso8601String(),
       };
 
       // Use upsert with onConflict to handle duplicate club_id
       await _supabase.from('club_payment_settings').upsert(
-        settingsData,
-        onConflict: 'club_id', // Specify the unique constraint column
-      );
+            settingsData,
+            onConflict: 'club_id', // Specify the unique constraint column
+          );
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error saving payment settings: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error saving payment settings: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -251,7 +245,8 @@ class RealPaymentService {
       return response;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error getting payment settings: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error getting payment settings: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -274,8 +269,7 @@ class RealPaymentService {
         'amount': amount,
         'description': description,
         'status': 'pending',
-        'due_date':
-            dueDate?.toIso8601String() ??
+        'due_date': dueDate?.toIso8601String() ??
             DateTime.now().add(const Duration(hours: 2)).toIso8601String(),
         'created_at': DateTime.now().toIso8601String(),
       };
@@ -289,7 +283,8 @@ class RealPaymentService {
       return response;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error creating booking invoice: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error creating booking invoice: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -313,18 +308,16 @@ class RealPaymentService {
         return true;
       } else {
         // Payment failed
-        await _supabase
-            .from('payments')
-            .update({
-              'status': 'failed',
-              'webhook_data': json.encode(webhookData),
-            })
-            .eq('id', partnerRefId);
+        await _supabase.from('payments').update({
+          'status': 'failed',
+          'webhook_data': json.encode(webhookData),
+        }).eq('id', partnerRefId);
         return false;
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error handling MoMo webhook: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error handling MoMo webhook: $e',
+            tag: 'real_payment_service');
       }
       return false;
     }
@@ -347,18 +340,16 @@ class RealPaymentService {
         );
         return true;
       } else {
-        await _supabase
-            .from('payments')
-            .update({
-              'status': 'failed',
-              'webhook_data': json.encode(webhookData),
-            })
-            .eq('id', appTransId);
+        await _supabase.from('payments').update({
+          'status': 'failed',
+          'webhook_data': json.encode(webhookData),
+        }).eq('id', appTransId);
         return false;
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error handling ZaloPay webhook: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error handling ZaloPay webhook: $e',
+            tag: 'real_payment_service');
       }
       return false;
     }
@@ -376,7 +367,8 @@ class RealPaymentService {
       return response['status'];
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error checking payment status: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error checking payment status: $e',
+            tag: 'real_payment_service');
       }
       return 'unknown';
     }
@@ -385,17 +377,15 @@ class RealPaymentService {
   /// Hủy payment
   static Future<void> cancelPayment(String paymentId, String reason) async {
     try {
-      await _supabase
-          .from('payments')
-          .update({
-            'status': 'cancelled',
-            'metadata': json.encode({'cancel_reason': reason}),
-            'cancelled_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', paymentId);
+      await _supabase.from('payments').update({
+        'status': 'cancelled',
+        'metadata': json.encode({'cancel_reason': reason}),
+        'cancelled_at': DateTime.now().toIso8601String(),
+      }).eq('id', paymentId);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error cancelling payment: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error cancelling payment: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -418,7 +408,8 @@ class RealPaymentService {
       return url;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error uploading QR image: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error uploading QR image: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }
@@ -434,7 +425,8 @@ class RealPaymentService {
       await _supabase.storage.from('payment-qr-codes').remove([path]);
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('Error deleting QR image: $e', tag: 'real_payment_service');
+        ProductionLogger.info('Error deleting QR image: $e',
+            tag: 'real_payment_service');
       }
       rethrow;
     }

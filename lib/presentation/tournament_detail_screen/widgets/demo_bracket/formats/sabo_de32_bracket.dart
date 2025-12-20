@@ -16,7 +16,7 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
     with TickerProviderStateMixin {
   late TabController _tabController;
   late PageController _pageController;
-  
+
   // 🔒 Cache grouped matches to prevent re-computation on every build
   List<Map<String, dynamic>>? _cachedGroupAMatches;
   List<Map<String, dynamic>>? _cachedGroupBMatches;
@@ -27,11 +27,11 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _pageController = PageController();
-    
+
     // Initialize cached matches
     _updateCachedMatches();
   }
-  
+
   @override
   void didUpdateWidget(SaboDE32Bracket oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -40,7 +40,7 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
       _updateCachedMatches();
     }
   }
-  
+
   void _updateCachedMatches() {
     _cachedGroupAMatches = _getMatchesByGroup('A');
     _cachedGroupBMatches = _getMatchesByGroup('B');
@@ -62,16 +62,15 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
         // Cross finals: Includes CROSS (6 matches) + GF (1 match) = 7 total
         final bracketType = m['bracket_type'] as String?;
         return bracketType != null &&
-            (bracketType == 'CROSS' || 
-             bracketType == 'GF' || 
-             bracketType == 'FINAL' || 
-             bracketType == 'SABO');
+            (bracketType == 'CROSS' ||
+                bracketType == 'GF' ||
+                bracketType == 'FINAL' ||
+                bracketType == 'SABO');
       }
       return bracketGroup == group;
     }).toList();
 
-    if (filtered.isEmpty && widget.matches.isNotEmpty) {
-    }
+    if (filtered.isEmpty && widget.matches.isNotEmpty) {}
 
     return filtered;
   }
@@ -181,7 +180,8 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
         Expanded(
           child: PageView(
             controller: _pageController,
-            physics: const ClampingScrollPhysics(), // 🔒 Prevent overscroll rebuild
+            physics:
+                const ClampingScrollPhysics(), // 🔒 Prevent overscroll rebuild
             onPageChanged: (index) {
               // Simple sync without flag - tabs don't trigger page changes
               _tabController.index = index;
@@ -217,8 +217,10 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
 
     // 🎯 LEARN FROM DE64: Use nested DefaultTabController for WB/LB-A/LB-B
     final wbMatches = matches.where((m) => m['bracket_type'] == 'WB').toList();
-    final lbAMatches = matches.where((m) => m['bracket_type'] == 'LB-A').toList();
-    final lbBMatches = matches.where((m) => m['bracket_type'] == 'LB-B').toList();
+    final lbAMatches =
+        matches.where((m) => m['bracket_type'] == 'LB-A').toList();
+    final lbBMatches =
+        matches.where((m) => m['bracket_type'] == 'LB-B').toList();
 
     return DefaultTabController(
       length: 3,
@@ -249,9 +251,10 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
       ),
     );
   }
-  
+
   // 🎯 LEARN FROM DE64: Nested SingleChildScrollView pattern
-  Widget _buildBracketTreeView(List<Map<String, dynamic>> matches, Color color) {
+  Widget _buildBracketTreeView(
+      List<Map<String, dynamic>> matches, Color color) {
     if (matches.isEmpty) {
       return Center(
         child: Column(
@@ -276,13 +279,14 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
       ),
     );
   }
-  
+
   // 🎯 Build bracket tree (horizontal rounds)
   Widget _buildBracketTree(List<Map<String, dynamic>> matches, Color color) {
     // Group by round_number (as int, like DE64)
     final rounds = <int, List<Map<String, dynamic>>>{};
     for (final match in matches) {
-      final roundNumber = match['round_number'] as int? ?? match['stage_round'] as int? ?? 1;
+      final roundNumber =
+          match['round_number'] as int? ?? match['stage_round'] as int? ?? 1;
       rounds.putIfAbsent(roundNumber, () => []).add(match);
     }
 
@@ -298,9 +302,10 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
       }).toList(),
     );
   }
-  
+
   // Build single round column
-  Widget _buildRoundColumn(String roundName, List<Map<String, dynamic>> matches, Color color) {
+  Widget _buildRoundColumn(
+      String roundName, List<Map<String, dynamic>> matches, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -333,7 +338,7 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
       ),
     );
   }
-  
+
   Widget _buildCrossFinals(List<Map<String, dynamic>> matches) {
     if (matches.isEmpty) {
       return Center(
@@ -391,9 +396,9 @@ class _SaboDE32BracketState extends State<SaboDE32Bracket>
 // 🔒 MATCH CARD WIDGET
 class _MatchCard extends StatelessWidget {
   final Map<String, dynamic> match;
-  
+
   const _MatchCard({required this.match});
-  
+
   @override
   Widget build(BuildContext context) {
     final player1 = match['player1'] as Map<String, dynamic>?;
@@ -428,9 +433,10 @@ class _MatchCard extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildPlayerRow(Map<String, dynamic>? player, bool isWinner) {
-    final name = player?['name'] as String? ?? player?['username'] as String? ?? 'TBD';
+    final name =
+        player?['name'] as String? ?? player?['username'] as String? ?? 'TBD';
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -459,4 +465,3 @@ class _MatchCard extends StatelessWidget {
     );
   }
 }
-

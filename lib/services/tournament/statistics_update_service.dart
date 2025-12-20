@@ -11,7 +11,6 @@ class StatisticsUpdateService {
     required List<Map<String, dynamic>> standings,
     required Map<String, dynamic> tournament,
   }) async {
-
     try {
       // Update user statistics for all participants
       for (final standing in standings) {
@@ -31,7 +30,6 @@ class StatisticsUpdateService {
       if (clubId != null) {
         await _updateClubStatistics(clubId: clubId);
       }
-
     } catch (e) {
       rethrow;
     }
@@ -48,7 +46,8 @@ class StatisticsUpdateService {
       // Get current stats
       final userStats = await _supabase
           .from('users')
-          .select('total_tournaments, tournament_wins, tournament_podiums, total_wins, total_losses')
+          .select(
+              'total_tournaments, tournament_wins, tournament_podiums, total_wins, total_losses')
           .eq('id', userId)
           .single();
 
@@ -60,8 +59,10 @@ class StatisticsUpdateService {
 
       // Calculate new values
       final newTotalTournaments = totalTournaments + 1;
-      final newTournamentWins = position == 1 ? tournamentWins + 1 : tournamentWins;
-      final newTournamentPodiums = position <= 4 ? tournamentPodiums + 1 : tournamentPodiums;
+      final newTournamentWins =
+          position == 1 ? tournamentWins + 1 : tournamentWins;
+      final newTournamentPodiums =
+          position <= 4 ? tournamentPodiums + 1 : tournamentPodiums;
       final matchesLost = matchesPlayed - matchesWon;
       final newTotalWins = totalWins + matchesWon;
       final newTotalLosses = totalLosses + matchesLost;
@@ -74,7 +75,6 @@ class StatisticsUpdateService {
         'total_wins': newTotalWins,
         'total_losses': newTotalLosses,
       }).eq('id', userId);
-
     } catch (e) {
       // Ignore error
     }
@@ -93,15 +93,12 @@ class StatisticsUpdateService {
           .single();
 
       final newCount = (clubData['tournaments_hosted'] ?? 0) + 1;
-      
+
       await _supabase
           .from('clubs')
-          .update({'tournaments_hosted': newCount})
-          .eq('id', clubId);
-
+          .update({'tournaments_hosted': newCount}).eq('id', clubId);
     } catch (e) {
       // Ignore error
     }
   }
 }
-

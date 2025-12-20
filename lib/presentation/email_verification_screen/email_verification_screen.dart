@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_navigation_controller.dart';
 import '../../helpers/welcome_voucher_helper.dart';
+import '../../widgets/common/app_button.dart';
 // ELON_MODE_AUTO_FIX
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -213,7 +214,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                 ),
                 SizedBox(height: 20),
                 Text(
-                  '✅ Email đã xác thực!', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  '✅ Email đã xác thực!',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
@@ -221,7 +224,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Đang chuyển hướng...', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  'Đang chuyển hướng...',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -306,7 +311,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
                 // Title
                 const Text(
-                  'Đăng ký CLB của bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Đăng ký CLB của bạn',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF1C1C1E),
@@ -319,7 +326,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
                 // Description
                 const Text(
-                  'Email đã được xác thực thành công! ✅\n\nBạn có muốn tiếp tục đăng ký thông tin CLB ngay bây giờ?', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Email đã được xác thực thành công! ✅\n\nBạn có muốn tiếp tục đăng ký thông tin CLB ngay bây giờ?',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
                     color: Color(0xFF6B7280),
@@ -333,68 +342,29 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                 // Action Buttons
                 Row(
                   children: [
-                    // "Để sau" button
+                    // "Để sau" button - iOS style
                     Expanded(
-                      child: OutlinedButton(
+                      child: AppButton(
+                        label: 'Để sau',
+                        type: AppButtonType.outline,
+                        size: AppButtonSize.medium,
+                        fullWidth: true,
                         onPressed: () => Navigator.pop(context, false),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          side: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: const Text(
-                          'Để sau', overflow: TextOverflow.ellipsis, style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF6B7280),
-                          ),
-                        ),
                       ),
                     ),
 
                     const SizedBox(width: 12),
 
-                    // "Đăng ký ngay" button
+                    // "Đăng ký ngay" button - iOS style
                     Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF3B82F6).withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            'Đăng ký ngay', overflow: TextOverflow.ellipsis, style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                      child: AppButton(
+                        label: 'Đăng ký ngay',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.medium,
+                        customColor: const Color(0xFF3B82F6), // iOS blue
+                        customTextColor: Colors.white,
+                        fullWidth: true,
+                        onPressed: () => Navigator.pop(context, true),
                       ),
                     ),
                   ],
@@ -447,7 +417,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
             onPressed: () => Navigator.pop(context),
             child: Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Bỏ qua',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            customColor: Colors.orange,
+            customTextColor: Colors.white,
             onPressed: () async {
               Navigator.pop(context);
 
@@ -458,8 +433,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                 isFirstLogin: true,
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: Text('Bỏ qua'),
           ),
         ],
       ),
@@ -484,7 +457,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                   ),
                   Expanded(
                     child: Text(
-                      'Xác thực Email', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Xác thực Email',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -536,7 +511,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
                     // Title
                     Text(
-                      '📧 Kiểm tra Email của bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      '📧 Kiểm tra Email của bạn',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -548,7 +525,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
                     // Description
                     Text(
-                      'Chúng tôi đã gửi link xác thực đến:', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Chúng tôi đã gửi link xác thực đến:',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withValues(alpha: 0.9),
                       ),
@@ -568,7 +547,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        widget.email, style: TextStyle(
+                        widget.email,
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -581,7 +561,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                     // Instructions
                     Text(
                       'Vui lòng kiểm tra hộp thư và nhấn vào link xác thực.\n'
-                      'Email có thể ở trong thư mục Spam.', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Email có thể ở trong thư mục Spam.',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 14,
                         color: Colors.white.withValues(alpha: 0.8),
                       ),
@@ -590,100 +572,36 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
                     SizedBox(height: 40),
 
-                    // Check Status Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _isChecking
-                            ? null
-                            : () => _checkVerificationStatus(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Color(0xFF007AFF),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 8,
-                        ),
-                        child: _isChecking
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation(
-                                        Color(0xFF007AFF),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Text('Đang kiểm tra...'),
-                                ],
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.refresh, size: 20),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Kiểm tra trạng thái', overflow: TextOverflow.ellipsis, style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
+                    // Check Status Button - iOS style
+                    AppButton(
+                      label: 'Kiểm tra trạng thái',
+                      type: AppButtonType.primary,
+                      size: AppButtonSize.large,
+                      icon: Icons.refresh,
+                      iconTrailing: false,
+                      customColor: Colors.white,
+                      customTextColor: const Color(0xFF007AFF), // iOS blue
+                      isLoading: _isChecking,
+                      fullWidth: true,
+                      onPressed:
+                          _isChecking ? null : () => _checkVerificationStatus(),
                     ),
 
                     SizedBox(height: 16),
 
-                    // Resend Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton(
-                        onPressed: (_canResend && !_isResending)
-                            ? _resendVerificationEmail
-                            : null,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: BorderSide(color: Colors.white, width: 2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: _isResending
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation(
-                                        Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Text('Đang gửi...'),
-                                ],
-                              )
-                            : Text(
-                                _canResend
-                                    ? '📧 Gửi lại email'
-                                    : '⏰ Gửi lại sau ${_resendCooldown}s', overflow: TextOverflow.ellipsis, style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
+                    // Resend Button - iOS style
+                    AppButton(
+                      label: _canResend
+                          ? 'Gửi lại email'
+                          : 'Gửi lại sau ${_resendCooldown}s',
+                      type: AppButtonType.outline,
+                      size: AppButtonSize.large,
+                      customTextColor: Colors.white,
+                      isLoading: _isResending,
+                      fullWidth: true,
+                      onPressed: (_canResend && !_isResending)
+                          ? _resendVerificationEmail
+                          : null,
                     ),
                   ],
                 ),
@@ -723,7 +641,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
                     ),
                     SizedBox(width: 8),
                     Text(
-                      'Tự động kiểm tra mỗi 3 giây...', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Tự động kiểm tra mỗi 3 giây...',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withValues(alpha: 0.8),
                       ),
@@ -738,4 +658,3 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
     );
   }
 }
-

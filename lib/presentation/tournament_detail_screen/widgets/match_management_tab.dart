@@ -13,8 +13,7 @@ import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX 
 
 // Safe debug print wrapper to avoid null debug service errors
 void _safeDebugPrint(String message) {
-  try {
-  } catch (e) {
+  try {} catch (e) {
     // Ignore debug service errors in production
     ProductionLogger.info(message, tag: 'match_management_tab');
   }
@@ -89,23 +88,29 @@ class _MatchManagementTabState extends State<MatchManagementTab>
     bool isDE24Format = filteredMatches.any(
       (m) {
         final round = m['round']?.toString() ?? '';
-        return round.startsWith('Group ') && 
-               (round == 'Group A' || round == 'Group B' || round == 'Group C' || 
-                round == 'Group D' || round == 'Group E' || round == 'Group F' ||
-                round == 'Group G' || round == 'Group H');
+        return round.startsWith('Group ') &&
+            (round == 'Group A' ||
+                round == 'Group B' ||
+                round == 'Group C' ||
+                round == 'Group D' ||
+                round == 'Group E' ||
+                round == 'Group F' ||
+                round == 'Group G' ||
+                round == 'Group H');
       },
     );
-    
-    if (filteredMatches.isNotEmpty) {
-    }
+
+    if (filteredMatches.isNotEmpty) {}
 
     Map<String, dynamic> structure = {};
 
     for (var match in filteredMatches) {
-      final bracketGroup = match['bracket_group']; // 'A', 'B', 'Group A', 'Group B', null
-      final bracketType =
-          match['bracket_type'] ?? 'WB'; // 'WB', 'LB-A', 'LB-B', 'CROSS', 'GF', 'groups', 'LB', 'Finals'
-      final round = match['round']?.toString() ?? ''; // For DE24: 'Group A', 'WB R1', etc.
+      final bracketGroup =
+          match['bracket_group']; // 'A', 'B', 'Group A', 'Group B', null
+      final bracketType = match['bracket_type'] ??
+          'WB'; // 'WB', 'LB-A', 'LB-B', 'CROSS', 'GF', 'groups', 'LB', 'Finals'
+      final round = match['round']?.toString() ??
+          ''; // For DE24: 'Group A', 'WB R1', etc.
       final stageRound = match['stage_round'] ?? match['round_number'] ?? 1;
       final displayOrder = match['display_order'] ?? 0;
 
@@ -136,7 +141,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         // Normalize bracket_group to handle both 'A' and 'Group A' formats
         final groupStr = bracketGroup?.toString().toUpperCase() ?? '';
         final normalizedGroup = groupStr.replaceAll('GROUP ', '').trim();
-        
+
         if (normalizedGroup == 'A' || groupStr.contains('A')) {
           level1Key = 'group_a';
           level1Label = '📁 Group A';
@@ -179,7 +184,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       } else if (hasBracketGroups) {
         // SABO format - use bracket_type as level 2
         level2Key = bracketType;
-        String groupPrefix = (bracketGroup != null && bracketGroup != 'CROSS') ? '$bracketGroup-' : '';
+        String groupPrefix = (bracketGroup != null && bracketGroup != 'CROSS')
+            ? '$bracketGroup-'
+            : '';
         if (bracketType == 'WB') {
           level2Label = '  ├─ ${groupPrefix}WB (Winner Bracket)';
         } else if (bracketType == 'LB-A') {
@@ -233,7 +240,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           };
         }
 
-        structure[level1Key]['children'][level2Key]['children'][level3Key]['matches']
+        structure[level1Key]['children'][level2Key]['children'][level3Key]
+                ['matches']
             .add(match);
       } else {
         // 2-level hierarchy for regular formats
@@ -311,23 +319,22 @@ class _MatchManagementTabState extends State<MatchManagementTab>
     if (hasWinnerBracket) {
       // Check if WB matches have consistent bracket_group values
       var wbMatches = _matches.where((m) => m['bracket_type'] == 'WB');
-      var groupACount = wbMatches
-          .where((m) => m['bracket_group'] == 'A')
-          .length;
-      var groupBCount = wbMatches
-          .where((m) => m['bracket_group'] == 'B')
-          .length;
-      var groupCCount = wbMatches
-          .where((m) => m['bracket_group'] == 'C')
-          .length;
-      var groupDCount = wbMatches
-          .where((m) => m['bracket_group'] == 'D')
-          .length;
+      var groupACount =
+          wbMatches.where((m) => m['bracket_group'] == 'A').length;
+      var groupBCount =
+          wbMatches.where((m) => m['bracket_group'] == 'B').length;
+      var groupCCount =
+          wbMatches.where((m) => m['bracket_group'] == 'C').length;
+      var groupDCount =
+          wbMatches.where((m) => m['bracket_group'] == 'D').length;
 
       // SABO DE32/DE64: Should have significant WB matches in groups
       // DE32: 2 groups (A, B)
       // DE64: 4 groups (A, B, C, D)
-      bool isSaboDE64 = (groupACount >= 4 && groupBCount >= 4 && groupCCount >= 4 && groupDCount >= 4);
+      bool isSaboDE64 = (groupACount >= 4 &&
+          groupBCount >= 4 &&
+          groupCCount >= 4 &&
+          groupDCount >= 4);
       bool isSaboDE32 = (groupACount >= 4 && groupBCount >= 4);
       hasBracketGroups = isSaboDE64 || isSaboDE32;
     }
@@ -442,7 +449,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
 
     // 🔥 FIX: Use filtered matches to respect selected bracket group
     final matchesToUse = _getFilteredMatches();
-    
+
     if (matchesToUse.isEmpty) return [];
 
     // Group matches by bracket_type + stage_round + bracket_group
@@ -612,7 +619,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
   Future<void> _refreshMatches() async {
     // 🔥 Start rotation animation
     _refreshAnimationController.repeat();
-    
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -625,7 +632,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
     try {
       // 🔥 FORCE REFRESH: Use TournamentService to get matches WITH user profiles
       _safeDebugPrint('🗑️ Force refreshing matches with user profiles...');
-      
+
       // Load participants count for dynamic round calculation
       List<Map<String, dynamic>> participants = [];
       try {
@@ -651,7 +658,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         );
       } catch (serviceError) {
         _safeDebugPrint('⚠️ TournamentService failed: $serviceError');
-        
+
         // Fallback to cached service with forceRefresh
         matches = await CachedTournamentService.loadMatches(
           widget.tournamentId,
@@ -686,7 +693,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       }
     } catch (e) {
       _safeDebugPrint('❌ Refresh failed: $e');
-      
+
       // 🔥 Stop rotation animation on error
       _refreshAnimationController.stop();
       _refreshAnimationController.reset();
@@ -734,7 +741,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
 
       // 🔥 CRITICAL: Directly query Supabase, completely bypass cache
       _safeDebugPrint('🗄️ Querying database directly...');
-      
+
       final rawMatches = await Supabase.instance.client
           .from('matches')
           .select('*')
@@ -755,8 +762,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       Map<String, dynamic> userProfiles = {};
       if (playerIds.isNotEmpty) {
         final uniquePlayerIds = playerIds.toSet().toList();
-        _safeDebugPrint('👥 Fetching ${uniquePlayerIds.length} user profiles...');
-        
+        _safeDebugPrint(
+            '👥 Fetching ${uniquePlayerIds.length} user profiles...');
+
         final profiles = await Supabase.instance.client
             .from('users')
             .select('id, full_name, display_name, avatar_url, elo_rating, rank')
@@ -790,9 +798,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           "player1": player1Profile != null
               ? {
                   "id": player1Profile['id'],
-                  "name": player1Profile['display_name'] ?? 
-                          player1Profile['full_name'] ?? 
-                          'Player 1',
+                  "name": player1Profile['display_name'] ??
+                      player1Profile['full_name'] ??
+                      'Player 1',
                   "display_name": player1Profile['display_name'],
                   "full_name": player1Profile['full_name'],
                   "avatar": player1Profile['avatar_url'] ??
@@ -803,9 +811,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           "player2": player2Profile != null
               ? {
                   "id": player2Profile['id'],
-                  "name": player2Profile['display_name'] ?? 
-                          player2Profile['full_name'] ?? 
-                          'Player 2',
+                  "name": player2Profile['display_name'] ??
+                      player2Profile['full_name'] ??
+                      'Player 2',
                   "display_name": player2Profile['display_name'],
                   "full_name": player2Profile['full_name'],
                   "avatar": player2Profile['avatar_url'] ??
@@ -843,7 +851,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
       }
     } catch (e) {
       _safeDebugPrint('❌ Force load failed: $e');
-      
+
       setState(() {
         _isLoading = false;
         _errorMessage = 'Lỗi tải từ database: ${e.toString()}';
@@ -873,22 +881,23 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         // SABO DE32: Filter by bracket_group (A, B, C, D, CROSS)
         filtered = filtered.where((m) {
           final bracketGroup = m['bracket_group'];
-          
+
           // Debug log
-          if (filtered.indexOf(m) == 0) {
-          }
-          
+          if (filtered.indexOf(m) == 0) {}
+
           if (_selectedBracketGroup == 'CROSS') {
-            return bracketGroup == 'CROSS' || bracketGroup == null || bracketGroup.toString().toUpperCase().contains('CROSS');
+            return bracketGroup == 'CROSS' ||
+                bracketGroup == null ||
+                bracketGroup.toString().toUpperCase().contains('CROSS');
           }
-          
+
           // Support both formats: 'A' or 'Group A'
           final groupStr = bracketGroup?.toString().toUpperCase() ?? '';
           final selectedStr = _selectedBracketGroup?.toUpperCase() ?? '';
-          
-          return groupStr == selectedStr || 
-                 groupStr == 'GROUP $selectedStr' ||
-                 groupStr.endsWith(selectedStr);
+
+          return groupStr == selectedStr ||
+              groupStr == 'GROUP $selectedStr' ||
+              groupStr.endsWith(selectedStr);
         }).toList();
       } else {
         // SABO DE16: Filter by bracket_type (WB, LB, FINAL) - SIMPLIFIED
@@ -929,7 +938,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
   Widget build(BuildContext context) {
     // Note: Keep normal match list view for all formats including DE24
     // The bracket visualization is in the "Bracket" tab, not "Matches" tab
-    
+
     if (_isLoading) {
       return Center(
         child: Column(
@@ -976,7 +985,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.sports_esports,
+              Icons.sports_baseball,
               size: 40.sp,
               color: AppTheme.dividerLight,
             ),
@@ -991,18 +1000,15 @@ class _MatchManagementTabState extends State<MatchManagementTab>
               style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
             ),
             SizedBox(height: 16.sp),
-            ElevatedButton.icon(
+            AppButton(
+              label: 'Làm mới',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              icon: Icons.refresh,
+              iconTrailing: false,
+              customColor: Colors.blue,
+              customTextColor: Colors.white,
               onPressed: _refreshMatches,
-              icon: Icon(Icons.refresh, size: 16.sp),
-              label: Text("Làm mới", style: TextStyle(fontSize: 14.sp)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16.sp,
-                  vertical: 8.sp,
-                ),
-              ),
             ),
           ],
         ),
@@ -1071,12 +1077,12 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                           SizedBox(width: 8),
                           // 🔥 Force load from database button
                           IconButton(
-                            onPressed: _isLoading ? null : _forceLoadFromDatabase,
+                            onPressed:
+                                _isLoading ? null : _forceLoadFromDatabase,
                             icon: Icon(
                               Icons.cloud_download_outlined,
-                              color: _isLoading 
-                                  ? Colors.grey 
-                                  : Colors.blue[700],
+                              color:
+                                  _isLoading ? Colors.grey : Colors.blue[700],
                               size: 24,
                             ),
                             tooltip: 'Tải trực tiếp từ database (bỏ qua cache)',
@@ -1091,8 +1097,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                               onPressed: _isLoading ? null : _refreshMatches,
                               icon: Icon(
                                 Icons.refresh,
-                                color: _isLoading 
-                                    ? Colors.grey 
+                                color: _isLoading
+                                    ? Colors.grey
                                     : AppTheme.primaryLight,
                                 size: 24,
                               ),
@@ -1120,20 +1126,18 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                                 ),
                               ),
                               // Individual group buttons
-                              ..._getAvailableBracketGroups()
-                                  .map(
-                                    (groupData) => Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 3,
-                                      ),
-                                      child: _buildGroupFilterButton(
-                                        groupData['label'],
-                                        groupData['count'],
-                                        groupData['key'],
-                                      ),
-                                    ),
-                                  )
-                                  ,
+                              ..._getAvailableBracketGroups().map(
+                                (groupData) => Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 3,
+                                  ),
+                                  child: _buildGroupFilterButton(
+                                    groupData['label'],
+                                    groupData['count'],
+                                    groupData['key'],
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -1153,8 +1157,10 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                                     child: _buildRoundFilterButton(
                                       roundData['name'],
                                       roundData['matches'].toString(),
-                                      roundData['bracket_type'], // 🔥 NEW: bracket type
-                                      roundData['stage_round'], // 🔥 NEW: stage round
+                                      roundData[
+                                          'bracket_type'], // 🔥 NEW: bracket type
+                                      roundData[
+                                          'stage_round'], // 🔥 NEW: stage round
                                     ),
                                   ),
                                 )
@@ -1281,24 +1287,18 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                   style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
                 ),
                 SizedBox(height: 16.sp),
-                ElevatedButton.icon(
+                AppButton(
+                  label: 'Xem tất cả trận đấu',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.medium,
+                  icon: Icons.clear_all,
+                  iconTrailing: false,
+                  customColor: Colors.blue,
+                  customTextColor: Colors.white,
                   onPressed: () => setState(() {
                     _selectedBracketGroup = null;
                     _selectedFilter = 'all';
                   }),
-                  icon: Icon(Icons.clear_all, size: 18.sp),
-                  label: Text(
-                    'Xem tất cả trận đấu',
-                    style: TextStyle(fontSize: 14.sp),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.sp,
-                      vertical: 12.sp,
-                    ),
-                  ),
                 ),
               ] else ...[
                 Text(
@@ -1308,13 +1308,12 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                 ),
                 if (_selectedBracketGroup != null) ...[
                   SizedBox(height: 12.sp),
-                  OutlinedButton(
+                  AppButton(
+                    label: 'Xóa bộ lọc',
+                    type: AppButtonType.outline,
+                    size: AppButtonSize.small,
                     onPressed: () =>
                         setState(() => _selectedBracketGroup = null),
-                    child: Text(
-                      'Xóa bộ lọc',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
                   ),
                 ],
               ],
@@ -1501,9 +1500,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                           ],
                         ),
                       ),
-                      ...childMatches
-                          .map((match) => _buildMatchCard(match))
-                          ,
+                      ...childMatches.map((match) => _buildMatchCard(match)),
                     ],
                   ),
                 ),
@@ -1632,8 +1629,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
     String bracketType,
     int stageRound,
   ) {
-    bool isSelected =
-        _selectedBracketType == bracketType &&
+    bool isSelected = _selectedBracketType == bracketType &&
         _selectedStageRound == stageRound;
 
     return InkWell(
@@ -1678,9 +1674,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected
-                    ? AppTheme.primaryDark
-                    : AppTheme.primaryLight,
+                color:
+                    isSelected ? AppTheme.primaryDark : AppTheme.primaryLight,
               ),
             ),
           ],
@@ -1725,9 +1720,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
               style: TextStyle(
                 fontSize: 15.sp, // Increased from 10.sp
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected
-                    ? AppTheme.primaryDark
-                    : AppTheme.primaryLight,
+                color:
+                    isSelected ? AppTheme.primaryDark : AppTheme.primaryLight,
               ),
             ),
           ],
@@ -1838,8 +1832,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
     String playerName = 'TBD';
     if (player != null) {
       if (player is Map<String, dynamic>) {
-        playerName =
-            player['name'] ??
+        playerName = player['name'] ??
             player['full_name'] ??
             player['display_name'] ??
             'Unknown Player';
@@ -1971,36 +1964,31 @@ class _MatchManagementTabState extends State<MatchManagementTab>
   }
 
   void _enterScore(Map<String, dynamic> match) async {
-
     // Get player names using same logic as _buildCompactPlayerRow
     String player1Name = 'Player 1';
     String player2Name = 'Player 2';
 
     if (match['player1'] != null) {
       if (match['player1'] is Map<String, dynamic>) {
-        player1Name =
-            match['player1']['name'] ??
+        player1Name = match['player1']['name'] ??
             match['player1']['full_name'] ??
             match['player1']['display_name'] ??
             'Player 1';
       } else if (match['player1'] is String) {
-        player1Name = match['player1'].isNotEmpty
-            ? match['player1']
-            : 'Player 1';
+        player1Name =
+            match['player1'].isNotEmpty ? match['player1'] : 'Player 1';
       }
     }
 
     if (match['player2'] != null) {
       if (match['player2'] is Map<String, dynamic>) {
-        player2Name =
-            match['player2']['name'] ??
+        player2Name = match['player2']['name'] ??
             match['player2']['full_name'] ??
             match['player2']['display_name'] ??
             'Player 2';
       } else if (match['player2'] is String) {
-        player2Name = match['player2'].isNotEmpty
-            ? match['player2']
-            : 'Player 2';
+        player2Name =
+            match['player2'].isNotEmpty ? match['player2'] : 'Player 2';
       }
     }
 
@@ -2019,7 +2007,7 @@ class _MatchManagementTabState extends State<MatchManagementTab>
             final p1Score = int.tryParse(player1Controller.text) ?? 0;
             final p2Score = int.tryParse(player2Controller.text) ?? 0;
             final isDraw = p1Score == p2Score;
-            
+
             return AlertDialog(
               title: Text(
                 'Nhập tỷ số trận đấu',
@@ -2030,14 +2018,14 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                 children: [
                   // Player 1 score input with +/- buttons
                   _buildScoreInputRow(
-                    player1Name, 
+                    player1Name,
                     player1Controller,
                     onChanged: () => setDialogState(() {}),
                   ),
                   SizedBox(height: 16.sp),
                   // Player 2 score input with +/- buttons
                   _buildScoreInputRow(
-                    player2Name, 
+                    player2Name,
                     player2Controller,
                     onChanged: () => setDialogState(() {}),
                   ),
@@ -2083,15 +2071,19 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                 ),
                 AppButton(
                   label: 'Lưu',
-                  onPressed: isDraw ? null : () async {
-                    final p1Score = int.tryParse(player1Controller.text) ?? 0;
-                    final p2Score = int.tryParse(player2Controller.text) ?? 0;
+                  onPressed: isDraw
+                      ? null
+                      : () async {
+                          final p1Score =
+                              int.tryParse(player1Controller.text) ?? 0;
+                          final p2Score =
+                              int.tryParse(player2Controller.text) ?? 0;
 
-                    await _updateMatchScore(match, p1Score, p2Score);
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  },
+                          await _updateMatchScore(match, p1Score, p2Score);
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
                 ),
               ],
             );
@@ -2116,12 +2108,10 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         winnerId = match['player1_id'] ?? '';
       } else if (player2Score > player1Score) {
         winnerId = match['player2_id'] ?? '';
-      } else {
-      }
+      } else {}
 
       // Validate winner_id
-      if (winnerId.isEmpty && player1Score != player2Score) {
-      }
+      if (winnerId.isEmpty && player1Score != player2Score) {}
 
       // Update in database (with silent caching)
 
@@ -2129,18 +2119,14 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         // ⚡ CRITICAL FIX: Always update directly to database first
         // This ensures data is persisted before cache update
 
-        await Supabase.instance.client
-            .from('matches')
-            .update({
-              'player1_score': player1Score,
-              'player2_score': player2Score,
-              'winner_id': winnerId.isEmpty ? null : winnerId,
-              'status': status,
-              // 'completed_at': status == 'completed' ? DateTime.now().toIso8601String() : null, // TODO: Add column to database
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('id', matchId);
-
+        await Supabase.instance.client.from('matches').update({
+          'player1_score': player1Score,
+          'player2_score': player2Score,
+          'winner_id': winnerId.isEmpty ? null : winnerId,
+          'status': status,
+          // 'completed_at': status == 'completed' ? DateTime.now().toIso8601String() : null, // TODO: Add column to database
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', matchId);
 
         // Then update cache to reflect database state
         try {
@@ -2154,7 +2140,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           );
         } catch (cacheError) {
           // Cache failure is non-critical since database is already updated
-          ProductionLogger.warning('Cache update failed', error: cacheError, tag: 'MatchManagement');
+          ProductionLogger.warning('Cache update failed',
+              error: cacheError, tag: 'MatchManagement');
         }
       } catch (e) {
         rethrow; // Rethrow to show error to user
@@ -2182,7 +2169,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         }
       }
 
-
       // ✅ NEW: Call advancement service if match is completed with a winner
       if (status == 'completed' && winnerId.isNotEmpty) {
         try {
@@ -2196,10 +2182,11 @@ class _MatchManagementTabState extends State<MatchManagementTab>
             },
           );
         } catch (advError) {
-          ProductionLogger.error('Advancement failed', error: advError, tag: 'MatchManagement');
+          ProductionLogger.error('Advancement failed',
+              error: advError, tag: 'MatchManagement');
         }
       }
-      
+
       // ⚡ PERFORMANCE: Just rebuild with current data
       // The local _matches array is already updated above
       // No need to reload all 27 matches from database!
@@ -2220,7 +2207,6 @@ class _MatchManagementTabState extends State<MatchManagementTab>
         widget.onMatchScoreUpdated!();
       }
     } catch (e) {
-
       // Show error to user
       if (mounted) {
         AppSnackbar.error(
@@ -2400,7 +2386,8 @@ class _MatchManagementTabState extends State<MatchManagementTab>
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6.sp),
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 4.sp), // Giảm padding
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 4.sp), // Giảm padding
                 ),
                 onChanged: (value) {
                   setState(() {});
@@ -2442,16 +2429,45 @@ class _MatchManagementTabState extends State<MatchManagementTab>
   }
 
   void _editCompletedMatch(Map<String, dynamic> match) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.edit, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('Sửa tỷ số?'),
+          ],
+        ),
+        content: Text(
+          'Trận đấu này đã kết thúc. Bạn có chắc chắn muốn sửa tỷ số không?\n\n'
+          '⚠️ Việc này có thể ảnh hưởng đến các vòng đấu tiếp theo.\n'
+          '⚠️ Nếu người thắng thay đổi, hệ thống sẽ cố gắng cập nhật, nhưng bạn nên kiểm tra lại các vòng sau.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Hủy'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            onPressed: () {
+              Navigator.pop(context);
+              _enterScore(match);
+            },
+            child: Text('Sửa tỷ số'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _autoUpdateMatchStatus(String matchId, String newStatus) async {
     try {
-
       // Update in database
       await Supabase.instance.client
           .from('matches')
-          .update({'status': newStatus})
-          .eq('id', matchId);
+          .update({'status': newStatus}).eq('id', matchId);
 
       // Update local state
       setState(() {
@@ -2462,9 +2478,9 @@ class _MatchManagementTabState extends State<MatchManagementTab>
           _matches[matchIndex]['status'] = newStatus;
         }
       });
-
     } catch (e) {
-      ProductionLogger.error('Auto update match status failed', error: e, tag: 'MatchManagement');
+      ProductionLogger.error('Auto update match status failed',
+          error: e, tag: 'MatchManagement');
     }
   }
 
@@ -2503,4 +2519,3 @@ class _MatchManagementTabState extends State<MatchManagementTab>
 
   // REMOVED: _advancePlayerToMatch() - caused duplicate advancement
 }
-

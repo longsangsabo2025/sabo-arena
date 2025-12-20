@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import '../device/device_info.dart';
 
 /// iPad-optimized spacing system with automatic scaling
-/// 
+///
 /// Provides spacing values that automatically scale based on iPad model:
 /// - iPad Mini: 1.15x scaling
-/// - iPad Air/Pro 11": 1.25x scaling  
+/// - iPad Air/Pro 11": 1.25x scaling
 /// - iPad Pro 12.9": 1.4x scaling
 /// - iPhone: 1.0x (base size)
-/// 
+///
 /// This creates more comfortable spacing on larger screens while maintaining
 /// proportions and visual hierarchy.
-/// 
+///
 /// Usage:
 /// ```dart
 /// Container(
@@ -28,7 +28,7 @@ class SpacingIPad {
   // ============================================================================
 
   /// Get spacing scale factor based on iPad model
-  /// 
+  ///
   /// Spacing scales more aggressively than typography to fill larger screens
   /// - iPad Pro 12.9": 1.4x (40% more space)
   /// - iPad Air/Pro 11": 1.25x (25% more space)
@@ -311,8 +311,10 @@ extension SpacingExtensions on BuildContext {
 
   // Padding presets
   EdgeInsets get screenPadding => SpacingIPad.screenPadding(this);
-  EdgeInsets get screenHorizontalPadding => SpacingIPad.screenHorizontalPadding(this);
-  EdgeInsets get screenVerticalPadding => SpacingIPad.screenVerticalPadding(this);
+  EdgeInsets get screenHorizontalPadding =>
+      SpacingIPad.screenHorizontalPadding(this);
+  EdgeInsets get screenVerticalPadding =>
+      SpacingIPad.screenVerticalPadding(this);
   EdgeInsets get cardPadding => SpacingIPad.cardPadding(this);
   EdgeInsets get cardPaddingLarge => SpacingIPad.cardPaddingLarge(this);
   EdgeInsets get listTilePadding => SpacingIPad.listTilePadding(this);

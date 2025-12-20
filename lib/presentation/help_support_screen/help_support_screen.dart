@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sabo_arena/widgets/custom_app_bar.dart';
 import 'package:sabo_arena/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../widgets/common/app_button.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -485,7 +486,13 @@ class _HelpSupportScreenState extends State<HelpSupportScreen>
           SizedBox(
             width: double.infinity,
             height: 50,
-            child: ElevatedButton.icon(
+            child: AppButton(
+              label: 'Gửi tin nhắn',
+              type: AppButtonType.primary,
+              size: AppButtonSize.large,
+              icon: Icons.send,
+              iconTrailing: false,
+              fullWidth: true,
               onPressed: () {
                 _sendContactMessage(
                   nameController.text,
@@ -493,15 +500,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen>
                   messageController.text,
                 );
               },
-              icon: const Icon(Icons.send),
-              label: const Text('Gửi tin nhắn'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryLight,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
             ),
           ),
         ],
@@ -540,7 +538,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen>
         ),
         const SizedBox(height: 16),
         _buildGuideCard(
-          icon: Icons.sports_esports,
+          icon: Icons.sports_baseball,
           title: 'Hướng dẫn cập nhật kết quả',
           description: 'Cách nhập và xác nhận kết quả trận đấu',
           steps: [

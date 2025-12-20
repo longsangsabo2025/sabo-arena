@@ -110,7 +110,7 @@ class _TournamentOverviewTabState extends State<TournamentOverviewTab> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildStatItem('Người chơi', '...', Icons.people),
-                    _buildStatItem('Trận đấu', '...', Icons.sports_esports),
+                    _buildStatItem('Trận đấu', '...', Icons.sports_baseball),
                     _buildStatItem('Hoàn thành', '...', Icons.check_circle),
                   ],
                 );
@@ -128,7 +128,7 @@ class _TournamentOverviewTabState extends State<TournamentOverviewTab> {
                   _buildStatItem(
                     'Trận đấu',
                     stats['matches'] ?? '0/0',
-                    Icons.sports_esports,
+                    Icons.sports_baseball,
                   ),
                   _buildStatItem(
                     'Hoàn thành',
@@ -458,4 +458,3 @@ class _TournamentOverviewTabState extends State<TournamentOverviewTab> {
     );
   }
 }
-

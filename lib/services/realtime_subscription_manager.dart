@@ -5,7 +5,7 @@ import 'dart:async';
 
 /// Real-time Subscription Manager
 /// Manages and limits concurrent real-time subscriptions per user
-/// 
+///
 /// Limits:
 /// - Max 10 concurrent subscriptions per user
 /// - Automatic cleanup on dispose
@@ -18,16 +18,17 @@ class RealtimeSubscriptionManager {
   RealtimeSubscriptionManager._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   // Active subscriptions tracking
   final Map<String, RealtimeChannel> _activeChannels = {};
   final Map<String, DateTime> _subscriptionTimestamps = {};
-  final Map<String, String> _subscriptionTypes = {}; // 'tournament', 'club', 'user', etc.
-  
+  final Map<String, String> _subscriptionTypes =
+      {}; // 'tournament', 'club', 'user', etc.
+
   // Configuration
   static const int _maxConcurrentSubscriptions = 10;
   static const Duration _subscriptionTimeout = Duration(minutes: 30);
-  
+
   // Statistics
   int _totalSubscriptions = 0;
   int _subscriptionsCleaned = 0;
@@ -40,11 +41,10 @@ class RealtimeSubscriptionManager {
     Function(Map<String, dynamic>)? onDelete,
   }) async {
     final key = 'tournament:$tournamentId';
-    
+
     // Check if already subscribed
     if (_activeChannels.containsKey(key)) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return _activeChannels[key];
     }
 
@@ -82,13 +82,11 @@ class RealtimeSubscriptionManager {
       _subscriptionTypes[key] = 'tournament';
       _totalSubscriptions++;
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       return channel;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -99,7 +97,7 @@ class RealtimeSubscriptionManager {
     Function(Map<String, dynamic>)? onUpdate,
   }) async {
     final key = 'matches:$tournamentId';
-    
+
     if (_activeChannels.containsKey(key)) {
       return _activeChannels[key];
     }
@@ -122,8 +120,8 @@ class RealtimeSubscriptionManager {
             ),
             callback: (payload) {
               if (onUpdate != null) {
-                final data = payload.newRecord.isNotEmpty 
-                    ? payload.newRecord 
+                final data = payload.newRecord.isNotEmpty
+                    ? payload.newRecord
                     : payload.oldRecord;
                 onUpdate(data);
               }
@@ -136,13 +134,11 @@ class RealtimeSubscriptionManager {
       _subscriptionTypes[key] = 'matches';
       _totalSubscriptions++;
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       return channel;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -153,7 +149,7 @@ class RealtimeSubscriptionManager {
     Function(Map<String, dynamic>)? onUpdate,
   }) async {
     final key = 'user:$userId';
-    
+
     if (_activeChannels.containsKey(key)) {
       return _activeChannels[key];
     }
@@ -176,8 +172,8 @@ class RealtimeSubscriptionManager {
             ),
             callback: (payload) {
               if (onUpdate != null) {
-                final data = payload.newRecord.isNotEmpty 
-                    ? payload.newRecord 
+                final data = payload.newRecord.isNotEmpty
+                    ? payload.newRecord
                     : payload.oldRecord;
                 onUpdate(data);
               }
@@ -192,8 +188,7 @@ class RealtimeSubscriptionManager {
 
       return channel;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -204,7 +199,7 @@ class RealtimeSubscriptionManager {
     Function(Map<String, dynamic>)? onUpdate,
   }) async {
     final key = 'club:$clubId';
-    
+
     if (_activeChannels.containsKey(key)) {
       return _activeChannels[key];
     }
@@ -227,8 +222,8 @@ class RealtimeSubscriptionManager {
             ),
             callback: (payload) {
               if (onUpdate != null) {
-                final data = payload.newRecord.isNotEmpty 
-                    ? payload.newRecord 
+                final data = payload.newRecord.isNotEmpty
+                    ? payload.newRecord
                     : payload.oldRecord;
                 onUpdate(data);
               }
@@ -243,8 +238,7 @@ class RealtimeSubscriptionManager {
 
       return channel;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -257,9 +251,8 @@ class RealtimeSubscriptionManager {
       _activeChannels.remove(key);
       _subscriptionTimestamps.remove(key);
       _subscriptionTypes.remove(key);
-      
-      if (kDebugMode) {
-      }
+
+      if (kDebugMode) {}
     }
   }
 
@@ -287,7 +280,7 @@ class RealtimeSubscriptionManager {
     // Find oldest subscription
     String? oldestKey;
     DateTime? oldestTime;
-    
+
     for (final entry in _subscriptionTimestamps.entries) {
       if (oldestTime == null || entry.value.isBefore(oldestTime)) {
         oldestTime = entry.value;
@@ -298,9 +291,8 @@ class RealtimeSubscriptionManager {
     if (oldestKey != null) {
       await unsubscribe(oldestKey);
       _subscriptionsCleaned++;
-      
-      if (kDebugMode) {
-      }
+
+      if (kDebugMode) {}
     }
   }
 
@@ -320,8 +312,7 @@ class RealtimeSubscriptionManager {
       await unsubscribe(key);
     }
 
-    if (expiredKeys.isNotEmpty && kDebugMode) {
-    }
+    if (expiredKeys.isNotEmpty && kDebugMode) {}
   }
 
   /// Cleanup all subscriptions
@@ -330,9 +321,8 @@ class RealtimeSubscriptionManager {
     for (final key in keys) {
       await unsubscribe(key);
     }
-    
-    if (kDebugMode) {
-    }
+
+    if (kDebugMode) {}
   }
 
   /// Get subscription statistics
@@ -356,5 +346,3 @@ class RealtimeSubscriptionManager {
     cleanupAll();
   }
 }
-
-

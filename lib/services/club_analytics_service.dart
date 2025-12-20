@@ -13,7 +13,6 @@ class ClubAnalyticsService {
   /// Get comprehensive analytics for a club
   Future<Map<String, dynamic>> getClubAnalytics(String clubId) async {
     try {
-
       final memberStats = await _getMemberStatistics(clubId);
       final tournamentStats = await _getTournamentStatistics(clubId);
       final revenueStats = await _getRevenueStatistics(clubId);
@@ -81,9 +80,8 @@ class ClubAnalyticsService {
         .order('created_at', ascending: false);
 
     final totalTournaments = tournaments.length;
-    final completed = tournaments
-        .where((t) => t['status'] == 'completed')
-        .length;
+    final completed =
+        tournaments.where((t) => t['status'] == 'completed').length;
     final ongoing = tournaments.where((t) => t['status'] == 'ongoing').length;
     final upcoming = tournaments.where((t) => t['status'] == 'upcoming').length;
 
@@ -97,10 +95,10 @@ class ClubAnalyticsService {
     // Average participants
     final avgParticipants = totalTournaments > 0
         ? tournaments.fold<int>(
-                0,
-                (sum, t) => sum + ((t['current_participants'] as int?) ?? 0),
-              ) /
-              totalTournaments
+              0,
+              (sum, t) => sum + ((t['current_participants'] as int?) ?? 0),
+            ) /
+            totalTournaments
         : 0;
 
     // Total prize pool distributed
@@ -110,13 +108,16 @@ class ClubAnalyticsService {
     );
 
     // Recent tournaments (up to 5 most recent)
-    final recentTournaments = tournaments.take(5).map((t) => {
-      'id': t['id'],
-      'name': t['title'],
-      'status': t['status'],
-      'participant_count': t['current_participants'] ?? 0,
-      'created_at': t['created_at'],
-    }).toList();
+    final recentTournaments = tournaments
+        .take(5)
+        .map((t) => {
+              'id': t['id'],
+              'name': t['title'],
+              'status': t['status'],
+              'participant_count': t['current_participants'] ?? 0,
+              'created_at': t['created_at'],
+            })
+        .toList();
 
     return {
       'total_tournaments': totalTournaments,
@@ -148,30 +149,26 @@ class ClubAnalyticsService {
 
     // Revenue in last 30 days
     final last30Days = DateTime.now().subtract(const Duration(days: 30));
-    final revenue30d = tournaments
-        .where((t) {
-          final createdAt = DateTime.parse(t['created_at'] as String);
-          return createdAt.isAfter(last30Days);
-        })
-        .fold<double>(0, (sum, t) {
-          final entryFee = (t['entry_fee'] as num?)?.toDouble() ?? 0;
-          final participants = (t['current_participants'] as int?) ?? 0;
-          return sum + (entryFee * participants);
-        });
+    final revenue30d = tournaments.where((t) {
+      final createdAt = DateTime.parse(t['created_at'] as String);
+      return createdAt.isAfter(last30Days);
+    }).fold<double>(0, (sum, t) {
+      final entryFee = (t['entry_fee'] as num?)?.toDouble() ?? 0;
+      final participants = (t['current_participants'] as int?) ?? 0;
+      return sum + (entryFee * participants);
+    });
 
     // Revenue today
     final today = DateTime.now();
     final todayStart = DateTime(today.year, today.month, today.day);
-    final revenueToday = tournaments
-        .where((t) {
-          final createdAt = DateTime.parse(t['created_at'] as String);
-          return createdAt.isAfter(todayStart);
-        })
-        .fold<double>(0, (sum, t) {
-          final entryFee = (t['entry_fee'] as num?)?.toDouble() ?? 0;
-          final participants = (t['current_participants'] as int?) ?? 0;
-          return sum + (entryFee * participants);
-        });
+    final revenueToday = tournaments.where((t) {
+      final createdAt = DateTime.parse(t['created_at'] as String);
+      return createdAt.isAfter(todayStart);
+    }).fold<double>(0, (sum, t) {
+      final entryFee = (t['entry_fee'] as num?)?.toDouble() ?? 0;
+      final participants = (t['current_participants'] as int?) ?? 0;
+      return sum + (entryFee * participants);
+    });
 
     // Get table reservations revenue (if implemented)
     final reservations = await _supabase
@@ -185,22 +182,21 @@ class ClubAnalyticsService {
       (sum, r) => sum + ((r['total_price'] as num?)?.toDouble() ?? 0),
     );
 
-    final reservationRevenueToday = reservations
-        .where((r) {
-          final createdAt = DateTime.parse(r['created_at'] as String);
-          return createdAt.isAfter(todayStart);
-        })
-        .fold<double>(
-          0,
-          (sum, r) => sum + ((r['total_price'] as num?)?.toDouble() ?? 0),
-        );
+    final reservationRevenueToday = reservations.where((r) {
+      final createdAt = DateTime.parse(r['created_at'] as String);
+      return createdAt.isAfter(todayStart);
+    }).fold<double>(
+      0,
+      (sum, r) => sum + ((r['total_price'] as num?)?.toDouble() ?? 0),
+    );
 
     return {
       'total_revenue': (totalRevenue + reservationRevenue).toStringAsFixed(0),
       'tournament_revenue': totalRevenue.toStringAsFixed(0),
       'reservation_revenue': reservationRevenue.toStringAsFixed(0),
       'revenue_30d': revenue30d.toStringAsFixed(0),
-      'revenue_today': (revenueToday + reservationRevenueToday).toStringAsFixed(0),
+      'revenue_today':
+          (revenueToday + reservationRevenueToday).toStringAsFixed(0),
       'avg_revenue_per_tournament': tournaments.isNotEmpty
           ? (totalRevenue / tournaments.length).toStringAsFixed(0)
           : '0',
@@ -245,7 +241,7 @@ class ClubAnalyticsService {
       'avg_engagement': avgEngagement,
       'engagement_rate': totalPosts > 0
           ? (((totalLikes + totalComments) / totalPosts / 10) * 100)
-                .toStringAsFixed(1)
+              .toStringAsFixed(1)
           : '0', // Assuming 10 followers per post average
     };
   }
@@ -323,10 +319,8 @@ class ClubAnalyticsService {
   Future<Map<String, int>> _getRankDistribution(List<String> memberIds) async {
     if (memberIds.isEmpty) return {};
 
-    final users = await _supabase
-        .from('users')
-        .select('rank')
-        .inFilter('id', memberIds);
+    final users =
+        await _supabase.from('users').select('rank').inFilter('id', memberIds);
 
     final Map<String, int> distribution = {};
 
@@ -364,4 +358,3 @@ class ClubAnalyticsService {
     return List<Map<String, dynamic>>.from(users);
   }
 }
-

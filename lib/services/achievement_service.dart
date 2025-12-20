@@ -27,15 +27,11 @@ class AchievementService {
 
   Future<List<Achievement>> getUserAchievements(String userId) async {
     try {
-      final response = await _supabase
-          .from('user_achievements')
-          .select('''
+      final response = await _supabase.from('user_achievements').select('''
             *,
             achievements (*),
             tournament:tournaments (title)
-          ''')
-          .eq('user_id', userId)
-          .order('earned_at', ascending: false);
+          ''').eq('user_id', userId).order('earned_at', ascending: false);
 
       return response.map<Achievement>((json) {
         final achievement = json['achievements'];
@@ -53,11 +49,8 @@ class AchievementService {
   Future<List<Achievement>> getUserAvailableAchievements(String userId) async {
     try {
       // Get user's current stats
-      final userProfile = await _supabase
-          .from('users')
-          .select()
-          .eq('id', userId)
-          .single();
+      final userProfile =
+          await _supabase.from('users').select().eq('id', userId).single();
 
       // Get all achievements
       final allAchievements = await _supabase.from('achievements').select();
@@ -68,9 +61,8 @@ class AchievementService {
           .select('achievement_id')
           .eq('user_id', userId);
 
-      final earnedIds = earnedAchievements
-          .map((e) => e['achievement_id'])
-          .toSet();
+      final earnedIds =
+          earnedAchievements.map((e) => e['achievement_id']).toSet();
 
       // Filter available achievements
       final availableAchievements = allAchievements.where((achievement) {

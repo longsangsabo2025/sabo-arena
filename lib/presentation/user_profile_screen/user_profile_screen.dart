@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart' as share_plus;
 import 'package:sabo_arena/widgets/common/common_widgets.dart'; // Phase 4
+// import '../../widgets/common/app_button.dart'; // iOS style buttons
 
 import '../../core/app_export.dart' hide AppTheme, AppColors;
 import '../../core/device/device_info.dart';
@@ -24,6 +25,7 @@ import '../help_support_screen/help_support_screen.dart';
 // import '../../services/notification_service.dart';
 import '../../models/tournament.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/notification_badge.dart';
 // Import FollowEventBroadcaster
 import '../club_dashboard_screen/club_owner_main_screen.dart';
 import '../club_registration_screen/club_registration_screen.dart';
@@ -60,7 +62,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   final ScrollController _scrollController = ScrollController();
   final UserProfileController _controller = UserProfileController();
   final ImagePicker _imagePicker = ImagePicker();
-  
+
   bool _isRefreshing = false;
 
   // Temporary image states for immediate UI update
@@ -69,7 +71,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   // Tab navigation state
   int _mainTabIndex = 0; // 0: Bài đăng, 1: Giải Đấu, 2: Trận Đấu, 3: Kết quả
-  int _postsSubTabIndex = 0; // 0: Bài viết (All), 1: Hình ảnh (Images only), 2: Highlight (Videos)
+  int _postsSubTabIndex =
+      0; // 0: Bài viết (All), 1: Hình ảnh (Images only), 2: Highlight (Videos)
 
   // Facade getters for backward compatibility
   UserProfile? get _userProfile => _controller.userProfile;
@@ -80,7 +83,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   // int get _unreadNotificationCount => _controller.unreadNotificationCount;
   String get _currentTab => _controller.currentTab;
   bool get _isLoading => _controller.isLoading;
-  
+
   // Services (kept for local usage if needed, but should prefer controller)
   final UserService _userService = UserService.instance;
   final AuthService _authService = AuthService.instance;
@@ -103,7 +106,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       } else if (args is Map && args.containsKey('user_id')) {
         userId = args['user_id'] as String?;
       }
-      
+
       _controller.init(userId: userId);
       _isInitialized = true;
     }
@@ -120,9 +123,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   void _onControllerUpdate() {
     if (mounted) setState(() {});
   }
-  
+
   // Legacy methods stubbed out or redirected to controller
-  
+
   String _formatTournamentDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -146,10 +149,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
     return '${(amount / 1000).toStringAsFixed(0)}K';
   }
-
-
-
-
 
   Future<void> _refreshProfile() async {
     if (_isRefreshing) return;
@@ -206,19 +205,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.person_off_outlined, size: 80, color: AppColors.textSecondary),
+              Icon(Icons.person_off_outlined,
+                  size: 80, color: AppColors.textSecondary),
               SizedBox(height: 2.h),
               Text(
-                'Không thể tải hồ sơ', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge,
+                'Không thể tải hồ sơ',
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 1.h),
               Text(
-                'Vui lòng đăng nhập hoặc thử lại.', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium,
+                'Vui lòng đăng nhập hoặc thử lại.',
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 4.h),
               AppButton(
                 label: 'Đăng nhập',
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.loginScreen),
+                onPressed: () =>
+                    Navigator.pushNamed(context, AppRoutes.loginScreen),
               ),
             ],
           ),
@@ -241,7 +246,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget _buildResponsiveBody() {
     final isIPad = DeviceInfo.isIPad(context);
     final maxWidth = isIPad ? 900.0 : double.infinity;
-    
+
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),
@@ -252,7 +257,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             SliverToBoxAdapter(
               child: ModernProfileHeaderWidget(
                 userProfile: _userProfile!,
-                userStats: _controller.userStats, // Assuming controller has userStats
+                userStats:
+                    _controller.userStats, // Assuming controller has userStats
                 socialData: _socialData,
                 tempAvatar: _tempAvatarPath,
                 tempCoverPhoto: _tempCoverPhotoPath,
@@ -323,16 +329,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     setState(() {
                       _controller.currentTab = tab;
                     });
-                    _controller.loadTournaments(); // Reload tournaments when tab changes
                   },
                 ),
               ),
 
               const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
-              // Tournament List based on current tab
+              // Tournament List based on current tab (now with infinite scroll)
               UserProfileTournamentsTab(
-                tournaments: _getTournamentsForCurrentTab(),
                 currentTab: _currentTab,
                 onTournamentTap: _navigateToTournamentDetail,
                 onShareTap: _shareTournament,
@@ -340,7 +344,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ] else if (_mainTabIndex == 2) ...[
               // Trận Đấu tab - Matches Section with tabs
               SliverToBoxAdapter(
-                child: MatchesSectionWidget(userId: _authService.currentUser?.id ?? ''),
+                child: MatchesSectionWidget(
+                    userId: _authService.currentUser?.id ?? ''),
               ),
             ] else if (_mainTabIndex == 3) ...[
               // Kết quả tab - No content needed as it navigates to LeaderboardScreen
@@ -353,8 +358,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       'Đang chuyển hướng tới bảng xếp hạng...',
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
                 ),
@@ -374,45 +379,45 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return CustomAppBar(
       title: 'Hồ sơ cá nhân',
       showBackButton: false,
-      showNotificationBadge: true, // Tự động thêm notification badge mới ở cuối
+      showNotificationBadge:
+          false, // Tắt tự động thêm badge để tự custom vị trí
       onNotificationTap: _navigateToNotifications,
       actions: [
         // Hiển thị nút chuyển sang giao diện club nếu:
         // 1. User có system role "clb" hoặc "club_owner" (chủ club)
         // 2. HOẶC user có club role là admin/moderator (quản lý club)
-        if (_userProfile?.role == 'clb' || 
+        if (_userProfile?.role == 'clb' ||
             _userProfile?.role == 'club_owner' ||
             _hasClubManagementAccess)
           Container(
             margin: const EdgeInsets.only(right: 4),
-            child: ElevatedButton.icon(
+            child: AppButton(
+              label: 'CLB',
+              type: AppButtonType.primary,
+              size: AppButtonSize.small,
+              icon: Icons.sports_soccer,
+              iconTrailing: false,
               onPressed: _switchToClubInterface,
-              icon: Icon(Icons.sports_soccer, size: 16),
-              label: Text(
-                'CLB', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: AppColors.textOnPrimary,
-                elevation: 2,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                minimumSize: Size(0, 32),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
             ),
           ),
+
+        // QR Code button - Di chuyển lên trước
+        IconButton(
+          onPressed: _showQRCode,
+          icon: CustomIconWidget(
+            iconName: 'qr_code',
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          tooltip: 'Mã QR',
+        ),
+
         // Messaging button with badge
         Stack(
           children: [
             IconButton(
               onPressed: _navigateToMessaging,
               icon: Icon(
-                Icons.message_outlined,
+                Icons.chat_bubble_outline,
                 color: Theme.of(context).colorScheme.primary,
               ),
               tooltip: 'Tin nhắn',
@@ -433,34 +438,36 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         ? '99+'
                         : _unreadMessageCount.toString(),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.textOnPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: AppColors.textOnPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ),
               ),
           ],
         ),
-        // QR Code button
-        IconButton(
-          onPressed: _showQRCode,
-          icon: CustomIconWidget(
-            iconName: 'qr_code',
-            color: Theme.of(context).colorScheme.primary,
+
+        // Notification button - Thêm thủ công để đặt cạnh tin nhắn
+        NotificationBadge(
+          child: IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: _navigateToNotifications,
+            tooltip: 'Thông báo',
           ),
-          tooltip: 'Mã QR',
         ),
-        // More options button (màu xanh)
+
+        // Menu button - Di chuyển xuống cuối
         IconButton(
           onPressed: _showMoreOptions,
-          icon: CustomIconWidget(
-            iconName: 'more_vert',
+          icon: Icon(
+            Icons.menu,
             color: Theme.of(context).colorScheme.primary,
-          ), // Đổi sang màu xanh
+          ),
           tooltip: 'Tùy chọn khác',
         ),
-        // Notification badge tự động thêm ở đây bởi CustomAppBar
+
+        const SizedBox(width: 8), // Padding cuối
       ],
     );
   }
@@ -492,7 +499,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             _controller.updateUserProfile(newProfile);
 
             if (!context.mounted) return;
-            
+
             // ignore: use_build_context_synchronously
             Navigator.pop(context);
             // ignore: use_build_context_synchronously
@@ -502,7 +509,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             );
           } catch (e) {
             if (!context.mounted) return;
-            
+
             // ignore: use_build_context_synchronously
             AppSnackbar.error(
               context: context,
@@ -537,7 +544,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ),
             SizedBox(height: 20),
             Text(
-              'Thay đổi ảnh bìa', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Thay đổi ảnh bìa',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 30),
             Row(
@@ -596,7 +605,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ),
             SizedBox(height: 20),
             Text(
-              'Thay đổi ảnh đại diện', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Thay đổi ảnh đại diện',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 30),
             Row(
@@ -669,7 +680,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             _tempCoverPhotoPath = image.path;
           }
         });
-        
+
         if (isAvatar) {
           await _uploadAvatar(image);
         } else {
@@ -682,12 +693,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   // Cover Photo Functions
-  void _pickCoverPhotoFromCamera() => _pickAndUpload(source: ImageSource.camera, isAvatar: false);
-  void _pickCoverPhotoFromGallery() => _pickAndUpload(source: ImageSource.gallery, isAvatar: false);
+  void _pickCoverPhotoFromCamera() =>
+      _pickAndUpload(source: ImageSource.camera, isAvatar: false);
+  void _pickCoverPhotoFromGallery() =>
+      _pickAndUpload(source: ImageSource.gallery, isAvatar: false);
 
   // Avatar Functions
-  void _pickAvatarFromCamera() => _pickAndUpload(source: ImageSource.camera, isAvatar: true);
-  void _pickAvatarFromGallery() => _pickAndUpload(source: ImageSource.gallery, isAvatar: true);
+  void _pickAvatarFromCamera() =>
+      _pickAndUpload(source: ImageSource.camera, isAvatar: true);
+  void _pickAvatarFromGallery() =>
+      _pickAndUpload(source: ImageSource.gallery, isAvatar: true);
 
   // ignore: unused_element
   void _removeAvatar() {
@@ -728,7 +743,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       // 🚀 MUSK: Atomic operation handled by service
       final oldCoverUrl = _userProfile?.coverPhotoUrl ?? '';
       final bytes = await image.readAsBytes();
-      
+
       final newCoverUrl = await _userService.uploadCoverPhoto(
         bytes,
         oldUrl: oldCoverUrl,
@@ -740,7 +755,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         setState(() {
           _tempCoverPhotoPath = null; // Clear temp path
           if (_controller.userProfile != null) {
-            _controller.updateUserProfile(_controller.userProfile!.copyWith(coverPhotoUrl: newCoverUrl));
+            _controller.updateUserProfile(
+                _controller.userProfile!.copyWith(coverPhotoUrl: newCoverUrl));
           }
         });
 
@@ -770,7 +786,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         setState(() {
           _tempAvatarPath = null; // Clear temp path
           if (_userProfile != null) {
-            _controller.updateUserProfile(_controller.userProfile!.copyWith(avatarUrl: newAvatarUrl));
+            _controller.updateUserProfile(
+                _controller.userProfile!.copyWith(avatarUrl: newAvatarUrl));
           }
         });
 
@@ -794,7 +811,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       setState(() {
         _tempAvatarPath = null;
         if (_userProfile != null) {
-          _controller.userProfile = _controller.userProfile!.copyWith(avatarUrl: null);
+          _controller.userProfile =
+              _controller.userProfile!.copyWith(avatarUrl: null);
         }
       });
 
@@ -833,7 +851,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               label: 'Mở cài đặt',
               onPressed: () {
                 Navigator.pop(context);
-                PermissionService.openDeviceAppSettings(); // Mở cài đặt ứng dụng
+                PermissionService
+                    .openDeviceAppSettings(); // Mở cài đặt ứng dụng
               },
             ),
           ],
@@ -871,8 +890,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: color ?? AppColors.textPrimary,
-            ),
+                  color: color ?? AppColors.textPrimary,
+                ),
           ),
         ],
       ),
@@ -883,7 +902,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     // Check nếu user có quyền truy cập:
     // 1. System role là 'clb' hoặc 'club_owner'
     // 2. HOẶC có club management access (admin/moderator)
-    if (_userProfile?.role != 'clb' && 
+    if (_userProfile?.role != 'clb' &&
         _userProfile?.role != 'club_owner' &&
         !_hasClubManagementAccess) {
       _showErrorMessage('Bạn không có quyền truy cập giao diện club');
@@ -957,7 +976,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         _userProfile!,
         context: context,
       );
-      
+
       if (result != null && mounted) {
         AppSnackbar.success(
           context: context,
@@ -1001,7 +1020,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   SizedBox(width: 24), // Spacer for centering
                   Flexible(
                     child: Text(
-                      'Tùy chọn', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      'Tùy chọn',
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   IconButton(
@@ -1240,9 +1262,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Color? iconColor,
     bool isDestructive = false,
   }) {
-    final effectiveIconColor = isDestructive
-        ? AppColors.error
-        : (iconColor ?? AppColors.primary);
+    final effectiveIconColor =
+        isDestructive ? AppColors.error : (iconColor ?? AppColors.primary);
     final effectiveTitleColor = isDestructive ? AppColors.error : null;
 
     return ListTile(
@@ -1255,7 +1276,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         child: Icon(icon, color: effectiveIconColor, size: 20),
       ),
       title: Text(
-        title, style: TextStyle(
+        title,
+        style: TextStyle(
           fontWeight: FontWeight.w600,
           color: effectiveTitleColor,
         ),
@@ -1263,8 +1285,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       subtitle: Text(
         subtitle,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: AppColors.textSecondary,
-        ),
+              color: AppColors.textSecondary,
+            ),
       ),
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -1498,7 +1520,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.sports_esports, color: AppColors.accent, size: 24),
+                Icon(Icons.sports_baseball, color: AppColors.accent, size: 24),
                 Text(
                   'Lịch sử thách đấu', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -1724,7 +1746,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     : AppColors.gray400;
                 IconData positionIcon = position <= 4
                     ? Icons.emoji_events
-                    : Icons.sports_esports;
+                    : Icons.sports_baseball;
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 12),
@@ -1940,7 +1962,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Ứng dụng quản lý giải đấu Billiards chuyên nghiệp', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14),
+              'Ứng dụng quản lý giải đấu Billiards chuyên nghiệp',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
             _buildInfoRow('Phiên bản', '1.0.3 (20)'),
@@ -1960,7 +1984,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  'Chính sách bảo mật', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Chính sách bảo mật',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppColors.primary,
                     decoration: TextDecoration.underline,
                   ),
@@ -1978,7 +2004,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  'Điều khoản sử dụng', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Điều khoản sử dụng',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppColors.primary,
                     decoration: TextDecoration.underline,
                   ),
@@ -1987,7 +2015,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ),
             const SizedBox(height: 8),
             const Text(
-              '© 2025 Sabo Arena. All rights reserved.', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              '© 2025 Sabo Arena. All rights reserved.',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -2008,9 +2038,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+          Text(label,
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary)),
           Text(
-            value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -2119,7 +2151,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             Text('Hotline: 1900-xxxx'),
             SizedBox(height: 16),
             Text(
-              'Vui lòng gửi email mô tả chi tiết vấn đề bạn gặp phải.', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              'Vui lòng gửi email mô tả chi tiết vấn đề bạn gặp phải.',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -2205,12 +2239,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Chọn ngôn ngữ', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            'Chọn ngôn ngữ',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 20),
           ...languages.map(
             (lang) => ListTile(
-              leading: Text(lang['flag']!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 24)),
+              leading: Text(lang['flag']!,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 24)),
               title: Text(lang['name']!),
               trailing: lang['code'] == 'vi'
                   ? Icon(Icons.check, color: AppColors.success)
@@ -2672,7 +2710,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             SizedBox(width: 2.w),
             Expanded(
               child: Text(
-                'Quản lý CLB', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Quản lý CLB',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.primary,
@@ -2686,7 +2726,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bạn chưa có câu lạc bộ nào để quản lý.', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, height: 1.4),
+              'Bạn chưa có câu lạc bộ nào để quản lý.',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 14.sp, height: 1.4),
             ),
             SizedBox(height: 2.h),
             Container(
@@ -2700,7 +2742,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tạo CLB mới:', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Tạo CLB mới:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.success700,
@@ -2777,7 +2821,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         tournamentId = tournamentData.id;
         tournamentName = tournamentData.title;
         date = _formatTournamentDate(tournamentData.startDate);
-        playersCount = '${tournamentData.currentParticipants}/${tournamentData.maxParticipants}';
+        playersCount =
+            '${tournamentData.currentParticipants}/${tournamentData.maxParticipants}';
         prizePool = _formatPrizePool(tournamentData.prizePool);
         format = tournamentData.format;
         status = tournamentData.status;
@@ -2791,10 +2836,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         format = tournament['format'] as String? ?? 'Single Elimination';
         status = tournament['status'] as String? ?? 'upcoming';
       }
-      
+
       // Extract participant count from "16/32" format
       final participants = playersCount.split('/').first;
-      
+
       // Use rich share with 4:5 image card
       await ShareService.shareTournamentRich(
         tournamentId: tournamentId,
@@ -2806,7 +2851,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         status: status,
         context: context,
       );
-      
+
       if (mounted) {
         AppSnackbar.success(
           context: context,
@@ -2824,16 +2869,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   // Helper method to get tournaments for current tab (now using real data)
+  // Currently unused - logic moved inline but keeping for reference
   List<Tournament> _getTournamentsForCurrentTab() {
     // Filter based on _currentTab
     return _tournaments.where((t) {
-      if (_currentTab == 'ready') return t.status == 'upcoming' || t.status == 'ready';
-      if (_currentTab == 'live') return t.status == 'active' || t.status == 'live' || t.status == 'in_progress';
-      if (_currentTab == 'done') return t.status == 'completed' || t.status == 'ended' || t.status == 'done';
+      if (_currentTab == 'ready')
+        return t.status == 'upcoming' || t.status == 'ready';
+      if (_currentTab == 'live')
+        return t.status == 'active' ||
+            t.status == 'live' ||
+            t.status == 'in_progress' ||
+            t.status == 'ongoing';
+      if (_currentTab == 'done')
+        return t.status == 'completed' ||
+            t.status == 'ended' ||
+            t.status == 'done';
       return true;
     }).toList();
   }
-
-
 }
-

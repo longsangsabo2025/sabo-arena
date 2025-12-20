@@ -11,7 +11,7 @@ class LoyaltyService {
   // ============================================================
   // GET OR CREATE USER LOYALTY ACCOUNT
   // ============================================================
-  
+
   /// Lấy hoặc tạo mới loyalty account cho user
   /// Returns: user_loyalty_points record
   Future<Map<String, dynamic>> getOrCreateUserLoyalty({
@@ -148,14 +148,10 @@ class LoyaltyService {
     required String userId,
   }) async {
     try {
-      final response = await _supabase
-          .from('user_loyalty_points')
-          .select('''
+      final response = await _supabase.from('user_loyalty_points').select('''
             *,
             club:clubs(id, name, avatar_url)
-          ''')
-          .eq('user_id', userId)
-          .order('total_earned', ascending: false);
+          ''').eq('user_id', userId).order('total_earned', ascending: false);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
@@ -269,15 +265,18 @@ class LoyaltyService {
   }) async {
     try {
       final updates = <String, dynamic>{};
-      
+
       if (programName != null) updates['program_name'] = programName;
       if (pointsPerGame != null) updates['points_per_game'] = pointsPerGame;
       if (pointsPerVnd != null) updates['points_per_vnd'] = pointsPerVnd;
       if (pointsPerHour != null) updates['points_per_hour'] = pointsPerHour;
-      if (birthdayMultiplier != null) updates['birthday_multiplier'] = birthdayMultiplier;
-      if (weekendMultiplier != null) updates['weekend_multiplier'] = weekendMultiplier;
+      if (birthdayMultiplier != null)
+        updates['birthday_multiplier'] = birthdayMultiplier;
+      if (weekendMultiplier != null)
+        updates['weekend_multiplier'] = weekendMultiplier;
       if (tierSystem != null) updates['tier_system'] = tierSystem;
-      if (pointsExpiryDays != null) updates['points_expiry_days'] = pointsExpiryDays;
+      if (pointsExpiryDays != null)
+        updates['points_expiry_days'] = pointsExpiryDays;
       if (isActive != null) updates['is_active'] = isActive;
 
       await _supabase
@@ -306,10 +305,30 @@ class LoyaltyService {
   }) async {
     try {
       final tierSystem = {
-        'bronze': {'min_points': 0, 'max_points': 499, 'discount_percent': 5, 'priority_booking': 1},
-        'silver': {'min_points': 500, 'max_points': 1499, 'discount_percent': 10, 'priority_booking': 2},
-        'gold': {'min_points': 1500, 'max_points': 4999, 'discount_percent': 15, 'priority_booking': 3},
-        'platinum': {'min_points': 5000, 'max_points': null, 'discount_percent': 20, 'priority_booking': 4},
+        'bronze': {
+          'min_points': 0,
+          'max_points': 499,
+          'discount_percent': 5,
+          'priority_booking': 1
+        },
+        'silver': {
+          'min_points': 500,
+          'max_points': 1499,
+          'discount_percent': 10,
+          'priority_booking': 2
+        },
+        'gold': {
+          'min_points': 1500,
+          'max_points': 4999,
+          'discount_percent': 15,
+          'priority_booking': 3
+        },
+        'platinum': {
+          'min_points': 5000,
+          'max_points': null,
+          'discount_percent': 20,
+          'priority_booking': 4
+        },
       };
 
       final response = await _supabase
@@ -367,7 +386,8 @@ class LoyaltyService {
   }
 
   /// Get tier benefits
-  Map<String, dynamic>? getTierBenefits(String tier, Map<String, dynamic> tierSystem) {
+  Map<String, dynamic>? getTierBenefits(
+      String tier, Map<String, dynamic> tierSystem) {
     return tierSystem[tier];
   }
 
@@ -377,7 +397,8 @@ class LoyaltyService {
       return (tierSystem['silver']?['min_points'] ?? 500) - currentPoints;
     } else if (currentPoints < (tierSystem['gold']?['min_points'] ?? 1500)) {
       return (tierSystem['gold']?['min_points'] ?? 1500) - currentPoints;
-    } else if (currentPoints < (tierSystem['platinum']?['min_points'] ?? 5000)) {
+    } else if (currentPoints <
+        (tierSystem['platinum']?['min_points'] ?? 5000)) {
       return (tierSystem['platinum']?['min_points'] ?? 5000) - currentPoints;
     }
     return null; // Already at max tier

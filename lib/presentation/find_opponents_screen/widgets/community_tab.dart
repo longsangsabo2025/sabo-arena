@@ -10,7 +10,6 @@ import '../../../utils/challenge_to_match_converter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 import 'package:sabo_arena/models/match.dart';
-import './challenge_card_widget_redesign.dart';
 import './challenge_detail_modal.dart';
 import './schedule_match_modal.dart';
 import './create_spa_challenge_modal.dart';
@@ -19,6 +18,7 @@ import '../../../models/user_profile.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/constants/ranking_constants.dart';
 import '../../../services/location_service.dart';
+import '../../../widgets/common/app_button.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math' as math;
 
@@ -38,7 +38,7 @@ class _CommunityTabState extends State<CommunityTab>
   bool _isLoading = true;
   String? _errorMessage;
   int _selectedTabIndex = 0; // 0: Thách đấu, 1: Giao lưu
-  
+
   // Sub-tab controllers for each main tab
   late TabController _thachDauSubController;
   late TabController _giaoLuuSubController;
@@ -63,7 +63,7 @@ class _CommunityTabState extends State<CommunityTab>
     _loadData();
     // Removed auto-refresh to improve UX - user can pull-to-refresh manually
   }
-  
+
   @override
   void dispose() {
     _thachDauSubController.dispose();
@@ -77,7 +77,6 @@ class _CommunityTabState extends State<CommunityTab>
         _isLoading = true;
         _errorMessage = null;
       });
-
 
       // Load both open challenges and accepted matches for community visibility
       final matches = await _challengeService.getCommunityMatches();
@@ -179,21 +178,17 @@ class _CommunityTabState extends State<CommunityTab>
     }
 
     // Get current user profile
-    final currentUserData = await supabase
-        .from('users')
-        .select()
-        .eq('id', currentUserId)
-        .single();
+    final currentUserData =
+        await supabase.from('users').select().eq('id', currentUserId).single();
 
     // Convert to UserProfile
     final currentUser = UserProfile.fromJson(currentUserData);
 
     // Get challenge-eligible opponents
-    final opponentsData = await _challengeService
-        .getChallengeEligibleOpponents();
-    final opponents = opponentsData
-        .map((data) => UserProfile.fromJson(data))
-        .toList();
+    final opponentsData =
+        await _challengeService.getChallengeEligibleOpponents();
+    final opponents =
+        opponentsData.map((data) => UserProfile.fromJson(data)).toList();
 
     if (!mounted) return;
 
@@ -233,10 +228,10 @@ class _CommunityTabState extends State<CommunityTab>
     }
 
     // Get opponents (using same eligible list for now, or could be different)
-    final opponentsData = await _challengeService.getChallengeEligibleOpponents();
-    final opponentProfiles = opponentsData
-        .map((data) => UserProfile.fromJson(data))
-        .toList();
+    final opponentsData =
+        await _challengeService.getChallengeEligibleOpponents();
+    final opponentProfiles =
+        opponentsData.map((data) => UserProfile.fromJson(data)).toList();
 
     if (!mounted) return;
 
@@ -250,7 +245,6 @@ class _CommunityTabState extends State<CommunityTab>
       ),
     );
   }
-
 
   Widget _buildBody() {
     if (_isLoading) {
@@ -311,8 +305,8 @@ class _CommunityTabState extends State<CommunityTab>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TabBar(
-                controller: _selectedTabIndex == 0 
-                    ? _thachDauSubController 
+                controller: _selectedTabIndex == 0
+                    ? _thachDauSubController
                     : _giaoLuuSubController,
                 labelColor: Theme.of(context).primaryColor,
                 unselectedLabelColor: Colors.grey,
@@ -328,8 +322,8 @@ class _CommunityTabState extends State<CommunityTab>
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.6,
               child: TabBarView(
-                controller: _selectedTabIndex == 0 
-                    ? _thachDauSubController 
+                controller: _selectedTabIndex == 0
+                    ? _thachDauSubController
                     : _giaoLuuSubController,
                 children: [
                   // Ready tab
@@ -354,7 +348,7 @@ class _CommunityTabState extends State<CommunityTab>
   /// Build matches list for sub-tab (Ready or Complete)
   Widget _buildMatchesList(String challengeType, {required bool isReady}) {
     final allMatches = _getFilteredMatchesByType(challengeType);
-    
+
     // Filter by status: Ready = pending/accepted/in_progress, Complete = completed
     final filteredMatches = allMatches.where((match) {
       final status = match['status'] as String? ?? 'pending';
@@ -387,7 +381,7 @@ class _CommunityTabState extends State<CommunityTab>
               ),
               const SizedBox(height: 16),
               Text(
-                isReady 
+                isReady
                     ? 'Chưa có trận nào đang chờ'
                     : 'Chưa có trận nào hoàn thành',
                 style: TextStyle(
@@ -418,20 +412,20 @@ class _CommunityTabState extends State<CommunityTab>
         itemCount: filteredMatches.length,
         itemBuilder: (context, index) {
           final challenge = filteredMatches[index];
-          
+
           // Transform challenge data to match card format (same as My Challenges tab)
           final matchData = ChallengeToMatchConverter.convert(
             challenge,
             currentUserId: Supabase.instance.client.auth.currentUser?.id,
           );
-          
+
           // Extract match information for live streaming detection
           final match = challenge['match'] as Map<String, dynamic>?;
           final isLive = match?['is_live'] as bool? ?? false;
           final matchStatus = match?['status'] as String? ?? 'pending';
           final videoUrls = match?['video_urls'] as List?;
           final hasVideoUrls = videoUrls != null && videoUrls.isNotEmpty;
-          
+
           // Conditional rendering: Use realtime card for live matches, static card otherwise
           if ((matchStatus == 'in_progress' || isLive) && hasVideoUrls) {
             // Live match with video - use realtime card with "Watch Live" button
@@ -476,7 +470,9 @@ class _CommunityTabState extends State<CommunityTab>
               onTap: () {
                 // Show challenge detail in bottom sheet
                 if (kDebugMode) {
-                  ProductionLogger.info('🎯 Challenge tapped: ${challenge['id']}', tag: 'community_tab');
+                  ProductionLogger.info(
+                      '🎯 Challenge tapped: ${challenge['id']}',
+                      tag: 'community_tab');
                 }
                 // You can add detail view here if needed
               },
@@ -492,38 +488,39 @@ class _CommunityTabState extends State<CommunityTab>
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
     final challengedId = challenge['challenged_id'] as String?;
     final challengerId = challenge['challenger_id'] as String?;
-    
+
     // Don't show buttons if I am the challenger
     if (currentUserId == challengerId) return null;
 
     // Show buttons if:
     // 1. It's a public challenge (challengedId is null)
     // 2. OR it's a direct challenge to me
-    if (status == 'pending' && (challengedId == null || challengedId == currentUserId)) {
+    if (status == 'pending' &&
+        (challengedId == null || challengedId == currentUserId)) {
       return Row(
         children: [
           Expanded(
-            child: ElevatedButton(
+            child: AppButton(
+              label: 'Nhận thách đấu',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              customColor: const Color(0xFF00695C), // Brand teal green
+              customTextColor: Colors.white,
+              fullWidth: true,
               onPressed: () => _acceptChallenge(challenge),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00695C),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text(
-                'Nhận thách đấu',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: OutlinedButton(
+            child: AppButton(
+              label: 'Hẹn lịch',
+              type: AppButtonType.outline,
+              size: AppButtonSize.medium,
+              customColor: const Color(0xFF00695C), // Brand teal green
+              fullWidth: true,
               onPressed: () {
-                final challenger = challenge['challenger'] as Map<String, dynamic>?;
+                final challenger =
+                    challenge['challenger'] as Map<String, dynamic>?;
                 if (challenger != null) {
                   showModalBottomSheet(
                     context: context,
@@ -535,23 +532,12 @@ class _CommunityTabState extends State<CommunityTab>
                     ),
                   );
                 } else {
-                   ScaffoldMessenger.of(context).showSnackBar(
-                     const SnackBar(content: Text('Không tìm thấy thông tin đối thủ')),
-                   );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Không tìm thấy thông tin đối thủ')),
+                  );
                 }
               },
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF00695C),
-                side: const BorderSide(color: Color(0xFF00695C)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text(
-                'Hẹn lịch',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
             ),
           ),
         ],
@@ -570,7 +556,7 @@ class _CommunityTabState extends State<CommunityTab>
       );
 
       await _challengeService.acceptChallenge(challenge['id']);
-      
+
       if (mounted) {
         Navigator.pop(context); // Hide loading
         ScaffoldMessenger.of(context).showSnackBar(
@@ -592,7 +578,7 @@ class _CommunityTabState extends State<CommunityTab>
   List<Map<String, dynamic>> _getFilteredMatchesByType(String challengeType) {
     final filtered = _matches.where((match) {
       final type = match['challenge_type'] as String?;
-      
+
       // 1. Filter by Type
       bool typeMatch = false;
       if (challengeType == 'giao_luu') {
@@ -613,7 +599,7 @@ class _CommunityTabState extends State<CommunityTab>
       if (_selectedRankFilter != null || _sameRankFilter) {
         final challenger = match['challenger'] as Map<String, dynamic>?;
         final challenged = match['challenged'] as Map<String, dynamic>?;
-        
+
         final challengerRank = challenger?['rank'] as String?;
         final challengedRank = challenged?['rank'] as String?;
 
@@ -627,7 +613,8 @@ class _CommunityTabState extends State<CommunityTab>
         if (targetRank != null) {
           // Check if ANY player in the match has the target rank
           // This is a loose filter to show relevant matches
-          final hasRank = (challengerRank == targetRank) || (challengedRank == targetRank);
+          final hasRank =
+              (challengerRank == targetRank) || (challengedRank == targetRank);
           if (!hasRank) return false;
         }
       }
@@ -644,7 +631,9 @@ class _CommunityTabState extends State<CommunityTab>
       if (_nearMeFilter && _currentPosition != null) {
         final club = match['club'] as Map<String, dynamic>?;
         // Only keep matches with location data
-        if (club == null || club['latitude'] == null || club['longitude'] == null) {
+        if (club == null ||
+            club['latitude'] == null ||
+            club['longitude'] == null) {
           return false;
         }
         // Don't filter by radius here, we will sort and take top 10 later
@@ -659,11 +648,13 @@ class _CommunityTabState extends State<CommunityTab>
       if (_nearMeFilter && _currentPosition != null) {
         final clubA = a['club'] as Map<String, dynamic>?;
         final clubB = b['club'] as Map<String, dynamic>?;
-        
+
         double distA = 999999;
         double distB = 999999;
-        
-        if (clubA != null && clubA['latitude'] != null && clubA['longitude'] != null) {
+
+        if (clubA != null &&
+            clubA['latitude'] != null &&
+            clubA['longitude'] != null) {
           distA = _calculateDistance(
             _currentPosition!.latitude,
             _currentPosition!.longitude,
@@ -671,8 +662,10 @@ class _CommunityTabState extends State<CommunityTab>
             (clubA['longitude'] as num).toDouble(),
           );
         }
-        
-        if (clubB != null && clubB['latitude'] != null && clubB['longitude'] != null) {
+
+        if (clubB != null &&
+            clubB['latitude'] != null &&
+            clubB['longitude'] != null) {
           distB = _calculateDistance(
             _currentPosition!.latitude,
             _currentPosition!.longitude,
@@ -680,8 +673,9 @@ class _CommunityTabState extends State<CommunityTab>
             (clubB['longitude'] as num).toDouble(),
           );
         }
-        
-        if ((distA - distB).abs() > 0.1) { // 100m difference
+
+        if ((distA - distB).abs() > 0.1) {
+          // 100m difference
           return distA.compareTo(distB);
         }
       }
@@ -699,7 +693,6 @@ class _CommunityTabState extends State<CommunityTab>
 
     return filtered;
   }
-
 
   /// Calculate distance between two coordinates (Haversine formula)
   double _calculateDistance(
@@ -738,18 +731,27 @@ class _CommunityTabState extends State<CommunityTab>
             avatar: Icon(
               Icons.filter_list,
               size: 16,
-              color: _selectedRankFilter != null ? Colors.white : Colors.grey[700],
+              color:
+                  _selectedRankFilter != null ? Colors.white : Colors.grey[700],
             ),
             label: Text(
-              _selectedRankFilter != null 
-                  ? (RankingConstants.RANK_DETAILS[_selectedRankFilter]?['name'] ?? _selectedRankFilter!)
+              _selectedRankFilter != null
+                  ? (RankingConstants.RANK_DETAILS[_selectedRankFilter]
+                          ?['name'] ??
+                      _selectedRankFilter!)
                   : 'Bộ lọc',
               style: TextStyle(
-                color: _selectedRankFilter != null ? Colors.white : Colors.grey[700],
-                fontWeight: _selectedRankFilter != null ? FontWeight.bold : FontWeight.normal,
+                color: _selectedRankFilter != null
+                    ? Colors.white
+                    : Colors.grey[700],
+                fontWeight: _selectedRankFilter != null
+                    ? FontWeight.bold
+                    : FontWeight.normal,
               ),
             ),
-            backgroundColor: _selectedRankFilter != null ? Theme.of(context).primaryColor : Colors.grey[200],
+            backgroundColor: _selectedRankFilter != null
+                ? Theme.of(context).primaryColor
+                : Colors.grey[200],
             onPressed: _showFilterModal,
           ),
           const SizedBox(width: 8),
@@ -769,8 +771,8 @@ class _CommunityTabState extends State<CommunityTab>
               color: _onlyLiveFilter ? Colors.red : Colors.grey[700],
               fontWeight: _onlyLiveFilter ? FontWeight.bold : FontWeight.normal,
             ),
-            avatar: _onlyLiveFilter 
-                ? const Icon(Icons.circle, size: 12, color: Colors.red) 
+            avatar: _onlyLiveFilter
+                ? const Icon(Icons.circle, size: 12, color: Colors.red)
                 : null,
           ),
           const SizedBox(width: 8),
@@ -783,11 +785,13 @@ class _CommunityTabState extends State<CommunityTab>
               if (selected && _currentPosition == null) {
                 // Request location
                 try {
-                  final position = await LocationService.instance.getCurrentPosition();
+                  final position =
+                      await LocationService.instance.getCurrentPosition();
                   setState(() {
                     _currentPosition = position;
                     _nearMeFilter = true;
-                    _selectedClubFilter = null; // Clear club filter if near me is chosen
+                    _selectedClubFilter =
+                        null; // Clear club filter if near me is chosen
                   });
                 } catch (e) {
                   if (mounted) {
@@ -809,8 +813,8 @@ class _CommunityTabState extends State<CommunityTab>
               color: _nearMeFilter ? Colors.green : Colors.grey[700],
               fontWeight: _nearMeFilter ? FontWeight.bold : FontWeight.normal,
             ),
-            avatar: _nearMeFilter 
-                ? const Icon(Icons.location_on, size: 12, color: Colors.green) 
+            avatar: _nearMeFilter
+                ? const Icon(Icons.location_on, size: 12, color: Colors.green)
                 : null,
           ),
           const SizedBox(width: 8),
@@ -820,18 +824,24 @@ class _CommunityTabState extends State<CommunityTab>
             avatar: Icon(
               Icons.store,
               size: 16,
-              color: _selectedClubFilter != null ? Colors.white : Colors.grey[700],
+              color:
+                  _selectedClubFilter != null ? Colors.white : Colors.grey[700],
             ),
             label: Text(
-              _selectedClubFilter != null 
+              _selectedClubFilter != null
                   ? (_selectedClubFilter!['name'] ?? 'CLB')
                   : 'CLB',
               style: TextStyle(
-                color: _selectedClubFilter != null ? Colors.white : Colors.grey[700],
-                fontWeight: _selectedClubFilter != null ? FontWeight.bold : FontWeight.normal,
+                color: _selectedClubFilter != null
+                    ? Colors.white
+                    : Colors.grey[700],
+                fontWeight: _selectedClubFilter != null
+                    ? FontWeight.bold
+                    : FontWeight.normal,
               ),
             ),
-            backgroundColor: _selectedClubFilter != null ? Colors.orange : Colors.grey[200],
+            backgroundColor:
+                _selectedClubFilter != null ? Colors.orange : Colors.grey[200],
             onPressed: _showClubFilterModal,
           ),
           const SizedBox(width: 8),
@@ -845,7 +855,8 @@ class _CommunityTabState extends State<CommunityTab>
                 setState(() {
                   _sameRankFilter = selected;
                   if (selected) {
-                    _selectedRankFilter = null; // Clear specific rank if "Same Rank" is chosen
+                    _selectedRankFilter =
+                        null; // Clear specific rank if "Same Rank" is chosen
                   }
                 });
               },
@@ -853,7 +864,8 @@ class _CommunityTabState extends State<CommunityTab>
               checkmarkColor: Colors.blue,
               labelStyle: TextStyle(
                 color: _sameRankFilter ? Colors.blue : Colors.grey[700],
-                fontWeight: _sameRankFilter ? FontWeight.bold : FontWeight.normal,
+                fontWeight:
+                    _sameRankFilter ? FontWeight.bold : FontWeight.normal,
               ),
             ),
         ],
@@ -898,7 +910,9 @@ class _CommunityTabState extends State<CommunityTab>
                   if (clubs.isEmpty)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Center(child: Text('Không có CLB nào trong danh sách trận đấu hiện tại')),
+                      child: Center(
+                          child: Text(
+                              'Không có CLB nào trong danh sách trận đấu hiện tại')),
                     )
                   else
                     Expanded(
@@ -907,22 +921,28 @@ class _CommunityTabState extends State<CommunityTab>
                         itemCount: clubs.length,
                         itemBuilder: (context, index) {
                           final club = clubs[index];
-                          final isSelected = _selectedClubFilter?['id'] == club['id'];
+                          final isSelected =
+                              _selectedClubFilter?['id'] == club['id'];
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundImage: club['logo_url'] != null 
-                                  ? NetworkImage(club['logo_url']) 
+                              backgroundImage: club['logo_url'] != null
+                                  ? NetworkImage(club['logo_url'])
                                   : null,
-                              child: club['logo_url'] == null ? const Icon(Icons.store) : null,
+                              child: club['logo_url'] == null
+                                  ? const Icon(Icons.store)
+                                  : null,
                             ),
                             title: Text(club['name'] ?? 'Unknown Club'),
                             subtitle: Text(club['address'] ?? ''),
-                            trailing: isSelected ? const Icon(Icons.check, color: Colors.blue) : null,
+                            trailing: isSelected
+                                ? const Icon(Icons.check, color: Colors.blue)
+                                : null,
                             onTap: () {
                               setState(() {
                                 _selectedClubFilter = isSelected ? null : club;
                                 if (_selectedClubFilter != null) {
-                                  _nearMeFilter = false; // Disable "Near Me" if specific club is chosen
+                                  _nearMeFilter =
+                                      false; // Disable "Near Me" if specific club is chosen
                                 }
                               });
                               Navigator.pop(context);
@@ -932,17 +952,17 @@ class _CommunityTabState extends State<CommunityTab>
                       ),
                     ),
                   const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedClubFilter = null;
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Xóa bộ lọc CLB'),
-                    ),
+                  AppButton(
+                    label: 'Xóa bộ lọc CLB',
+                    type: AppButtonType.outline,
+                    size: AppButtonSize.medium,
+                    fullWidth: true,
+                    onPressed: () {
+                      setState(() {
+                        _selectedClubFilter = null;
+                      });
+                      Navigator.pop(context);
+                    },
                   ),
                 ],
               ),
@@ -986,7 +1006,9 @@ class _CommunityTabState extends State<CommunityTab>
                     runSpacing: 8,
                     children: RankingConstants.RANK_ORDER.map((rankCode) {
                       final isSelected = _selectedRankFilter == rankCode;
-                      final rankName = RankingConstants.RANK_DETAILS[rankCode]?['name'] ?? rankCode;
+                      final rankName = RankingConstants.RANK_DETAILS[rankCode]
+                              ?['name'] ??
+                          rankCode;
                       return ChoiceChip(
                         label: Text(rankName),
                         selected: isSelected,
@@ -994,7 +1016,8 @@ class _CommunityTabState extends State<CommunityTab>
                           setModalState(() {
                             _selectedRankFilter = selected ? rankCode : null;
                             if (selected) {
-                              _sameRankFilter = false; // Disable "Same Rank" if specific rank is chosen
+                              _sameRankFilter =
+                                  false; // Disable "Same Rank" if specific rank is chosen
                             }
                           });
                           setState(() {}); // Update parent UI
@@ -1006,7 +1029,11 @@ class _CommunityTabState extends State<CommunityTab>
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton(
+                        child: AppButton(
+                          label: 'Đặt lại',
+                          type: AppButtonType.outline,
+                          size: AppButtonSize.medium,
+                          fullWidth: true,
                           onPressed: () {
                             setState(() {
                               _selectedRankFilter = null;
@@ -1015,14 +1042,16 @@ class _CommunityTabState extends State<CommunityTab>
                             });
                             Navigator.pop(context);
                           },
-                          child: const Text('Đặt lại'),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: ElevatedButton(
+                        child: AppButton(
+                          label: 'Áp dụng',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.medium,
+                          fullWidth: true,
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Áp dụng'),
                         ),
                       ),
                     ],
@@ -1095,4 +1124,3 @@ class _CommunityTabState extends State<CommunityTab>
     );
   }
 }
-

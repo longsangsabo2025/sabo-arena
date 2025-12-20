@@ -20,7 +20,7 @@ class DeviceInfo {
   // ============================================================================
 
   /// Detect if current device is an iPad
-  /// 
+  ///
   /// Uses screen dimensions to identify iPad devices:
   /// - iPad Mini: 744x1133 (portrait)
   /// - iPad Air: 820x1180 (portrait)
@@ -37,7 +37,7 @@ class DeviceInfo {
     if (minDimension >= 744 && maxDimension >= 1024) {
       return true;
     }
-    
+
     // On native iOS, also check Platform
     if (!kIsWeb && Platform.isIOS) {
       return minDimension >= 744 && maxDimension >= 1024;
@@ -95,7 +95,7 @@ class DeviceInfo {
   // ============================================================================
 
   /// Get ideal content width for readability
-  /// 
+  ///
   /// Returns maximum width for content to prevent text lines from being too long
   /// on large screens, following readability best practices (50-75 characters per line)
   static double getMaxContentWidth(BuildContext context) {
@@ -181,7 +181,7 @@ class DeviceInfo {
   }
 
   /// Check if app is likely in Split View mode
-  /// 
+  ///
   /// Detects if the app is running in Split View by checking if the width
   /// is significantly smaller than expected for the device
   static bool isInSplitView(BuildContext context) {

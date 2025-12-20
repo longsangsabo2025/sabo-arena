@@ -37,10 +37,12 @@ class PaymentMethod {
     return PaymentMethod(
       id: map['id'] as String,
       clubId: map['club_id'] as String,
-      type: PaymentMethodType.fromString(map['method_type'] as String? ?? map['type'] as String),
+      type: PaymentMethodType.fromString(
+          map['method_type'] as String? ?? map['type'] as String),
       bankName: map['bank_name'] as String?,
       accountNumber: map['account_number'] as String?,
-      accountName: map['account_holder'] as String? ?? map['account_name'] as String?,
+      accountName:
+          map['account_holder'] as String? ?? map['account_name'] as String?,
       qrCodeUrl: map['qr_code_url'] as String?,
       qrCodePath: map['qr_code_path'] as String?,
       isActive: map['is_active'] as bool? ?? true,

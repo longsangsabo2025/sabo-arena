@@ -176,7 +176,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       // Save user interest for post-login personalization
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('has_seen_onboarding', true);
-      
+
       // Default to 'player' if nothing selected (for the "Skip" case)
       final roleToSave = _selectedRole.isEmpty ? 'player' : _selectedRole;
       await prefs.setString('interested_role', roleToSave);
@@ -250,8 +250,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         builder: (context, child) {
                           final isLastPage =
                               _currentPage == _onboardingData.length - 1;
-                          final isRoleSelectionPage = _onboardingData[_currentPage].showRoleSelection;
-                          
+                          final isRoleSelectionPage =
+                              _onboardingData[_currentPage].showRoleSelection;
+
                           // Hide button completely if on role selection page (regardless of selection state)
                           if (isRoleSelectionPage) {
                             return const SizedBox.shrink();
@@ -263,13 +264,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   ? LinearGradient(
                                       colors: [
                                         AppTheme.primaryLight.withValues(
-                                          alpha:
-                                              0.9 +
+                                          alpha: 0.9 +
                                               (_pulseController.value * 0.1),
                                         ),
                                         AppTheme.secondaryLight.withValues(
-                                          alpha:
-                                              0.8 +
+                                          alpha: 0.8 +
                                               (_pulseController.value * 0.1),
                                         ),
                                       ],
@@ -284,8 +283,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   ? [
                                       BoxShadow(
                                         color: AppTheme.primaryLight.withValues(
-                                          alpha:
-                                              0.3 +
+                                          alpha: 0.3 +
                                               (_pulseController.value * 0.2),
                                         ),
                                         blurRadius:
@@ -309,7 +307,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        isLastPage ? "Bắt đầu" : "Bỏ qua", overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(
+                                        isLastPage ? "Bắt đầu" : "Bỏ qua",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.inter(
                                           fontSize: 16,
                                           fontWeight: isLastPage
                                               ? FontWeight.w700
@@ -365,7 +365,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       },
                     ),
                   ),
-                  
+
                   SizedBox(height: 2.h),
 
                   // Navigation dots - Premium style
@@ -374,7 +374,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     builder: (context, child) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(_onboardingData.length, (index) {
+                        children:
+                            List.generate(_onboardingData.length, (index) {
                           final isActive = _currentPage == index;
                           return AnimatedContainer(
                             duration: const Duration(milliseconds: 400),
@@ -399,9 +400,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   ? [
                                       BoxShadow(
                                         color: AppTheme.primaryLight.withValues(
-                                          alpha: 0.4 + (_pulseController.value * 0.2),
+                                          alpha: 0.4 +
+                                              (_pulseController.value * 0.2),
                                         ),
-                                        blurRadius: 12 + (_pulseController.value * 5),
+                                        blurRadius:
+                                            12 + (_pulseController.value * 5),
                                         offset: const Offset(0, 4),
                                       ),
                                     ]
@@ -495,7 +498,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   stops: const [0.0, 0.5, 1.0],
                 ).createShader(bounds),
                 child: Text(
-                  data.title, style: GoogleFonts.inter(
+                  data.title,
+                  style: GoogleFonts.inter(
                     fontSize: 28,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
@@ -525,7 +529,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
           // Subtitle
           Text(
-            "Chọn vai trò để bắt đầu", overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(
+            "Chọn vai trò để bắt đầu",
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.inter(
               fontSize: 15.sp,
               color: Colors.white.withValues(alpha: 0.85),
               fontWeight: FontWeight.w400,
@@ -548,8 +554,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             children: [
               Expanded(
                 child: _PremiumRoleCard(
-                  icon: Icons
-                      .sports_golf_rounded, // Metaphor for Cue & Ball
+                  icon: Icons.sports_golf_rounded, // Metaphor for Cue & Ball
                   title: 'Người chơi',
                   subtitle: 'Tìm đối thủ, tham gia giải đấu',
                   isSelected: isPlayerSelected,
@@ -590,7 +595,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               animation: _pulseController,
               builder: (context, child) {
                 return Transform.scale(
-                  scale: 1.0 + (_pulseController.value * 0.01), // Very subtle scale
+                  scale: 1.0 +
+                      (_pulseController.value * 0.01), // Very subtle scale
                   child: AnimatedOpacity(
                     opacity: _selectedRole.isNotEmpty ? 1.0 : 0.0,
                     duration: const Duration(milliseconds: 300),
@@ -703,7 +709,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     stops: const [0.0, 0.5, 1.0],
                   ).createShader(bounds),
                   child: Text(
-                    data.title, style: GoogleFonts.inter(
+                    data.title,
+                    style: GoogleFonts.inter(
                       fontSize: 22.sp, // Slightly smaller
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
@@ -724,9 +731,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
                 // Description text
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w), // More padding
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 6.w), // More padding
                   child: Text(
-                    data.description, style: GoogleFonts.inter(
+                    data.description,
+                    style: GoogleFonts.inter(
                       fontSize: 15.sp, // Slightly smaller for balance
                       color: Colors.white.withValues(alpha: 0.9),
                       height: 1.6,
@@ -1015,7 +1024,8 @@ class _PremiumRoleCardState extends State<_PremiumRoleCard>
                               colors: [Colors.white, Colors.white],
                             ).createShader(bounds),
                       child: Text(
-                        widget.title, style: GoogleFonts.inter(
+                        widget.title,
+                        style: GoogleFonts.inter(
                           fontSize: 18.sp,
                           fontWeight: widget.isSelected
                               ? FontWeight.w800
@@ -1038,7 +1048,8 @@ class _PremiumRoleCardState extends State<_PremiumRoleCard>
                     SizedBox(height: 0.5.h),
                     // Subtitle
                     Text(
-                      widget.subtitle, style: GoogleFonts.inter(
+                      widget.subtitle,
+                      style: GoogleFonts.inter(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w400,
                         color: widget.isSelected
@@ -1082,4 +1093,3 @@ class OnboardingData {
     required this.showRoleSelection,
   });
 }
-

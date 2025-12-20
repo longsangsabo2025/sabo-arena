@@ -8,6 +8,7 @@ import '../../../services/simple_challenge_service.dart';
 import '../../../services/user_service.dart';
 import '../../../services/opponent_club_service.dart';
 import '../../../services/challenge_rules_service.dart';
+import '../../../widgets/common/app_button.dart';
 import 'user_search_dialog.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
@@ -89,7 +90,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
         // _isLoadingSpaBalance = false;
       });
     } catch (e) {
-      ProductionLogger.info('Error loading SPA balance: $e', tag: 'create_spa_challenge_modal');
+      ProductionLogger.info('Error loading SPA balance: $e',
+          tag: 'create_spa_challenge_modal');
       setState(() {
         _currentUserSpaBalance = 0;
         // _isLoadingSpaBalance = false;
@@ -121,7 +123,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
 
       setState(() => _currentHandicap = handicapResult);
     } catch (e) {
-      ProductionLogger.info('Error calculating handicap: $e', tag: 'create_spa_challenge_modal');
+      ProductionLogger.info('Error calculating handicap: $e',
+          tag: 'create_spa_challenge_modal');
       setState(() => _currentHandicap = null);
     }
   }
@@ -248,7 +251,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
         _isLoadingLocations = false;
       });
     } catch (e) {
-      ProductionLogger.info('Error loading locations: $e', tag: 'create_spa_challenge_modal');
+      ProductionLogger.info('Error loading locations: $e',
+          tag: 'create_spa_challenge_modal');
       setState(() {
         // Keep empty - will show error or use fallback
         _isLoadingLocations = false;
@@ -312,7 +316,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
           height: 160, // Increased height to prevent overflow
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: widget.opponents.length + 2, // +2 for "Open" and "Search" buttons
+            itemCount: widget.opponents.length +
+                2, // +2 for "Open" and "Search" buttons
             itemBuilder: (context, index) {
               if (index == 0) {
                 final isOpenChallenge = _selectedOpponent == null;
@@ -338,7 +343,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                       boxShadow: isOpenChallenge
                           ? [
                               BoxShadow(
-                                color: const Color(0xFF1E88E5).withValues(alpha: 0.2),
+                                color: const Color(0xFF1E88E5)
+                                    .withValues(alpha: 0.2),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -412,7 +418,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                       context: context,
                       builder: (context) => UserSearchDialog(
                         currentUser: widget.currentUser,
-                        excludeUserIds: widget.opponents.map((o) => o.id).toList(),
+                        excludeUserIds:
+                            widget.opponents.map((o) => o.id).toList(),
                       ),
                     );
 
@@ -462,7 +469,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.orange.shade300.withValues(alpha: 0.5),
+                                color: Colors.orange.shade300
+                                    .withValues(alpha: 0.5),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -523,7 +531,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF1E88E5).withValues(alpha: 0.2),
+                              color: const Color(0xFF1E88E5)
+                                  .withValues(alpha: 0.2),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -752,7 +761,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF1E88E5).withValues(alpha: 0.2),
+                              color: const Color(0xFF1E88E5)
+                                  .withValues(alpha: 0.2),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -767,9 +777,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isSelected
-                              ? Colors.white
-                              : Colors.grey.shade700,
+                          color:
+                              isSelected ? Colors.white : Colors.grey.shade700,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -834,7 +843,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                       onPrimary: Colors.white,
                       surface: Colors.white,
                       onSurface: Colors.black87,
-                    ), dialogTheme: DialogThemeData(backgroundColor: Colors.white),
+                    ),
+                    dialogTheme: DialogThemeData(backgroundColor: Colors.white),
                   ),
                   child: child!,
                 );
@@ -909,7 +919,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                       onPrimary: Colors.white,
                       surface: Colors.white,
                       onSurface: Colors.black87,
-                    ), dialogTheme: DialogThemeData(backgroundColor: Colors.white),
+                    ),
+                    dialogTheme: DialogThemeData(backgroundColor: Colors.white),
                   ),
                   child: child!,
                 );
@@ -1186,20 +1197,20 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
   }
 
   Widget _buildRankLimitSection() {
+    // MIGRATED 2025: Removed K+ and I+ ranks (now 10 ranks total)
     // Danh sách các hạng từ rank_system (theo thứ tự từ thấp đến cao)
     final List<Map<String, dynamic>> ranks = [
       {'code': 'K', 'name': 'Starter (Người mới)', 'value': 1},
-      {'code': 'K+', 'name': 'Apprentice (Học việc)', 'value': 2},
-      {'code': 'I', 'name': 'Worker III (Thợ 3)', 'value': 3},
-      {'code': 'I+', 'name': 'Worker II (Thợ 2)', 'value': 4},
-      {'code': 'H', 'name': 'Worker I (Thợ 1)', 'value': 5},
-      {'code': 'H+', 'name': 'Master Worker (Thợ chính)', 'value': 6},
-      {'code': 'G', 'name': 'Skilled Worker (Thợ giỏi)', 'value': 7},
-      {'code': 'G+', 'name': 'Master Craftsman (Thợ cả)', 'value': 8},
-      {'code': 'F', 'name': 'Expert (Chuyên gia)', 'value': 9},
-      {'code': 'E', 'name': 'Master (Cao thủ)', 'value': 10},
-      {'code': 'D', 'name': 'Legend (Huyền Thoại)', 'value': 11},
-      {'code': 'C', 'name': 'Champion (Vô địch)', 'value': 12},
+      {'code': 'I', 'name': 'Worker III (Thợ 3)', 'value': 2},
+      {'code': 'H', 'name': 'Worker I (Thợ 1)', 'value': 3},
+      {'code': 'H+', 'name': 'Master Worker (Thợ chính)', 'value': 4},
+      {'code': 'G', 'name': 'Skilled Worker (Thợ giỏi)', 'value': 5},
+      {'code': 'G+', 'name': 'Master Craftsman (Thợ cả)', 'value': 6},
+      {'code': 'F', 'name': 'Expert (Chuyên gia)', 'value': 7},
+      {'code': 'F+', 'name': 'Expert+ (Chuyên gia+)', 'value': 8},
+      {'code': 'E', 'name': 'Master (Cao thủ)', 'value': 9},
+      {'code': 'D', 'name': 'Legend (Huyền Thoại)', 'value': 10},
+      {'code': 'C', 'name': 'Champion (Vô địch)', 'value': 11},
     ];
 
     return Column(
@@ -1533,18 +1544,18 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
           child: Text(
             widget.challengeType == 'thach_dau'
                 ? '• Game: $_selectedGameType - Race to $_selectedRaceTo (theo $_selectedSpaBonus SPA)\n'
-                      '• SPA Bonus: Thắng +$_selectedSpaBonus, Thua -$_selectedSpaBonus\n'
-                      '• Nguồn SPA từ club pool\n'
-                      '• Ngày giờ: $dateStr lúc $timeStr\n'
-                      '• Địa điểm: ${_selectedClub?.name ?? "TBD"}\n'
-                      '• Đấu với: ${_selectedOpponent?.displayName ?? "đối thủ"}\n'
-                      '• Giới hạn hạng: ${_getRankLimitDisplay()}'
+                    '• SPA Bonus: Thắng +$_selectedSpaBonus, Thua -$_selectedSpaBonus\n'
+                    '• Nguồn SPA từ club pool\n'
+                    '• Ngày giờ: $dateStr lúc $timeStr\n'
+                    '• Địa điểm: ${_selectedClub?.name ?? "TBD"}\n'
+                    '• Đấu với: ${_selectedOpponent?.displayName ?? "đối thủ"}\n'
+                    '• Giới hạn hạng: ${_getRankLimitDisplay()}'
                 : '• Game: $_selectedGameType\n'
-                      '• Ngày giờ: $dateStr lúc $timeStr\n'
-                      '• Địa điểm: ${_selectedClub?.name ?? "TBD"}\n'
-                      '• Đấu với: ${_selectedOpponent?.displayName ?? "đối thủ"}\n'
-                      '• Giới hạn hạng: ${_getRankLimitDisplay()}\n'
-                      '• Loại: Chơi vui, không SPA',
+                    '• Ngày giờ: $dateStr lúc $timeStr\n'
+                    '• Địa điểm: ${_selectedClub?.name ?? "TBD"}\n'
+                    '• Đấu với: ${_selectedOpponent?.displayName ?? "đối thủ"}\n'
+                    '• Giới hạn hạng: ${_getRankLimitDisplay()}\n'
+                    '• Loại: Chơi vui, không SPA',
             style: const TextStyle(
               fontSize: 13,
               height: 1.4,
@@ -1580,12 +1591,14 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
     // ✅ NEW: Support both OPEN and TARGETED challenges
     // - OPEN: _selectedOpponent == null (anyone can join)
     // - TARGETED: _selectedOpponent != null (specific opponent)
-    
+
     // ✅ Validation: Check rank eligibility (only for TARGETED challenges)
     final currentUserRank = widget.currentUser?.rank;
     final opponentRank = _selectedOpponent?.rank;
-    
-    if (_selectedOpponent != null && currentUserRank != null && opponentRank != null) {
+
+    if (_selectedOpponent != null &&
+        currentUserRank != null &&
+        opponentRank != null) {
       final rulesService = ChallengeRulesService.instance;
       if (!rulesService.canChallenge(currentUserRank, opponentRank)) {
         if (mounted) {
@@ -1650,7 +1663,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
 
       // Create the challenge with all new fields
       final challengeResult = await _challengeService.sendChallenge(
-        challengedUserId: _selectedOpponent?.id ?? '', // Empty for OPEN challenge
+        challengedUserId:
+            _selectedOpponent?.id ?? '', // Empty for OPEN challenge
         challengeType: widget
             .challengeType, // Use widget parameter (thach_dau or giao_luu)
         gameType: _selectedGameType,
@@ -1679,7 +1693,7 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
 
           String successMessage;
           final isOpenChallenge = _selectedOpponent == null;
-          
+
           if (widget.challengeType == 'thach_dau') {
             successMessage = isOpenChallenge
                 ? 'Thách đấu MỞ đã tạo thành công!\n'
@@ -1709,9 +1723,9 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                     '👤 ${_selectedOpponent!.displayName}\n'
                     '🎮 $_selectedGameType\n'
                     '📅 $dateStr lúc $timeStr\n'
-                      '📍 $locationStr\n'
-                      '🤝 Chơi vui không SPA\n'
-                      'ID: ${challengeResult['id']}';
+                    '📍 $locationStr\n'
+                    '🤝 Chơi vui không SPA\n'
+                    'ID: ${challengeResult['id']}';
           }
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -2105,52 +2119,20 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
               ),
               child: Semantics(
                 label: 'Gửi thách đấu SPA',
-                hint: _isCreating ? 'Đang xử lý, vui lòng chờ' : 'Nhấn để gửi thách đấu',
+                hint: _isCreating
+                    ? 'Đang xử lý, vui lòng chờ'
+                    : 'Nhấn để gửi thách đấu',
                 enabled: !_isCreating,
-                child: ElevatedButton(
+                child: AppButton(
+                  label: 'Gửi thách đấu SPA',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.large,
+                  customColor:
+                      const Color(0xFF1E88E5), // Blue for SPA challenge
+                  customTextColor: Colors.white,
+                  isLoading: _isCreating,
+                  fullWidth: true,
                   onPressed: _isCreating ? null : _createChallenge,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.white,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 18), // Increased for better touch target
-                  ),
-                  child: _isCreating
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white.withValues(alpha: 0.8),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Đang tạo...',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ],
-                        )
-                      : const Text(
-                          'Gửi thách đấu SPA',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
                 ),
               ),
             ),
@@ -2234,9 +2216,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                   : Colors.grey.shade50,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected
-                    ? const Color(0xFF1E88E5)
-                    : Colors.grey.shade300,
+                color:
+                    isSelected ? const Color(0xFF1E88E5) : Colors.grey.shade300,
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -2264,7 +2245,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16, // Increased from 14 for better readability
+                        fontSize:
+                            16, // Increased from 14 for better readability
                       ),
                     ),
                   ),
@@ -2275,7 +2257,8 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
                   style: TextStyle(
                     fontSize: 14, // Increased from 13 for better readability
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? const Color(0xFF1E88E5) : Colors.black87,
+                    color:
+                        isSelected ? const Color(0xFF1E88E5) : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -2295,4 +2278,3 @@ class _CreateSpaChallengeModalState extends State<CreateSpaChallengeModal> {
     );
   }
 }
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../../services/tournament/tournament_completion_orchestrator.dart';
 import '../../../services/tournament_service.dart';
+import '../../../widgets/common/app_button.dart';
 
 class TournamentStatusPanel extends StatefulWidget {
   final String tournamentId;
@@ -188,95 +189,47 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
         // Start Tournament Button
         if (widget.currentStatus == 'recruiting' ||
             widget.currentStatus == 'ready')
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _startTournament,
-              icon: _isLoading
-                  ? SizedBox(
-                      width: 16.sp,
-                      height: 16.sp,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
-                      ),
-                    )
-                  : Icon(Icons.play_arrow, size: 16.sp),
-              label: Text(
-                _isLoading ? 'Đang bắt đầu...' : 'Bắt đầu giải đấu',
-                style: TextStyle(fontSize: 14.sp),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 12.sp),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.sp),
-                ),
-              ),
-            ),
+          AppButton(
+            label: _isLoading ? 'Đang bắt đầu...' : 'Bắt đầu giải đấu',
+            type: AppButtonType.primary,
+            size: AppButtonSize.large,
+            icon: Icons.play_arrow,
+            iconTrailing: false,
+            isLoading: _isLoading,
+            customColor: Colors.green,
+            customTextColor: Colors.white,
+            fullWidth: true,
+            onPressed: _isLoading ? null : _startTournament,
           ),
 
         // Complete Tournament Button
         if (widget.currentStatus == 'active')
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _completeTournament,
-              icon: _isLoading
-                  ? SizedBox(
-                      width: 16.sp,
-                      height: 16.sp,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
-                      ),
-                    )
-                  : Icon(Icons.emoji_events, size: 16.sp),
-              label: Text(
-                _isLoading ? 'Đang hoàn thành...' : 'Hoàn thành giải đấu',
-                style: TextStyle(fontSize: 14.sp),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 12.sp),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.sp),
-                ),
-              ),
-            ),
+          AppButton(
+            label: _isLoading ? 'Đang hoàn thành...' : 'Hoàn thành giải đấu',
+            type: AppButtonType.primary,
+            size: AppButtonSize.large,
+            icon: Icons.emoji_events,
+            iconTrailing: false,
+            isLoading: _isLoading,
+            customColor: Colors.orange,
+            customTextColor: Colors.white,
+            fullWidth: true,
+            onPressed: _isLoading ? null : _completeTournament,
           ),
 
         // Archive Tournament Button
         if (widget.currentStatus == 'completed')
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _archiveTournament,
-              icon: _isLoading
-                  ? SizedBox(
-                      width: 16.sp,
-                      height: 16.sp,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
-                      ),
-                    )
-                  : Icon(Icons.archive, size: 16.sp),
-              label: Text(
-                _isLoading ? 'Đang lưu trữ...' : 'Lưu trữ giải đấu',
-                style: TextStyle(fontSize: 14.sp),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[600],
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 12.sp),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.sp),
-                ),
-              ),
-            ),
+          AppButton(
+            label: _isLoading ? 'Đang lưu trữ...' : 'Lưu trữ giải đấu',
+            type: AppButtonType.primary,
+            size: AppButtonSize.large,
+            icon: Icons.archive,
+            iconTrailing: false,
+            isLoading: _isLoading,
+            customColor: Colors.grey[600],
+            customTextColor: Colors.white,
+            fullWidth: true,
+            onPressed: _isLoading ? null : _archiveTournament,
           ),
       ],
     );
@@ -306,7 +259,7 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
       case 'ready':
         return Icons.group_add;
       case 'active':
-        return Icons.sports_esports;
+        return Icons.sports_baseball;
       case 'completed':
         return Icons.emoji_events;
       case 'cancelled':
@@ -370,9 +323,11 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
               onPressed: () => Navigator.pop(context, false),
               child: Text('Hủy'),
             ),
-            ElevatedButton(
+            AppButton(
+              label: 'Bắt đầu',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
               onPressed: () => Navigator.pop(context, true),
-              child: Text('Bắt đầu'),
             ),
           ],
         ),
@@ -437,9 +392,11 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
               onPressed: () => Navigator.pop(context, false),
               child: Text('Hủy'),
             ),
-            ElevatedButton(
+            AppButton(
+              label: 'Hoàn thành',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
               onPressed: () => Navigator.pop(context, true),
-              child: Text('Hoàn thành'),
             ),
           ],
         ),
@@ -448,13 +405,14 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
       if (confirmed == true) {
         await _completionService.completeTournament(
           tournamentId: widget.tournamentId,
-          executeRewards: false, // 🆕 DON'T execute rewards - let admin use "Gửi Quà" button manually
+          // 🚀 ELON MODE: Auto-execute rewards (default: true)
         );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('🎉 Giải đấu đã hoàn thành! Dùng nút "Gửi Quà" để phân phối thưởng.'),
+              content: Text(
+                  '✅ Tournament completed! Rewards distributed to all players.'),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 4),
             ),
@@ -495,9 +453,11 @@ class _TournamentStatusPanelState extends State<TournamentStatusPanel> {
               onPressed: () => Navigator.pop(context, false),
               child: Text('Hủy'),
             ),
-            ElevatedButton(
+            AppButton(
+              label: 'Lưu trữ',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
               onPressed: () => Navigator.pop(context, true),
-              child: Text('Lưu trữ'),
             ),
           ],
         ),

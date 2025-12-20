@@ -9,7 +9,7 @@ enum TournamentTabStatus {
       case TournamentTabStatus.upcoming:
         return 'upcoming';
       case TournamentTabStatus.live:
-        return 'live';
+        return 'ongoing';
       case TournamentTabStatus.completed:
         return 'completed';
       case TournamentTabStatus.cancelled:
@@ -22,6 +22,7 @@ enum TournamentTabStatus {
       case 'upcoming':
         return TournamentTabStatus.upcoming;
       case 'live':
+      case 'ongoing':
         return TournamentTabStatus.live;
       case 'completed':
         return TournamentTabStatus.completed;
@@ -31,7 +32,7 @@ enum TournamentTabStatus {
         return TournamentTabStatus.upcoming;
     }
   }
-  
+
   String get displayName {
     switch (this) {
       case TournamentTabStatus.upcoming:

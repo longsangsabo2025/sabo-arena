@@ -20,7 +20,6 @@ class RegistrationQRService {
     String role = 'player',
   }) async {
     try {
-
       // 1. Generate unique user code
       final userCode = await UserCodeService.generateUniqueUserCode(userId);
 
@@ -73,12 +72,8 @@ class RegistrationQRService {
       };
 
       // 4. Insert or update user profile
-      final result = await _supabase
-          .from('users')
-          .upsert(profileData)
-          .select()
-          .single();
-
+      final result =
+          await _supabase.from('users').upsert(profileData).select().single();
 
       // 5. Return success with user code and QR data
       return {
@@ -119,11 +114,8 @@ class RegistrationQRService {
   static Future<Map<String, dynamic>> regenerateUserQR(String userId) async {
     try {
       // Get current user data
-      final userData = await _supabase
-          .from('users')
-          .select('*')
-          .eq('id', userId)
-          .single();
+      final userData =
+          await _supabase.from('users').select('*').eq('id', userId).single();
 
       // Generate new code and QR
       final userProfile = UserProfile.fromJson(userData);
@@ -131,15 +123,12 @@ class RegistrationQRService {
       final newQRData = ShareService.generateUserQRData(userProfile);
 
       // Update database
-      await _supabase
-          .from('users')
-          .update({
-            'user_code': newUserCode,
-            'qr_data': newQRData,
-            'qr_generated_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'user_code': newUserCode,
+        'qr_data': newQRData,
+        'qr_generated_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
 
       return {
         'success': true,
@@ -168,11 +157,8 @@ class RegistrationQRService {
       if (pathSegments.length >= 2 && pathSegments[0] == 'user') {
         final userId = pathSegments[1];
 
-        final result = await _supabase
-            .from('users')
-            .select('*')
-            .eq('id', userId)
-            .single();
+        final result =
+            await _supabase.from('users').select('*').eq('id', userId).single();
 
         return {'success': true, 'user': result, 'message': 'QR code hợp lệ'};
       } else {
@@ -210,4 +196,3 @@ class RegistrationQRService {
     }
   }
 }
-

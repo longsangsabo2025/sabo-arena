@@ -57,7 +57,8 @@ class PaymentMethodService {
     try {
       final bytes = await imageFile.readAsBytes();
       final ext = imageFile.name.split('.').last.toLowerCase();
-      final safeExt = (ext == 'png' || ext == 'jpg' || ext == 'jpeg') ? ext : 'png';
+      final safeExt =
+          (ext == 'png' || ext == 'jpg' || ext == 'jpeg') ? ext : 'png';
       final fileName =
           'qr_${clubId}_${DateTime.now().millisecondsSinceEpoch}.$safeExt';
       final path = 'payment_qr_codes/$clubId/$fileName';
@@ -67,9 +68,7 @@ class PaymentMethodService {
       if (safeExt == 'jpg' || safeExt == 'jpeg') contentType = 'image/jpeg';
 
       // Upload to Supabase Storage
-      await _supabase.storage
-          .from('club_assets')
-          .uploadBinary(
+      await _supabase.storage.from('club_assets').uploadBinary(
             path,
             bytes,
             fileOptions: FileOptions(
@@ -276,13 +275,10 @@ class PaymentMethodService {
       }
 
       // Soft delete (set inactive)
-      await _supabase
-          .from('payment_methods')
-          .update({
-            'is_active': false,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', paymentMethodId);
+      await _supabase.from('payment_methods').update({
+        'is_active': false,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', paymentMethodId);
     } catch (e) {
       rethrow;
     }
@@ -373,9 +369,7 @@ class PaymentMethodService {
           'proof_${paymentId}_${DateTime.now().millisecondsSinceEpoch}.png';
       final path = 'payment_proofs/$tournamentId/$fileName';
 
-      await _supabase.storage
-          .from('tournament_assets')
-          .uploadBinary(
+      await _supabase.storage.from('tournament_assets').uploadBinary(
             path,
             bytes,
             fileOptions: const FileOptions(
@@ -384,9 +378,8 @@ class PaymentMethodService {
             ),
           );
 
-      final url = _supabase.storage
-          .from('tournament_assets')
-          .getPublicUrl(path);
+      final url =
+          _supabase.storage.from('tournament_assets').getPublicUrl(path);
 
       // Update payment
       final response = await _supabase
@@ -512,4 +505,3 @@ class PaymentMethodService {
     }
   }
 }
-

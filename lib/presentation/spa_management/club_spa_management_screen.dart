@@ -272,7 +272,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Số dư SPA của câu lạc bộ', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge,
+                      'Số dư SPA của câu lạc bộ',
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -343,7 +345,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            '${_clubRewards.length}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                            '${_clubRewards.length}',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.purple,
@@ -365,7 +369,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                           const SizedBox(height: 8),
                           Text('Giao dịch'),
                           Text(
-                            '${_clubTransactions.length}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                            '${_clubTransactions.length}',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
@@ -389,7 +395,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hoạt động gần đây', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium,
+                      'Hoạt động gần đây',
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
                     ..._clubTransactions.take(5).map((transaction) {
@@ -407,7 +415,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                           'Loại: ${_getTransactionTypeText(transaction['transaction_type'])}',
                         ),
                         trailing: Text(
-                          '${isPositive ? '+' : ''}${transaction['spa_amount']} SPA', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          '${isPositive ? '+' : ''}${transaction['spa_amount']} SPA',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color: isPositive ? Colors.green : Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
@@ -491,7 +501,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    reward['reward_name'], overflow: TextOverflow.ellipsis, style: const TextStyle(
+                                    reward['reward_name'],
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -499,7 +511,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                                   if (reward['reward_description'] != null &&
                                       reward['reward_description'].isNotEmpty)
                                     Text(
-                                      reward['reward_description'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                                      reward['reward_description'],
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
                                         color: Colors.grey.shade600,
                                       ),
                                     ),
@@ -532,7 +546,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                '${reward['spa_cost']} SPA', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                '${reward['spa_cost']} SPA',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                   color: Colors.blue.shade800,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -550,7 +566,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  'Còn: ${reward['quantity_available'] - reward['quantity_claimed']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                  'Còn: ${reward['quantity_available'] - reward['quantity_claimed']}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
                                     color: Colors.green.shade800,
                                     fontSize: 12,
                                   ),
@@ -558,7 +576,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                               ),
                             const Spacer(),
                             Text(
-                              'Đã đổi: ${reward['quantity_claimed']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                              'Đã đổi: ${reward['quantity_claimed']}',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
                                 color: Colors.grey.shade600,
                                 fontSize: 12,
                               ),
@@ -567,7 +587,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Giá trị: ${reward['reward_value']}', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey.shade700),
+                          'Giá trị: ${reward['reward_value']}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.grey.shade700),
                         ),
                       ],
                     ),
@@ -645,7 +667,9 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Phần thưởng phổ biến', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium,
+                      'Phần thưởng phổ biến',
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
                     ...(() {
@@ -658,15 +682,15 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
                         (a, b) => (b['quantity_claimed'] as int? ?? 0)
                             .compareTo(a['quantity_claimed'] as int? ?? 0),
                       );
-                      return popularRewards
-                          .take(5)
-                          .map(
+                      return popularRewards.take(5).map(
                             (reward) => ListTile(
                               leading: _getRewardIcon(reward['reward_type']),
                               title: Text(reward['reward_name']),
                               subtitle: Text('${reward['spa_cost']} SPA'),
                               trailing: Text(
-                                '${reward['quantity_claimed']} lượt', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                                '${reward['quantity_claimed']} lượt',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -707,7 +731,8 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
             Icon(icon, size: 32, color: color),
             const SizedBox(height: 8),
             Text(
-              value, style: TextStyle(
+              value,
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: color,
@@ -715,7 +740,8 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
             ),
             const SizedBox(height: 4),
             Text(
-              title, style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              title,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
           ],
@@ -756,4 +782,3 @@ class _ClubSpaManagementScreenState extends State<ClubSpaManagementScreen>
     }
   }
 }
-

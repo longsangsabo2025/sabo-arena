@@ -22,7 +22,8 @@ class _ClubVoucherRegistrationSimpleState
   final _quantityController = TextEditingController(text: '50');
 
   String _campaignType = 'prize'; // welcome, loyalty, prize
-  String _voucherType = 'spa_balance'; // spa_balance, percentage_discount, fixed_amount
+  String _voucherType =
+      'spa_balance'; // spa_balance, percentage_discount, fixed_amount
   DateTime? _startDate;
   DateTime? _endDate;
 
@@ -40,7 +41,8 @@ class _ClubVoucherRegistrationSimpleState
 
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('⚠️ Vui lòng chọn ngày bắt đầu và kết thúc')),
+        const SnackBar(
+            content: Text('⚠️ Vui lòng chọn ngày bắt đầu và kết thúc')),
       );
       return;
     }
@@ -145,9 +147,12 @@ class _ClubVoucherRegistrationSimpleState
                 prefixIcon: Icon(Icons.card_giftcard),
               ),
               items: const [
-                DropdownMenuItem(value: 'spa_balance', child: Text('SPA Balance')),
-                DropdownMenuItem(value: 'percentage_discount', child: Text('Giảm %')),
-                DropdownMenuItem(value: 'fixed_amount', child: Text('Giảm VNĐ')),
+                DropdownMenuItem(
+                    value: 'spa_balance', child: Text('SPA Balance')),
+                DropdownMenuItem(
+                    value: 'percentage_discount', child: Text('Giảm %')),
+                DropdownMenuItem(
+                    value: 'fixed_amount', child: Text('Giảm VNĐ')),
               ],
               onChanged: (v) => setState(() => _voucherType = v!),
             ),
@@ -163,7 +168,8 @@ class _ClubVoucherRegistrationSimpleState
                 prefixIcon: Icon(Icons.attach_money),
               ),
               keyboardType: TextInputType.number,
-              validator: (v) => v?.isEmpty ?? true ? 'Vui lòng nhập giá trị' : null,
+              validator: (v) =>
+                  v?.isEmpty ?? true ? 'Vui lòng nhập giá trị' : null,
             ),
             SizedBox(height: 3.w),
 
@@ -177,7 +183,8 @@ class _ClubVoucherRegistrationSimpleState
                 prefixIcon: Icon(Icons.numbers),
               ),
               keyboardType: TextInputType.number,
-              validator: (v) => v?.isEmpty ?? true ? 'Vui lòng nhập số lượng' : null,
+              validator: (v) =>
+                  v?.isEmpty ?? true ? 'Vui lòng nhập số lượng' : null,
             ),
             SizedBox(height: 3.w),
 
@@ -206,7 +213,9 @@ class _ClubVoucherRegistrationSimpleState
                             ? '${_startDate!.day}/${_startDate!.month}/${_startDate!.year}'
                             : 'Chọn',
                         style: TextStyle(
-                          color: _startDate != null ? Colors.black87 : Colors.grey[600],
+                          color: _startDate != null
+                              ? Colors.black87
+                              : Colors.grey[600],
                         ),
                       ),
                     ),
@@ -235,7 +244,9 @@ class _ClubVoucherRegistrationSimpleState
                             ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
                             : 'Chọn',
                         style: TextStyle(
-                          color: _endDate != null ? Colors.black87 : Colors.grey[600],
+                          color: _endDate != null
+                              ? Colors.black87
+                              : Colors.grey[600],
                         ),
                       ),
                     ),

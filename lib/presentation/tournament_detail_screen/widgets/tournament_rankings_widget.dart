@@ -6,6 +6,7 @@ import '../../../services/tournament_service.dart';
 import '../../../services/tournament_prize_voucher_service.dart';
 import '../../../core/utils/user_display_name.dart';
 import '../../../services/tournament/reward_execution_service.dart';
+import '../../../services/tournament/tournament_completion_orchestrator.dart'; // 🚀 ELON MODE
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
 class TournamentRankingsWidget extends StatefulWidget {
@@ -24,8 +25,11 @@ class TournamentRankingsWidget extends StatefulWidget {
 }
 
 class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
+  final _supabase =
+      Supabase.instance.client; // 🚀 ELON MODE: Add Supabase instance
   final TournamentService _tournamentService = TournamentService.instance;
-  final TournamentPrizeVoucherService _prizeVoucherService = TournamentPrizeVoucherService();
+  final TournamentPrizeVoucherService _prizeVoucherService =
+      TournamentPrizeVoucherService();
   List<Map<String, dynamic>> _rankings = [];
   List<Map<String, dynamic>> _prizeVouchers = [];
   bool _isLoading = true;
@@ -34,7 +38,8 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
   /// 🆕 PUBLIC GETTER: Expose current rankings data for tournament completion
   /// This allows TournamentCompletionOrchestrator to use the ALREADY CALCULATED data
   /// instead of re-calculating everything
-  List<Map<String, dynamic>> get currentRankings => List.unmodifiable(_rankings);
+  List<Map<String, dynamic>> get currentRankings =>
+      List.unmodifiable(_rankings);
 
   @override
   void initState() {
@@ -45,14 +50,16 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
 
   Future<void> _loadPrizeVouchers() async {
     try {
-      final vouchers = await _prizeVoucherService.getTournamentPrizeVouchers(widget.tournamentId);
+      final vouchers = await _prizeVoucherService
+          .getTournamentPrizeVouchers(widget.tournamentId);
       if (mounted) {
         setState(() {
           _prizeVouchers = vouchers;
         });
       }
     } catch (e) {
-      ProductionLogger.info('❌ Error loading prize vouchers: $e', tag: 'tournament_rankings_widget');
+      ProductionLogger.info('❌ Error loading prize vouchers: $e',
+          tag: 'tournament_rankings_widget');
       // Don't show error to user - vouchers are optional
     }
   }
@@ -75,7 +82,9 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
         _error = null;
       });
 
-      ProductionLogger.info('🔍 [RANKINGS WIDGET] Loading rankings for tournament ${widget.tournamentId}', tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '🔍 [RANKINGS WIDGET] Loading rankings for tournament ${widget.tournamentId}',
+          tag: 'tournament_rankings_widget');
 
       // ═══════════════════════════════════════════════════════════════
       // 🆕 NEW: Check if tournament is completed → read from tournament_results
@@ -100,12 +109,14 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
   }
 
   /// Load rankings from tournament_results (for completed tournaments)
-  /// This reads from the SOURCE OF TRUTH - no calculation needed
+  /// 🚀 ELON MODE: RE-CALCULATE bracket ranks from matches (don't trust old data)
   Future<void> _loadCompletedTournamentRankings() async {
     try {
-      ProductionLogger.info('✅ [RANKINGS WIDGET] Tournament completed - loading from tournament_results', tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '✅ [RANKINGS WIDGET] Tournament completed - loading from tournament_results',
+          tag: 'tournament_rankings_widget');
 
-      // Read from tournament_results (SOURCE OF TRUTH)
+      // Read from tournament_results (SOURCE OF TRUTH for rewards)
       final resultsResponse = await Supabase.instance.client
           .from('tournament_results')
           .select('''
@@ -128,15 +139,20 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
       final results = resultsResponse as List<dynamic>;
 
       if (results.isEmpty) {
-        ProductionLogger.info('⚠️ [RANKINGS WIDGET] No results found in tournament_results, falling back to live calculation', tag: 'tournament_rankings_widget');
+        ProductionLogger.info(
+            '⚠️ [RANKINGS WIDGET] No results found in tournament_results, falling back to live calculation',
+            tag: 'tournament_rankings_widget');
         await _loadLiveRankings();
         return;
       }
 
-      ProductionLogger.info('✅ [RANKINGS WIDGET] Loaded ${results.length} results from tournament_results', tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '✅ [RANKINGS WIDGET] Loaded ${results.length} results from tournament_results',
+          tag: 'tournament_rankings_widget');
 
       // Fetch user details for avatar/display name (tournament_results might have stale names)
-      final userIds = results.map((r) => r['participant_id'] as String).toList();
+      final userIds =
+          results.map((r) => r['participant_id'] as String).toList();
       final usersResponse = await Supabase.instance.client
           .from('users')
           .select('id, username, full_name, avatar_url')
@@ -147,18 +163,26 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
           user['id'] as String: user
       };
 
-      // Map results to rankings format (with CORRECT rewards from source of truth)
+      // Map results to rankings format (with rewards from source of truth)
       final rankings = results.map((result) {
         final userId = result['participant_id'] as String;
         final user = usersMap[userId];
+        final position = result['position'] as int;
 
         return {
           'user_id': userId,
-          'display_name': user?['full_name'] ?? result['participant_name'] ?? 'Unknown',
-          'full_name': user?['full_name'] ?? result['participant_name'] ?? 'Unknown',
-          'username': user?['username'] ?? result['participant_name'] ?? 'Unknown',
+          'player_id':
+              userId, // 🚀 ELON MODE: Add player_id for bracket position logic
+          'display_name':
+              user?['full_name'] ?? result['participant_name'] ?? 'Unknown',
+          'full_name':
+              user?['full_name'] ?? result['participant_name'] ?? 'Unknown',
+          'username':
+              user?['username'] ?? result['participant_name'] ?? 'Unknown',
           'avatar_url': user?['avatar_url'],
-          'rank': result['position'], // Position is the rank for completed tournaments
+          'rank':
+              position, // Old position from tournament_results (will be overridden)
+          'bracket_rank': 999, // Will be calculated from matches
           'wins': result['matches_won'] ?? 0,
           'losses': result['matches_lost'] ?? 0,
           'draws': 0,
@@ -173,6 +197,27 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
         };
       }).toList();
 
+      // 🚀 ELON MODE: RE-CALCULATE bracket positions from matches (don't trust old data)
+      await _assignBracketPositions(rankings, widget.tournamentId);
+
+      // Sort by bracket position (primary), then wins (tie-break)
+      rankings.sort((a, b) {
+        // Primary sort: bracket_rank (1 < 2 < 3 < 5 < 9...)
+        final rankA = a['bracket_rank'] as int? ?? 999;
+        final rankB = b['bracket_rank'] as int? ?? 999;
+        if (rankA != rankB) return rankA.compareTo(rankB);
+
+        // Tie-break: wins (higher wins = better)
+        final winsA = a['wins'] as int? ?? 0;
+        final winsB = b['wins'] as int? ?? 0;
+        if (winsA != winsB) return winsB.compareTo(winsA);
+
+        // Final tie-break: win rate
+        return (b['win_rate'] as num).toDouble().compareTo(
+              (a['win_rate'] as num).toDouble(),
+            );
+      });
+
       if (mounted) {
         setState(() {
           _rankings = rankings;
@@ -180,9 +225,13 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
         });
       }
 
-      ProductionLogger.info('✅ [RANKINGS WIDGET] Displayed rankings with CORRECT rewards from tournament_results', tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '✅ [RANKINGS WIDGET] Displayed rankings with CORRECT rewards from tournament_results',
+          tag: 'tournament_rankings_widget');
     } catch (e) {
-      ProductionLogger.info('❌ [RANKINGS WIDGET] Error loading completed tournament rankings: $e', tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '❌ [RANKINGS WIDGET] Error loading completed tournament rankings: $e',
+          tag: 'tournament_rankings_widget');
       // Fallback to live calculation
       await _loadLiveRankings();
     }
@@ -191,16 +240,21 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
   /// Load rankings by calculating live (for ongoing tournaments)
   Future<void> _loadLiveRankings() async {
     try {
-      ProductionLogger.info('🔍 [RANKINGS WIDGET] Calculating live rankings from matches', tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '🔍 [RANKINGS WIDGET] Calculating live rankings from matches',
+          tag: 'tournament_rankings_widget');
 
       // Get tournament info (for prize pool)
       final tournamentResponse = await Supabase.instance.client
           .from('tournaments')
-          .select('prize_pool, prize_distribution, max_participants')
+          .select(
+              'prize_pool, prize_distribution, max_participants, custom_distribution')
           .eq('id', widget.tournamentId)
           .single();
 
-      ProductionLogger.info('🔍 [RANKINGS WIDGET] Tournament response: $tournamentResponse', tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '🔍 [RANKINGS WIDGET] Tournament response: $tournamentResponse',
+          tag: 'tournament_rankings_widget');
 
       final prizePool =
           (tournamentResponse['prize_pool'] as num?)?.toDouble() ?? 0.0;
@@ -215,18 +269,45 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
         // If it's a Map, extract template or use default
         prizeDistribution = prizeDistData['template']?.toString() ?? 'standard';
         // ✅ Check for custom distribution
-        if (prizeDistribution == 'custom' && prizeDistData['distribution'] != null) {
+        if (prizeDistribution == 'custom' &&
+            prizeDistData['distribution'] != null) {
           customDistribution = (prizeDistData['distribution'] as List)
               .map((e) => Map<String, dynamic>.from(e))
               .toList();
-          ProductionLogger.info('✅ [RANKINGS] Found custom distribution with ${customDistribution.length} positions', tag: 'tournament_rankings_widget');
+          ProductionLogger.info(
+              '✅ [RANKINGS] Found custom distribution with ${customDistribution.length} positions',
+              tag: 'tournament_rankings_widget');
         }
       }
 
-      ProductionLogger.info('🔍 [RANKINGS WIDGET] Prize pool: $prizePool, distribution: $prizeDistribution',  tag: 'tournament_rankings_widget');
-      ProductionLogger.info('🔍 [RANKINGS WIDGET] Raw prize_distribution type: ${prizeDistData.runtimeType}',  tag: 'tournament_rankings_widget');
+      // Fallback: Check custom_distribution column if not found in JSON
+      if (customDistribution == null &&
+          tournamentResponse['custom_distribution'] != null) {
+        try {
+          customDistribution =
+              (tournamentResponse['custom_distribution'] as List)
+                  .map((e) => Map<String, dynamic>.from(e))
+                  .toList();
+          ProductionLogger.info(
+              '✅ [RANKINGS] Found custom distribution in column with ${customDistribution.length} positions',
+              tag: 'tournament_rankings_widget');
+        } catch (e) {
+          ProductionLogger.info(
+              '⚠️ [RANKINGS] Error parsing custom_distribution column: $e',
+              tag: 'tournament_rankings_widget');
+        }
+      }
+
+      ProductionLogger.info(
+          '🔍 [RANKINGS WIDGET] Prize pool: $prizePool, distribution: $prizeDistribution',
+          tag: 'tournament_rankings_widget');
+      ProductionLogger.info(
+          '🔍 [RANKINGS WIDGET] Raw prize_distribution type: ${prizeDistData.runtimeType}',
+          tag: 'tournament_rankings_widget');
       if (customDistribution != null) {
-        ProductionLogger.info('🔍 [RANKINGS WIDGET] Custom distribution: $customDistribution', tag: 'tournament_rankings_widget');
+        ProductionLogger.info(
+            '🔍 [RANKINGS WIDGET] Custom distribution: $customDistribution',
+            tag: 'tournament_rankings_widget');
       }
 
       // Get tournament participants
@@ -283,35 +364,57 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
         };
       }).toList();
 
-      // Sort by points (wins), then by win rate
+      // 🚀 ELON MODE: PROPER BRACKET POSITION TRACKING
+      // For elimination tournaments, rank is determined by elimination round:
+      // - Rank 1: Champion (won final)
+      // - Rank 2: Runner-up (lost final)
+      // - Rank 3-4: Semi-final losers (đồng hạng 3)
+      // - Rank 5-8: Quarter-final losers (đồng hạng 5)
+      // etc.
+
+      // Step 1: Identify bracket positions from matches
+      await _assignBracketPositions(rankings, widget.tournamentId);
+
+      // Step 2: Sort by bracket position (primary), then wins (tie-break)
       rankings.sort((a, b) {
-        int pointsCompare = (b['points'] as num).toInt().compareTo(
-          (a['points'] as num).toInt(),
-        );
-        if (pointsCompare != 0) return pointsCompare;
+        // Primary sort: bracket_rank (1 < 2 < 3 < 5 < 9...)
+        final rankA = a['bracket_rank'] as int? ?? 999;
+        final rankB = b['bracket_rank'] as int? ?? 999;
+        if (rankA != rankB) return rankA.compareTo(rankB);
+
+        // Tie-break: wins (higher wins = better)
+        final winsA = a['wins'] as int? ?? 0;
+        final winsB = b['wins'] as int? ?? 0;
+        if (winsA != winsB) return winsB.compareTo(winsA);
+
+        // Final tie-break: win rate
         return (b['win_rate'] as num).toDouble().compareTo(
-          (a['win_rate'] as num).toDouble(),
-        );
+              (a['win_rate'] as num).toDouble(),
+            );
       });
 
       // Get prize distribution percentages OR custom amounts
       List<double> prizePercentages = [];
       List<int> customPrizeAmounts = [];
-      
+
       if (customDistribution != null) {
         // ✅ Use custom distribution amounts directly
         customPrizeAmounts = customDistribution.map((item) {
           final amount = item['cashAmount'] ?? item['amount'] ?? 0;
           return (amount is int) ? amount : (amount as double).toInt();
         }).toList();
-        ProductionLogger.info('✅ [RANKINGS] Using custom prize amounts: $customPrizeAmounts', tag: 'tournament_rankings_widget');
+        ProductionLogger.info(
+            '✅ [RANKINGS] Using custom prize amounts: $customPrizeAmounts',
+            tag: 'tournament_rankings_widget');
       } else {
         // Use template percentages
         prizePercentages = _getPrizeDistribution(
           prizeDistribution,
           rankings.length,
         );
-        ProductionLogger.info('✅ [RANKINGS] Using template percentages: $prizePercentages', tag: 'tournament_rankings_widget');
+        ProductionLogger.info(
+            '✅ [RANKINGS] Using template percentages: $prizePercentages',
+            tag: 'tournament_rankings_widget');
       }
 
       // Assign ranks with tie handling - same points/win_rate = same rank
@@ -319,24 +422,24 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
       int currentRank = 1;
       for (int i = 0; i < rankings.length; i++) {
         final position = i + 1;
-        
+
         // Check if this player has same stats as previous player (tie)
         if (i > 0) {
           final prevPoints = rankings[i - 1]['points'] as int;
           final prevWinRate = rankings[i - 1]['win_rate'] as double;
           final currPoints = rankings[i]['points'] as int;
           final currWinRate = rankings[i]['win_rate'] as double;
-          
+
           // If different stats, increment rank to current position
           if (prevPoints != currPoints || prevWinRate != currWinRate) {
             currentRank = position;
           }
           // else: same stats, keep same rank
         }
-        
+
         rankings[i]['rank'] = currentRank;
         rankings[i]['elo_bonus'] = _calculateEloBonus(
-          currentRank, // ELO uses rank (handles ties)
+          position, // 🚀 ELON MODE: ELO uses POSITION (not rank) - only top 4 positions get bonus
           totalParticipants,
         );
         rankings[i]['spa_bonus'] = _calculateSpaBonus(
@@ -403,9 +506,9 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
                 ),
               ),
               Spacer(),
-              // 🎁 Compact Reward Distribution Button
+              // 🚀 ELON MODE: Complete Tournament button RIGHT HERE (not hidden in Settings)
               if (!_isLoading && _error == null && _rankings.isNotEmpty)
-                _buildCompactRewardButton(),
+                _buildCompleteTournamentButton(),
               if (!_isLoading)
                 IconButton(
                   onPressed: _loadRankings,
@@ -421,10 +524,10 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
             child: _isLoading
                 ? _buildLoadingState()
                 : _error != null
-                ? _buildErrorState()
-                : _rankings.isEmpty
-                ? _buildEmptyState()
-                : _buildRankingsList(),
+                    ? _buildErrorState()
+                    : _rankings.isEmpty
+                        ? _buildEmptyState()
+                        : _buildRankingsList(),
           ),
         ],
       ),
@@ -546,9 +649,13 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
   }
 
   Widget _buildRankingItem(Map<String, dynamic> ranking, int position) {
-    final rank = ranking['rank'] as int? ?? position; // Use rank from data, fallback to position
-    final isTopFour = rank <= 4; // Top 4 includes both 3rd & 4th (đồng hạng 3)
-    final bgColor = isTopFour ? _getTopThreeColor(rank) : Colors.white; // Use rank for color
+    final rank = ranking['rank'] as int? ??
+        position; // Use rank from data, fallback to position
+    final isTopFour =
+        position <= 4; // 🚀 ELON MODE: Chỉ 4 người đầu tiên có màu/icon
+    final bgColor = isTopFour
+        ? _getTopThreeColor(rank)
+        : Colors.white; // Use rank for color
     final textColor = isTopFour ? Colors.white : Colors.grey[800]!;
     final borderColor = isTopFour ? Colors.transparent : Colors.grey[200]!;
 
@@ -579,7 +686,8 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
               // Center the badge
               child: isTopFour
                   ? Icon(
-                      _getPositionIcon(rank), // Use rank for icon (includes 3rd & 4th)
+                      _getPositionIcon(
+                          rank), // Use rank for icon (includes 3rd & 4th)
                       size: 22.sp, // Increased from 18.sp
                       color: Colors.white,
                     )
@@ -713,7 +821,8 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
                       ),
                       SizedBox(width: 4.sp),
                       Text(
-                        _formatPrizeMoney(_getVoucherForPosition(rank)!['vnd_value'] ?? 0),
+                        _formatPrizeMoney(
+                            _getVoucherForPosition(rank)!['vnd_value'] ?? 0),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
@@ -790,17 +899,94 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
     }
   }
 
-  IconData _getPositionIcon(int position) {
-    switch (position) {
+  IconData _getPositionIcon(int rank) {
+    switch (rank) {
       case 1:
         return Icons.emoji_events; // Trophy
       case 2:
         return Icons.military_tech; // Medal
       case 3:
-      case 4: // Đồng hạng 3 (Both 3rd & 4th place)
+      case 4: // Đồng hạng 3-4
         return Icons.military_tech; // Medal
       default:
         return Icons.circle;
+    }
+  }
+
+  /// 🚀 ELON MODE: Assign bracket positions based on elimination round
+  Future<void> _assignBracketPositions(
+      List<Map<String, dynamic>> rankings, String tournamentId) async {
+    try {
+      // Fetch all matches to determine elimination rounds
+      final matches = await _supabase
+          .from('matches')
+          .select('id, round_name, winner_id, loser_id')
+          .eq('tournament_id', tournamentId)
+          .order('round_number', ascending: false); // Finals first
+
+      // Track players by elimination round
+      final Map<String, int> playerBracketRank = {};
+      String? championId;
+      String? runnerUpId;
+      final Set<String> semiLosers = {};
+      final Set<String> quarterLosers = {};
+      final Set<String> round16Losers = {};
+      final Set<String> round32Losers = {};
+
+      for (final match in matches) {
+        final round = (match['round_name'] as String?)?.toLowerCase() ?? '';
+        final winnerId = match['winner_id'] as String?;
+        final loserId = match['loser_id'] as String?;
+
+        if (round.contains('final') && !round.contains('semi')) {
+          // Finals match
+          championId = winnerId;
+          runnerUpId = loserId;
+        } else if (round.contains('semi')) {
+          // Semi-finals
+          if (loserId != null) semiLosers.add(loserId);
+        } else if (round.contains('quarter')) {
+          // Quarter-finals
+          if (loserId != null) quarterLosers.add(loserId);
+        } else if (round.contains('16')) {
+          // Round of 16
+          if (loserId != null) round16Losers.add(loserId);
+        } else if (round.contains('32')) {
+          // Round of 32
+          if (loserId != null) round32Losers.add(loserId);
+        }
+      }
+
+      // Assign bracket ranks
+      if (championId != null) playerBracketRank[championId] = 1;
+      if (runnerUpId != null) playerBracketRank[runnerUpId] = 2;
+      for (final id in semiLosers) playerBracketRank[id] = 3; // Đồng hạng 3
+      for (final id in quarterLosers) playerBracketRank[id] = 5; // Đồng hạng 5
+      for (final id in round16Losers) playerBracketRank[id] = 9; // Đồng hạng 9
+      for (final id in round32Losers)
+        playerBracketRank[id] = 17; // Đồng hạng 17
+
+      // Apply bracket ranks to rankings
+      for (final ranking in rankings) {
+        final playerId = ranking['player_id'] as String?;
+        if (playerId != null && playerBracketRank.containsKey(playerId)) {
+          ranking['bracket_rank'] = playerBracketRank[playerId];
+        } else {
+          // Default: rank by wins (for players not yet eliminated)
+          ranking['bracket_rank'] = 999;
+        }
+      }
+
+      ProductionLogger.info(
+          '✅ Assigned bracket positions: Champion=$championId, Runner-up=$runnerUpId, Semi-losers=${semiLosers.length}, Quarter-losers=${quarterLosers.length}',
+          tag: 'tournament_rankings_widget');
+    } catch (e) {
+      ProductionLogger.info('❌ Error assigning bracket positions: $e',
+          tag: 'tournament_rankings_widget');
+      // Fallback: assign rank 999 to all (will sort by wins)
+      for (final ranking in rankings) {
+        ranking['bracket_rank'] = 999;
+      }
     }
   }
 
@@ -831,7 +1017,7 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
     final top25 = (totalParticipants * 0.25).ceil();
     final top50 = (totalParticipants * 0.5).ceil();
     final top75 = (totalParticipants * 0.75).ceil();
-    
+
     if (position == 1) {
       return 1000; // Winner: +1000 SPA
     } else if (position == 2) {
@@ -854,33 +1040,33 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
     switch (template) {
       case 'winner_takes_all':
         return [100.0];
-      
+
       // Template: Top 3 - Chia cho 3 người đầu
       case 'top_3':
         return [60.0, 25.0, 15.0];
-      
+
       // Template: Top 4 (Đồng hạng 3) - Chia cho 4 người (vị trí 3 & 4 đồng hạng)
       case 'top_4':
         return [40.0, 30.0, 15.0, 15.0]; // Position 3 & 4 đều nhận 15%
-      
+
       // Template: Top 8 - Chia cho 8 người đầu
       case 'top_8':
         return [35.0, 25.0, 15.0, 10.0, 5.0, 5.0, 2.5, 2.5];
-      
+
       // Template: Đồng hạng 3 - Top 4 với đồng hạng 3
       case 'dong_hang_3':
         return [40.0, 30.0, 15.0, 15.0]; // Giống top_4
-      
+
       case 'top_heavy':
         if (participantCount <= 4) return [60.0, 30.0, 10.0];
         if (participantCount <= 8) return [50.0, 30.0, 12.0, 8.0];
         return [40.0, 25.0, 15.0, 10.0, 5.0, 3.0, 2.0];
-      
+
       case 'flat':
         if (participantCount <= 4) return [40.0, 30.0, 20.0, 10.0];
         if (participantCount <= 8) return [30.0, 25.0, 20.0, 12.0, 8.0, 5.0];
         return [25.0, 20.0, 15.0, 12.0, 10.0, 8.0, 5.0, 3.0, 2.0];
-      
+
       case 'standard':
       default:
         if (participantCount <= 4) return [50.0, 30.0, 20.0];
@@ -911,27 +1097,28 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
     return '$amount';
   }
 
-  /// Build compact reward distribution button for header
-  Widget _buildCompactRewardButton() {
+  /// Build Complete Tournament button for header
+  /// 🚀 ELON MODE: ONE button does it all - complete + distribute rewards
+  Widget _buildCompleteTournamentButton() {
     return Container(
       margin: EdgeInsets.only(right: 8.sp),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(20.sp),
-          onTap: _distributeRewards,
+          onTap: _completeTournamentAction,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 6.sp),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.green.shade400, Colors.green.shade600],
+                colors: [Colors.orange.shade400, Colors.orange.shade600],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20.sp),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.green.withValues(alpha: 0.3),
+                  color: Colors.orange.withValues(alpha: 0.3),
                   blurRadius: 4,
                   offset: Offset(0, 2),
                 ),
@@ -941,17 +1128,18 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.card_giftcard,
+                  Icons.emoji_events,
                   color: Colors.white,
                   size: 16.sp,
                 ),
                 SizedBox(width: 4.sp),
                 Text(
-                  'Gửi Quà',
+                  'Complete Tournament',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
@@ -962,75 +1150,368 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
     );
   }
 
-  /// Distribute rewards using RewardDistributionButton logic
-  Future<void> _distributeRewards() async {
-    // Show confirmation dialog
+  /// Complete tournament with auto-reward distribution
+  /// 🚀 ELON MODE: ONE action does everything (no hidden Settings tab)
+  Future<void> _completeTournamentAction() async {
+    // Show confirmation
     final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.emoji_events, color: Colors.orange, size: 28),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Complete Tournament',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Complete tournament and distribute rewards automatically?',
+                  style: TextStyle(fontSize: 14),
+                ),
+                SizedBox(height: 16),
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle,
+                              color: Colors.green, size: 16),
+                          SizedBox(width: 8),
+                          Text('Mark tournament as completed',
+                              style: TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle,
+                              color: Colors.green, size: 16),
+                          SizedBox(width: 8),
+                          Text(
+                              'Distribute SPA, ELO, prizes to ${_rankings.length} players',
+                              style: TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle,
+                              color: Colors.green, size: 16),
+                          SizedBox(width: 8),
+                          Text('Issue vouchers to Top 4',
+                              style: TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red, width: 1.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning_amber, color: Colors.red, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Irreversible action',
+                          style: TextStyle(
+                            color: Colors.red[800],
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.emoji_events, size: 18),
+                    SizedBox(width: 6),
+                    Text('Complete',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirmed) return;
+    if (!mounted) return;
+
+    // Show loading
+    showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.card_giftcard, color: Colors.green),
-            SizedBox(width: 8),
-            Text('🎁 Xác nhận phân phối quà'),
-          ],
-        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Bạn có chắc chắn muốn gửi quà cho ${_rankings.length} người chơi?'),
-            SizedBox(height: 16),
-            Text('Quà bao gồm:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text('• SPA Points (100-1000 tùy hạng)'),
-            Text('• ELO Rating (+75 đến -5)'),
-            Text('• Prize Money (nếu có)'),
-            Text('• Vouchers (Top 4)'),
-            SizedBox(height: 16),
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '⚠️ Hành động này không thể hoàn tác!',
-                style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
-              ),
+            CircularProgressIndicator(strokeWidth: 3),
+            SizedBox(height: 20),
+            Text(
+              'Completing Tournament',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Distributing rewards to ${_rankings.length} players...',
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Hủy'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-            ),
-            child: Text('🎁 Gửi Quà'),
-          ),
-        ],
       ),
-    ) ?? false;
+    );
+
+    try {
+      final orchestrator = TournamentCompletionOrchestrator.instance;
+      final result = await orchestrator.completeTournament(
+        tournamentId: widget.tournamentId,
+        // executeRewards defaults to true (auto-execute)
+      );
+
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Close loading
+
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white, size: 20),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '✅ Tournament completed! Rewards distributed to ${_rankings.length} players.',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green[700],
+            duration: Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        );
+
+        // Refresh rankings
+        await _loadRankings();
+      } else {
+        throw Exception(result['error'] ?? 'Tournament completion failed');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Close loading
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '❌ Error: ${e.toString().replaceAll('Exception: ', '')}',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red[700],
+          duration: Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    }
+  }
+
+  /// Distribute rewards using RewardDistributionButton logic
+  /// 🚀 ELON MODE: Simplified, faster, clearer
+  /// Currently unused - logic moved to Reward DistributionButton but keeping for reference
+  Future<void> _distributeRewards() async {
+    // Show confirmation dialog (SIMPLIFIED)
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.rocket_launch, color: Colors.green, size: 28),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Execute Reward Distribution',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Player count (EMPHASIZED)
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.green.withValues(alpha: 0.2),
+                        Colors.blue.withValues(alpha: 0.2)
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: Colors.green.withValues(alpha: 0.5), width: 2),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.people, size: 32, color: Colors.green),
+                      SizedBox(width: 12),
+                      Text(
+                        '${_rankings.length}',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'players',
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                // Rewards summary (CONCISE)
+                Text(
+                  'Rewards: SPA Points, ELO, Prize Money, Vouchers',
+                  style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16),
+                // Warning (CLEAR)
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange, width: 1.5),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning_amber, color: Colors.orange, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Irreversible action',
+                          style: TextStyle(
+                            color: Colors.orange[800],
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Cancel', style: TextStyle(fontSize: 14)),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.rocket_launch, size: 18),
+                    SizedBox(width: 6),
+                    Text('Execute',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
 
     if (!confirmed) return;
 
     if (!mounted) return;
 
-    // Show loading dialog
+    // Show loading dialog (WITH PROGRESS)
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        content: Row(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(width: 16),
-            Text('Đang phân phối quà...'),
+            CircularProgressIndicator(strokeWidth: 3),
+            SizedBox(height: 20),
+            Text(
+              'Executing Reward Distribution',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Processing ${_rankings.length} players...',
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            ),
           ],
         ),
       ),
@@ -1049,23 +1530,62 @@ class _TournamentRankingsWidgetState extends State<TournamentRankingsWidget> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('🎉 Quà đã được gửi thành công cho ${_rankings.length} người chơi!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white, size: 20),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '✅ Rewards distributed to ${_rankings.length} players successfully!',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green[700],
+            duration: Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
         );
       } else {
-        throw Exception('Reward distribution failed');
+        throw Exception('Reward distribution failed - check logs');
       }
     } catch (e) {
       if (!mounted) return;
       Navigator.of(context).pop(); // Close loading dialog
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ Có lỗi khi gửi quà: $e'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '❌ Reward Distribution Failed',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Error: ${e.toString().replaceAll('Exception: ', '')}',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red[700],
+          duration: Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     }

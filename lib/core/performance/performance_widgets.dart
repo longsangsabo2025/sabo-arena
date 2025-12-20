@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 /// Optimized image widget with caching and loading states
-/// 
+///
 /// Usage:
 /// ```dart
 /// OptimizedImage(
@@ -36,28 +36,30 @@ class OptimizedImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit ?? BoxFit.cover,
-      placeholder: (context, url) => placeholder ?? 
-        Container(
-          width: width,
-          height: height,
-          color: Colors.grey.shade200,
-          child: const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
+      placeholder: (context, url) =>
+          placeholder ??
+          Container(
+            width: width,
+            height: height,
+            color: Colors.grey.shade200,
+            child: const Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
           ),
-        ),
-      errorWidget: (context, url, error) => errorWidget ??
-        Container(
-          width: width,
-          height: height,
-          color: Colors.grey.shade300,
-          child: const Icon(Icons.error_outline, color: Colors.red),
-        ),
+      errorWidget: (context, url, error) =>
+          errorWidget ??
+          Container(
+            width: width,
+            height: height,
+            color: Colors.grey.shade300,
+            child: const Icon(Icons.error_outline, color: Colors.red),
+          ),
     );
   }
 }
 
 /// Optimized list with lazy loading
-/// 
+///
 /// Usage:
 /// ```dart
 /// OptimizedListView(
@@ -99,7 +101,7 @@ class OptimizedListView extends StatelessWidget {
 }
 
 /// 120Hz animation support for ProMotion displays
-/// 
+///
 /// Usage:
 /// ```dart
 /// ProMotionAnimation(
@@ -156,7 +158,7 @@ class _ProMotionAnimationState extends State<ProMotionAnimation>
 }
 
 /// Repaint boundary wrapper for complex widgets
-/// 
+///
 /// Usage:
 /// ```dart
 /// PerformanceOptimizedWidget(
@@ -180,7 +182,7 @@ class PerformanceOptimizedWidget extends StatelessWidget {
 }
 
 /// Debounced search field
-/// 
+///
 /// Usage:
 /// ```dart
 /// DebouncedSearchField(
@@ -228,7 +230,7 @@ class _DebouncedSearchFieldState extends State<DebouncedSearchField> {
 
   void _onTextChanged() {
     _lastChangeTime = DateTime.now();
-    
+
     Future.delayed(widget.debounceTime, () {
       if (_lastChangeTime != null &&
           DateTime.now().difference(_lastChangeTime!) >= widget.debounceTime) {
@@ -285,9 +287,9 @@ class PerformanceMonitor {
   static String getSummary() {
     if (_metrics.isEmpty) return 'No metrics collected';
 
-    final avgDuration = _metrics
-        .map((m) => m.duration.inMilliseconds)
-        .reduce((a, b) => a + b) / _metrics.length;
+    final avgDuration =
+        _metrics.map((m) => m.duration.inMilliseconds).reduce((a, b) => a + b) /
+            _metrics.length;
 
     return 'Avg: ${avgDuration.toStringAsFixed(2)}ms | Total: ${_metrics.length} ops';
   }

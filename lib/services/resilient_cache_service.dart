@@ -7,13 +7,13 @@ import 'app_cache_service.dart';
 
 /// Resilient Cache Service
 /// Multi-layer cache with automatic fallback and circuit breakers
-/// 
+///
 /// Cache Strategy (in order):
 /// 1. Memory Cache (instant, limited size)
 /// 2. Redis Cache (server-side, shared)
 /// 3. Database (fallback if Redis fails)
 /// 4. Network (last resort)
-/// 
+///
 /// Features:
 /// - Circuit breaker protection
 /// - Automatic fallback between layers
@@ -26,23 +26,26 @@ class ResilientCacheService {
   ResilientCacheService._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  final CircuitBreaker _redisBreaker = CircuitBreakerManager.instance.getBreaker('redis');
-  final CircuitBreaker _databaseBreaker = CircuitBreakerManager.instance.getBreaker('database');
+  final CircuitBreaker _redisBreaker =
+      CircuitBreakerManager.instance.getBreaker('redis');
+  final CircuitBreaker _databaseBreaker =
+      CircuitBreakerManager.instance.getBreaker('database');
 
   /// Get tournament with multi-layer cache and fallback
   Future<Map<String, dynamic>?> getTournament(String tournamentId) async {
     // Layer 1: Memory cache (AppCacheService)
-    final memoryCache = await AppCacheService.instance.getCache('tournament:$tournamentId');
+    final memoryCache =
+        await AppCacheService.instance.getCache('tournament:$tournamentId');
     if (memoryCache != null) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return memoryCache as Map<String, dynamic>?;
     }
 
     // Layer 2: Redis cache (with circuit breaker)
     return await _redisBreaker.execute(
       () async {
-        final redisCache = await RedisCacheService.instance.getTournament(tournamentId);
+        final redisCache =
+            await RedisCacheService.instance.getTournament(tournamentId);
         if (redisCache != null) {
           // Store in memory cache for next time
           await AppCacheService.instance.setCache(
@@ -58,16 +61,15 @@ class ResilientCacheService {
         // Layer 3: Database (with circuit breaker)
         return await _databaseBreaker.execute(
           () async {
-            if (kDebugMode) {
-            }
+            if (kDebugMode) {}
             final response = await _supabase
                 .from('tournaments')
                 .select()
                 .eq('id', tournamentId)
                 .single();
-            
+
             final data = response as Map<String, dynamic>?;
-            
+
             // Cache in memory and Redis for next time
             if (data != null) {
               await AppCacheService.instance.setCache(
@@ -76,18 +78,18 @@ class ResilientCacheService {
                 ttl: const Duration(minutes: 5),
               );
               // Try to cache in Redis (non-blocking)
-              RedisCacheService.instance.setTournament(tournamentId, data).catchError((e) {
-                if (kDebugMode) {
-                }
+              RedisCacheService.instance
+                  .setTournament(tournamentId, data)
+                  .catchError((e) {
+                if (kDebugMode) {}
               });
             }
-            
+
             return data;
           },
           fallback: () async {
             // Layer 4: Return null (network/error)
-            if (kDebugMode) {
-            }
+            if (kDebugMode) {}
             return null as Map<String, dynamic>?;
           },
         );
@@ -126,9 +128,9 @@ class ResilientCacheService {
                 .select()
                 .eq('id', userId)
                 .single();
-            
+
             final data = response as Map<String, dynamic>?;
-            
+
             if (data != null) {
               await AppCacheService.instance.setCache(
                 key: 'user:$userId',
@@ -136,11 +138,10 @@ class ResilientCacheService {
                 ttl: const Duration(minutes: 15),
               );
               RedisCacheService.instance.setUser(userId, data).catchError((e) {
-                if (kDebugMode) {
-                }
+                if (kDebugMode) {}
               });
             }
-            
+
             return data;
           },
           fallback: () async => null as Map<String, dynamic>?,
@@ -180,9 +181,9 @@ class ResilientCacheService {
                 .select()
                 .eq('id', clubId)
                 .single();
-            
+
             final data = response as Map<String, dynamic>?;
-            
+
             if (data != null) {
               await AppCacheService.instance.setCache(
                 key: 'club:$clubId',
@@ -190,11 +191,10 @@ class ResilientCacheService {
                 ttl: const Duration(minutes: 30),
               );
               RedisCacheService.instance.setClub(clubId, data).catchError((e) {
-                if (kDebugMode) {
-                }
+                if (kDebugMode) {}
               });
             }
-            
+
             return data;
           },
           fallback: () async => null as Map<String, dynamic>?,
@@ -221,5 +221,3 @@ class ResilientCacheService {
     await RedisCacheService.instance.invalidateClub(clubId);
   }
 }
-
-

@@ -48,7 +48,7 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
   void _initializeFromData() {
     _selectedRules = List<String>.from(widget.data['selectedRules'] ?? []);
     _contactController.text = widget.data['contactInfo'] ?? '';
-    
+
     // If no rules selected, add some default rules
     if (_selectedRules.isEmpty) {
       _selectedRules = [
@@ -116,8 +116,10 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
             ? _selectedRules.join('\n')
             : 'Giải đấu áp dụng luật thi đấu chuẩn\nTuân thủ quyết định của trọng tài\nĐến đúng giờ, trễ quá 15 phút sẽ bị loại';
 
-        ProductionLogger.info('📋 Rules text being saved: $rulesText', tag: 'enhanced_rules_review_step');
-        ProductionLogger.info('📋 Rules length: ${rulesText.length}', tag: 'enhanced_rules_review_step');
+        ProductionLogger.info('📋 Rules text being saved: $rulesText',
+            tag: 'enhanced_rules_review_step');
+        ProductionLogger.info('📋 Rules length: ${rulesText.length}',
+            tag: 'enhanced_rules_review_step');
 
         widget.onDataChanged({
           'selectedRules': _selectedRules,
@@ -131,14 +133,23 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
 
   @override
   Widget build(BuildContext context) {
-    ProductionLogger.info('🎯 STEP 4: EnhancedRulesReviewStep - Starting build', tag: 'enhanced_rules_review_step');
-    ProductionLogger.info('   widget.data[format] = ${widget.data['format']}', tag: 'enhanced_rules_review_step');
-    ProductionLogger.info('   widget.data[gameType] = ${widget.data['gameType']}', tag: 'enhanced_rules_review_step');
-    ProductionLogger.info('   widget.data[entryFee] = ${widget.data['entryFee']}', tag: 'enhanced_rules_review_step');
-    ProductionLogger.info('   widget.data[maxParticipants] = ${widget.data['maxParticipants']}', tag: 'enhanced_rules_review_step');
+    ProductionLogger.info('🎯 STEP 4: EnhancedRulesReviewStep - Starting build',
+        tag: 'enhanced_rules_review_step');
+    ProductionLogger.info('   widget.data[format] = ${widget.data['format']}',
+        tag: 'enhanced_rules_review_step');
+    ProductionLogger.info(
+        '   widget.data[gameType] = ${widget.data['gameType']}',
+        tag: 'enhanced_rules_review_step');
+    ProductionLogger.info(
+        '   widget.data[entryFee] = ${widget.data['entryFee']}',
+        tag: 'enhanced_rules_review_step');
+    ProductionLogger.info(
+        '   widget.data[maxParticipants] = ${widget.data['maxParticipants']}',
+        tag: 'enhanced_rules_review_step');
 
     try {
-      ProductionLogger.info('✅ STEP 4: Building Scaffold', tag: 'enhanced_rules_review_step');
+      ProductionLogger.info('✅ STEP 4: Building Scaffold',
+          tag: 'enhanced_rules_review_step');
       return Scaffold(
         backgroundColor: Colors.grey[50],
         body: Column(
@@ -147,15 +158,20 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
             Builder(
               builder: (context) {
                 try {
-                  ProductionLogger.info('✅ STEP 4: Building ValidationFeedbackWidget', tag: 'enhanced_rules_review_step');
+                  ProductionLogger.info(
+                      '✅ STEP 4: Building ValidationFeedbackWidget',
+                      tag: 'enhanced_rules_review_step');
                   return ValidationFeedbackWidget(
                     errors: _errors,
                     warnings: _warnings,
                     successes: _successes,
                   );
                 } catch (e, stack) {
-                  ProductionLogger.info('❌ STEP 4 ERROR in ValidationFeedback: $e', tag: 'enhanced_rules_review_step');
-                  ProductionLogger.info('Stack: $stack', tag: 'enhanced_rules_review_step');
+                  ProductionLogger.info(
+                      '❌ STEP 4 ERROR in ValidationFeedback: $e',
+                      tag: 'enhanced_rules_review_step');
+                  ProductionLogger.info('Stack: $stack',
+                      tag: 'enhanced_rules_review_step');
                   return Container(
                     padding: EdgeInsets.all(8),
                     color: Colors.orange.shade100,
@@ -178,7 +194,8 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
                     Builder(
                       builder: (context) {
                         try {
-                          ProductionLogger.info('✅ STEP 4: Building Header', tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info('✅ STEP 4: Building Header',
+                              tag: 'enhanced_rules_review_step');
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -201,7 +218,8 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
                             ],
                           );
                         } catch (e) {
-                          ProductionLogger.info('❌ STEP 4 ERROR in Header: $e', tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info('❌ STEP 4 ERROR in Header: $e',
+                              tag: 'enhanced_rules_review_step');
                           return Text(
                             'Header Error: $e',
                             style: TextStyle(color: Colors.red),
@@ -215,7 +233,9 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
                     Builder(
                       builder: (context) {
                         try {
-                          ProductionLogger.info('✅ STEP 4: Building RulesChecklistWidget', tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info(
+                              '✅ STEP 4: Building RulesChecklistWidget',
+                              tag: 'enhanced_rules_review_step');
                           return RulesChecklistWidget(
                             selectedRules: _selectedRules,
                             onChanged: (rules) {
@@ -226,8 +246,11 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
                             },
                           );
                         } catch (e, stack) {
-                          ProductionLogger.info('❌ STEP 4 ERROR in RulesChecklist: $e', tag: 'enhanced_rules_review_step');
-                          ProductionLogger.info('Stack: $stack', tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info(
+                              '❌ STEP 4 ERROR in RulesChecklist: $e',
+                              tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info('Stack: $stack',
+                              tag: 'enhanced_rules_review_step');
                           return Container(
                             padding: EdgeInsets.all(16),
                             color: Colors.red.shade100,
@@ -243,7 +266,9 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
                     Builder(
                       builder: (context) {
                         try {
-                          ProductionLogger.info('✅ STEP 4: Building Contact & Review sections', tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info(
+                              '✅ STEP 4: Building Contact & Review sections',
+                              tag: 'enhanced_rules_review_step');
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -254,8 +279,11 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
                             ],
                           );
                         } catch (e, stack) {
-                          ProductionLogger.info('❌ STEP 4 ERROR in Contact/Review: $e', tag: 'enhanced_rules_review_step');
-                          ProductionLogger.info('Stack: $stack', tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info(
+                              '❌ STEP 4 ERROR in Contact/Review: $e',
+                              tag: 'enhanced_rules_review_step');
+                          ProductionLogger.info('Stack: $stack',
+                              tag: 'enhanced_rules_review_step');
                           return Container(
                             padding: EdgeInsets.all(16),
                             color: Colors.red.shade100,
@@ -272,8 +300,10 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
         ),
       );
     } catch (e, stack) {
-      ProductionLogger.info('❌ STEP 4 FATAL ERROR: $e', tag: 'enhanced_rules_review_step');
-      ProductionLogger.info('Stack trace: $stack', tag: 'enhanced_rules_review_step');
+      ProductionLogger.info('❌ STEP 4 FATAL ERROR: $e',
+          tag: 'enhanced_rules_review_step');
+      ProductionLogger.info('Stack trace: $stack',
+          tag: 'enhanced_rules_review_step');
       return Container(
         color: Colors.red.shade50,
         child: Center(
@@ -413,7 +443,8 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
             ),
             _buildPreviewItem(
               'Tổng giải thưởng',
-              _formatMoney(widget.data['prizePool'] ?? widget.data['totalPrize'] ?? 0),
+              _formatMoney(
+                  widget.data['prizePool'] ?? widget.data['totalPrize'] ?? 0),
             ),
             _buildPreviewItem('Phân bổ', _getPrizeDistribution()),
           ]),
@@ -471,9 +502,8 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: canCreate && !widget.isCreating
-            ? widget.onCreateTournament
-            : null,
+        onPressed:
+            canCreate && !widget.isCreating ? widget.onCreateTournament : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Colors.white,
@@ -581,7 +611,9 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
   }
 
   String _getPrizeDistribution() {
-    final distribution = widget.data['prizeTemplate'] ?? widget.data['prizeDistribution'] ?? 'top_3';
+    final distribution = widget.data['prizeTemplate'] ??
+        widget.data['prizeDistribution'] ??
+        'top_3';
     switch (distribution) {
       case 'top_3':
         return 'Top 3 (50%-30%-20%)';
@@ -608,9 +640,8 @@ class _EnhancedRulesReviewStepState extends State<EnhancedRulesReviewStep> {
 
   String _formatMoney(dynamic amount) {
     if (amount == null || amount == 0) return 'Miễn phí';
-    final value = amount is String
-        ? double.tryParse(amount) ?? 0
-        : amount.toDouble();
+    final value =
+        amount is String ? double.tryParse(amount) ?? 0 : amount.toDouble();
     if (value >= 1000000) {
       return '₫${(value / 1000000).toStringAsFixed(1)}M';
     } else if (value >= 1000) {

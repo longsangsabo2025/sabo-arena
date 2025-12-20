@@ -66,8 +66,8 @@ class _MemberSettingsTabState extends State<MemberSettingsTab>
                 Text(
                   'Quản lý thành viên',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ],
             ),
@@ -181,8 +181,8 @@ class _MemberSettingsTabState extends State<MemberSettingsTab>
                 Text(
                   'Quyền hạn',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ],
             ),
@@ -249,8 +249,8 @@ class _MemberSettingsTabState extends State<MemberSettingsTab>
                 Text(
                   'Hành động quản trị',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ],
             ),
@@ -312,9 +312,9 @@ class _MemberSettingsTabState extends State<MemberSettingsTab>
                 Text(
                   'Vùng nguy hiểm',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.red,
-                  ),
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red,
+                      ),
                 ),
               ],
             ),
@@ -363,17 +363,17 @@ class _MemberSettingsTabState extends State<MemberSettingsTab>
                   Text(
                     title,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                   SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
                   ),
                 ],
               ),
@@ -412,10 +412,10 @@ class _MemberSettingsTabState extends State<MemberSettingsTab>
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
                 ),
               ],
             ),
@@ -449,18 +449,18 @@ class _MemberSettingsTabState extends State<MemberSettingsTab>
                   Text(
                     title,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: color,
-                    ),
+                          fontWeight: FontWeight.w500,
+                          color: color,
+                        ),
                   ),
                   SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
                   ),
                 ],
               ),

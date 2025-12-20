@@ -14,12 +14,13 @@ class ClubService {
   ClubService._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   // Get read client (uses replica if available)
   SupabaseClient get _readClient => DatabaseReplicaManager.instance.readClient;
-  
+
   // Get write client (always uses primary)
-  SupabaseClient get _writeClient => DatabaseReplicaManager.instance.writeClient;
+  SupabaseClient get _writeClient =>
+      DatabaseReplicaManager.instance.writeClient;
 
   Future<List<Club>> getClubs({
     double? latitude,
@@ -78,17 +79,14 @@ class ClubService {
       }
 
       // Use read replica for read operations
-      final response = await _readClient
-          .from('clubs')
-          .select()
-          .eq('id', clubId)
-          .single();
+      final response =
+          await _readClient.from('clubs').select().eq('id', clubId).single();
 
       final club = Club.fromJson(response);
-      
+
       // Cache the club data
       await CacheManager.instance.setClub(clubId, response);
-      
+
       return club;
     } catch (error) {
       final errorInfo = StandardizedErrorHandler.handleError(
@@ -317,8 +315,8 @@ class ClubService {
         // Toggle favorite status (use write client)
         await _writeClient
             .from('club_members')
-            .update({'is_favorite': !membership['is_favorite']})
-            .eq('id', membership['id']);
+            .update({'is_favorite': !membership['is_favorite']}).eq(
+                'id', membership['id']);
       } else {
         // Join club as favorite (use write client)
         await _writeClient.from('club_members').insert({
@@ -415,11 +413,8 @@ class ClubService {
         'is_active': false, // Inactive until approved
       };
 
-      final response = await _supabase
-          .from('clubs')
-          .insert(clubData)
-          .select()
-          .single();
+      final response =
+          await _supabase.from('clubs').insert(clubData).select().single();
 
       final club = Club.fromJson(response);
 
@@ -459,7 +454,7 @@ class ClubService {
   }
 
   /// Get clubs owned by current user
-  Future<List<Club>> getMyClubs() async {
+  Future<List<Club>> getMyClubs({int limit = 20, int offset = 0}) async {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
@@ -469,7 +464,8 @@ class ClubService {
           .from('clubs')
           .select('*')
           .eq('owner_id', user.id)
-          .order('created_at', ascending: false);
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
 
       return response.map<Club>((json) => Club.fromJson(json)).toList();
     } catch (error) {
@@ -571,19 +567,21 @@ class ClubService {
 
       // Generate unique filename
       final ext = fileName.split('.').last.toLowerCase();
-      final safeExt = (ext == 'png' || ext == 'jpg' || ext == 'jpeg' || ext == 'webp') ? ext : 'png';
+      final safeExt =
+          (ext == 'png' || ext == 'jpg' || ext == 'jpeg' || ext == 'webp')
+              ? ext
+              : 'png';
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final uniqueFileName = 'club_logo_${clubId}_$timestamp.$safeExt';
 
       // Determine content type
       String contentType = 'image/png';
-      if (safeExt == 'jpg' || safeExt == 'jpeg') contentType = 'image/jpeg';
+      if (safeExt == 'jpg' || safeExt == 'jpeg')
+        contentType = 'image/jpeg';
       else if (safeExt == 'webp') contentType = 'image/webp';
 
       // Upload file to storage
-      await _supabase.storage
-          .from('club-logos')
-          .uploadBinary(
+      await _supabase.storage.from('club-logos').uploadBinary(
             uniqueFileName,
             fileBytes,
             fileOptions: FileOptions(
@@ -593,9 +591,8 @@ class ClubService {
           );
 
       // Get public URL
-      final publicUrl = _supabase.storage
-          .from('club-logos')
-          .getPublicUrl(uniqueFileName);
+      final publicUrl =
+          _supabase.storage.from('club-logos').getPublicUrl(uniqueFileName);
 
       // Update club logo in database
       return await updateClubLogo(clubId, publicUrl);
@@ -623,9 +620,7 @@ class ClubService {
       final uniqueFileName = 'club_cover_${clubId}_$timestamp.jpg';
 
       // Upload file to storage (using club-images bucket)
-      await _supabase.storage
-          .from('club-images')
-          .uploadBinary(
+      await _supabase.storage.from('club-images').uploadBinary(
             uniqueFileName,
             fileBytes,
             fileOptions: const FileOptions(
@@ -635,9 +630,8 @@ class ClubService {
           );
 
       // Get public URL
-      final publicUrl = _supabase.storage
-          .from('club-images')
-          .getPublicUrl(uniqueFileName);
+      final publicUrl =
+          _supabase.storage.from('club-images').getPublicUrl(uniqueFileName);
 
       // Update club cover in database
       return await updateClubCover(clubId, publicUrl);
@@ -768,18 +762,15 @@ class ClubService {
       final contentType = _getContentType(extension);
 
       // Upload file to storage
-      await _supabase.storage
-          .from('club-images')
-          .uploadBinary(
+      await _supabase.storage.from('club-images').uploadBinary(
             uniqueFileName,
             fileBytes,
             fileOptions: FileOptions(contentType: contentType, upsert: true),
           );
 
       // Get public URL
-      final publicUrl = _supabase.storage
-          .from('club-images')
-          .getPublicUrl(uniqueFileName);
+      final publicUrl =
+          _supabase.storage.from('club-images').getPublicUrl(uniqueFileName);
 
       // Update club profile image in database
       final response = await _supabase
@@ -821,18 +812,15 @@ class ClubService {
       final contentType = _getContentType(extension);
 
       // Upload file to storage
-      await _supabase.storage
-          .from('club-images')
-          .uploadBinary(
+      await _supabase.storage.from('club-images').uploadBinary(
             uniqueFileName,
             fileBytes,
             fileOptions: FileOptions(contentType: contentType, upsert: true),
           );
 
       // Get public URL
-      final publicUrl = _supabase.storage
-          .from('club-images')
-          .getPublicUrl(uniqueFileName);
+      final publicUrl =
+          _supabase.storage.from('club-images').getPublicUrl(uniqueFileName);
 
       // Update club cover image in database
       final response = await _supabase
@@ -937,10 +925,8 @@ class ClubService {
   Future<int> getClubFollowersCount(String clubId) async {
     try {
       // Use read replica for read operations
-      final response = await _readClient
-          .from('club_follows')
-          .select()
-          .eq('club_id', clubId);
+      final response =
+          await _readClient.from('club_follows').select().eq('club_id', clubId);
 
       return response.length;
     } catch (error) {
@@ -976,8 +962,8 @@ class ClubService {
           .eq('status', 'active')
           .maybeSingle();
 
-      return membership != null && 
-             (membership['role'] == 'admin' || membership['role'] == 'owner');
+      return membership != null &&
+          (membership['role'] == 'admin' || membership['role'] == 'owner');
     } catch (error) {
       ProductionLogger.error(
         'Error checking user club permission',

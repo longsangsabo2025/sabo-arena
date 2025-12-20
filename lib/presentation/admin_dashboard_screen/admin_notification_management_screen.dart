@@ -95,7 +95,8 @@ class _AdminNotificationManagementScreenState
         };
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading stats: $e', tag: 'admin_notification_management_screen');
+      ProductionLogger.info('❌ Error loading stats: $e',
+          tag: 'admin_notification_management_screen');
     }
   }
 
@@ -112,7 +113,8 @@ class _AdminNotificationManagementScreenState
         _recentNotifications = List<Map<String, dynamic>>.from(result);
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading recent notifications: $e', tag: 'admin_notification_management_screen');
+      ProductionLogger.info('❌ Error loading recent notifications: $e',
+          tag: 'admin_notification_management_screen');
     }
   }
 
@@ -129,7 +131,8 @@ class _AdminNotificationManagementScreenState
         _scheduledNotifications = List<Map<String, dynamic>>.from(result);
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading scheduled notifications: $e', tag: 'admin_notification_management_screen');
+      ProductionLogger.info('❌ Error loading scheduled notifications: $e',
+          tag: 'admin_notification_management_screen');
     }
   }
 
@@ -149,7 +152,8 @@ class _AdminNotificationManagementScreenState
         };
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading delivery trends: $e', tag: 'admin_notification_management_screen');
+      ProductionLogger.info('❌ Error loading delivery trends: $e',
+          tag: 'admin_notification_management_screen');
     }
   }
 
@@ -205,14 +209,18 @@ class _AdminNotificationManagementScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Quản lý Thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Quản lý Thông báo',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
           Text(
-            'Admin Dashboard', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp, color: Colors.white70),
+            'Admin Dashboard',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 11.sp, color: Colors.white70),
           ),
         ],
       ),
@@ -307,7 +315,8 @@ class _AdminNotificationManagementScreenState
               SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  label, style: TextStyle(fontSize: 11.sp, color: Colors.white70),
+                  label,
+                  style: TextStyle(fontSize: 11.sp, color: Colors.white70),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -315,7 +324,8 @@ class _AdminNotificationManagementScreenState
           ),
           SizedBox(height: 4),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -382,9 +392,8 @@ class _AdminNotificationManagementScreenState
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: _recentNotifications.length > 10
-          ? 10
-          : _recentNotifications.length,
+      itemCount:
+          _recentNotifications.length > 10 ? 10 : _recentNotifications.length,
       itemBuilder: (context, index) {
         final notification = _recentNotifications[index];
         return _buildNotificationCard(notification);
@@ -410,7 +419,8 @@ class _AdminNotificationManagementScreenState
           child: Icon(_getTypeIcon(type), color: _getTypeColor(type), size: 20),
         ),
         title: Text(
-          title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13.sp),
+          title,
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13.sp),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -418,7 +428,8 @@ class _AdminNotificationManagementScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              message, style: TextStyle(fontSize: 11.sp),
+              message,
+              style: TextStyle(fontSize: 11.sp),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -428,7 +439,8 @@ class _AdminNotificationManagementScreenState
                 Icon(Icons.person, size: 12, color: Colors.grey),
                 SizedBox(width: 4),
                 Text(
-                  userName, style: TextStyle(fontSize: 10.sp, color: Colors.grey),
+                  userName,
+                  style: TextStyle(fontSize: 10.sp, color: Colors.grey),
                 ),
                 SizedBox(width: 12),
                 Icon(Icons.access_time, size: 12, color: Colors.grey),
@@ -453,7 +465,9 @@ class _AdminNotificationManagementScreenState
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                isRead ? 'Đã đọc' : 'Chưa đọc', overflow: TextOverflow.ellipsis, style: TextStyle(
+                isRead ? 'Đã đọc' : 'Chưa đọc',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 10.sp,
                   color: isRead ? Colors.green : Colors.orange,
                   fontWeight: FontWeight.w600,
@@ -609,7 +623,9 @@ class _AdminNotificationManagementScreenState
                     ),
                     icon: Icon(Icons.send, color: Colors.white),
                     label: Text(
-                      'Gửi thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Gửi thông báo',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -654,7 +670,9 @@ class _AdminNotificationManagementScreenState
               onPressed: _showScheduleDialog,
               icon: Icon(Icons.add_alarm, color: Colors.white),
               label: Text(
-                'Tạo lịch mới', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white),
+                'Tạo lịch mới',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryDark,
@@ -696,7 +714,8 @@ class _AdminNotificationManagementScreenState
         subtitle: Text('Lên lịch: ${_formatDateTime(scheduledAt)}'),
         trailing: Chip(
           label: Text(
-            status == 'pending' ? 'Chờ gửi' : status, style: TextStyle(fontSize: 10.sp),
+            status == 'pending' ? 'Chờ gửi' : status,
+            style: TextStyle(fontSize: 10.sp),
           ),
           backgroundColor: status == 'pending'
               ? Colors.orange.withValues(alpha: 0.2)
@@ -766,24 +785,31 @@ class _AdminNotificationManagementScreenState
       margin: EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: _getTypeColor(template['type']).withValues(alpha: 0.2),
+          backgroundColor:
+              _getTypeColor(template['type']).withValues(alpha: 0.2),
           child: Icon(
             _getTypeIcon(template['type']),
             color: _getTypeColor(template['type']),
           ),
         ),
         title: Text(
-          template['name'], overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
+          template['name'],
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 4),
             Text(
-              template['title'], overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w500),
+              template['title'],
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w500),
             ),
             Text(
-              template['message'], overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10.sp, color: Colors.grey),
+              template['message'],
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 10.sp, color: Colors.grey),
               maxLines: 2,
             ),
           ],
@@ -1020,14 +1046,16 @@ class _AdminNotificationManagementScreenState
           Icon(icon, color: color, size: 32),
           SizedBox(height: 8),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
           Text(
-            label, style: TextStyle(fontSize: 11.sp, color: Colors.grey),
+            label,
+            style: TextStyle(fontSize: 11.sp, color: Colors.grey),
             textAlign: TextAlign.center,
           ),
         ],
@@ -1038,7 +1066,8 @@ class _AdminNotificationManagementScreenState
   /// Helper: Build section title
   Widget _buildSectionTitle(String title) {
     return Text(
-      title, style: TextStyle(
+      title,
+      style: TextStyle(
         fontSize: 16.sp,
         fontWeight: FontWeight.bold,
         color: AppTheme.textPrimaryLight,
@@ -1057,7 +1086,8 @@ class _AdminNotificationManagementScreenState
             Icon(Icons.inbox, size: 64, color: Colors.grey[300]),
             SizedBox(height: 16),
             Text(
-              message, style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+              message,
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -1074,7 +1104,9 @@ class _AdminNotificationManagementScreenState
         children: [
           CircularProgressIndicator(color: AppTheme.primaryDark),
           SizedBox(height: 16),
-          Text('Đang tải dữ liệu...', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey)),
+          Text('Đang tải dữ liệu...',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey)),
         ],
       ),
     );
@@ -1087,7 +1119,9 @@ class _AdminNotificationManagementScreenState
         _tabController.animateTo(1); // Go to Broadcast tab
       },
       icon: Icon(Icons.send, color: Colors.white),
-      label: Text('Gửi thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white)),
+      label: Text('Gửi thông báo',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: Colors.white)),
       backgroundColor: AppTheme.primaryDark,
     );
   }
@@ -1108,7 +1142,7 @@ class _AdminNotificationManagementScreenState
       case 'club':
         return Icons.groups;
       case 'match':
-        return Icons.sports_esports;
+        return Icons.sports_baseball;
       case 'social':
         return Icons.people;
       default:
@@ -1190,7 +1224,8 @@ class _AdminNotificationManagementScreenState
           );
           successCount++;
         } catch (e) {
-          ProductionLogger.info('❌ Failed to send to user $userId: $e', tag: 'admin_notification_management_screen');
+          ProductionLogger.info('❌ Failed to send to user $userId: $e',
+              tag: 'admin_notification_management_screen');
         }
       }
 
@@ -1219,10 +1254,8 @@ class _AdminNotificationManagementScreenState
           return List<String>.from(result.map((u) => u['id']));
 
         case 'players':
-          final result = await _supabase
-              .from('users')
-              .select('id')
-              .eq('role', 'player');
+          final result =
+              await _supabase.from('users').select('id').eq('role', 'player');
           return List<String>.from(result.map((u) => u['id']));
 
         case 'club_owners':
@@ -1233,10 +1266,8 @@ class _AdminNotificationManagementScreenState
           return List<String>.from(result.map((u) => u['id']));
 
         case 'admins':
-          final result = await _supabase
-              .from('users')
-              .select('id')
-              .eq('role', 'admin');
+          final result =
+              await _supabase.from('users').select('id').eq('role', 'admin');
           return List<String>.from(result.map((u) => u['id']));
 
         case 'active_users':
@@ -1251,7 +1282,8 @@ class _AdminNotificationManagementScreenState
           return [];
       }
     } catch (e) {
-      ProductionLogger.info('❌ Error getting target users: $e', tag: 'admin_notification_management_screen');
+      ProductionLogger.info('❌ Error getting target users: $e',
+          tag: 'admin_notification_management_screen');
       return [];
     }
   }

@@ -21,14 +21,16 @@ class ProfileTabNavigationWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _buildTab(context,
+            child: _buildTab(
+              context,
               label: 'Ready',
               value: 'ready',
               isActive: currentTab == 'ready',
             ),
           ),
           Expanded(
-            child: _buildTab(context,
+            child: _buildTab(
+              context,
               label: 'Live',
               value: 'live',
               isActive: currentTab == 'live',
@@ -36,7 +38,9 @@ class ProfileTabNavigationWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: _buildTab(              context,              label: 'Hoàn thành',
+            child: _buildTab(
+              context,
+              label: 'Hoàn thành',
               value: 'done',
               isActive: currentTab == 'done',
             ),
@@ -68,7 +72,12 @@ class ProfileTabNavigationWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: isActive
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.5),
                   ),
                 ),
                 if (showRedDot && isActive) ...[
@@ -89,7 +98,9 @@ class ProfileTabNavigationWidget extends StatelessWidget {
           Container(
             height: 2,
             width: _getUnderlineWidth(label, showRedDot && isActive),
-            color: isActive ? Theme.of(context).colorScheme.onSurface : Colors.transparent,
+            color: isActive
+                ? Theme.of(context).colorScheme.onSurface
+                : Colors.transparent,
           ),
         ],
       ),

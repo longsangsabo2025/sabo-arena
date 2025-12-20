@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
+import '../../widgets/common/app_button.dart';
 
 class MessagingScreen extends StatefulWidget {
   final String? chatId;
@@ -307,7 +308,9 @@ class _MessagingScreenState extends State<MessagingScreen> {
                       Icon(Icons.chat, color: Colors.white),
                       SizedBox(width: 8),
                       Text(
-                        'Danh sách chat', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Danh sách chat',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -331,7 +334,9 @@ class _MessagingScreenState extends State<MessagingScreen> {
                                 child: Icon(Icons.group, color: Colors.white),
                               ),
                               title: Text(
-                                chat['name'] ?? 'Unnamed Chat', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                chat['name'] ?? 'Unnamed Chat',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                   fontWeight: isSelected
                                       ? FontWeight.bold
                                       : FontWeight.normal,
@@ -369,16 +374,21 @@ class _MessagingScreenState extends State<MessagingScreen> {
                         ),
                         SizedBox(height: 16),
                         Text(
-                          'Chọn một phòng chat để bắt đầu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Chọn một phòng chat để bắt đầu',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 18,
                             color: Colors.grey[600],
                           ),
                         ),
                         SizedBox(height: 16),
-                        ElevatedButton.icon(
+                        AppButton(
+                          label: 'Tạo phòng chat mới',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.medium,
+                          icon: Icons.add,
+                          iconTrailing: false,
                           onPressed: _createNewChat,
-                          icon: Icon(Icons.add),
-                          label: Text('Tạo phòng chat mới'),
                         ),
                       ],
                     ),
@@ -393,8 +403,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                           itemCount: _messages.length,
                           itemBuilder: (context, index) {
                             final message = _messages[index];
-                            final isCurrentUser =
-                                message['sender_id'] ==
+                            final isCurrentUser = message['sender_id'] ==
                                 _supabase.auth.currentUser?.id;
                             final senderName =
                                 message['users']?['display_name'] ?? 'Unknown';
@@ -426,7 +435,8 @@ class _MessagingScreenState extends State<MessagingScreen> {
                                       Padding(
                                         padding: EdgeInsets.only(bottom: 4),
                                         child: Text(
-                                          senderName, style: TextStyle(
+                                          senderName,
+                                          style: TextStyle(
                                             color: Theme.of(
                                               context,
                                             ).primaryColor,
@@ -436,7 +446,9 @@ class _MessagingScreenState extends State<MessagingScreen> {
                                         ),
                                       ),
                                     Text(
-                                      message['message'] ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                      message['message'] ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
                                         color: isCurrentUser
                                             ? Colors.white
                                             : Colors.black87,

@@ -5,7 +5,7 @@ import 'dart:async';
 
 /// Batched Real-Time Service
 /// Batches all real-time updates into single subscription
-/// 
+///
 /// Benefits:
 /// - 80% reduction in WebSocket overhead
 /// - Lower server load
@@ -20,24 +20,24 @@ class BatchedRealtimeService {
 
   final SupabaseClient _supabase = Supabase.instance.client;
   RealtimeChannel? _batchedChannel;
-  
+
   // Batching configuration
   static const Duration _batchInterval = Duration(milliseconds: 100);
   static const int _maxBatchSize = 50;
-  
+
   // Batch buffer
   final List<BatchedUpdate> _batchBuffer = [];
   Timer? _batchTimer;
-  
+
   // Callbacks
   final Map<String, Function(Map<String, dynamic>)> _callbacks = {};
-  
+
   bool _isSubscribed = false;
 
   /// Initialize batched real-time service
   Future<void> initialize() async {
     if (_isSubscribed) return;
-    
+
     _batchedChannel = _supabase
         .channel('batched-updates')
         .onPostgresChanges(
@@ -48,12 +48,11 @@ class BatchedRealtimeService {
           },
         )
         .subscribe();
-    
+
     _isSubscribed = true;
     _startBatchTimer();
-    
-    if (kDebugMode) {
-    }
+
+    if (kDebugMode) {}
   }
 
   /// Handle incoming update
@@ -61,12 +60,13 @@ class BatchedRealtimeService {
     final update = BatchedUpdate(
       table: payload.table,
       event: payload.eventType.toString(),
-      data: payload.newRecord.isNotEmpty ? payload.newRecord : payload.oldRecord,
+      data:
+          payload.newRecord.isNotEmpty ? payload.newRecord : payload.oldRecord,
       timestamp: DateTime.now(),
     );
-    
+
     _batchBuffer.add(update);
-    
+
     // Flush if batch is full
     if (_batchBuffer.length >= _maxBatchSize) {
       _flushBatch();
@@ -86,10 +86,10 @@ class BatchedRealtimeService {
   /// Flush batch buffer
   void _flushBatch() {
     if (_batchBuffer.isEmpty) return;
-    
+
     final batch = List<BatchedUpdate>.from(_batchBuffer);
     _batchBuffer.clear();
-    
+
     // Process batch
     _processBatch(batch);
   }
@@ -104,19 +104,19 @@ class BatchedRealtimeService {
       }
       grouped[update.table]!.add(update);
     }
-    
+
     // Notify callbacks
     for (final entry in grouped.entries) {
       final table = entry.key;
       final updates = entry.value;
-      
+
       if (_callbacks.containsKey(table)) {
         final callback = _callbacks[table]!;
         for (final update in updates) {
           callback(update.data);
         }
       }
-      
+
       // Also notify specific callbacks (tournament:123, user:456, etc.)
       for (final update in updates) {
         final specificKey = '$table:${update.data['id']}';
@@ -125,9 +125,8 @@ class BatchedRealtimeService {
         }
       }
     }
-    
-    if (kDebugMode) {
-    }
+
+    if (kDebugMode) {}
   }
 
   /// Subscribe to table updates
@@ -136,8 +135,7 @@ class BatchedRealtimeService {
     Function(Map<String, dynamic>) callback,
   ) {
     _callbacks[table] = callback;
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Subscribe to specific entity updates (e.g., tournament:123)
@@ -146,22 +144,19 @@ class BatchedRealtimeService {
     Function(Map<String, dynamic>) callback,
   ) {
     _callbacks[key] = callback;
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Unsubscribe from table
   void unsubscribeFromTable(String table) {
     _callbacks.remove(table);
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Unsubscribe from entity
   void unsubscribeFromEntity(String key) {
     _callbacks.remove(key);
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Dispose service
@@ -173,9 +168,8 @@ class BatchedRealtimeService {
     _callbacks.clear();
     _batchBuffer.clear();
     _isSubscribed = false;
-    
-    if (kDebugMode) {
-    }
+
+    if (kDebugMode) {}
   }
 }
 
@@ -193,5 +187,3 @@ class BatchedUpdate {
     required this.timestamp,
   });
 }
-
-

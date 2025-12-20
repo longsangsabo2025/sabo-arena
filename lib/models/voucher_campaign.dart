@@ -57,7 +57,9 @@ class VoucherCampaign {
       approvalStatus: json['approval_status'] as String? ?? 'pending',
       adminNotes: json['admin_notes'] as String?,
       approvedBy: json['approved_by'] as String?,
-      approvedAt: json['approved_at'] != null ? DateTime.parse(json['approved_at'] as String) : null,
+      approvedAt: json['approved_at'] != null
+          ? DateTime.parse(json['approved_at'] as String)
+          : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       clubName: json['club']?['name'] as String?,
@@ -82,31 +84,43 @@ class VoucherCampaign {
   bool get isPending => approvalStatus == 'pending';
   bool get isApproved => approvalStatus == 'approved';
   bool get isRejected => approvalStatus == 'rejected';
-  
+
   String get campaignTypeDisplay {
     switch (campaignType) {
-      case 'welcome': return 'Chào Mừng';
-      case 'loyalty': return 'Thành Viên';
-      case 'prize': return 'Giải Thưởng';
-      default: return campaignType;
+      case 'welcome':
+        return 'Chào Mừng';
+      case 'loyalty':
+        return 'Thành Viên';
+      case 'prize':
+        return 'Giải Thưởng';
+      default:
+        return campaignType;
     }
   }
-  
+
   String get voucherTypeDisplay {
     switch (voucherType) {
-      case 'spa_balance': return 'SPA Balance';
-      case 'percentage_discount': return 'Giảm %';
-      case 'fixed_amount': return 'Giảm VNĐ';
-      default: return voucherType;
+      case 'spa_balance':
+        return 'SPA Balance';
+      case 'percentage_discount':
+        return 'Giảm %';
+      case 'fixed_amount':
+        return 'Giảm VNĐ';
+      default:
+        return voucherType;
     }
   }
-  
+
   String get statusDisplay {
     switch (approvalStatus) {
-      case 'pending': return 'Chờ Duyệt';
-      case 'approved': return 'Đã Duyệt';
-      case 'rejected': return 'Từ Chối';
-      default: return approvalStatus;
+      case 'pending':
+        return 'Chờ Duyệt';
+      case 'approved':
+        return 'Đã Duyệt';
+      case 'rejected':
+        return 'Từ Chối';
+      default:
+        return approvalStatus;
     }
   }
 }

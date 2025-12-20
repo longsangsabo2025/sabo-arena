@@ -19,14 +19,13 @@ class RichShareService {
     double pixelRatio = 3.0,
   }) async {
     try {
-      
       final imageBytes = await _screenshotController.captureFromWidget(
         widget,
         pixelRatio: pixelRatio,
         context: context,
         delay: const Duration(milliseconds: 100), // Wait for rendering
       );
-      
+
       return imageBytes;
     } catch (e) {
       return null;
@@ -42,9 +41,9 @@ class RichShareService {
       final directory = await getTemporaryDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final file = File('${directory.path}/${filename}_$timestamp.png');
-      
+
       await file.writeAsBytes(imageBytes);
-      
+
       return file;
     } catch (e) {
       return null;
@@ -64,7 +63,7 @@ class RichShareService {
     String? contentId,
   }) async {
     final startTime = DateTime.now();
-    
+
     try {
       // Track share initiated
       if (contentType != null && contentId != null) {
@@ -83,7 +82,7 @@ class RichShareService {
         context: context,
         pixelRatio: pixelRatio,
       );
-      
+
       if (imageBytes == null) {
         throw Exception('Không thể chụp ảnh widget');
       }
@@ -102,7 +101,8 @@ class RichShareService {
       );
 
       // Track performance
-      final processingTime = DateTime.now().difference(startTime).inMilliseconds;
+      final processingTime =
+          DateTime.now().difference(startTime).inMilliseconds;
       if (contentType != null && contentId != null) {
         await ShareAnalyticsService.trackSharePerformance(
           contentType: contentType,
@@ -118,7 +118,8 @@ class RichShareService {
             contentType: contentType,
             contentId: contentId,
             shareMethod: 'rich_image',
-            shareDestination: 'unknown', // ShareResult doesn't provide destination
+            shareDestination:
+                'unknown', // ShareResult doesn't provide destination
           );
         } else if (result.status == ShareResultStatus.dismissed) {
           await ShareAnalyticsService.trackShareCancelled(
@@ -142,10 +143,10 @@ class RichShareService {
 
       return result;
     } catch (e) {
-      
       // Track error
       if (contentType != null && contentId != null) {
-        final processingTime = DateTime.now().difference(startTime).inMilliseconds;
+        final processingTime =
+            DateTime.now().difference(startTime).inMilliseconds;
         await ShareAnalyticsService.trackSharePerformance(
           contentType: contentType,
           contentId: contentId,
@@ -155,7 +156,7 @@ class RichShareService {
           errorMessage: e.toString(),
         );
       }
-      
+
       rethrow;
     }
   }
@@ -172,7 +173,7 @@ class RichShareService {
         text: text,
         subject: subject ?? 'Từ SABO ARENA',
       );
-      
+
       return result;
     } catch (e) {
       rethrow;
@@ -191,10 +192,8 @@ class RichShareService {
           // deleted++;
         }
       }
-      
     } catch (e) {
       // Ignore cleanup errors
     }
   }
 }
-

@@ -173,142 +173,142 @@ class AppTypography {
   // ============================================================================
 
   static TextStyle display1({Color? color}) => TextStyle(
-    fontSize: 57,
-    fontWeight: FontWeight.w400,
-    letterSpacing: -0.25,
-    height: 1.12,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 57,
+        fontWeight: FontWeight.w400,
+        letterSpacing: -0.25,
+        height: 1.12,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle display2({Color? color}) => TextStyle(
-    fontSize: 45,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0,
-    height: 1.16,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 45,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+        height: 1.16,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   // ============================================================================
   // Heading Styles
   // ============================================================================
 
   static TextStyle h1({Color? color}) => TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    letterSpacing: 0,
-    height: 1.25,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0,
+        height: 1.25,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle h2({Color? color}) => TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    letterSpacing: 0,
-    height: 1.29,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0,
+        height: 1.29,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle h3({Color? color}) => TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-    height: 1.33,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0,
+        height: 1.33,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle h4({Color? color}) => TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.15,
-    height: 1.4,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.15,
+        height: 1.4,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle h5({Color? color}) => TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.15,
-    height: 1.44,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.15,
+        height: 1.44,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle h6({Color? color}) => TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.15,
-    height: 1.5,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.15,
+        height: 1.5,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   // ============================================================================
   // Body Styles
   // ============================================================================
 
   static TextStyle bodyLarge({Color? color}) => TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.5,
-    height: 1.5,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        letterSpacing: 0.5,
+        height: 1.5,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle bodyMedium({Color? color}) => TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.25,
-    height: 1.43,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+        letterSpacing: 0.25,
+        height: 1.43,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle bodySmall({Color? color}) => TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.4,
-    height: 1.33,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 12,
+        fontWeight: FontWeight.normal,
+        letterSpacing: 0.4,
+        height: 1.33,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   // ============================================================================
   // Label Styles (Buttons, chips, etc.)
   // ============================================================================
 
   static TextStyle labelLarge({Color? color}) => TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.1,
-    height: 1.43,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.1,
+        height: 1.43,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle labelMedium({Color? color}) => TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.33,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.5,
+        height: 1.33,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   static TextStyle labelSmall({Color? color}) => TextStyle(
-    fontSize: 11,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.45,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 11,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.5,
+        height: 1.45,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   // ============================================================================
   // Special Styles
@@ -316,63 +316,63 @@ class AppTypography {
 
   /// For large statistic numbers
   static TextStyle statValue({Color? color}) => TextStyle(
-    fontSize: 36,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.5,
-    height: 1.2,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 36,
+        fontWeight: FontWeight.bold,
+        letterSpacing: -0.5,
+        height: 1.2,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   /// For stat labels/descriptions
   static TextStyle statLabel({Color? color}) => TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.33,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textSecondary,
-  );
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.5,
+        height: 1.33,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textSecondary,
+      );
 
   /// For card titles
   static TextStyle cardTitle({Color? color}) => TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.15,
-    height: 1.5,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textPrimary,
-  );
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.15,
+        height: 1.5,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textPrimary,
+      );
 
   /// For button text
   static TextStyle button({Color? color}) => TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
-    height: 1.43,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textOnPrimary,
-  );
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+        height: 1.43,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textOnPrimary,
+      );
 
   /// For caption text
   static TextStyle caption({Color? color}) => TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    letterSpacing: 0.4,
-    height: 1.33,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textSecondary,
-  );
+        fontSize: 12,
+        fontWeight: FontWeight.normal,
+        letterSpacing: 0.4,
+        height: 1.33,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textSecondary,
+      );
 
   /// For overline text (labels above content)
   static TextStyle overline({Color? color}) => TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 1.5,
-    height: 1.6,
-    fontFamily: fontFamily,
-    color: color ?? AppColors.textSecondary,
-  );
+        fontSize: 10,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 1.5,
+        height: 1.6,
+        fontFamily: fontFamily,
+        color: color ?? AppColors.textSecondary,
+      );
 }
 
 // ============================================================================

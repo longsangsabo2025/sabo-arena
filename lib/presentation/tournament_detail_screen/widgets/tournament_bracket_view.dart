@@ -8,7 +8,7 @@ import '../../../core/utils/rank_migration_helper.dart';
 class TournamentBracketView extends StatefulWidget {
   final String tournamentId;
   final String
-  format; // 'single_elimination', 'double_elimination', 'round_robin'
+      format; // 'single_elimination', 'double_elimination', 'round_robin'
   final int totalParticipants;
   final bool isEditable;
 
@@ -358,8 +358,8 @@ class _TournamentBracketViewState extends State<TournamentBracketView>
                 color: isEmpty
                     ? AppTheme.textDisabledLight
                     : (isWinner
-                          ? AppTheme.successLight
-                          : AppTheme.textPrimaryLight),
+                        ? AppTheme.successLight
+                        : AppTheme.textPrimaryLight),
               ),
             ),
           ),

@@ -334,10 +334,10 @@ class Breakpoints {
   // ============================================================================
 
   /// Get responsive value with iPad-specific options
-  /// 
+  ///
   /// This provides finer control for iPad sizes compared to the generic
   /// value() method. Use this when you need different values for each iPad model.
-  /// 
+  ///
   /// Usage:
   /// ```dart
   /// final padding = Breakpoints.valueIPad(
@@ -362,7 +362,7 @@ class Breakpoints {
     if (width >= Breakpoints.iPadPro11 && iPadPro != null) return iPadPro;
     if (width >= Breakpoints.iPadAir && iPadAir != null) return iPadAir;
     if (width >= Breakpoints.iPadMini && iPadMini != null) return iPadMini;
-    
+
     return mobile;
   }
 
@@ -460,7 +460,8 @@ extension BreakpointExtensions on BuildContext {
   // ============================================================================
 
   /// Get iPad-optimized horizontal padding
-  double get iPadHorizontalPadding => Breakpoints.getIPadHorizontalPadding(this);
+  double get iPadHorizontalPadding =>
+      Breakpoints.getIPadHorizontalPadding(this);
 
   /// Get iPad-optimized vertical padding
   double get iPadVerticalPadding => Breakpoints.getIPadVerticalPadding(this);

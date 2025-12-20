@@ -13,7 +13,6 @@ class ClubSpaService {
   /// Get SPA balance for a specific club
   Future<Map<String, dynamic>?> getClubSpaBalance(String clubId) async {
     try {
-
       final response = await _supabase
           .from('club_spa_balances')
           .select('*')
@@ -36,7 +35,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-
       // Try user_spa_balances first
       final response = await _supabase
           .from('user_spa_balances')
@@ -93,7 +91,6 @@ class ClubSpaService {
     int limit = 50,
   }) async {
     try {
-
       final response = await _supabase
           .from('spa_transactions')
           .select('*')
@@ -117,7 +114,6 @@ class ClubSpaService {
     String? description,
   }) async {
     try {
-
       // Call the database function to award SPA bonus
       final response = await _supabase.rpc(
         'award_spa_bonus',
@@ -142,7 +138,6 @@ class ClubSpaService {
   /// Get all available rewards for a club
   Future<List<Map<String, dynamic>>> getClubRewards(String clubId) async {
     try {
-
       final response = await _supabase
           .from('spa_rewards')
           .select('*')
@@ -168,7 +163,6 @@ class ClubSpaService {
     DateTime? validUntil,
   }) async {
     try {
-
       await _supabase.from('spa_rewards').insert({
         'club_id': clubId,
         'reward_name': rewardName,
@@ -194,7 +188,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-
       // Get reward details first
       final reward = await _supabase
           .from('spa_rewards')
@@ -221,7 +214,6 @@ class ClubSpaService {
 
       // Generate redemption code
       final redemptionCode = _generateRedemptionCode();
-      
 
       // Create redemption record first (before deducting SPA)
       final redemption = await _supabase
@@ -237,7 +229,6 @@ class ClubSpaService {
           })
           .select()
           .single();
-
 
       // 🎯 NEW: Create user_voucher record so user can actually use the voucher
       final userVoucher = await _supabase
@@ -274,31 +265,25 @@ class ClubSpaService {
           .select()
           .single();
 
-
       // Update redemption record with voucher_id link
       await _supabase
           .from('spa_reward_redemptions')
-          .update({'voucher_id': userVoucher['id']})
-          .eq('id', redemption['id']);
+          .update({'voucher_id': userVoucher['id']}).eq('id', redemption['id']);
 
-
-      // Now deduct SPA from user balance 
-      final currentBalance = userBalance['spa_balance'] ?? userBalance['spa_points'] ?? 0;
+      // Now deduct SPA from user balance
+      final currentBalance =
+          userBalance['spa_balance'] ?? userBalance['spa_points'] ?? 0;
       final newBalance = currentBalance - reward['spa_cost'];
-      
+
       await _supabase
           .from('users')
-          .update({'spa_points': newBalance})
-          .eq('id', userId);
-
+          .update({'spa_points': newBalance}).eq('id', userId);
 
       // Update reward quantity
       final currentAvailable = (reward['available_quantity'] ?? 0) as int;
       if (currentAvailable > 0) {
-        await _supabase
-            .from('spa_rewards')
-            .update({'available_quantity': currentAvailable - 1})
-            .eq('id', rewardId);
+        await _supabase.from('spa_rewards').update(
+            {'available_quantity': currentAvailable - 1}).eq('id', rewardId);
       }
 
       // Record transaction
@@ -315,7 +300,6 @@ class ClubSpaService {
         'created_by': userId,
       });
 
-
       return {
         'success': true,
         'redemption': redemption,
@@ -325,12 +309,16 @@ class ClubSpaService {
         'reward_name': reward['reward_name'],
         'spa_spent': reward['spa_cost'],
         'voucher_id': userVoucher['id'],
-        'message': 'Đã tạo voucher thành công! Bạn có thể sử dụng ngay tại quán.',
+        'message':
+            'Đã tạo voucher thành công! Bạn có thể sử dụng ngay tại quán.',
       };
     } catch (e) {
       // If there's an error, we should try to rollback any changes made
       // But for now, just return the error
-      return {'success': false, 'error': 'Failed to redeem reward: ${e.toString()}'};
+      return {
+        'success': false,
+        'error': 'Failed to redeem reward: ${e.toString()}'
+      };
     }
   }
 
@@ -348,7 +336,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-
       final response = await _supabase
           .from('spa_reward_redemptions')
           .select('''
@@ -376,7 +363,6 @@ class ClubSpaService {
     String description,
   ) async {
     try {
-
       final response = await _supabase.rpc(
         'add_spa_to_club',
         params: {
@@ -402,7 +388,6 @@ class ClubSpaService {
     int limit = 100,
   }) async {
     try {
-
       final response = await _supabase
           .from('spa_transactions')
           .select('''
@@ -469,22 +454,19 @@ class ClubSpaService {
   /// Get all SPA transactions across the system (admin only)
   Future<List<Map<String, dynamic>>> getAllSpaTransactions() async {
     try {
-      final response = await _supabase
-          .from('spa_transactions')
-          .select('''
+      final response = await _supabase.from('spa_transactions').select('''
             *,
             club:clubs!spa_transactions_club_id_fkey(name),
             user:users!spa_transactions_user_id_fkey(full_name)
-          ''')
-          .order('created_at', ascending: false)
-          .limit(100);
+          ''').order('created_at', ascending: false).limit(100);
 
       final enrichedTransactions = response
           .map(
             (transaction) => {
               ...transaction,
               'club_name': transaction['club']?['name'],
-              'user_name': transaction['user']?['display_name'] ?? transaction['user']?['full_name'],
+              'user_name': transaction['user']?['display_name'] ??
+                  transaction['user']?['full_name'],
             },
           )
           .toList();
@@ -500,10 +482,7 @@ class ClubSpaService {
     try {
       final results = await Future.wait([
         // Total allocated SPA
-        _supabase
-            .from('club_spa_balances')
-            .select('total_spa_allocated')
-            .then(
+        _supabase.from('club_spa_balances').select('total_spa_allocated').then(
               (response) => response.fold<double>(
                 0,
                 (sum, item) =>
@@ -512,10 +491,7 @@ class ClubSpaService {
             ),
 
         // Total spent SPA
-        _supabase
-            .from('club_spa_balances')
-            .select('spent_spa')
-            .then(
+        _supabase.from('club_spa_balances').select('spent_spa').then(
               (response) => response.fold<double>(
                 0,
                 (sum, item) => sum + (item['spent_spa'] as double? ?? 0),
@@ -523,10 +499,7 @@ class ClubSpaService {
             ),
 
         // Total available SPA
-        _supabase
-            .from('club_spa_balances')
-            .select('available_spa')
-            .then(
+        _supabase.from('club_spa_balances').select('available_spa').then(
               (response) => response.fold<double>(
                 0,
                 (sum, item) => sum + (item['available_spa'] as double? ?? 0),
@@ -601,7 +574,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-
       final response = await _supabase
           .from('spa_reward_redemptions')
           .select('''
@@ -653,7 +625,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-
       // Verify this redemption belongs to the club
       final verification = await _supabase
           .from('spa_reward_redemptions')
@@ -688,13 +659,10 @@ class ClubSpaService {
       }
 
       // Update status to delivered
-      await _supabase
-          .from('spa_reward_redemptions')
-          .update({
-            'status': 'delivered',
-            'delivered_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', redemptionId);
+      await _supabase.from('spa_reward_redemptions').update({
+        'status': 'delivered',
+        'delivered_at': DateTime.now().toIso8601String(),
+      }).eq('id', redemptionId);
 
       return {
         'success': true,
@@ -713,7 +681,6 @@ class ClubSpaService {
     String clubId,
   ) async {
     try {
-
       final response = await _supabase
           .from('spa_reward_redemptions')
           .select('''
@@ -752,7 +719,6 @@ class ClubSpaService {
     int limit = 50,
   }) async {
     try {
-
       final response = await _supabase
           .from('spa_reward_redemptions')
           .select('''
@@ -786,4 +752,3 @@ class ClubSpaService {
     }
   }
 }
-

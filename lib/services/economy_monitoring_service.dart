@@ -13,7 +13,6 @@ class EconomyMonitoringService {
   /// Get comprehensive economy statistics
   Future<Map<String, dynamic>> getEconomyStats() async {
     try {
-
       // Get total SPA in circulation
       final spaCirculation = await _getTotalSPACirculation();
 
@@ -49,10 +48,7 @@ class EconomyMonitoringService {
   /// Get total SPA points in circulation
   Future<Map<String, dynamic>> _getTotalSPACirculation() async {
     // Total SPA owned by all users
-    final userSPA = await _supabase
-        .from('users')
-        .select('spa_points')
-        .then(
+    final userSPA = await _supabase.from('users').select('spa_points').then(
           (data) => data.fold<int>(
             0,
             (sum, user) => sum + ((user['spa_points'] as int?) ?? 0),
@@ -176,12 +172,10 @@ class EconomyMonitoringService {
     final top1Count = (totalUsers * 0.01).ceil();
     final top10Count = (totalUsers * 0.10).ceil();
 
-    final top1SPA = spaList
-        .take(top1Count)
-        .fold<int>(0, (sum, spa) => sum + spa);
-    final top10SPA = spaList
-        .take(top10Count)
-        .fold<int>(0, (sum, spa) => sum + spa);
+    final top1SPA =
+        spaList.take(top1Count).fold<int>(0, (sum, spa) => sum + spa);
+    final top10SPA =
+        spaList.take(top10Count).fold<int>(0, (sum, spa) => sum + spa);
 
     // Median
     final median = spaList[totalUsers ~/ 2];
@@ -226,9 +220,8 @@ class EconomyMonitoringService {
       'status': status,
       'velocity': velocity.toStringAsFixed(3),
       'concentration': concentration.toStringAsFixed(2),
-      'inflation_risk': velocity > 0.5
-          ? 'high'
-          : (velocity > 0.3 ? 'medium' : 'low'),
+      'inflation_risk':
+          velocity > 0.5 ? 'high' : (velocity > 0.3 ? 'medium' : 'low'),
       'recommendation': _getRecommendation(
         status,
         velocity.toDouble(),
@@ -336,4 +329,3 @@ class EconomyMonitoringService {
     return alerts;
   }
 }
-

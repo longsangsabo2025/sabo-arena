@@ -323,7 +323,9 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                           shape: BoxShape.circle,
                         ),
                         child: Text(
-                          '${room.unreadCount > 99 ? '99+' : room.unreadCount}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          '${room.unreadCount > 99 ? '99+' : room.unreadCount}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -342,18 +344,23 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                       children: [
                         Expanded(
                           child: Text(
-                            room.name, style: Theme.of(context).textTheme.titleSmall
+                            room.name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
                                 ?.copyWith(fontWeight: FontWeight.w600),
                           ),
                         ),
                         if (room.lastMessage != null)
                           Text(
                             _formatTime(room.lastMessage!.timestamp),
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface
-                                      .withValues(alpha: 0.6),
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.6),
+                                    ),
                           ),
                       ],
                     ),
@@ -369,7 +376,11 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                         ),
                         SizedBox(width: 4),
                         Text(
-                          '${room.memberCount} thành viên', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall
+                          '${room.memberCount} thành viên',
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
                               ?.copyWith(
                                 color: Theme.of(
                                   context,
@@ -383,16 +394,20 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                       Text(
                         room.lastMessage!.content,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: room.unreadCount > 0
-                              ? Theme.of(context).colorScheme.onSurface
-                              : Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.6),
-                          fontWeight: room.unreadCount > 0
-                              ? FontWeight.w500
-                              : FontWeight.normal,
-                        ),
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: room.unreadCount > 0
+                                  ? Theme.of(context).colorScheme.onSurface
+                                  : Theme.of(
+                                      context,
+                                    )
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.6),
+                              fontWeight: room.unreadCount > 0
+                                  ? FontWeight.w500
+                                  : FontWeight.normal,
+                            ),
                       ),
                     ],
                   ],
@@ -449,12 +464,19 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          announcement.title, style: Theme.of(context).textTheme.titleSmall
+                          announcement.title,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Bởi ${announcement.author.displayName}', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall
+                          'Bởi ${announcement.author.displayName}',
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
                               ?.copyWith(
                                 color: Theme.of(
                                   context,
@@ -470,10 +492,10 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                       Text(
                         _formatDate(announcement.createdAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                       ),
                       if (!announcement.isRead)
                         Container(
@@ -493,7 +515,8 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
               Text(
                 announcement.content,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               if (announcement.tags.isNotEmpty) ...[
                 SizedBox(height: 8),
@@ -510,7 +533,8 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        tag, style: TextStyle(
+                        tag,
+                        style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w500,
@@ -569,30 +593,32 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        notification.title, style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: notification.isRead
-                              ? FontWeight.w500
-                              : FontWeight.w600,
-                        ),
+                        notification.title,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: notification.isRead
+                                  ? FontWeight.w500
+                                  : FontWeight.w600,
+                            ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         notification.content,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.8),
-                        ),
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.8),
+                            ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         _formatRelativeTime(notification.createdAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                       ),
                     ],
                   ),
@@ -632,19 +658,21 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
           ),
           SizedBox(height: 16),
           Text(
-            title, style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
           ),
           SizedBox(height: 8),
           Text(
-            subtitle, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.4),
-            ),
+            subtitle,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.4),
+                ),
           ),
         ],
       ),
@@ -683,8 +711,8 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
     return rooms.where((room) {
       return room.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           (room.lastMessage?.content.toLowerCase().contains(
-                _searchQuery.toLowerCase(),
-              ) ??
+                    _searchQuery.toLowerCase(),
+                  ) ??
               false);
     }).toList();
   }
@@ -693,11 +721,11 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
     if (_searchQuery.isEmpty) return announcements;
     return announcements.where((announcement) {
       return announcement.title.toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ||
+                _searchQuery.toLowerCase(),
+              ) ||
           announcement.content.toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ||
+                _searchQuery.toLowerCase(),
+              ) ||
           announcement.tags.any(
             (tag) => tag.toLowerCase().contains(_searchQuery.toLowerCase()),
           );
@@ -708,11 +736,11 @@ class _MemberCommunicationScreenState extends State<MemberCommunicationScreen>
     if (_searchQuery.isEmpty) return notifications;
     return notifications.where((notification) {
       return notification.title.toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ||
+                _searchQuery.toLowerCase(),
+              ) ||
           notification.content.toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          );
+                _searchQuery.toLowerCase(),
+              );
     }).toList();
   }
 

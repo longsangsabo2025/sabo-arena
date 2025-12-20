@@ -4,6 +4,7 @@ import '../../../../models/tournament.dart';
 import '../../../../models/club.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../utils/production_logger.dart';
+import '../../../../widgets/common/app_button.dart';
 import '../../../shared/widgets/tournament_card_widget.dart';
 
 class ClubTournamentsTab extends StatelessWidget {
@@ -36,7 +37,7 @@ class ClubTournamentsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     // Filter tournaments based on selected filter
     final filteredTournaments = filter == 'Tất cả'
         ? tournaments
@@ -79,10 +80,13 @@ class ClubTournamentsTab extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              ElevatedButton.icon(
+              AppButton(
+                label: 'Thử lại',
+                type: AppButtonType.primary,
+                size: AppButtonSize.medium,
+                icon: Icons.refresh,
+                iconTrailing: false,
                 onPressed: onRefresh,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Thử lại'),
               ),
             ],
           ),
@@ -101,9 +105,11 @@ class ClubTournamentsTab extends StatelessWidget {
               const SizedBox(width: 8),
               _buildFilterChip('Sắp tới', filter == 'Sắp tới', colorScheme),
               const SizedBox(width: 8),
-              _buildFilterChip('Đang diễn ra', filter == 'Đang diễn ra', colorScheme),
+              _buildFilterChip(
+                  'Đang diễn ra', filter == 'Đang diễn ra', colorScheme),
               const SizedBox(width: 8),
-              _buildFilterChip('Đã kết thúc', filter == 'Đã kết thúc', colorScheme),
+              _buildFilterChip(
+                  'Đã kết thúc', filter == 'Đã kết thúc', colorScheme),
             ],
           ),
         ),
@@ -141,14 +147,16 @@ class ClubTournamentsTab extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final tournament = filteredTournaments[index];
                     final cardData = _convertTournamentToCardData(tournament);
-                    
+
                     // Show delete button if user is club owner
                     return Stack(
                       children: [
                         TournamentCardWidget(
                           tournamentMap: cardData,
                           onTap: () {
-                            ProductionLogger.info('🎯 Tournament tapped: ${tournament.id} - ${tournament.title}', tag: 'club_detail_section');
+                            ProductionLogger.info(
+                                '🎯 Tournament tapped: ${tournament.id} - ${tournament.title}',
+                                tag: 'club_detail_section');
                             // Navigate to tournament detail (tap on card)
                             Navigator.pushNamed(
                               context,
@@ -160,7 +168,9 @@ class ClubTournamentsTab extends StatelessWidget {
                             );
                           },
                           onDetailTap: () {
-                            ProductionLogger.info('🎯 Tournament detail button tapped: ${tournament.id}', tag: 'club_detail_section');
+                            ProductionLogger.info(
+                                '🎯 Tournament detail button tapped: ${tournament.id}',
+                                tag: 'club_detail_section');
                             // Navigate to tournament detail (tap on Detail button)
                             Navigator.pushNamed(
                               context,
@@ -172,7 +182,9 @@ class ClubTournamentsTab extends StatelessWidget {
                             );
                           },
                           onResultTap: () {
-                            ProductionLogger.info('🎯 Tournament result button tapped: ${tournament.id}', tag: 'club_detail_section');
+                            ProductionLogger.info(
+                                '🎯 Tournament result button tapped: ${tournament.id}',
+                                tag: 'club_detail_section');
                             // Navigate to tournament results (tap on Kết quả button)
                             Navigator.pushNamed(
                               context,
@@ -187,8 +199,12 @@ class ClubTournamentsTab extends StatelessWidget {
                           onShareTap: () {
                             // TODO: Implement share tournament
                           },
-                          onDelete: isClubOwner ? () => onDeleteTournament(tournament) : null,
-                          onHide: isClubOwner ? () => onHideTournament(tournament) : null,
+                          onDelete: isClubOwner
+                              ? () => onDeleteTournament(tournament)
+                              : null,
+                          onHide: isClubOwner
+                              ? () => onHideTournament(tournament)
+                              : null,
                         ),
                       ],
                     );
@@ -215,9 +231,8 @@ class ClubTournamentsTab extends StatelessWidget {
       selectedColor: colorScheme.primaryContainer,
       labelStyle: TextStyle(
         fontSize: 12,
-        color: isSelected
-            ? colorScheme.onPrimaryContainer
-            : colorScheme.onSurface,
+        color:
+            isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
       ),
     );
   }
@@ -237,35 +252,58 @@ class ClubTournamentsTab extends StatelessWidget {
 
     // Format date
     String dateStr = '';
-    final weekday = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][tournament.startDate.weekday % 7];
+    final weekday = [
+      'CN',
+      'T2',
+      'T3',
+      'T4',
+      'T5',
+      'T6',
+      'T7'
+    ][tournament.startDate.weekday % 7];
     dateStr = '${DateFormat('dd/MM').format(tournament.startDate)} - $weekday';
 
     // Format time
     String timeStr = DateFormat('HH:mm').format(tournament.startDate);
 
     // Format players count
-    String playersCount = '${tournament.currentParticipants}/${tournament.maxParticipants}';
+    String playersCount =
+        '${tournament.currentParticipants}/${tournament.maxParticipants}';
 
     // Prize pool (convert double to formatted string)
-    String prizePool = tournament.prizePool > 0 
-        ? '${(tournament.prizePool / 1000000).toStringAsFixed(1)}M VNĐ' 
+    String prizePool = tournament.prizePool > 0
+        ? '${(tournament.prizePool / 1000000).toStringAsFixed(1)}M VNĐ'
         : 'Chưa có';
 
-    // Rating/Rank requirement
-    String rating = tournament.skillLevelRequired ?? 'Tất cả';
+    // Rating/Rank requirement - use minRank/maxRank
+    String rating;
+    if (tournament.minRank != null && tournament.maxRank != null) {
+      if (tournament.minRank == tournament.maxRank) {
+        rating = 'Hạng ${tournament.minRank}';
+      } else {
+        rating = 'Hạng ${tournament.minRank} - ${tournament.maxRank}';
+      }
+    } else if (tournament.minRank != null) {
+      rating = 'Hạng ${tournament.minRank}+';
+    } else if (tournament.maxRank != null) {
+      rating = 'Hạng ${tournament.maxRank}-';
+    } else {
+      rating = tournament.skillLevelRequired ?? 'Tất cả';
+    }
 
     // Mạng count (use 2 as default since not in model)
     int mangCount = 2;
 
     // Is live?
     bool isLive = tournament.status == 'ongoing';
-    
+
     // ✅ Get prize breakdown from prize_distribution
     Map<String, String>? prizeBreakdown;
     final prizeDistribution = tournament.prizeDistribution;
     if (prizeDistribution != null) {
       // Check for text-based format (first, second, third keys)
-      if (prizeDistribution.containsKey('first') && prizeDistribution['first'] is String) {
+      if (prizeDistribution.containsKey('first') &&
+          prizeDistribution['first'] is String) {
         prizeBreakdown = {
           'first': prizeDistribution['first'] as String,
           if (prizeDistribution['second'] != null)
@@ -293,7 +331,8 @@ class ClubTournamentsTab extends StatelessWidget {
       'tournamentType': tournament.tournamentType,
       // 🚀 ELON STYLE: Pass missing fields for smart badge logic
       'registrationDeadline': tournament.registrationDeadline.toIso8601String(),
-      'entryFee': tournament.entryFee > 0 ? '${tournament.entryFee} VNĐ' : 'Miễn phí',
+      'entryFee':
+          tournament.entryFee > 0 ? '${tournament.entryFee} VNĐ' : 'Miễn phí',
       'venue': tournament.venueAddress ?? club.address,
     };
   }

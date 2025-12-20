@@ -90,9 +90,8 @@ class NotificationAnalyticsService {
 
       final totalSent = notifications.length;
       final totalRead = notifications.where((n) => n['is_read'] == true).length;
-      final totalClicked = notifications
-          .where((n) => n['clicked_at'] != null)
-          .length;
+      final totalClicked =
+          notifications.where((n) => n['clicked_at'] != null).length;
 
       return NotificationTypeAnalytics(
         type: type,
@@ -126,7 +125,8 @@ class NotificationAnalyticsService {
         'metadata': metadata,
       });
     } catch (e) {
-      ProductionLogger.warning('Failed to track notification sent', error: e, tag: 'NotificationAnalyticsService');
+      ProductionLogger.warning('Failed to track notification sent',
+          error: e, tag: 'NotificationAnalyticsService');
     }
   }
 
@@ -139,7 +139,8 @@ class NotificationAnalyticsService {
         'timestamp': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      ProductionLogger.warning('Failed to track notification read', error: e, tag: 'NotificationAnalyticsService');
+      ProductionLogger.warning('Failed to track notification read',
+          error: e, tag: 'NotificationAnalyticsService');
     }
   }
 
@@ -157,7 +158,8 @@ class NotificationAnalyticsService {
         'metadata': {'action_id': actionId, ...?metadata},
       });
     } catch (e) {
-      ProductionLogger.warning('Failed to track notification click', error: e, tag: 'NotificationAnalyticsService');
+      ProductionLogger.warning('Failed to track notification click',
+          error: e, tag: 'NotificationAnalyticsService');
     }
   }
 
@@ -516,4 +518,3 @@ class DailyTrend {
     );
   }
 }
-

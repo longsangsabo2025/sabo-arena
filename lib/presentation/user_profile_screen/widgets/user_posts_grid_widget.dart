@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../../models/post_model.dart';
 import '../../../services/post_repository.dart';
 import '../../../widgets/post_background_card.dart';
@@ -8,6 +9,7 @@ import '../../../models/post_background_theme.dart';
 import '../../post_detail_screen/post_detail_screen.dart';
 import '../../widgets/custom_video_player.dart'; // Video player widgets
 import '../../home_feed_screen/widgets/create_post_modal_widget.dart';
+import '../../../widgets/common/app_button.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // ELON_MODE_AUTO_FIX
 
@@ -31,14 +33,14 @@ class UserPostsGridWidget extends StatefulWidget {
 
 class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
   final PostRepository _postRepository = PostRepository();
-  List<PostModel> _userPosts = [];
-  bool _isLoading = true;
+  final PagingController<int, PostModel> _pagingController =
+      PagingController(firstPageKey: 0);
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _loadUserPosts();
+    _pagingController.addPageRequestListener(_fetchPostsPage);
   }
 
   @override
@@ -47,37 +49,27 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
     // Reload khi userId hoặc filterType thay đổi
     if (oldWidget.userId != widget.userId ||
         oldWidget.filterType != widget.filterType) {
-      _loadUserPosts();
+      _pagingController.refresh();
     }
   }
 
-  Future<void> _loadUserPosts() async {
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchPostsPage(int pageKey) async {
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-
       final allPosts = await _postRepository.getUserPostsByUserId(
         widget.userId,
-        limit: 100,
+        limit: 20,
+        offset: pageKey,
       );
-
-
-      // Debug: Print first few posts to see their image data
-      if (allPosts.isNotEmpty) {
-        for (int i = 0; i < (allPosts.length > 3 ? 3 : allPosts.length); i++) {
-        }
-      } else {
-      }
 
       // Apply filter based on filterType
       List<PostModel> filteredPosts;
-      
-      // Debug: Print filter breakdown
-      // Count logic removed - variables were unused
-      
+
       switch (widget.filterType ?? PostFilterType.textOnly) {
         case PostFilterType.textOnly:
           // Chỉ lấy posts text (không có ảnh và video)
@@ -99,7 +91,6 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
           break;
         case PostFilterType.videosOnly:
           // Chỉ lấy posts có video_url (YouTube link) VÀ KHÔNG có ảnh
-          // (để phân biệt video thuần túy với bài post có kèm video)
           filteredPosts = allPosts
               .where(
                 (post) =>
@@ -110,21 +101,21 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
           break;
       }
 
-
-      if (mounted) {
-        setState(() {
-          _userPosts = filteredPosts;
-          _isLoading = false;
-        });
+      final isLastPage = allPosts.length < 20;
+      if (isLastPage) {
+        _pagingController.appendLastPage(filteredPosts);
+      } else {
+        final nextPageKey = pageKey + allPosts.length;
+        _pagingController.appendPage(filteredPosts, nextPageKey);
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = 'Không thể tải bài đăng: $e';
-        });
-      }
+      _errorMessage = 'Không thể tải bài đăng: $e';
+      _pagingController.error = e;
     }
+  }
+
+  Future<void> _loadUserPosts() async {
+    _pagingController.refresh();
   }
 
   void _openPostDetail(PostModel post, int index) {
@@ -164,18 +155,33 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const SliverToBoxAdapter(
-        child: Padding(
+    return PagedSliverGrid<int, PostModel>(
+      pagingController: _pagingController,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 2,
+        mainAxisSpacing: 2,
+        childAspectRatio: 3 / 4,
+      ),
+      builderDelegate: PagedChildBuilderDelegate<PostModel>(
+        itemBuilder: (context, post, index) {
+          // First item is create post card
+          if (index == 0) {
+            return _buildCreatePostCard();
+          }
+          return _buildPostGridItem(post, index);
+        },
+        firstPageProgressIndicatorBuilder: (context) => const Padding(
           padding: EdgeInsets.all(40.0),
           child: Center(child: CircularProgressIndicator()),
         ),
-      );
-    }
-
-    if (_errorMessage != null) {
-      return SliverToBoxAdapter(
-        child: Padding(
+        newPageProgressIndicatorBuilder: (context) => const Center(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        firstPageErrorIndicatorBuilder: (context) => Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
             child: Column(
@@ -183,62 +189,26 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
                 Text(
-                  _errorMessage!,
+                  _errorMessage ?? 'Có lỗi xảy ra',
                   style: const TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
+                AppButton(
+                  label: 'Thử lại',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.medium,
                   onPressed: _loadUserPosts,
-                  child: const Text('Thử lại'),
                 ),
               ],
             ),
           ),
         ),
-      );
-    }
-
-    if (_userPosts.isEmpty) {
-      // Nếu chưa có posts, chỉ hiển thị create post card
-      return SliverPadding(
-        padding: const EdgeInsets.all(2.0),
-        sliver: SliverGrid(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 2,
-            childAspectRatio: 3 / 4,
+        noItemsFoundIndicatorBuilder: (context) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(40.0),
+            child: _buildCreatePostCard(),
           ),
-          delegate: SliverChildBuilderDelegate(
-            (context, index) => _buildCreatePostCard(),
-            childCount: 1,
-          ),
-        ),
-      );
-    }
-
-    // Grid layout with 3:4 aspect ratio + Create Post card at first position
-    return SliverPadding(
-      padding: const EdgeInsets.all(2.0),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 2,
-          mainAxisSpacing: 2,
-          childAspectRatio: 3 / 4, // Portrait aspect ratio (3:4)
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            // First item is create post card
-            if (index == 0) {
-              return _buildCreatePostCard();
-            }
-            // Subsequent items are actual posts (index - 1)
-            final post = _userPosts[index - 1];
-            return _buildPostGridItem(post, index - 1);
-          },
-          childCount: _userPosts.length + 1, // +1 for create post card
         ),
       ),
     );
@@ -257,7 +227,10 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
               Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
             ],
           ),
-          border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: 0.5),
+          border: Border.all(
+              color:
+                  Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              width: 0.5),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Column(
@@ -306,7 +279,10 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: 0.5),
+          border: Border.all(
+              color:
+                  Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,41 +305,52 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                         },
                       )
                     : hasImage
-                    ? CachedNetworkImage(
-                        imageUrl: post.imageUrl!,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                        ? CachedNetworkImage(
+                            imageUrl: post.imageUrl!,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHigh,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.4),
+                                  ),
+                                ),
                               ),
                             ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHigh,
+                              child: Icon(
+                                Icons.broken_image,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.4),
+                                size: 32,
+                              ),
+                            ),
+                          )
+                        : FutureBuilder<PostBackgroundTheme>(
+                            future:
+                                PostBackgroundService.instance.getThemeForPost(
+                              postId: post.id,
+                            ),
+                            builder: (context, snapshot) {
+                              return PostBackgroundCardCompact(
+                                content: post.content,
+                                theme: snapshot.data,
+                                onTap: () => _openPostDetail(post, index),
+                              );
+                            },
                           ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                          child: Icon(
-                            Icons.broken_image,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                            size: 32,
-                          ),
-                        ),
-                      )
-                    : FutureBuilder<PostBackgroundTheme>(
-                        future: PostBackgroundService.instance.getThemeForPost(
-                          postId: post.id,
-                        ),
-                        builder: (context, snapshot) {
-                          return PostBackgroundCardCompact(
-                            content: post.content,
-                            theme: snapshot.data,
-                            onTap: () => _openPostDetail(post, index),
-                          );
-                        },
-                      ),
               ),
             ),
 
@@ -401,13 +388,19 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
                         Icon(
                           Icons.favorite_border,
                           size: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
                         ),
                         const SizedBox(width: 2),
                         Text(
                           _formatCount(post.likeCount),
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.7),
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                           ),
@@ -448,4 +441,3 @@ class _UserPostsGridWidgetState extends State<UserPostsGridWidget> {
     return count.toString();
   }
 }
-

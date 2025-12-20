@@ -163,18 +163,21 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    title, style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    title,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             Text(
-              value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              value,
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
-              subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+              subtitle,
+              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
             ),
           ],
         ),
@@ -195,7 +198,9 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '👥 Thống kê thành viên', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '👥 Thống kê thành viên',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildStatRow('Tổng thành viên', '${stats['total_members']}'),
@@ -205,11 +210,12 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
               'Thành viên mới (30d)',
               '${stats['new_members_30d']}',
             ),
-
             if (rankDist != null && rankDist.isNotEmpty) ...[
               const Divider(height: 24),
               const Text(
-                'Phân bố hạng:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
+                'Phân bố hạng:',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               ...rankDist.entries.map(
@@ -234,7 +240,9 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '🏆 Thống kê giải đấu', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '🏆 Thống kê giải đấu',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildStatRow('Tổng giải đấu', '${stats['total_tournaments']}'),
@@ -265,7 +273,9 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '💰 Doanh thu', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '💰 Doanh thu',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildStatRow(
@@ -302,7 +312,9 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '📊 Tương tác', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '📊 Tương tác',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildStatRow('Tổng bài viết', '${stats['total_posts']}'),
@@ -327,7 +339,9 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              '⭐ Top thành viên', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '⭐ Top thành viên',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ListView.separated(
@@ -349,7 +363,9 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
                     'Rank: ${member['rank'] ?? 'N/A'} | ELO: ${member['elo_rating'] ?? 0}',
                   ),
                   trailing: Text(
-                    '${member['total_wins'] ?? 0} thắng', overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold),
+                    '${member['total_wins'] ?? 0} thắng',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 );
               },
@@ -378,7 +394,9 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Thành viên mới:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
+              'Thành viên mới:',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             ...memberGrowth.entries.map(
@@ -398,7 +416,8 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
         children: [
           Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: valueColor ?? Colors.black87,
@@ -409,4 +428,3 @@ class _ClubAnalyticsScreenState extends State<ClubAnalyticsScreen> {
     );
   }
 }
-

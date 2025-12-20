@@ -20,19 +20,23 @@ class TournamentPrizeVoucherService {
           .eq('tournament_id', tournamentId);
 
       // Insert prize configs
-      final prizeData = prizes.map((prize) => {
-            'tournament_id': tournamentId,
-            'position': prize.position,
-            'position_label': prize.positionLabel,
-            'voucher_value': prize.voucherValue,
-            'voucher_code_prefix': prize.codePrefix,
-            'voucher_description': prize.description,
-            'valid_days': prize.validDays,
-          }).toList();
+      final prizeData = prizes
+          .map((prize) => {
+                'tournament_id': tournamentId,
+                'position': prize.position,
+                'position_label': prize.positionLabel,
+                'voucher_value': prize.voucherValue,
+                'voucher_code_prefix': prize.codePrefix,
+                'voucher_description': prize.description,
+                'valid_days': prize.validDays,
+              })
+          .toList();
 
       await _supabase.from('tournament_prize_vouchers').insert(prizeData);
 
-      ProductionLogger.info('Setup ${prizes.length} prize vouchers for tournament', tag: 'TournamentPrizeVoucher');
+      ProductionLogger.info(
+          'Setup ${prizes.length} prize vouchers for tournament',
+          tag: 'TournamentPrizeVoucher');
     } catch (e, stackTrace) {
       StandardizedErrorHandler.handleError(
         e,
@@ -42,7 +46,8 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi thiết lập voucher giải thưởng',
         ),
       );
-      ProductionLogger.error('Lỗi khi thiết lập voucher giải thưởng', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi thiết lập voucher giải thưởng',
+          error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -68,7 +73,8 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi lấy danh sách voucher giải thưởng',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy danh sách voucher giải thưởng', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách voucher giải thưởng',
+          error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -110,7 +116,11 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi lấy danh sách voucher giải thưởng của CLB',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy danh sách voucher giải thưởng của CLB', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error(
+          'Lỗi khi lấy danh sách voucher giải thưởng của CLB',
+          error: e,
+          stackTrace: stackTrace,
+          tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -139,7 +149,8 @@ class TournamentPrizeVoucherService {
       final responseInfo = response is Map
           ? 'response keys: ${(response).keys.join(", ")}'
           : 'response type: ${response.runtimeType}';
-      ProductionLogger.debug('AFTER RPC CALL: $responseInfo', tag: 'TournamentPrizeVoucher');
+      ProductionLogger.debug('AFTER RPC CALL: $responseInfo',
+          tag: 'TournamentPrizeVoucher');
 
       ProductionLogger.info(
         'Issued prize voucher for position $position - Voucher code: ${response['voucher_code']}, Value: ${response['voucher_value']} VND',
@@ -156,7 +167,8 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi cấp voucher giải thưởng',
         ),
       );
-      ProductionLogger.error('Lỗi khi cấp voucher giải thưởng', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi cấp voucher giải thưởng',
+          error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -188,7 +200,8 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi lấy danh sách voucher thanh toán bàn',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy danh sách voucher thanh toán bàn', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy danh sách voucher thanh toán bàn',
+          error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -232,7 +245,8 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi áp dụng voucher',
         ),
       );
-      ProductionLogger.error('Lỗi khi áp dụng voucher', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi áp dụng voucher',
+          error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -263,7 +277,8 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi lấy lịch sử thanh toán',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy lịch sử thanh toán', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy lịch sử thanh toán',
+          error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }
@@ -294,7 +309,8 @@ class TournamentPrizeVoucherService {
           context: 'Lỗi khi lấy lịch sử thanh toán của CLB',
         ),
       );
-      ProductionLogger.error('Lỗi khi lấy lịch sử thanh toán của CLB', error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
+      ProductionLogger.error('Lỗi khi lấy lịch sử thanh toán của CLB',
+          error: e, stackTrace: stackTrace, tag: 'TournamentPrizeVoucher');
       rethrow;
     }
   }

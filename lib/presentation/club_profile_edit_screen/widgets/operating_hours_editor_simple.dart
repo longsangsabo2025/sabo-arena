@@ -61,7 +61,8 @@ class _OperatingHoursEditorState extends State<OperatingHoursEditor> {
             border: Border.all(color: Colors.grey[300]!),
           ),
           child: Column(
-            children: _daysOfWeek.map<Widget>((day) => _buildDayRow(day)).toList(),
+            children:
+                _daysOfWeek.map<Widget>((day) => _buildDayRow(day)).toList(),
           ),
         ),
       ],
@@ -69,8 +70,7 @@ class _OperatingHoursEditorState extends State<OperatingHoursEditor> {
   }
 
   Widget _buildDayRow(String day) {
-    final dayData =
-        _operatingHours[day] ??
+    final dayData = _operatingHours[day] ??
         {'open': '08:00', 'close': '22:00', 'isOpen': 'true'};
 
     final isOpen = dayData['isOpen'] == 'true';

@@ -28,9 +28,8 @@ class FormProgressIndicator extends StatelessWidget {
           Row(
             children: List.generate(totalSteps, (index) {
               final isActive = index == currentStep;
-              final isCompleted = stepCompleted.length > index
-                  ? stepCompleted[index]
-                  : false;
+              final isCompleted =
+                  stepCompleted.length > index ? stepCompleted[index] : false;
               final isPast = index < currentStep;
 
               return Expanded(
@@ -43,8 +42,8 @@ class FormProgressIndicator extends StatelessWidget {
                           color: isCompleted || isActive
                               ? Colors.green.shade600
                               : isPast
-                              ? Colors.orange.shade400
-                              : Colors.grey.shade300,
+                                  ? Colors.orange.shade400
+                                  : Colors.grey.shade300,
                           borderRadius: BorderRadius.circular(2.h),
                         ),
                       ),
@@ -63,9 +62,8 @@ class FormProgressIndicator extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(totalSteps, (index) {
               final isActive = index == currentStep;
-              final isCompleted = stepCompleted.length > index
-                  ? stepCompleted[index]
-                  : false;
+              final isCompleted =
+                  stepCompleted.length > index ? stepCompleted[index] : false;
               final isPast = index < currentStep;
 
               return Expanded(
@@ -78,10 +76,10 @@ class FormProgressIndicator extends StatelessWidget {
                         color: isCompleted
                             ? Colors.green.shade600
                             : isActive
-                            ? Colors.blue.shade600
-                            : isPast
-                            ? Colors.orange.shade400
-                            : Colors.grey.shade300,
+                                ? Colors.blue.shade600
+                                : isPast
+                                    ? Colors.orange.shade400
+                                    : Colors.grey.shade300,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -105,9 +103,8 @@ class FormProgressIndicator extends StatelessWidget {
                         color: isActive
                             ? Colors.blue.shade600
                             : Colors.grey.shade600,
-                        fontWeight: isActive
-                            ? FontWeight.w600
-                            : FontWeight.normal,
+                        fontWeight:
+                            isActive ? FontWeight.w600 : FontWeight.normal,
                       ),
                       textAlign: TextAlign.center,
                       maxLines: 2,
@@ -243,26 +240,24 @@ class ValidationFeedbackWidget extends StatelessWidget {
             ],
           ),
           SizedBox(height: 8.h),
-          ...items.entries
-              .map(
-                (entry) => Padding(
-                  padding: EdgeInsets.only(bottom: 4.h),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.circle, size: 6.w, color: color),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Text(
-                          '${entry.key}: ${entry.value}',
-                          style: TextStyle(fontSize: 13.w, color: color),
-                        ),
-                      ),
-                    ],
+          ...items.entries.map(
+            (entry) => Padding(
+              padding: EdgeInsets.only(bottom: 4.h),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.circle, size: 6.w, color: color),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Text(
+                      '${entry.key}: ${entry.value}',
+                      style: TextStyle(fontSize: 13.w, color: color),
+                    ),
                   ),
-                ),
-              )
-              ,
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -311,7 +306,8 @@ class EnhancedFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasError = errorText != null && errorText!.isNotEmpty;
-    final isEmpty = (controller?.text ?? value) == null || (controller?.text ?? value)!.isEmpty;
+    final isEmpty = (controller?.text ?? value) == null ||
+        (controller?.text ?? value)!.isEmpty;
     final showValidIcon = !isEmpty && isValid && !hasError;
 
     return Column(
@@ -332,8 +328,8 @@ class EnhancedFormField extends StatelessWidget {
               color: hasError
                   ? Colors.red.shade700
                   : isRequired && isEmpty
-                  ? Colors.orange.shade700
-                  : null,
+                      ? Colors.orange.shade700
+                      : null,
             ),
             hintText: hintText,
             helperText: helperText,
@@ -344,12 +340,11 @@ class EnhancedFormField extends StatelessWidget {
                     color: hasError
                         ? Colors.red.shade600
                         : showValidIcon
-                        ? Colors.green.shade600
-                        : null,
+                            ? Colors.green.shade600
+                            : null,
                   )
                 : null,
-            suffixIcon:
-                suffix ??
+            suffixIcon: suffix ??
                 (showValidIcon
                     ? Icon(
                         Icons.check_circle,
@@ -357,8 +352,9 @@ class EnhancedFormField extends StatelessWidget {
                         size: 20.w,
                       )
                     : hasError
-                    ? Icon(Icons.error, color: Colors.red.shade600, size: 20.w)
-                    : null),
+                        ? Icon(Icons.error,
+                            color: Colors.red.shade600, size: 20.w)
+                        : null),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -366,8 +362,8 @@ class EnhancedFormField extends StatelessWidget {
                 color: showValidIcon
                     ? Colors.green.shade300
                     : isRequired && isEmpty
-                    ? Colors.orange.shade300
-                    : Colors.grey.shade300,
+                        ? Colors.orange.shade300
+                        : Colors.grey.shade300,
               ),
             ),
             focusedBorder: OutlineInputBorder(

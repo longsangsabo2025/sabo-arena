@@ -92,8 +92,8 @@ class HardcodedSaboDE64Service {
     int? loserAdvancesTo,
     String? player1Id,
     String? player2Id,
-    int? player1SourceMatch,  // ✅ NEW: Track where player1 comes from
-    int? player2SourceMatch,  // ✅ NEW: Track where player2 comes from
+    int? player1SourceMatch, // ✅ NEW: Track where player1 comes from
+    int? player2SourceMatch, // ✅ NEW: Track where player2 comes from
     String? player1SourceType, // ✅ NEW: 'winner' or 'loser'
     String? player2SourceType, // ✅ NEW: 'winner' or 'loser'
   }) {
@@ -106,9 +106,9 @@ class HardcodedSaboDE64Service {
     );
 
     // Auto-detect status: if both players assigned, match is ready to play
-    final status = (player1Id != null && player2Id != null) 
-        ? 'in_progress'  // Both players → ready to play
-        : 'pending';     // Waiting for players
+    final status = (player1Id != null && player2Id != null)
+        ? 'in_progress' // Both players → ready to play
+        : 'pending'; // Waiting for players
 
     return {
       'tournament_id': tournamentId,
@@ -118,13 +118,17 @@ class HardcodedSaboDE64Service {
       'bracket_group': bracketGroup,
       'player1_id': player1Id,
       'player2_id': player2Id,
-      'winner_advances_to': winnerAdvancesTo != null ? 'M$winnerAdvancesTo' : null,
+      'winner_advances_to':
+          winnerAdvancesTo != null ? 'M$winnerAdvancesTo' : null,
       'loser_advances_to': loserAdvancesTo != null ? 'M$loserAdvancesTo' : null,
-      'player1_source_match': player1SourceMatch != null ? 'M$player1SourceMatch' : null, // ✅ NEW
-      'player2_source_match': player2SourceMatch != null ? 'M$player2SourceMatch' : null, // ✅ NEW
+      'player1_source_match':
+          player1SourceMatch != null ? 'M$player1SourceMatch' : null, // ✅ NEW
+      'player2_source_match':
+          player2SourceMatch != null ? 'M$player2SourceMatch' : null, // ✅ NEW
       'player1_source_type': player1SourceType, // ✅ NEW
       'player2_source_type': player2SourceType, // ✅ NEW
-      'status': status, // ✅ SMART STATUS: 'in_progress' if both players, else 'pending'
+      'status':
+          status, // ✅ SMART STATUS: 'in_progress' if both players, else 'pending'
       'stage_round': stageRound,
       'display_order': displayOrder,
       'round': roundName,
@@ -363,8 +367,14 @@ class HardcodedSaboDE64Service {
 
     // Group WB Round 1 (8 matches): X1101-X1108
     final wbR1Pairs = [
-      [0, 15], [7, 8], [3, 12], [4, 11],
-      [1, 14], [6, 9], [2, 13], [5, 10],
+      [0, 15],
+      [7, 8],
+      [3, 12],
+      [4, 11],
+      [1, 14],
+      [6, 9],
+      [2, 13],
+      [5, 10],
     ];
 
     for (var i = 0; i < wbR1Pairs.length; i++) {
@@ -392,7 +402,7 @@ class HardcodedSaboDE64Service {
 
     // Continue with WB Round 2, WB Round 3, LB-A, LB-B
     // (Implementation similar to DE32 but with group prefix)
-    
+
     // WB Round 2 (4 matches)
     for (int i = 0; i < 4; i++) {
       final displayOrder = (groupPrefix * 10000) + 1201 + i;
@@ -429,7 +439,8 @@ class HardcodedSaboDE64Service {
           stageRound: 3,
           displayOrder: displayOrder,
           winnerAdvancesTo: advancement['winner'], // To Cross Finals
-          loserAdvancesTo: advancement['loser'], // ✅ FIXED: To LB-B R3 (not eliminated!)
+          loserAdvancesTo:
+              advancement['loser'], // ✅ FIXED: To LB-B R3 (not eliminated!)
         ),
       );
       matchNumber++;
@@ -584,7 +595,7 @@ class HardcodedSaboDE64Service {
     // ========================================
     // GROUP A ADVANCEMENT (26 matches)
     // ========================================
-    
+
     // Group A - WB R1 (8 matches): winner to WB R2, loser to LB-A R1
     map[11101] = {'winner': 11201, 'loser': 12101};
     map[11102] = {'winner': 11201, 'loser': 12101};
@@ -602,8 +613,14 @@ class HardcodedSaboDE64Service {
     map[11204] = {'winner': 11302, 'loser': 13102};
 
     // Group A - WB R3 (2 matches - Group Finals): winners qualify for Cross R16, losers to LB-B R3
-    map[11301] = {'winner': 51101, 'loser': 13301}; // A1 (WB #1) vs B4 at R16-1, loser to LB-B R3
-    map[11302] = {'winner': 51102, 'loser': 13301}; // A2 (WB #2) vs C3 at R16-2, loser to LB-B R3
+    map[11301] = {
+      'winner': 51101,
+      'loser': 13301
+    }; // A1 (WB #1) vs B4 at R16-1, loser to LB-B R3
+    map[11302] = {
+      'winner': 51102,
+      'loser': 13301
+    }; // A2 (WB #2) vs C3 at R16-2, loser to LB-B R3
 
     // Group A - LB-A R1 (4 matches): winner to LB-A R2
     map[12101] = {'winner': 12201, 'loser': null};
@@ -623,10 +640,16 @@ class HardcodedSaboDE64Service {
     map[13102] = {'winner': 13201, 'loser': null};
 
     // Group A - LB-B R2 (1 match - LB-B Semi-Final): winner to LB-B R4
-    map[13201] = {'winner': 13401, 'loser': null}; // A-LB-B Semi-Final winner to LB-B R4
+    map[13201] = {
+      'winner': 13401,
+      'loser': null
+    }; // A-LB-B Semi-Final winner to LB-B R4
 
     // Group A - LB-B R3 (1 match - WB R3 Losers Match): winner to LB-B R4
-    map[13301] = {'winner': 13401, 'loser': null}; // WB R3 losers battle, winner to LB-B R4
+    map[13301] = {
+      'winner': 13401,
+      'loser': null
+    }; // WB R3 losers battle, winner to LB-B R4
 
     // Group A - LB-B R4 (1 match - LB-B Final): winner qualifies for Cross R16
     map[13401] = {'winner': 51107, 'loser': null}; // A4 (LB-B) vs D1 at R16-7
@@ -634,7 +657,7 @@ class HardcodedSaboDE64Service {
     // ========================================
     // GROUP B ADVANCEMENT (26 matches)
     // ========================================
-    
+
     // Group B - WB R1 (8 matches): winner to WB R2, loser to LB-A R1
     map[21101] = {'winner': 21201, 'loser': 22101};
     map[21102] = {'winner': 21201, 'loser': 22101};
@@ -652,8 +675,14 @@ class HardcodedSaboDE64Service {
     map[21204] = {'winner': 21302, 'loser': 23102};
 
     // Group B - WB R3 (2 matches - Group Finals): winners qualify for Cross R16, losers to LB-B R3
-    map[21301] = {'winner': 51103, 'loser': 23301}; // B1 (WB #1) vs A4 at R16-3, loser to LB-B R3
-    map[21302] = {'winner': 51104, 'loser': 23301}; // B2 (WB #2) vs D3 at R16-4, loser to LB-B R3
+    map[21301] = {
+      'winner': 51103,
+      'loser': 23301
+    }; // B1 (WB #1) vs A4 at R16-3, loser to LB-B R3
+    map[21302] = {
+      'winner': 51104,
+      'loser': 23301
+    }; // B2 (WB #2) vs D3 at R16-4, loser to LB-B R3
 
     // Group B - LB-A R1 (4 matches): winner to LB-A R2
     map[22101] = {'winner': 22201, 'loser': null};
@@ -673,10 +702,16 @@ class HardcodedSaboDE64Service {
     map[23102] = {'winner': 23201, 'loser': null};
 
     // Group B - LB-B R2 (1 match - LB-B Semi-Final): winner to LB-B R4
-    map[23201] = {'winner': 23401, 'loser': null}; // B-LB-B Semi-Final winner to LB-B R4
+    map[23201] = {
+      'winner': 23401,
+      'loser': null
+    }; // B-LB-B Semi-Final winner to LB-B R4
 
     // Group B - LB-B R3 (1 match - WB R3 Losers Match): winner to LB-B R4
-    map[23301] = {'winner': 23401, 'loser': null}; // WB R3 losers battle, winner to LB-B R4
+    map[23301] = {
+      'winner': 23401,
+      'loser': null
+    }; // WB R3 losers battle, winner to LB-B R4
 
     // Group B - LB-B R4 (1 match - LB-B Final): winner qualifies for Cross R16
     map[23401] = {'winner': 51101, 'loser': null}; // B4 (LB-B) vs A1 at R16-1
@@ -684,7 +719,7 @@ class HardcodedSaboDE64Service {
     // ========================================
     // GROUP C ADVANCEMENT (26 matches)
     // ========================================
-    
+
     // Group C - WB R1 (8 matches): winner to WB R2, loser to LB-A R1
     map[31101] = {'winner': 31201, 'loser': 32101};
     map[31102] = {'winner': 31201, 'loser': 32101};
@@ -702,8 +737,14 @@ class HardcodedSaboDE64Service {
     map[31204] = {'winner': 31302, 'loser': 33102};
 
     // Group C - WB R3 (2 matches - Group Finals): winners qualify for Cross R16, losers to LB-B R3
-    map[31301] = {'winner': 51105, 'loser': 33301}; // C1 (WB #1) vs D4 at R16-5, loser to LB-B R3
-    map[31302] = {'winner': 51106, 'loser': 33301}; // C2 (WB #2) vs A3 at R16-6, loser to LB-B R3
+    map[31301] = {
+      'winner': 51105,
+      'loser': 33301
+    }; // C1 (WB #1) vs D4 at R16-5, loser to LB-B R3
+    map[31302] = {
+      'winner': 51106,
+      'loser': 33301
+    }; // C2 (WB #2) vs A3 at R16-6, loser to LB-B R3
 
     // Group C - LB-A R1 (4 matches): winner to LB-A R2
     map[32101] = {'winner': 32201, 'loser': null};
@@ -723,10 +764,16 @@ class HardcodedSaboDE64Service {
     map[33102] = {'winner': 33201, 'loser': null};
 
     // Group C - LB-B R2 (1 match - LB-B Semi-Final): winner to LB-B R4
-    map[33201] = {'winner': 33401, 'loser': null}; // C-LB-B Semi-Final winner to LB-B R4
+    map[33201] = {
+      'winner': 33401,
+      'loser': null
+    }; // C-LB-B Semi-Final winner to LB-B R4
 
     // Group C - LB-B R3 (1 match - WB R3 Losers Match): winner to LB-B R4
-    map[33301] = {'winner': 33401, 'loser': null}; // WB R3 losers battle, winner to LB-B R4
+    map[33301] = {
+      'winner': 33401,
+      'loser': null
+    }; // WB R3 losers battle, winner to LB-B R4
 
     // Group C - LB-B R4 (1 match - LB-B Final): winner qualifies for Cross R16
     map[33401] = {'winner': 51102, 'loser': null}; // C4 (LB-B) vs A2 at R16-2
@@ -734,7 +781,7 @@ class HardcodedSaboDE64Service {
     // ========================================
     // GROUP D ADVANCEMENT (26 matches)
     // ========================================
-    
+
     // Group D - WB R1 (8 matches): winner to WB R2, loser to LB-A R1
     map[41101] = {'winner': 41201, 'loser': 42101};
     map[41102] = {'winner': 41201, 'loser': 42101};
@@ -752,8 +799,14 @@ class HardcodedSaboDE64Service {
     map[41204] = {'winner': 41302, 'loser': 43102};
 
     // Group D - WB R3 (2 matches - Group Finals): winners qualify for Cross R16, losers to LB-B R3
-    map[41301] = {'winner': 51107, 'loser': 43301}; // D1 (WB #1) vs A4 at R16-7, loser to LB-B R3
-    map[41302] = {'winner': 51108, 'loser': 43301}; // D2 (WB #2) vs B3 at R16-8, loser to LB-B R3
+    map[41301] = {
+      'winner': 51107,
+      'loser': 43301
+    }; // D1 (WB #1) vs A4 at R16-7, loser to LB-B R3
+    map[41302] = {
+      'winner': 51108,
+      'loser': 43301
+    }; // D2 (WB #2) vs B3 at R16-8, loser to LB-B R3
 
     // Group D - LB-A R1 (4 matches): winner to LB-A R2
     map[42101] = {'winner': 42201, 'loser': null};
@@ -773,10 +826,16 @@ class HardcodedSaboDE64Service {
     map[43102] = {'winner': 43201, 'loser': null};
 
     // Group D - LB-B R2 (1 match - LB-B Semi-Final): winner to LB-B R4
-    map[43201] = {'winner': 43401, 'loser': null}; // D-LB-B Semi-Final winner to LB-B R4
+    map[43201] = {
+      'winner': 43401,
+      'loser': null
+    }; // D-LB-B Semi-Final winner to LB-B R4
 
     // Group D - LB-B R3 (1 match - WB R3 Losers Match): winner to LB-B R4
-    map[43301] = {'winner': 43401, 'loser': null}; // WB R3 losers battle, winner to LB-B R4
+    map[43301] = {
+      'winner': 43401,
+      'loser': null
+    }; // WB R3 losers battle, winner to LB-B R4
 
     // Group D - LB-B R4 (1 match - LB-B Final): winner qualifies for Cross R16
     map[43401] = {'winner': 51105, 'loser': null}; // D4 (LB-B) vs C1 at R16-5
@@ -823,14 +882,15 @@ class HardcodedSaboDE64Service {
         .select('player1_id, player2_id, tournament_id')
         .eq('id', matchId)
         .single();
-        
+
     final player1Id = match['player1_id'] as String;
     final player2Id = match['player2_id'] as String;
     final loserId = (winnerId == player1Id) ? player2Id : player1Id;
     final tournamentId = match['tournament_id'] as String;
 
     // Use UniversalMatchProgressionService for immediate advancement
-    return await UniversalMatchProgressionService.instance.updateMatchResultWithImmediateAdvancement(
+    return await UniversalMatchProgressionService.instance
+        .updateMatchResultWithImmediateAdvancement(
       matchId: matchId,
       tournamentId: tournamentId,
       winnerId: winnerId,

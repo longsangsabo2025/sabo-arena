@@ -12,7 +12,8 @@ import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 class OpponentUserCard extends StatefulWidget {
   final UserProfile user;
   final VoidCallback? onRefresh; // 🚀 MUSK: Make optional to reduce coupling
-  final VoidCallback? onFollowChanged; // 🚀 MUSK: Better callback for follow status changes
+  final VoidCallback?
+      onFollowChanged; // 🚀 MUSK: Better callback for follow status changes
 
   const OpponentUserCard({
     super.key,
@@ -51,7 +52,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
         }
         return;
       }
-      
+
       final isFollowing = await _userService.isFollowingUser(widget.user.id);
       if (mounted) {
         setState(() {
@@ -60,7 +61,8 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
         });
       }
     } catch (e) {
-      ProductionLogger.error('👥 Follow status check failed: $e', tag: 'opponent_card');
+      ProductionLogger.error('👥 Follow status check failed: $e',
+          tag: 'opponent_card');
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -141,9 +143,11 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
       // ❌ REMOVED: widget.onRefresh();
       // ✅ Không reload page, chỉ update state local để tăng trải nghiệm
     } catch (e) {
-      ProductionLogger.error('👥 Follow toggle failed: $e', tag: 'opponent_card');
+      ProductionLogger.error('👥 Follow toggle failed: $e',
+          tag: 'opponent_card');
       if (mounted) {
-        _showErrorSnackbar('Không thể ${_isFollowing ? "bỏ theo dõi" : "theo dõi"} ${widget.user.displayName}');
+        _showErrorSnackbar(
+            'Không thể ${_isFollowing ? "bỏ theo dõi" : "theo dõi"} ${widget.user.displayName}');
       }
     } finally {
       if (mounted) {
@@ -151,7 +155,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
       }
     }
   }
-  
+
   /// Show follow success snackbar
   // void _showFollowSuccessSnackbar() {
   //   ScaffoldMessenger.of(context).showSnackBar(
@@ -180,7 +184,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
   //     ),
   //   );
   // }
-  
+
   /// Show error snackbar với context-aware message
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -215,8 +219,10 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
   @override
   Widget build(BuildContext context) {
     // Debug log để kiểm tra avatar URL
-    ProductionLogger.info('👤 User: ${widget.user.displayName}, Avatar: ${widget.user.avatarUrl}', tag: 'opponent_user_card');
-    
+    ProductionLogger.info(
+        '👤 User: ${widget.user.displayName}, Avatar: ${widget.user.avatarUrl}',
+        tag: 'opponent_user_card');
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -295,7 +301,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
                               color: const Color(0xFF65676B),
                             ),
                           ),
-                          
+
                           // 🚀 MUSK: Smart distance/activity indicator
                           const SizedBox(width: 12),
                           _buildActivityIndicator(),
@@ -383,17 +389,16 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
                   color: _isProcessing
                       ? Colors.grey
                       : (_isFollowing
-                            ? const Color(0xFF42B72A)
-                            : const Color(0xFF0866FF)),
+                          ? const Color(0xFF42B72A)
+                          : const Color(0xFF0866FF)),
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          (_isFollowing
-                                  ? const Color(0xFF42B72A)
-                                  : const Color(0xFF0866FF))
-                              .withValues(alpha: 0.3),
+                      color: (_isFollowing
+                              ? const Color(0xFF42B72A)
+                              : const Color(0xFF0866FF))
+                          .withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -414,11 +419,11 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
                         duration: const Duration(milliseconds: 200),
                         transitionBuilder:
                             (Widget child, Animation<double> animation) {
-                              return ScaleTransition(
-                                scale: animation,
-                                child: child,
-                              );
-                            },
+                          return ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          );
+                        },
                         child: Icon(
                           _isFollowing ? Icons.check : Icons.person_add,
                           key: ValueKey<bool>(_isFollowing),
@@ -437,7 +442,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
   //   // Tạo avatar từ chữ cái đầu của tên
   //   String initials = _getInitials(widget.user.displayName);
   //   Color backgroundColor = _getAvatarColor(widget.user.displayName);
-  //   
+  //
   //   return Container(
   //     color: backgroundColor,
   //     child: Center(
@@ -453,7 +458,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
   //     ),
   //   );
   // }
-  
+
   // String _getInitials(String name) {
   //   List<String> nameParts = name.trim().split(' ');
   //   if (nameParts.length >= 2) {
@@ -463,13 +468,13 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
   //   }
   //   return '?';
   // }
-  
+
   // Color _getAvatarColor(String name) {
   //   // Tạo màu consistent dựa trên tên
   //   final colors = [
   //     const Color(0xFF1877F2), // Facebook Blue
   //     const Color(0xFF42B883), // Green
-  //     const Color(0xFFE1306C), // Instagram Pink  
+  //     const Color(0xFFE1306C), // Instagram Pink
   //     const Color(0xFF1DA1F2), // Twitter Blue
   //     const Color(0xFFFF6B6B), // Coral Red
   //     const Color(0xFF4ECDC4), // Turquoise
@@ -478,7 +483,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
   //     const Color(0xFFFECEB7), // Peach
   //     const Color(0xFFE17055), // Orange Red
   //   ];
-    
+
   //   int hash = name.hashCode.abs();
   //   return colors[hash % colors.length];
   // }
@@ -486,7 +491,7 @@ class _OpponentUserCardState extends State<OpponentUserCard> {
   /// 🚀 MUSK: Smart activity indicator
   Widget _buildActivityIndicator() {
     final lastSeen = DateTime.now().difference(widget.user.updatedAt).inDays;
-    
+
     if (lastSeen == 0) {
       return Row(
         mainAxisSize: MainAxisSize.min,

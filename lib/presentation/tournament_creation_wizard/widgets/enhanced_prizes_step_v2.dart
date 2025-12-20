@@ -48,6 +48,32 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
 
   final List<String> _saboRanks = RankingConstants.RANK_ORDER;
 
+  // 🚀 ELON MODE: Validation helpers
+  bool get _hasValidCustomPrizes {
+    if (_selectedTemplate != 'custom') return true;
+    return _prizes.any((p) => p.cashAmount > 0 || p.percentage > 0);
+  }
+
+  double get _totalPercentage {
+    return _prizes.fold<double>(0, (sum, prize) => sum + prize.percentage);
+  }
+
+  String? get _validationError {
+    if (_selectedTemplate == 'custom' && !_hasValidCustomPrizes) {
+      return 'Vui lòng nhập ít nhất 1 giải thưởng với giá trị > 0';
+    }
+    if (_totalPercentage > 100) {
+      final totalPrize = double.tryParse(_totalPrizeController.text) ?? 0;
+      final totalDistributed =
+          _prizes.fold<int>(0, (sum, p) => sum + p.cashAmount);
+      return 'Tổng giải thưởng vượt quá prize pool!\n'
+          'Đang chia: ${_formatCurrency(totalDistributed)} VND\n'
+          'Prize pool: ${_formatCurrency(totalPrize.toInt())} VND\n'
+          '→ Giảm giải thưởng hoặc tăng prize pool';
+    }
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +88,7 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
       final clubId = widget.data['clubId'];
       if (clubId != null) {
         final supabase = Supabase.instance.client;
-        
+
         // Query approved voucher campaigns for this club
         final response = await supabase
             .from('voucher_campaigns')
@@ -71,15 +97,15 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
             .eq('approval_status', 'approved')
             .gte('end_date', DateTime.now().toIso8601String())
             .order('created_at', ascending: false);
-        
+
         final campaigns = (response as List)
             .map((json) => VoucherCampaign.fromJson(json))
             .toList();
-        
+
         setState(() {
           _availableVouchers = campaigns;
         });
-        
+
         // Voucher campaigns loaded successfully
       }
     } catch (e) {
@@ -110,14 +136,44 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
     // Defer setState to after build is complete
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        // 🚀 CRITICAL FIX: Only set customDistribution if template is actually 'custom'
+        // Otherwise we pass template data as "custom" which causes confusion
+        final customDist = _selectedTemplate == 'custom'
+            ? _prizes.map((p) => p.toMap()).toList()
+            : null;
+
+        // Validation code commented for production - keeping for reference
+        // bool hasValidPrizes = false;
+        // if (customDist != null) {
+        //   hasValidPrizes = customDist.any((prize) {
+        //     final cashAmount = prize['cashAmount'] as int? ?? 0;
+        //     final percentage = prize['percentage'] as num? ?? 0;
+        //     return cashAmount > 0 || percentage > 0;
+        //   });
+        // }
+
+        // Debug logging (commented for production)
+        // print('🚀 [PRIZE STEP] Updating data:');
+        // print('  Template: $_selectedTemplate');
+        // print('  Prizes count: ${_prizes.length}');
+        // print('  CustomDistribution: ${customDist != null ? "SET (${customDist.length} items)" : "NULL"}');
+        // if (customDist != null) {
+        //   print('  Custom values: ${customDist.map((p) => "${p['position']}: ${p['cashAmount']}").join(", ")}');
+        //   print('  Has valid prizes: $hasValidPrizes');
+        //   if (!hasValidPrizes) {
+        //     print('  ⚠️ WARNING: Custom template selected but ALL values are ZERO!');
+        //     print('  ⚠️ System will fallback to top_3 template to prevent broken tournament');
+        //   }
+        // }
+
         widget.onDataChanged({
           'entryFee': double.tryParse(_entryFeeController.text) ?? 0,
           'totalPrize': double.tryParse(_totalPrizeController.text) ?? 0,
-          'prizePool':
-              double.tryParse(_totalPrizeController.text) ??
+          'prizePool': double.tryParse(_totalPrizeController.text) ??
               0, // Đảm bảo prizePool được cập nhật
           'prizeTemplate': _selectedTemplate,
           'prizes': _prizes.map((p) => p.toMap()).toList(),
+          'customDistribution': customDist,
           'minRank': _minRank,
           'maxRank': _maxRank,
         });
@@ -141,8 +197,14 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
         _prizes = [
           PrizeItem(position: 1, percentage: 40, cashAmount: 0),
           PrizeItem(position: 2, percentage: 30, cashAmount: 0),
-          PrizeItem(position: 3, percentage: 15, cashAmount: 0), // Đồng hạng 3 - người thứ nhất
-          PrizeItem(position: 3, percentage: 15, cashAmount: 0), // Đồng hạng 3 - người thứ hai
+          PrizeItem(
+              position: 3,
+              percentage: 15,
+              cashAmount: 0), // Đồng hạng 3 - người thứ nhất
+          PrizeItem(
+              position: 3,
+              percentage: 15,
+              cashAmount: 0), // Đồng hạng 3 - người thứ hai
         ];
         break;
       case 'top_8':
@@ -151,8 +213,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
           PrizeItem(position: 2, percentage: 25, cashAmount: 0),
           PrizeItem(position: 3, percentage: 15, cashAmount: 0),
           PrizeItem(position: 5, percentage: 10, cashAmount: 0), // Hạng 5
-          PrizeItem(position: 5, percentage: 5, cashAmount: 0),  // Đồng hạng 5
-          PrizeItem(position: 5, percentage: 5, cashAmount: 0),  // Đồng hạng 5
+          PrizeItem(position: 5, percentage: 5, cashAmount: 0), // Đồng hạng 5
+          PrizeItem(position: 5, percentage: 5, cashAmount: 0), // Đồng hạng 5
           PrizeItem(position: 5, percentage: 2.5, cashAmount: 0), // Đồng hạng 5
           PrizeItem(position: 5, percentage: 2.5, cashAmount: 0), // Đồng hạng 5
         ];
@@ -240,7 +302,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.textOnPrimary, size: 16),
+                  Icon(Icons.info_outline,
+                      color: AppColors.textOnPrimary, size: 16),
                   SizedBox(width: 6.w),
                   Text(
                     'BƯỚC 3/4',
@@ -251,7 +314,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                     ),
                   ),
                   Spacer(),
-                  Icon(Icons.check_circle, color: AppColors.textOnPrimary, size: 14),
+                  Icon(Icons.check_circle,
+                      color: AppColors.textOnPrimary, size: 14),
                   SizedBox(width: 4.w),
                   Text(
                     '75%',
@@ -278,7 +342,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                 child: LinearProgressIndicator(
                   value: 0.75,
                   backgroundColor: Colors.white.withValues(alpha: 0.2),
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.textOnPrimary),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(AppColors.textOnPrimary),
                   minHeight: 4,
                 ),
               ),
@@ -501,6 +566,36 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                   ],
                 ),
 
+                // 🚨 VALIDATION WARNING
+                if (_validationError != null) ...[
+                  SizedBox(height: 16.h),
+                  Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange, width: 1.5),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded,
+                            color: Colors.orange.shade700, size: 20),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Text(
+                            _validationError!,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.orange.shade900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 // Input mode toggle (only for custom template)
                 if (_selectedTemplate == 'custom') ...[
                   SizedBox(height: 20.h),
@@ -526,11 +621,13 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                         Row(
                           children: [
                             Expanded(
-                              child: _buildInputModeButton('Nhập %', 'percentage'),
+                              child:
+                                  _buildInputModeButton('Nhập %', 'percentage'),
                             ),
                             SizedBox(width: 8.w),
                             Expanded(
-                              child: _buildInputModeButton('Nhập số tiền', 'amount'),
+                              child: _buildInputModeButton(
+                                  'Nhập số tiền', 'amount'),
                             ),
                           ],
                         ),
@@ -687,9 +784,9 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                   child: TextFormField(
                     key: ValueKey('${prize.position}_$_inputMode'),
                     keyboardType: TextInputType.number,
-                    initialValue: _inputMode == 'percentage' 
-                      ? prize.percentage.toStringAsFixed(0)
-                      : prize.cashAmount.toString(),
+                    initialValue: _inputMode == 'percentage'
+                        ? prize.percentage.toStringAsFixed(0)
+                        : prize.cashAmount.toString(),
                     decoration: InputDecoration(
                       hintText: _inputMode == 'percentage' ? '%' : 'VNĐ',
                       suffixText: _inputMode == 'percentage' ? '%' : 'đ',
@@ -706,13 +803,15 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                         _calculatePrizes();
                       } else {
                         // User nhập số tiền VND
-                        final totalPrize = double.tryParse(_totalPrizeController.text) ?? 0;
+                        final totalPrize =
+                            double.tryParse(_totalPrizeController.text) ?? 0;
                         prize.cashAmount = numValue.toInt();
                         // Tính ngược % từ số tiền
                         if (totalPrize > 0) {
                           prize.percentage = (numValue / totalPrize) * 100;
                         }
-                        // REMOVED setState() - không cần rebuild khi chỉ update data
+                        // 🚨 CRITICAL: Phải call _updateData() để update validation
+                        _updateData();
                       }
                     },
                   ),
@@ -762,6 +861,7 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
           // Physical prize
           SizedBox(height: 8.h),
           TextField(
+            controller: TextEditingController(text: prize.physicalPrize),
             decoration: InputDecoration(
               hintText: 'Phần thưởng hiện vật (tùy chọn)',
               hintStyle: TextStyle(fontSize: 13),
@@ -776,7 +876,22 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
               _updateData();
             },
           ),
-          
+
+          // 🚀 ELON MODE: Quick select cho phần thưởng phổ biến
+          SizedBox(height: 8.h),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              _buildQuickPrizeChip(prize, '🏆 Cúp vô địch'),
+              _buildQuickPrizeChip(prize, '🥈 Cúp á quân'),
+              _buildQuickPrizeChip(prize, '🥉 Cúp hạng 3'),
+              _buildQuickPrizeChip(prize, '📜 Bảng vinh danh'),
+              _buildQuickPrizeChip(prize, '🎖️ Huy chương'),
+              _buildQuickPrizeChip(prize, '🎁 Quà tặng'),
+            ],
+          ),
+
           // 🎟️ Voucher reward section
           SizedBox(height: 8.h),
           _buildVoucherSelector(prize),
@@ -799,7 +914,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
         children: [
           Row(
             children: [
-              Icon(Icons.confirmation_number, size: 18, color: AppColors.premium),
+              Icon(Icons.confirmation_number,
+                  size: 18, color: AppColors.premium),
               SizedBox(width: 8.w),
               Text(
                 'Voucher thưởng',
@@ -825,7 +941,6 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                 ),
             ],
           ),
-          
           if (prize.voucherId == null) ...[
             SizedBox(height: 8.h),
             ElevatedButton.icon(
@@ -846,18 +961,26 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
             Container(
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                color: prize.voucherType == 'prize' ? AppColors.success50 : AppColors.surface,
+                color: prize.voucherType == 'prize'
+                    ? AppColors.success50
+                    : AppColors.surface,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: prize.voucherType == 'prize' ? AppColors.success500 : AppColors.premium500,
+                  color: prize.voucherType == 'prize'
+                      ? AppColors.success500
+                      : AppColors.premium500,
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
-                    prize.voucherType == 'prize' ? Icons.payments : Icons.local_activity,
+                    prize.voucherType == 'prize'
+                        ? Icons.payments
+                        : Icons.local_activity,
                     size: 20,
-                    color: prize.voucherType == 'prize' ? AppColors.success : AppColors.premium,
+                    color: prize.voucherType == 'prize'
+                        ? AppColors.success
+                        : AppColors.premium,
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
@@ -876,9 +999,12 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                             ),
                             SizedBox(width: 4),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: prize.voucherType == 'prize' ? AppColors.success : AppColors.premium,
+                                color: prize.voucherType == 'prize'
+                                    ? AppColors.success
+                                    : AppColors.premium,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -911,7 +1037,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                             ),
                           ),
                         ],
-                        if (prize.voucherType == 'prize' && prize.voucherValidDays != null) ...[
+                        if (prize.voucherType == 'prize' &&
+                            prize.voucherValidDays != null) ...[
                           SizedBox(height: 2),
                           Text(
                             'Hiệu lực: ${prize.voucherValidDays} ngày',
@@ -925,7 +1052,11 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.edit, size: 18, color: prize.voucherType == 'prize' ? AppColors.success : AppColors.premium),
+                    icon: Icon(Icons.edit,
+                        size: 18,
+                        color: prize.voucherType == 'prize'
+                            ? AppColors.success
+                            : AppColors.premium),
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
                     onPressed: () => _showVoucherPicker(prize),
@@ -1069,7 +1200,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                     Expanded(
                       child: Text(
                         'Tất cả voucher dưới đây đã được admin phê duyệt',
-                        style: TextStyle(fontSize: 11, color: AppColors.success700),
+                        style: TextStyle(
+                            fontSize: 11, color: AppColors.success700),
                       ),
                     ),
                   ],
@@ -1108,7 +1240,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                                 ),
                               ),
                             ),
-                            Icon(Icons.verified, color: AppColors.success, size: 16),
+                            Icon(Icons.verified,
+                                color: AppColors.success, size: 16),
                           ],
                         ),
                         subtitle: Column(
@@ -1125,7 +1258,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                             SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.payments, size: 12, color: AppColors.textTertiary),
+                                Icon(Icons.payments,
+                                    size: 12, color: AppColors.textTertiary),
                                 SizedBox(width: 4),
                                 Text(
                                   '${_formatCurrency(voucher.voucherValue)} ${_getVoucherTypeText(voucher.voucherType)}',
@@ -1136,7 +1270,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                                   ),
                                 ),
                                 SizedBox(width: 12),
-                                Icon(Icons.inventory_2, size: 12, color: AppColors.textTertiary),
+                                Icon(Icons.inventory_2,
+                                    size: 12, color: AppColors.textTertiary),
                                 SizedBox(width: 4),
                                 Text(
                                   'Còn ${voucher.totalQuantity - voucher.issuedQuantity}/${voucher.totalQuantity}',
@@ -1150,7 +1285,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                             SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.calendar_today, size: 12, color: AppColors.textTertiary),
+                                Icon(Icons.calendar_today,
+                                    size: 12, color: AppColors.textTertiary),
                                 SizedBox(width: 4),
                                 Text(
                                   'Đến ${_formatDate(voucher.endDate)}',
@@ -1192,7 +1328,7 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
       });
     }
   }
-  
+
   String _getVoucherTypeText(String type) {
     switch (type) {
       case 'spa_balance':
@@ -1205,12 +1341,12 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
         return type;
     }
   }
-  
+
   String _formatCurrency(int value) {
     return value.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   /// Show prize voucher config dialog
@@ -1218,9 +1354,9 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
     int quantity = prize.voucherQuantity;
     int vndValue = prize.voucherValueVnd ?? 700000; // Default 700K
     int validDays = prize.voucherValidDays ?? 30; // Default 30 days
-    
+
     final vndController = TextEditingController(text: vndValue.toString());
-    
+
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => AlertDialog(
@@ -1266,27 +1402,32 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                       vndValue = int.tryParse(value) ?? 0;
                     },
                   ),
-                  
+
                   SizedBox(height: 16),
-                  
+
                   // Quick presets
                   Text(
                     'Gợi ý nhanh',
-                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                    style:
+                        TextStyle(fontSize: 13, color: AppColors.textSecondary),
                   ),
                   SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     children: [
-                      _buildPresetChip('300K', 300000, vndController, setDialogState),
-                      _buildPresetChip('500K', 500000, vndController, setDialogState),
-                      _buildPresetChip('700K', 700000, vndController, setDialogState),
-                      _buildPresetChip('1M', 1000000, vndController, setDialogState),
+                      _buildPresetChip(
+                          '300K', 300000, vndController, setDialogState),
+                      _buildPresetChip(
+                          '500K', 500000, vndController, setDialogState),
+                      _buildPresetChip(
+                          '700K', 700000, vndController, setDialogState),
+                      _buildPresetChip(
+                          '1M', 1000000, vndController, setDialogState),
                     ],
                   ),
-                  
+
                   SizedBox(height: 16),
-                  
+
                   // Số lượng
                   Text(
                     'Số lượng voucher',
@@ -1301,9 +1442,11 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.remove_circle_outline),
-                        onPressed: quantity > 1 ? () {
-                          setDialogState(() => quantity--);
-                        } : null,
+                        onPressed: quantity > 1
+                            ? () {
+                                setDialogState(() => quantity--);
+                              }
+                            : null,
                       ),
                       SizedBox(
                         width: 60,
@@ -1324,9 +1467,9 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                       ),
                     ],
                   ),
-                  
+
                   SizedBox(height: 16),
-                  
+
                   // Validity days
                   Text(
                     'Thời hạn hiệu lực (ngày)',
@@ -1368,7 +1511,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
           ElevatedButton(
             onPressed: () {
               // Read from controller to get the latest value (including preset selections)
-              final finalVndValue = int.tryParse(vndController.text) ?? vndValue;
+              final finalVndValue =
+                  int.tryParse(vndController.text) ?? vndValue;
               Navigator.pop(context, {
                 'quantity': quantity,
                 'vndValue': finalVndValue,
@@ -1383,8 +1527,10 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
 
     if (result != null) {
       setState(() {
-        prize.voucherId = 'prize_${prize.position}_${DateTime.now().millisecondsSinceEpoch}';
-        prize.voucherName = 'Prize Voucher ${_formatMoney(result['vndValue'])} VNĐ';
+        prize.voucherId =
+            'prize_${prize.position}_${DateTime.now().millisecondsSinceEpoch}';
+        prize.voucherName =
+            'Prize Voucher ${_formatMoney(result['vndValue'])} VNĐ';
         prize.voucherType = 'prize';
         prize.voucherQuantity = result['quantity'];
         prize.voucherValueVnd = result['vndValue'];
@@ -1394,7 +1540,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
     }
   }
 
-  Widget _buildPresetChip(String label, int value, TextEditingController controller, StateSetter setState) {
+  Widget _buildPresetChip(String label, int value,
+      TextEditingController controller, StateSetter setState) {
     return ActionChip(
       label: Text(label),
       onPressed: () {
@@ -1414,7 +1561,7 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
     final vndController = TextEditingController(
       text: prize.voucherValueVnd?.toString() ?? '',
     );
-    
+
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1447,9 +1594,11 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.remove_circle_outline),
-                        onPressed: quantity > 1 ? () {
-                          setDialogState(() => quantity--);
-                        } : null,
+                        onPressed: quantity > 1
+                            ? () {
+                                setDialogState(() => quantity--);
+                              }
+                            : null,
                       ),
                       SizedBox(
                         width: 60,
@@ -1470,11 +1619,11 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
                       ),
                     ],
                   ),
-                  
+
                   SizedBox(height: 20),
                   Divider(),
                   SizedBox(height: 12),
-                  
+
                   // VND value input
                   Text(
                     'Trị giá voucher (tùy chọn)',
@@ -1530,8 +1679,8 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
           ElevatedButton(
             onPressed: () {
               // Read from controller for consistency with Prize Voucher dialog
-              final finalVndValue = vndController.text.isEmpty 
-                  ? null 
+              final finalVndValue = vndController.text.isEmpty
+                  ? null
                   : int.tryParse(vndController.text);
               setState(() {
                 prize.voucherQuantity = quantity;
@@ -1548,35 +1697,87 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
   }
 
   Widget _buildTotalCheck() {
-    final total = _prizes.fold<double>(0, (sum, p) => sum + p.percentage);
+    final total = _totalPercentage;
+    final totalPrize = double.tryParse(_totalPrizeController.text) ?? 0;
+    final totalDistributed =
+        _prizes.fold<int>(0, (sum, p) => sum + p.cashAmount);
+
     final isValid = (total - 100).abs() < 0.01;
+    final hasError = total > 100;
+    final hasWarning =
+        total > 0 && total < 100 && _selectedTemplate == 'custom';
+
+    Color bgColor = AppColors.success50;
+    Color borderColor = AppColors.success;
+    Color iconColor = AppColors.success;
+    IconData icon = Icons.check_circle;
+
+    if (hasError) {
+      bgColor = AppColors.error50;
+      borderColor = AppColors.error;
+      iconColor = AppColors.error;
+      icon = Icons.error;
+    } else if (hasWarning) {
+      bgColor = Colors.orange.shade50;
+      borderColor = Colors.orange;
+      iconColor = Colors.orange.shade700;
+      icon = Icons.info;
+    } else if (!isValid) {
+      bgColor = AppColors.warning50;
+      borderColor = AppColors.warning;
+      iconColor = AppColors.warning;
+      icon = Icons.warning;
+    }
 
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: isValid ? AppColors.success50 : AppColors.warning50,
+        color: bgColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isValid ? AppColors.success : AppColors.warning),
+        border: Border.all(color: borderColor),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            isValid ? Icons.check_circle : Icons.warning,
-            color: isValid ? AppColors.success : AppColors.warning,
+          Row(
+            children: [
+              Icon(icon, color: iconColor),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Text(
+                  isValid
+                      ? 'Tổng phân bổ: ${total.toStringAsFixed(1)}% ✓'
+                      : 'Tổng phân bổ: ${total.toStringAsFixed(1)}%${hasError ? " (vượt quá 100%!)" : hasWarning ? " (còn thiếu)" : " (cần đúng 100%)"}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: iconColor,
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Text(
-              isValid
-                  ? 'Tổng phân bổ: ${total.toStringAsFixed(1)}% ✓'
-                  : 'Tổng phân bổ: ${total.toStringAsFixed(1)}% (cần đúng 100%)',
+          if (totalPrize > 0) ...[
+            SizedBox(height: 4.h),
+            Text(
+              'Số tiền: ${_formatCurrency(totalDistributed)} / ${_formatCurrency(totalPrize.toInt())}',
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isValid ? AppColors.success700 : AppColors.warning700,
+                fontSize: 12,
+                color: AppColors.textSecondary,
               ),
             ),
-          ),
+          ],
+          if (hasWarning) ...[
+            SizedBox(height: 4.h),
+            Text(
+              'Lưu ý: Còn ${(100 - total).toStringAsFixed(1)}% chưa phân bổ',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.orange.shade700,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -1764,6 +1965,40 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
     );
   }
 
+  /// 🚀 ELON MODE: Quick select chip cho phần thưởng vật chất
+  Widget _buildQuickPrizeChip(PrizeItem prize, String text) {
+    final isSelected = prize.physicalPrize == text;
+    return InkWell(
+      onTap: () {
+        setState(() {
+          prize.physicalPrize = isSelected ? null : text;
+          _updateData();
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.gray300,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+
   Color _getPositionColor(int position) {
     switch (position) {
       case 1:
@@ -1779,9 +2014,9 @@ class _EnhancedPrizesStepV2State extends State<EnhancedPrizesStepV2> {
 
   String _formatMoney(int amount) {
     return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]}.',
+        );
   }
 }
 
@@ -1790,12 +2025,13 @@ class PrizeItem {
   double percentage;
   int cashAmount;
   String? physicalPrize;
-  String? voucherId;        // 🎟️ ID của voucher campaign
-  String? voucherName;      // Tên voucher (để hiển thị)
-  int voucherQuantity;      // Số lượng voucher (mặc định 1)
-  int? voucherValueVnd;     // Trị giá voucher bằng VNĐ (tùy chọn, để hiển thị)
-  String? voucherType;      // 🎯 'club' (discount/time) hoặc 'prize' (cash for table payment)
-  int? voucherValidDays;    // Số ngày hiệu lực (cho prize voucher)
+  String? voucherId; // 🎟️ ID của voucher campaign
+  String? voucherName; // Tên voucher (để hiển thị)
+  int voucherQuantity; // Số lượng voucher (mặc định 1)
+  int? voucherValueVnd; // Trị giá voucher bằng VNĐ (tùy chọn, để hiển thị)
+  String?
+      voucherType; // 🎯 'club' (discount/time) hoặc 'prize' (cash for table payment)
+  int? voucherValidDays; // Số ngày hiệu lực (cho prize voucher)
 
   PrizeItem({
     required this.position,

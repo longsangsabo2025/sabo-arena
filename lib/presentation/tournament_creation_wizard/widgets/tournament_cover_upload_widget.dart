@@ -155,8 +155,8 @@ class _TournamentCoverUploadWidgetState
                   label: Text('Xóa', style: TextStyle(fontSize: 14)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 20.w, vertical: 12.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

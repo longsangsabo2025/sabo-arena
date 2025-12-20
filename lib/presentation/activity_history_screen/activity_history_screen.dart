@@ -113,8 +113,7 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
           activityType: item['activity_type'],
           description: item['activity_description'],
           actorId: item['actor_id'],
-          actorName:
-              item['users']?['full_name'] ??
+          actorName: item['users']?['full_name'] ??
               item['users']?['username'] ??
               'Người dùng không xác định',
           actorAvatar: item['users']?['avatar_url'],
@@ -216,7 +215,9 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          'Lịch sử hoạt động', overflow: TextOverflow.ellipsis, style: Theme.of(
+          'Lịch sử hoạt động',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(
             context,
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
@@ -253,9 +254,8 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
                       selectedColor: Colors.blue[200],
                       labelStyle: TextStyle(
                         color: isSelected ? Colors.blue[700] : Colors.grey[600],
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                   );
@@ -269,20 +269,20 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
             child: _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : _filteredActivities.isEmpty
-                ? _buildEmptyState()
-                : RefreshIndicator(
-                    onRefresh: _loadActivities,
-                    child: ListView.builder(
-                      padding: EdgeInsets.all(16),
-                      itemCount: _filteredActivities.length,
-                      itemBuilder: (context, index) {
-                        return _buildActivityItem(
-                          _filteredActivities[index],
-                          index,
-                        );
-                      },
-                    ),
-                  ),
+                    ? _buildEmptyState()
+                    : RefreshIndicator(
+                        onRefresh: _loadActivities,
+                        child: ListView.builder(
+                          padding: EdgeInsets.all(16),
+                          itemCount: _filteredActivities.length,
+                          itemBuilder: (context, index) {
+                            return _buildActivityItem(
+                              _filteredActivities[index],
+                              index,
+                            );
+                          },
+                        ),
+                      ),
           ),
         ],
       ),
@@ -297,7 +297,9 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
           Icon(Icons.history, size: 64, color: Colors.grey[400]),
           SizedBox(height: 16),
           Text(
-            'Chưa có hoạt động nào', overflow: TextOverflow.ellipsis, style: Theme.of(
+            'Chưa có hoạt động nào',
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(color: Colors.grey[600]),
           ),
@@ -305,7 +307,9 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
           Text(
             _selectedFilter == 'all'
                 ? 'Lịch sử hoạt động sẽ hiển thị ở đây'
-                : 'Không có hoạt động nào cho bộ lọc này', overflow: TextOverflow.ellipsis, style: Theme.of(
+                : 'Không có hoạt động nào cho bộ lọc này',
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
           ),
@@ -447,7 +451,7 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
 
   IconData _getActivityIcon(String activityType) {
     if (activityType.startsWith('member_')) return Icons.person;
-    if (activityType.startsWith('tournament_')) return Icons.sports_esports;
+    if (activityType.startsWith('tournament_')) return Icons.sports_baseball;
     if (activityType.startsWith('post_')) return Icons.article;
     if (activityType.startsWith('financial_')) return Icons.attach_money;
     if (activityType.contains('admin') || activityType.contains('promote')) {
@@ -514,4 +518,3 @@ class ClubActivityLog {
     this.data,
   });
 }
-

@@ -14,7 +14,7 @@ class CacheManagementScreen extends StatefulWidget {
 
 class _CacheManagementScreenState extends State<CacheManagementScreen> {
   bool _isClearing = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +74,7 @@ class _CacheManagementScreenState extends State<CacheManagementScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          
+
           // Reload stats
           await _loadCacheStats();
         }
@@ -98,7 +98,7 @@ class _CacheManagementScreenState extends State<CacheManagementScreen> {
   Future<void> _viewCacheStats() async {
     // Print cache statistics
     AppCacheService.instance.printCacheStats();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

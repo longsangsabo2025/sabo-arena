@@ -41,10 +41,12 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
       if (_venueController.text.isEmpty && widget.data['venue'] != null) {
         _venueController.text = widget.data['venue'];
       }
-      if (_contactNameController.text.isEmpty && widget.data['venueContact'] != null) {
+      if (_contactNameController.text.isEmpty &&
+          widget.data['venueContact'] != null) {
         _contactNameController.text = widget.data['venueContact'];
       }
-      if (_contactPhoneController.text.isEmpty && widget.data['venuePhone'] != null) {
+      if (_contactPhoneController.text.isEmpty &&
+          widget.data['venuePhone'] != null) {
         _contactPhoneController.text = widget.data['venuePhone'];
       }
     }
@@ -184,8 +186,7 @@ class _EnhancedScheduleStepState extends State<EnhancedScheduleStep> {
                   // Venue with autocomplete
                   VenueAutocompleteField(
                     value: _venueController.text,
-                    isValid:
-                        !_errors.containsKey('Địa điểm') &&
+                    isValid: !_errors.containsKey('Địa điểm') &&
                         _venueController.text.length >= 5,
                     errorText: _errors['Địa điểm'],
                     onChanged: (value) {

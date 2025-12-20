@@ -85,7 +85,8 @@ class _ClubRankChangeManagementScreenState
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Lỗi: ${response['error'] ?? 'Lỗi không xác định'}'),
+              content:
+                  Text('Lỗi: ${response['error'] ?? 'Lỗi không xác định'}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -112,7 +113,9 @@ class _ClubRankChangeManagementScreenState
       backgroundColor: AppTheme.backgroundLight,
       appBar: AppBar(
         title: Text(
-          'Quản lý thay đổi hạng', overflow: TextOverflow.ellipsis, style: TextStyle(
+          'Quản lý thay đổi hạng',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             color: AppTheme.textPrimaryLight,
             fontWeight: FontWeight.bold,
             fontSize: 18.sp,
@@ -140,7 +143,9 @@ class _ClubRankChangeManagementScreenState
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        '${_pendingRequests.length}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        '${_pendingRequests.length}',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.sp,
                           fontWeight: FontWeight.bold,
@@ -172,11 +177,11 @@ class _ClubRankChangeManagementScreenState
               child: CircularProgressIndicator(color: AppTheme.accentLight),
             )
           : _errorMessage != null
-          ? _buildErrorState()
-          : TabBarView(
-              controller: _tabController,
-              children: [_buildPendingTab(), _buildReviewedTab()],
-            ),
+              ? _buildErrorState()
+              : TabBarView(
+                  controller: _tabController,
+                  children: [_buildPendingTab(), _buildReviewedTab()],
+                ),
     );
   }
 
@@ -192,7 +197,9 @@ class _ClubRankChangeManagementScreenState
           ),
           SizedBox(height: 16),
           Text(
-            _errorMessage!, overflow: TextOverflow.ellipsis, style: TextStyle(
+            _errorMessage!,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: AppTheme.textSecondaryLight,
               fontSize: 16.sp,
             ),
@@ -270,7 +277,8 @@ class _ClubRankChangeManagementScreenState
           ),
           SizedBox(height: 16),
           Text(
-            title, style: TextStyle(
+            title,
+            style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
               color: AppTheme.textSecondaryLight,
@@ -279,7 +287,8 @@ class _ClubRankChangeManagementScreenState
           ),
           SizedBox(height: 8),
           Text(
-            subtitle, style: TextStyle(
+            subtitle,
+            style: TextStyle(
               fontSize: 14.sp,
               color: AppTheme.textSecondaryLight,
             ),
@@ -339,7 +348,8 @@ class _ClubRankChangeManagementScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userName, style: TextStyle(
+                        userName,
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.sp,
                           color: AppTheme.textPrimaryLight,
@@ -390,7 +400,9 @@ class _ClubRankChangeManagementScreenState
 
             // Reason
             Text(
-              'Lý do:', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lý do:',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14.sp,
                 color: AppTheme.textPrimaryLight,
@@ -398,7 +410,8 @@ class _ClubRankChangeManagementScreenState
             ),
             SizedBox(height: 4),
             Text(
-              reason, style: TextStyle(
+              reason,
+              style: TextStyle(
                 fontSize: 14.sp,
                 color: AppTheme.textSecondaryLight,
               ),
@@ -556,7 +569,9 @@ class _ClubRankChangeManagementScreenState
               _reviewRequest(requestId, false, comments: reasonController.text);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text('Từ chối', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white)),
+            child: Text('Từ chối',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

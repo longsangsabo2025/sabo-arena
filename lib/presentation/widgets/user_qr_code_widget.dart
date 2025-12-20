@@ -55,7 +55,7 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -108,7 +108,8 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
                 const SizedBox(height: 4),
                 Text(
                   'Quét mã này để kết nối hoặc mời bạn bè',
-                  style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+                  style: TextStyle(
+                      fontSize: 12, color: colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -140,7 +141,8 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
                     size: widget.size,
                     backgroundColor: colorScheme.surface,
                     eyeStyle: QrEyeStyle(color: colorScheme.onSurface),
-                    dataModuleStyle: QrDataModuleStyle(color: colorScheme.onSurface),
+                    dataModuleStyle:
+                        QrDataModuleStyle(color: colorScheme.onSurface),
                   ),
                 ),
 
@@ -189,9 +191,8 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _qrData == null
-                        ? null
-                        : () => _shareQRCode(context),
+                    onPressed:
+                        _qrData == null ? null : () => _shareQRCode(context),
                     icon: const Icon(Icons.share),
                     label: const Text('Chia sẻ mã QR'),
                     style: ElevatedButton.styleFrom(
@@ -216,8 +217,7 @@ class _UserQRCodeWidgetState extends State<UserQRCodeWidget> {
       widget.user.id,
     );
 
-    final shareText =
-        '''
+    final shareText = '''
 🏆 Kết nối với ${widget.user.fullName} trên SABO ARENA!
 
 👤 ${widget.user.fullName}
@@ -300,8 +300,8 @@ class QuickQRShareButton extends StatelessWidget {
                     onPressed: () async {
                       final qrData =
                           await ShareService.generateUserQRDataWithReferral(
-                            user,
-                          );
+                        user,
+                      );
                       await Share.share(
                         'Quét mã QR này để kết nối với tôi: $qrData',
                         subject: 'Kết nối với ${user.fullName}',

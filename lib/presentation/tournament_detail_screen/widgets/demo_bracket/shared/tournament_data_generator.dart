@@ -109,12 +109,10 @@ class TournamentDataGenerator {
           score2 = '';
         } else {
           final isPlayer1Winner = (i + roundNumber) % 2 == 0;
-          score1 = isPlayer1Winner
-              ? '2'
-              : ((i + roundNumber) % 3 == 0 ? '0' : '1');
-          score2 = isPlayer1Winner
-              ? ((i + roundNumber) % 3 == 0 ? '0' : '1')
-              : '2';
+          score1 =
+              isPlayer1Winner ? '2' : ((i + roundNumber) % 3 == 0 ? '0' : '1');
+          score2 =
+              isPlayer1Winner ? ((i + roundNumber) % 3 == 0 ? '0' : '1') : '2';
         }
       }
 
@@ -243,8 +241,8 @@ class TournamentDataGenerator {
           'isPlayed': isPlayed,
           'timestamp': isPlayed
               ? DateTime.now()
-                    .subtract(Duration(hours: matchCounter))
-                    .toString()
+                  .subtract(Duration(hours: matchCounter))
+                  .toString()
               : null,
         });
         matchCounter++;
@@ -376,18 +374,17 @@ class TournamentDataGenerator {
     int playerId,
     List<Map<String, dynamic>> schedule,
   ) {
-    final playerMatches =
-        schedule
-            .where(
-              (match) =>
-                  match['isPlayed'] &&
-                  (match['player1Id'] == playerId ||
-                      match['player2Id'] == playerId),
-            )
-            .toList()
-          ..sort(
-            (a, b) => b['matchId'].compareTo(a['matchId']),
-          ); // Most recent first
+    final playerMatches = schedule
+        .where(
+          (match) =>
+              match['isPlayed'] &&
+              (match['player1Id'] == playerId ||
+                  match['player2Id'] == playerId),
+        )
+        .toList()
+      ..sort(
+        (a, b) => b['matchId'].compareTo(a['matchId']),
+      ); // Most recent first
 
     final form = StringBuffer();
     for (int i = 0; i < 5 && i < playerMatches.length; i++) {
@@ -508,10 +505,10 @@ class TournamentDataGenerator {
       final roundTitle = roundNumber == 1
           ? 'Vòng 1 Bảng Thắng'
           : roundNumber == 2
-          ? 'Vòng 2 Bảng Thắng'
-          : roundNumber == 3
-          ? 'Bán kết Bảng Thắng'
-          : 'Chung kết Bảng Thắng';
+              ? 'Vòng 2 Bảng Thắng'
+              : roundNumber == 3
+                  ? 'Bán kết Bảng Thắng'
+                  : 'Chung kết Bảng Thắng';
 
       rounds.add({
         'title': roundTitle,
@@ -784,7 +781,7 @@ class TournamentDataGenerator {
       });
     }
 
- // Debug fix
+    // Debug fix
     return rounds;
   }
 
@@ -918,12 +915,10 @@ class TournamentDataGenerator {
       if (hasResult) {
         final isPlayer1Winner =
             (i + roundNumber) % 2 == 1; // Different pattern than WB
-        score1 = isPlayer1Winner
-            ? '2'
-            : ((i + roundNumber) % 3 == 0 ? '0' : '1');
-        score2 = isPlayer1Winner
-            ? ((i + roundNumber) % 3 == 0 ? '0' : '1')
-            : '2';
+        score1 =
+            isPlayer1Winner ? '2' : ((i + roundNumber) % 3 == 0 ? '0' : '1');
+        score2 =
+            isPlayer1Winner ? ((i + roundNumber) % 3 == 0 ? '0' : '1') : '2';
       }
 
       matches.add({
@@ -980,4 +975,3 @@ class TournamentDataGenerator {
     );
   }
 }
-

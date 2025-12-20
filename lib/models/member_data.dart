@@ -1,4 +1,5 @@
 import 'package:sabo_arena/utils/production_logger.dart';
+
 // Enums for member management
 enum MembershipType { regular, vip, premium }
 
@@ -54,8 +55,10 @@ class MemberData {
   }
 
   factory MemberData.fromSupabaseData(Map<String, dynamic> data) {
-    ProductionLogger.info('🔍 Converting member data: ${data.keys}', tag: 'member_data');
-    ProductionLogger.info('🔍 Users data: ${data['users']}', tag: 'member_data');
+    ProductionLogger.info('🔍 Converting member data: ${data.keys}',
+        tag: 'member_data');
+    ProductionLogger.info('🔍 Users data: ${data['users']}',
+        tag: 'member_data');
 
     // Handle nested users data
     final userData = data['users'] ?? {};
@@ -64,8 +67,7 @@ class MemberData {
       id: data['id'] ?? '',
       user: UserInfo(
         id: userData['id'] ?? data['user_id'] ?? '',
-        name:
-            userData['name'] ??
+        name: userData['name'] ??
             data['user_name'] ??
             userData['display_name'] ??
             'Chưa có tên',

@@ -45,7 +45,6 @@ class HardcodedSaboDE16Service {
     required List<String> participantIds,
   }) async {
     try {
-
       if (participantIds.length != 16) {
         throw Exception('SABO DE16 requires exactly 16 participants');
       }
@@ -61,7 +60,8 @@ class HardcodedSaboDE16Service {
       // WB Round 1: Matches 1-8 (display_order 1101-1108)
       for (int i = 1; i <= 8; i++) {
         final displayOrder = (1 * 1000) + (1 * 100) + i; // 1101-1108
-        final advancement = advancementMap[displayOrder]!; // 🔥 Use display_order as key!
+        final advancement =
+            advancementMap[displayOrder]!; // 🔥 Use display_order as key!
         allMatches.add({
           'tournament_id': tournamentId,
           'round_number': 1, // WB R1 (legacy)
@@ -74,8 +74,10 @@ class HardcodedSaboDE16Service {
           'status': 'pending',
           'match_type': 'tournament',
           'bracket_format': 'sabo_de16',
-          'winner_advances_to': advancement['winner'], // 🔥 Now contains display_order!
-          'loser_advances_to': advancement['loser'], // 🔥 Now contains display_order!
+          'winner_advances_to':
+              advancement['winner'], // 🔥 Now contains display_order!
+          'loser_advances_to':
+              advancement['loser'], // 🔥 Now contains display_order!
           // 🔥 STANDARDIZED FIELDS
           'bracket_type': 'WB',
           'bracket_group': null,
@@ -93,7 +95,8 @@ class HardcodedSaboDE16Service {
       // WB Round 2: Matches 9-12 (display_order 1201-1204)
       for (int i = 9; i <= 12; i++) {
         final displayOrder = (1 * 1000) + (2 * 100) + (i - 8); // 1201-1204
-        final advancement = advancementMap[displayOrder]!; // 🔥 Use display_order as key!
+        final advancement =
+            advancementMap[displayOrder]!; // 🔥 Use display_order as key!
         allMatches.add({
           'tournament_id': tournamentId,
           'round_number': 2, // WB R2 (legacy)
@@ -106,8 +109,10 @@ class HardcodedSaboDE16Service {
           'status': 'pending',
           'match_type': 'tournament',
           'bracket_format': 'sabo_de16',
-          'winner_advances_to': advancement['winner'], // 🔥 Now contains display_order!
-          'loser_advances_to': advancement['loser'], // 🔥 Now contains display_order!
+          'winner_advances_to':
+              advancement['winner'], // 🔥 Now contains display_order!
+          'loser_advances_to':
+              advancement['loser'], // 🔥 Now contains display_order!
           // 🔥 STANDARDIZED FIELDS
           'bracket_type': 'WB',
           'bracket_group': null,
@@ -126,7 +131,8 @@ class HardcodedSaboDE16Service {
       // ⚠️ NO LOSER ADVANCEMENT - WB stops here, goes to SABO Finals
       for (int i = 13; i <= 14; i++) {
         final displayOrder = (1 * 1000) + (3 * 100) + (i - 12); // 1301-1302
-        final advancement = advancementMap[displayOrder]!; // 🔥 Use display_order as key!
+        final advancement =
+            advancementMap[displayOrder]!; // 🔥 Use display_order as key!
         allMatches.add(_createMatch(
           tournamentId: tournamentId,
           roundNumber: 3,
@@ -144,7 +150,8 @@ class HardcodedSaboDE16Service {
       // LB-A Round 1: Matches 15-18 (display_order 2101-2104)
       for (int i = 15; i <= 18; i++) {
         final displayOrder = (2 * 1000) + (1 * 100) + (i - 14); // 2101-2104
-        final advancement = advancementMap[displayOrder]!; // 🔥 Use display_order as key!
+        final advancement =
+            advancementMap[displayOrder]!; // 🔥 Use display_order as key!
         allMatches.add({
           'tournament_id': tournamentId,
           'round_number': 101, // LB-A R1 (legacy)
@@ -157,7 +164,8 @@ class HardcodedSaboDE16Service {
           'status': 'pending',
           'match_type': 'tournament',
           'bracket_format': 'sabo_de16',
-          'winner_advances_to': advancement['winner'], // 🔥 Now contains display_order!
+          'winner_advances_to':
+              advancement['winner'], // 🔥 Now contains display_order!
           'loser_advances_to': null, // Eliminated
           // 🔥 STANDARDIZED FIELDS
           'bracket_type': 'LB-A', // Loser Branch A
@@ -176,7 +184,8 @@ class HardcodedSaboDE16Service {
       // LB-A Round 2: Matches 19-20 (display_order 2201-2202)
       for (int i = 19; i <= 20; i++) {
         final displayOrder = (2 * 1000) + (2 * 100) + (i - 18); // 2201-2202
-        final advancement = advancementMap[displayOrder]!; // 🔥 Use display_order as key!
+        final advancement =
+            advancementMap[displayOrder]!; // 🔥 Use display_order as key!
         allMatches.add({
           'tournament_id': tournamentId,
           'round_number': 102, // LB-A R2 (legacy)
@@ -189,7 +198,8 @@ class HardcodedSaboDE16Service {
           'status': 'pending',
           'match_type': 'tournament',
           'bracket_format': 'sabo_de16',
-          'winner_advances_to': advancement['winner'], // 🔥 Now contains display_order!
+          'winner_advances_to':
+              advancement['winner'], // 🔥 Now contains display_order!
           'loser_advances_to': null, // Eliminated
           // 🔥 STANDARDIZED FIELDS
           'bracket_type': 'LB-A',
@@ -207,7 +217,8 @@ class HardcodedSaboDE16Service {
 
       // LB-A Round 3 / Final: Match 21 (display_order 2301)
       final displayOrder21 = 2301;
-      final advancement21 = advancementMap[displayOrder21]!; // 🔥 Use display_order as key!
+      final advancement21 =
+          advancementMap[displayOrder21]!; // 🔥 Use display_order as key!
       allMatches.add({
         'tournament_id': tournamentId,
         'round_number': 103, // LB-A R3 Final (legacy)
@@ -220,7 +231,8 @@ class HardcodedSaboDE16Service {
         'status': 'pending',
         'match_type': 'tournament',
         'bracket_format': 'sabo_de16',
-        'winner_advances_to': advancement21['winner'], // 🔥 Now contains display_order! To SABO Finals Semi1
+        'winner_advances_to': advancement21[
+            'winner'], // 🔥 Now contains display_order! To SABO Finals Semi1
         'loser_advances_to': null, // Eliminated
         // 🔥 STANDARDIZED FIELDS
         'bracket_type': 'LB-A',
@@ -241,7 +253,8 @@ class HardcodedSaboDE16Service {
       // LB-B Round 1: Matches 22-23 (display_order 3101-3102)
       for (int i = 22; i <= 23; i++) {
         final displayOrder = (3 * 1000) + (1 * 100) + (i - 21); // 3101-3102
-        final advancement = advancementMap[displayOrder]!; // 🔥 Use display_order as key!
+        final advancement =
+            advancementMap[displayOrder]!; // 🔥 Use display_order as key!
         allMatches.add({
           'tournament_id': tournamentId,
           'round_number': 201, // LB-B R1 (legacy)
@@ -254,7 +267,8 @@ class HardcodedSaboDE16Service {
           'status': 'pending',
           'match_type': 'tournament',
           'bracket_format': 'sabo_de16',
-          'winner_advances_to': advancement['winner'], // 🔥 Now contains display_order!
+          'winner_advances_to':
+              advancement['winner'], // 🔥 Now contains display_order!
           'loser_advances_to': null, // Eliminated
           // 🔥 STANDARDIZED FIELDS
           'bracket_type': 'LB-B', // Loser Branch B
@@ -273,7 +287,8 @@ class HardcodedSaboDE16Service {
       // LB-B Round 2: Match 24 (display_order 3201)
       // W22 vs W23 winners meet here
       final displayOrder24 = 3201;
-      final advancement24 = advancementMap[displayOrder24]!; // 🔥 Use display_order as key!
+      final advancement24 =
+          advancementMap[displayOrder24]!; // 🔥 Use display_order as key!
       allMatches.add({
         'tournament_id': tournamentId,
         'round_number': 202, // LB-B R2 (legacy)
@@ -317,7 +332,8 @@ class HardcodedSaboDE16Service {
         'status': 'pending',
         'match_type': 'tournament',
         'bracket_format': 'sabo_de16',
-        'winner_advances_to': advancement25_lbb['winner'], // 🔥 To LB-B R4 (3401)
+        'winner_advances_to':
+            advancement25_lbb['winner'], // 🔥 To LB-B R4 (3401)
         'loser_advances_to': null, // Eliminated
         // 🔥 STANDARDIZED FIELDS
         'bracket_type': 'LB-B',
@@ -348,7 +364,8 @@ class HardcodedSaboDE16Service {
         'status': 'pending',
         'match_type': 'tournament',
         'bracket_format': 'sabo_de16',
-        'winner_advances_to': advancement26_lbb['winner'], // 🔥 To SABO Semi2 (4102)
+        'winner_advances_to':
+            advancement26_lbb['winner'], // 🔥 To SABO Semi2 (4102)
         'loser_advances_to': null, // Eliminated
         // 🔥 STANDARDIZED FIELDS
         'bracket_type': 'LB-B',
@@ -369,7 +386,8 @@ class HardcodedSaboDE16Service {
       // Semifinal 1: Match 27 (display_order 4101)
       // WB R3 M13 winner vs LB-A champion
       final displayOrder27 = 4101;
-      final advancement27 = advancementMap[displayOrder27]!; // 🔥 Use display_order as key!
+      final advancement27 =
+          advancementMap[displayOrder27]!; // 🔥 Use display_order as key!
       allMatches.add({
         'tournament_id': tournamentId,
         'round_number': 250, // SABO Semi1 (legacy)
@@ -382,7 +400,8 @@ class HardcodedSaboDE16Service {
         'status': 'pending',
         'match_type': 'tournament',
         'bracket_format': 'sabo_de16',
-        'winner_advances_to': advancement27['winner'], // 🔥 Now contains display_order! To Final
+        'winner_advances_to':
+            advancement27['winner'], // 🔥 Now contains display_order! To Final
         'loser_advances_to': null, // 3rd place
         // 🔥 STANDARDIZED FIELDS
         'bracket_type': 'SABO', // SABO Finals
@@ -400,7 +419,8 @@ class HardcodedSaboDE16Service {
       // Semifinal 2: Match 28 (display_order 4102)
       // WB R3 M14 winner vs LB-B R4 champion
       final displayOrder28 = 4102;
-      final advancement28 = advancementMap[displayOrder28]!; // 🔥 Use display_order as key!
+      final advancement28 =
+          advancementMap[displayOrder28]!; // 🔥 Use display_order as key!
       allMatches.add({
         'tournament_id': tournamentId,
         'round_number': 251, // SABO Semi2 (legacy)
@@ -413,7 +433,8 @@ class HardcodedSaboDE16Service {
         'status': 'pending',
         'match_type': 'tournament',
         'bracket_format': 'sabo_de16',
-        'winner_advances_to': advancement28['winner'], // 🔥 Now contains display_order! To Final
+        'winner_advances_to':
+            advancement28['winner'], // 🔥 Now contains display_order! To Final
         'loser_advances_to': null, // 4th place
         // 🔥 STANDARDIZED FIELDS
         'bracket_type': 'SABO',
@@ -507,8 +528,14 @@ class HardcodedSaboDE16Service {
     // ⭐ ENHANCED: Losers now go to LB-B R3 (3301) instead of being eliminated!
     // Winners → SABO Finals semifinals (4101, 4102)
     // Losers → LB-B R3 (3301) - "Trận cứu vớt"
-    map[1301] = {'winner': 4101, 'loser': 3301}; // DO 1301 → 4101 (Semi1), L→3301
-    map[1302] = {'winner': 4102, 'loser': 3301}; // DO 1302 → 4102 (Semi2), L→3301
+    map[1301] = {
+      'winner': 4101,
+      'loser': 3301
+    }; // DO 1301 → 4101 (Semi1), L→3301
+    map[1302] = {
+      'winner': 4102,
+      'loser': 3301
+    }; // DO 1302 → 4102 (Semi2), L→3301
 
     // ========== LOSER BRANCH A (7 matches) ==========
 
@@ -622,14 +649,15 @@ class HardcodedSaboDE16Service {
         .select('player1_id, player2_id, tournament_id')
         .eq('id', matchId)
         .single();
-        
+
     final player1Id = match['player1_id'] as String;
     final player2Id = match['player2_id'] as String;
     final loserId = (winnerId == player1Id) ? player2Id : player1Id;
     final tournamentId = match['tournament_id'] as String;
 
     // Use UniversalMatchProgressionService for immediate advancement
-    return await UniversalMatchProgressionService.instance.updateMatchResultWithImmediateAdvancement(
+    return await UniversalMatchProgressionService.instance
+        .updateMatchResultWithImmediateAdvancement(
       matchId: matchId,
       tournamentId: tournamentId,
       winnerId: winnerId,
@@ -638,4 +666,3 @@ class HardcodedSaboDE16Service {
     );
   }
 }
-

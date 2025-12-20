@@ -67,7 +67,7 @@ class ShareableTournamentCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 60),
 
               // Tournament Name
@@ -116,8 +116,7 @@ class ShareableTournamentCard extends StatelessWidget {
                 children: [
                   if (startDate != null)
                     _buildStat('📅', _formatDate(startDate!)),
-                  if (participants != null)
-                    _buildStat('👥', '$participants'),
+                  if (participants != null) _buildStat('👥', '$participants'),
                   if (format != null)
                     _buildStat('🏆', _formatTournamentType(format!)),
                 ],
@@ -289,7 +288,16 @@ class ShareableTournamentCard extends StatelessWidget {
       case 'round_robin':
         return 'Vòng Tròn';
       case 'swiss':
+      case 'swiss_system':
         return 'Swiss';
+      case 'sabo_de8':
+        return 'SABO DE8 (8 người)';
+      case 'sabo_de16':
+        return 'SABO DE16 (16 người)';
+      case 'sabo_de32':
+        return 'SABO DE32 (32 người)';
+      case 'sabo_de64':
+        return 'SABO DE64 (64 người)';
       default:
         return format;
     }

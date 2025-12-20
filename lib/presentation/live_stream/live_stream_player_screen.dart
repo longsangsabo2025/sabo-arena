@@ -51,7 +51,8 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
             });
           },
           onWebResourceError: (error) {
-            ProductionLogger.info('❌ WebView error: ${error.description}', tag: 'live_stream_player_screen');
+            ProductionLogger.info('❌ WebView error: ${error.description}',
+                tag: 'live_stream_player_screen');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Lỗi tải video: ${error.description}'),
@@ -73,7 +74,7 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
         return 'https://www.youtube.com/embed/$videoId?autoplay=1&modestbranding=1';
       }
     }
-    
+
     // YouTube short URL
     if (url.contains('youtu.be/')) {
       final videoId = url.split('youtu.be/').last.split('?').first;
@@ -135,7 +136,9 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'TRỰC TIẾP', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'TRỰC TIẾP',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1,
@@ -143,7 +146,9 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
             ),
             if (widget.matchTitle != null)
               Text(
-                widget.matchTitle!, overflow: TextOverflow.ellipsis, style: const TextStyle(
+                widget.matchTitle!,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w400,
                 ),
@@ -186,9 +191,12 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Players
-                  if (widget.player1Name != null && widget.player2Name != null) ...[
+                  if (widget.player1Name != null &&
+                      widget.player2Name != null) ...[
                     const Text(
-                      'TRẬN ĐẤU', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'TRẬN ĐẤU',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: Colors.white70,
@@ -201,7 +209,9 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            widget.player1Name!, overflow: TextOverflow.ellipsis, style: const TextStyle(
+                            widget.player1Name!,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -212,7 +222,9 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
-                            'VS', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'VS',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFFFF5722),
@@ -221,7 +233,9 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
                         ),
                         Expanded(
                           child: Text(
-                            widget.player2Name!, overflow: TextOverflow.ellipsis, style: const TextStyle(
+                            widget.player2Name!,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -257,7 +271,9 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
                         ),
                         const SizedBox(width: 8),
                         const Text(
-                          'ĐANG PHÁT TRỰC TIẾP', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'ĐANG PHÁT TRỰC TIẾP',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -272,7 +288,9 @@ class _LiveStreamPlayerScreenState extends State<LiveStreamPlayerScreen> {
 
                   // Instructions
                   Text(
-                    '💡 Xoay ngang màn hình hoặc nhấn nút toàn màn hình để xem tốt hơn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    '💡 Xoay ngang màn hình hoặc nhấn nút toàn màn hình để xem tốt hơn',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 12,
                       color: Colors.white54,
                       fontStyle: FontStyle.italic,

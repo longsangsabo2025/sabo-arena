@@ -1,23 +1,24 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart'
+    show kIsWeb, defaultTargetPlatform, TargetPlatform;
 
 /// Local database cache for messages
 /// Implements caching strategy similar to WhatsApp/Messenger:
 /// 1. Load from cache first (instant)
 /// 2. Sync with server in background
 /// 3. Listen to real-time updates
-/// 
+///
 /// NOTE: Disabled on web platform (sqflite not supported)
 class MessagesCacheService {
   static Database? _database;
-  
+
   /// Check if caching is available (disabled on web and desktop)
   static bool get isAvailable {
     if (kIsWeb) return false;
     // Disable on desktop platforms as sqflite requires ffi setup which might be missing
-    if (defaultTargetPlatform == TargetPlatform.windows || 
-        defaultTargetPlatform == TargetPlatform.linux || 
+    if (defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       return false;
     }
@@ -99,17 +100,20 @@ class MessagesCacheService {
     if (!isAvailable) return; // Skip on web
     final db = await database;
     if (db == null) return;
-    await db.insert('conversations', {
-      'room_id': roomId,
-      'other_user_id': otherUserId,
-      'other_user_name': otherUserName,
-      'other_user_avatar': otherUserAvatar,
-      'last_message': lastMessage,
-      'last_message_time': lastMessageTime,
-      'unread_count': unreadCount,
-      'updated_at': updatedAt,
-      'synced_at': DateTime.now().toIso8601String(),
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+        'conversations',
+        {
+          'room_id': roomId,
+          'other_user_id': otherUserId,
+          'other_user_name': otherUserName,
+          'other_user_avatar': otherUserAvatar,
+          'last_message': lastMessage,
+          'last_message_time': lastMessageTime,
+          'unread_count': unreadCount,
+          'updated_at': updatedAt,
+          'synced_at': DateTime.now().toIso8601String(),
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Get all cached conversations
@@ -131,14 +135,17 @@ class MessagesCacheService {
     if (!isAvailable) return; // Skip on web
     final db = await database;
     if (db == null) return;
-    await db.insert('messages', {
-      'id': id,
-      'room_id': roomId,
-      'sender_id': senderId,
-      'message': message,
-      'created_at': createdAt,
-      'synced_at': DateTime.now().toIso8601String(),
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+        'messages',
+        {
+          'id': id,
+          'room_id': roomId,
+          'sender_id': senderId,
+          'message': message,
+          'created_at': createdAt,
+          'synced_at': DateTime.now().toIso8601String(),
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Get cached messages for a room

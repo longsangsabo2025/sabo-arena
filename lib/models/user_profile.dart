@@ -57,12 +57,24 @@ class UserProfile {
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
+    // ELON FIX: Smart name resolution
+    String displayName = json['display_name'] ?? json['full_name'] ?? '';
+    String? username = json['username'];
+
+    // If display name is generic/invalid, try to use username
+    final lowerName = displayName.trim().toLowerCase();
+    if ((lowerName.isEmpty || lowerName == 'user' || lowerName == 'unknown') &&
+        username != null &&
+        username.isNotEmpty) {
+      displayName = username;
+    }
+
     return UserProfile(
       id: json['id'] ?? '',
       email: json['email'] ?? '',
       fullName: json['full_name'] ?? '',
-      displayName: json['display_name'] ?? json['full_name'] ?? '',
-      username: json['username'],
+      displayName: displayName,
+      username: username,
       bio: json['bio'],
       avatarUrl: json['avatar_url'],
       coverPhotoUrl: json['cover_photo_url'],

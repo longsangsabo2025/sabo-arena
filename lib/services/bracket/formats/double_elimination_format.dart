@@ -24,7 +24,6 @@ class HardcodedDoubleEliminationService {
     required List<String> participantIds,
   }) async {
     try {
-
       if (participantIds.length != 16) {
         throw Exception('DE16 requires exactly 16 participants');
       }
@@ -458,4 +457,3 @@ class HardcodedDoubleEliminationService {
     return map;
   }
 }
-

@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../services/club_service.dart';
 import '../../models/club.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/common/app_button.dart';
 
 class MyClubsScreen extends StatefulWidget {
   const MyClubsScreen({super.key});
@@ -15,48 +17,52 @@ class MyClubsScreen extends StatefulWidget {
 
 class _MyClubsScreenState extends State<MyClubsScreen> {
   final ClubService _clubService = ClubService.instance;
+  final PagingController<int, Club> _pagingController =
+      PagingController(firstPageKey: 0);
 
-  List<Club> _myClubs = [];
-  bool _isLoading = true;
   String? _errorMessage;
   Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
-    _loadMyClubs();
+    _pagingController.addPageRequestListener(_fetchClubsPage);
 
     // Auto-refresh every 30 seconds to check for status updates
     _refreshTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      _loadMyClubs();
+      _pagingController.refresh();
     });
   }
 
   @override
   void dispose() {
     _refreshTimer?.cancel();
+    _pagingController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadMyClubs() async {
+  Future<void> _fetchClubsPage(int pageKey) async {
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
+      final clubs = await _clubService.getMyClubs(
+        limit: 20,
+        offset: pageKey,
+      );
 
-      final clubs = await _clubService.getMyClubs();
-
-      setState(() {
-        _myClubs = clubs;
-        _isLoading = false;
-      });
+      final isLastPage = clubs.length < 20;
+      if (isLastPage) {
+        _pagingController.appendLastPage(clubs);
+      } else {
+        final nextPageKey = pageKey + clubs.length;
+        _pagingController.appendPage(clubs, nextPageKey);
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Lỗi tải danh sách CLB: $e';
-      });
+      _errorMessage = 'Lỗi tải danh sách CLB: $e';
+      _pagingController.error = e;
     }
+  }
+
+  Future<void> _loadMyClubs() async {
+    _pagingController.refresh();
   }
 
   @override
@@ -96,40 +102,45 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red),
-            SizedBox(height: 16),
-            Text(
-              _errorMessage!, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadMyClubs, child: Text('Thử lại')),
-          ],
-        ),
-      );
-    }
-
-    if (_myClubs.isEmpty) {
-      return _buildEmptyState();
-    }
-
     return RefreshIndicator(
       onRefresh: _loadMyClubs,
-      child: ListView.builder(
+      child: PagedListView<int, Club>(
+        pagingController: _pagingController,
         padding: EdgeInsets.all(16),
-        itemCount: _myClubs.length,
-        itemBuilder: (context, index) {
-          return _buildClubCard(_myClubs[index]);
-        },
+        builderDelegate: PagedChildBuilderDelegate<Club>(
+          itemBuilder: (context, club, index) => _buildClubCard(club),
+          firstPageProgressIndicatorBuilder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+          newPageProgressIndicatorBuilder: (context) => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          firstPageErrorIndicatorBuilder: (context) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: Colors.red),
+                SizedBox(height: 16),
+                Text(
+                  _errorMessage ?? 'Có lỗi xảy ra',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16),
+                AppButton(
+                  label: 'Thử lại',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.medium,
+                  onPressed: _loadMyClubs,
+                ),
+              ],
+            ),
+          ),
+          noItemsFoundIndicatorBuilder: (context) => _buildEmptyState(),
+        ),
       ),
     );
   }
@@ -142,7 +153,9 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
           Icon(Icons.store_outlined, size: 64, color: Colors.grey),
           SizedBox(height: 16),
           Text(
-            'Bạn chưa đăng ký CLB nào', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Bạn chưa đăng ký CLB nào',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.w500,
               color: Colors.grey[600],
@@ -150,18 +163,23 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
           ),
           SizedBox(height: 8),
           Text(
-            'Hãy đăng ký CLB đầu tiên của bạn!', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, color: Colors.grey[500]),
+            'Hãy đăng ký CLB đầu tiên của bạn!',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey[500]),
           ),
           SizedBox(height: 24),
-          ElevatedButton.icon(
+          AppButton(
+            label: 'Đăng ký CLB',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            icon: Icons.add,
+            iconTrailing: false,
             onPressed: () {
               Navigator.pushNamed(
                 context,
                 '/club_registration_screen',
               ).then((_) => _loadMyClubs());
             },
-            icon: Icon(Icons.add),
-            label: Text('Đăng ký CLB'),
           ),
         ],
       ),
@@ -183,7 +201,8 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    club.name, style: TextStyle(
+                    club.name,
+                    style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),
@@ -203,7 +222,9 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
                   SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      club.address!, overflow: TextOverflow.ellipsis, style: TextStyle(
+                      club.address!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 14.sp,
                         color: Colors.grey[600],
                       ),
@@ -217,7 +238,9 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
             // Description
             if (club.description != null)
               Text(
-                club.description!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
+                club.description!,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
                 maxLines: 2,
               ),
 
@@ -251,7 +274,9 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Lý do từ chối:', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Lý do từ chối:',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.red[700],
@@ -259,7 +284,9 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      club.rejectionReason!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.sp, color: Colors.red[600]),
+                      club.rejectionReason!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12.sp, color: Colors.red[600]),
                     ),
                   ],
                 ),
@@ -272,14 +299,17 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
+                      child: AppButton(
+                        label: 'Đăng ký lại',
+                        type: AppButtonType.outline,
+                        size: AppButtonSize.medium,
+                        fullWidth: true,
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
                             '/club_registration_screen',
                           ).then((_) => _loadMyClubs());
                         },
-                        child: Text('Đăng ký lại'),
                       ),
                     ),
                   ],
@@ -331,7 +361,8 @@ class _MyClubsScreenState extends State<MyClubsScreen> {
           Icon(icon, size: 14, color: textColor),
           SizedBox(width: 4),
           Text(
-            statusText, style: TextStyle(
+            statusText,
+            style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
               color: textColor,

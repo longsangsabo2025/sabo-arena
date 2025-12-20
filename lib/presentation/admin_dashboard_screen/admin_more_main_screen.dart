@@ -30,7 +30,9 @@ class AdminMoreMainScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Thêm tùy chọn', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Thêm tùy chọn',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.textPrimaryLight,
@@ -135,7 +137,8 @@ class AdminMoreMainScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const AdminVoucherCampaignApprovalScreen(),
+                      builder: (_) =>
+                          const AdminVoucherCampaignApprovalScreen(),
                     ),
                   );
                 },
@@ -166,8 +169,7 @@ class AdminMoreMainScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          const NotificationSettingsScreen(),
+                      builder: (_) => const NotificationSettingsScreen(),
                     ),
                   );
                 },
@@ -280,7 +282,8 @@ class AdminMoreMainScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title, style: TextStyle(
+          title,
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimaryLight,
@@ -327,7 +330,8 @@ class AdminMoreMainScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title, style: TextStyle(
+                    title,
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.textPrimaryLight,
@@ -335,7 +339,8 @@ class AdminMoreMainScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    subtitle, style: TextStyle(
+                    subtitle,
+                    style: TextStyle(
                       fontSize: 14,
                       color: AppTheme.textSecondaryLight,
                     ),

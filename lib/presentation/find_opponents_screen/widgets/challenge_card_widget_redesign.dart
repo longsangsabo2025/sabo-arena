@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/challenge_list_service.dart';
 import '../../../services/challenge_service.dart';
+import '../../../widgets/common/app_button.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
 
 /// Card widget to display a challenge/invite in list
@@ -41,8 +42,7 @@ class _ChallengeCardWidgetRedesignState
     final clubLogoUrl = club?['logo_url'] as String?;
 
     // Fallback to location from match_conditions if no club data
-    final location =
-        clubName ??
+    final location = clubName ??
         matchConditions['location_name'] ??
         matchConditions['location'] ??
         'Chưa xác định';
@@ -71,7 +71,8 @@ class _ChallengeCardWidgetRedesignState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: primaryColor.withValues(alpha: 0.3), width: 1.5),
+        border:
+            Border.all(color: primaryColor.withValues(alpha: 0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: primaryColor.withValues(alpha: 0.1),
@@ -389,7 +390,7 @@ class _ChallengeCardWidgetRedesignState
           children: [
             Expanded(
               child: _buildCompactInfoItem(
-                Icons.sports_esports,
+                Icons.sports_baseball,
                 'Game',
                 gameType,
                 const Color(0xFF1E88E5),
@@ -913,103 +914,75 @@ class _ChallengeCardWidgetRedesignState
 
               const SizedBox(height: 24),
 
-              // Send Button
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          setModalState(() => isLoading = true);
+              // Send Button - iOS style
+              AppButton(
+                label: 'Gửi lời mời hẹn lịch',
+                type: AppButtonType.primary,
+                size: AppButtonSize.large,
+                customColor: const Color(0xFF00695C), // Brand teal green
+                customTextColor: Colors.white,
+                isLoading: isLoading,
+                fullWidth: true,
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setModalState(() => isLoading = true);
 
-                          try {
-                            final challengerId =
-                                widget.challenge['challenger_id'];
+                        try {
+                          final challengerId =
+                              widget.challenge['challenger_id'];
 
-                            await ChallengeService.instance.sendScheduleRequest(
-                              targetUserId: challengerId,
-                              scheduledDate: selectedDate,
-                              timeSlot: selectedTimeSlot,
-                              message: 'Lời mời hẹn lịch chơi bida',
-                            );
+                          await ChallengeService.instance.sendScheduleRequest(
+                            targetUserId: challengerId,
+                            scheduledDate: selectedDate,
+                            timeSlot: selectedTimeSlot,
+                            message: 'Lời mời hẹn lịch chơi bida',
+                          );
 
-                            if (modalContext.mounted) {
-                              Navigator.pop(modalContext);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.check_circle,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(width: 12),
-                                      Text('Đã gửi lời mời hẹn lịch!'),
-                                    ],
-                                  ),
-                                  backgroundColor: Color(0xFF00695C),
-                                  behavior: SnackBarBehavior.floating,
+                          if (modalContext.mounted) {
+                            Navigator.pop(modalContext);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text('Đã gửi lời mời hẹn lịch!'),
+                                  ],
                                 ),
-                              );
-                            }
-                          } catch (e) {
-                            if (modalContext.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.error,
-                                        color: Colors.white,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(child: Text('Lỗi: $e')),
-                                    ],
-                                  ),
-                                  backgroundColor: Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            }
-                          } finally {
-                            if (modalContext.mounted) {
-                              setModalState(() => isLoading = false);
-                            }
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00695C),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                          ),
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.send, size: 18),
-                            SizedBox(width: 8),
-                            Text(
-                              'Gửi lời mời',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                                backgroundColor: Color(0xFF00695C),
+                                behavior: SnackBarBehavior.floating,
                               ),
-                            ),
-                          ],
-                        ),
-                ),
+                            );
+                          }
+                        } catch (e) {
+                          if (modalContext.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.error,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(child: Text('Lỗi: $e')),
+                                  ],
+                                ),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (modalContext.mounted) {
+                            setModalState(() => isLoading = false);
+                          }
+                        }
+                      },
               ),
             ],
           ),

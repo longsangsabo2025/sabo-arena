@@ -3,7 +3,7 @@ import '../../universal_match_progression_service.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
 /// 🏆 SABO DE24 Tournament Format Service
-/// 
+///
 /// Structure:
 /// - 24 players total
 /// - GROUP STAGE: 8 groups of 3 players each
@@ -55,12 +55,13 @@ class HardcodedSaboDE24Service {
     // ==========================================
     // PHASE 1: GROUP STAGE (8 groups × 3 players)
     // ==========================================
-    
+
     for (int group = 0; group < 8; group++) {
       // Get 3 players for this group
       final groupPlayers = shuffled.sublist(group * 3, (group + 1) * 3);
-      final groupName = String.fromCharCode(65 + group); // A, B, C, D, E, F, G, H
-      
+      final groupName =
+          String.fromCharCode(65 + group); // A, B, C, D, E, F, G, H
+
       // Round-robin: 3 matches per group
       // Match 1: Player 0 vs Player 1
       matches.add(_createMatch(
@@ -70,7 +71,8 @@ class HardcodedSaboDE24Service {
         round: 'Group $groupName',
         player1Id: groupPlayers[0],
         player2Id: groupPlayers[1],
-        bracketType: 'groups',  // Changed from 'group_stage' (11 chars) to 'groups' (6 chars) - fits VARCHAR(10)
+        bracketType:
+            'groups', // Changed from 'group_stage' (11 chars) to 'groups' (6 chars) - fits VARCHAR(10)
         metadata: {
           'group': groupName,
           'group_match': 1,
@@ -85,7 +87,8 @@ class HardcodedSaboDE24Service {
         round: 'Group $groupName',
         player1Id: groupPlayers[0],
         player2Id: groupPlayers[2],
-        bracketType: 'groups',  // Changed from 'group_stage' (11 chars) to 'groups' (6 chars) - fits VARCHAR(10)
+        bracketType:
+            'groups', // Changed from 'group_stage' (11 chars) to 'groups' (6 chars) - fits VARCHAR(10)
         metadata: {
           'group': groupName,
           'group_match': 2,
@@ -100,7 +103,8 @@ class HardcodedSaboDE24Service {
         round: 'Group $groupName',
         player1Id: groupPlayers[1],
         player2Id: groupPlayers[2],
-        bracketType: 'groups',  // Changed from 'group_stage' (11 chars) to 'groups' (6 chars) - fits VARCHAR(10)
+        bracketType:
+            'groups', // Changed from 'group_stage' (11 chars) to 'groups' (6 chars) - fits VARCHAR(10)
         metadata: {
           'group': groupName,
           'group_match': 3,
@@ -109,14 +113,14 @@ class HardcodedSaboDE24Service {
     }
 
     // ==========================================
-    // PHASE 2: MAIN STAGE - SABO DE16 FORMAT  
+    // PHASE 2: MAIN STAGE - SABO DE16 FORMAT
     // ==========================================
     // Create SABO DE16 bracket structure (27 matches)
     // Players will be filled after group stage completion
-    
+
     // Generate advancement map for SABO DE16
     final advancementMap = _calculateAdvancementMap();
-    
+
     // ===== WINNERS BRACKET (14 matches, stops at R3) =====
     // WB Round 1: 16 → 8 (8 matches)
     for (int i = 0; i < 8; i++) {
@@ -277,9 +281,15 @@ class HardcodedSaboDE24Service {
     // Insert all matches (24 Group + 27 SABO DE16 = 51 total)
     await _supabase.from('matches').insert(matches);
 
-    ProductionLogger.info('✅ Created SABO DE24 tournament: ${matches.length} matches', tag: 'hardcoded_sabo_de24_service');
-    ProductionLogger.info('   📊 Group Stage: 24 matches (8 groups × 3 matches)', tag: 'hardcoded_sabo_de24_service');
-    ProductionLogger.info('   🏆 Main Stage SABO DE16: 27 matches (WB: 14, LB-A: 7, LB-B: 3, Finals: 3)', tag: 'hardcoded_sabo_de24_service');
+    ProductionLogger.info(
+        '✅ Created SABO DE24 tournament: ${matches.length} matches',
+        tag: 'hardcoded_sabo_de24_service');
+    ProductionLogger.info(
+        '   📊 Group Stage: 24 matches (8 groups × 3 matches)',
+        tag: 'hardcoded_sabo_de24_service');
+    ProductionLogger.info(
+        '   🏆 Main Stage SABO DE16: 27 matches (WB: 14, LB-A: 7, LB-B: 3, Finals: 3)',
+        tag: 'hardcoded_sabo_de24_service');
   }
 
   /// Helper to create match data
@@ -304,7 +314,8 @@ class HardcodedSaboDE24Service {
       'round_number': roundNumber,
       'player1_id': player1Id,
       'player2_id': player2Id,
-      'status': 'pending',  // All group matches start as 'pending', valid values: pending, in_progress, completed
+      'status':
+          'pending', // All group matches start as 'pending', valid values: pending, in_progress, completed
       'bracket_type': bracketType,
       'winner_advances_to': winnerAdvancesTo,
       'loser_advances_to': loserAdvancesTo,
@@ -423,24 +434,28 @@ class HardcodedSaboDE24Service {
       final player2Score = (match['player2_score'] ?? 0) as int;
 
       // Initialize player stats
-      standings.putIfAbsent(player1Id, () => {
-        'player_id': player1Id,
-        'wins': 0,
-        'losses': 0,
-        'points': 0,
-        'score_for': 0,      // Total points scored
-        'score_against': 0,  // Total points conceded
-        'score_diff': 0,     // Difference (for - against)
-      });
-      standings.putIfAbsent(player2Id, () => {
-        'player_id': player2Id,
-        'wins': 0,
-        'losses': 0,
-        'points': 0,
-        'score_for': 0,
-        'score_against': 0,
-        'score_diff': 0,
-      });
+      standings.putIfAbsent(
+          player1Id,
+          () => {
+                'player_id': player1Id,
+                'wins': 0,
+                'losses': 0,
+                'points': 0,
+                'score_for': 0, // Total points scored
+                'score_against': 0, // Total points conceded
+                'score_diff': 0, // Difference (for - against)
+              });
+      standings.putIfAbsent(
+          player2Id,
+          () => {
+                'player_id': player2Id,
+                'wins': 0,
+                'losses': 0,
+                'points': 0,
+                'score_for': 0,
+                'score_against': 0,
+                'score_diff': 0,
+              });
 
       // Update scores
       standings[player1Id]!['score_for'] += player1Score;
@@ -462,7 +477,8 @@ class HardcodedSaboDE24Service {
 
     // Calculate score difference for each player
     for (final playerStats in standings.values) {
-      playerStats['score_diff'] = playerStats['score_for'] - playerStats['score_against'];
+      playerStats['score_diff'] =
+          playerStats['score_for'] - playerStats['score_against'];
     }
 
     // Sort by: 1) points, 2) score difference, 3) score_for
@@ -471,22 +487,27 @@ class HardcodedSaboDE24Service {
         // Primary: Points (descending)
         final pointsDiff = (b['points'] as int).compareTo(a['points'] as int);
         if (pointsDiff != 0) return pointsDiff;
-        
+
         // Secondary: Score difference (descending)
-        final scoreDiff = (b['score_diff'] as int).compareTo(a['score_diff'] as int);
+        final scoreDiff =
+            (b['score_diff'] as int).compareTo(a['score_diff'] as int);
         if (scoreDiff != 0) return scoreDiff;
-        
+
         // Tertiary: Total score for (descending)
         return (b['score_for'] as int).compareTo(a['score_for'] as int);
       });
 
     // Return top 2 player IDs
-    return sortedStandings.take(2).map((s) => s['player_id'] as String).toList();
+    return sortedStandings
+        .take(2)
+        .map((s) => s['player_id'] as String)
+        .toList();
   }
 
   /// Advance group winners to DE16 main stage
   Future<void> advanceGroupWinnersToMainStage(String tournamentId) async {
-    ProductionLogger.info('🎯 Advancing group winners to DE16 main stage...', tag: 'hardcoded_sabo_de24_service');
+    ProductionLogger.info('🎯 Advancing group winners to DE16 main stage...',
+        tag: 'hardcoded_sabo_de24_service');
 
     final qualifiers = <String>[];
 
@@ -497,9 +518,11 @@ class HardcodedSaboDE24Service {
         tournamentId: tournamentId,
         groupName: groupName,
       );
-      
+
       qualifiers.addAll(topTwo);
-      ProductionLogger.info('   ✅ Group $groupName: ${topTwo.length} qualifiers', tag: 'hardcoded_sabo_de24_service');
+      ProductionLogger.info(
+          '   ✅ Group $groupName: ${topTwo.length} qualifiers',
+          tag: 'hardcoded_sabo_de24_service');
     }
 
     if (qualifiers.length != 16) {
@@ -522,17 +545,17 @@ class HardcodedSaboDE24Service {
       final player1 = shuffled[i * 2];
       final player2 = shuffled[i * 2 + 1];
 
-      await _supabase
-          .from('matches')
-          .update({
-            'player1_id': player1,
-            'player2_id': player2,
-            'status': 'pending',  // Changed from 'ready' to 'pending' - valid enum values: pending, in_progress, completed
-          })
-          .eq('id', match['id']);
+      await _supabase.from('matches').update({
+        'player1_id': player1,
+        'player2_id': player2,
+        'status':
+            'pending', // Changed from 'ready' to 'pending' - valid enum values: pending, in_progress, completed
+      }).eq('id', match['id']);
     }
 
-    ProductionLogger.info('✅ ${qualifiers.length} players advanced to DE16 main stage', tag: 'hardcoded_sabo_de24_service');
+    ProductionLogger.info(
+        '✅ ${qualifiers.length} players advanced to DE16 main stage',
+        tag: 'hardcoded_sabo_de24_service');
   }
 
   /// Process match result
@@ -547,7 +570,7 @@ class HardcodedSaboDE24Service {
         .select('player1_id, player2_id, tournament_id, round, bracket_type')
         .eq('id', matchId)
         .single();
-        
+
     final player1Id = match['player1_id'] as String;
     final player2Id = match['player2_id'] as String;
     final loserId = (winnerId == player1Id) ? player2Id : player1Id;
@@ -555,7 +578,8 @@ class HardcodedSaboDE24Service {
     final bracketType = match['bracket_type'] as String?;
 
     // Use UniversalMatchProgressionService for immediate advancement
-    final result = await UniversalMatchProgressionService.instance.updateMatchResultWithImmediateAdvancement(
+    final result = await UniversalMatchProgressionService.instance
+        .updateMatchResultWithImmediateAdvancement(
       matchId: matchId,
       tournamentId: tournamentId,
       winnerId: winnerId,
@@ -564,7 +588,8 @@ class HardcodedSaboDE24Service {
     );
 
     // If it's a group match, check if we need to advance group winners
-    if (bracketType == 'groups' || (match['round'] as String).startsWith('Group')) {
+    if (bracketType == 'groups' ||
+        (match['round'] as String).startsWith('Group')) {
       // Check if ALL group matches are completed
       final pendingMatches = await _supabase
           .from('matches')
@@ -573,14 +598,15 @@ class HardcodedSaboDE24Service {
           .like('round', 'Group%')
           .neq('status', 'completed')
           .count();
-      
+
       final count = pendingMatches.count;
 
       if (count == 0) {
         // All group matches done, advance winners
         await advanceGroupWinnersToMainStage(tournamentId);
         final msg = result['message'] ?? '';
-        result['message'] = '$msg (Group Stage Completed - Advanced to Main Stage)';
+        result['message'] =
+            '$msg (Group Stage Completed - Advanced to Main Stage)';
       }
     }
 

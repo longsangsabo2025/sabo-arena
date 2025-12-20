@@ -543,10 +543,10 @@ class NotificationPreferences {
 
   // Convenience getter for quiet hours
   QuietHours get quietHours => QuietHours(
-    enabled: enableQuietHours,
-    startTime: quietHoursStart,
-    endTime: quietHoursEnd,
-  );
+        enabled: enableQuietHours,
+        startTime: quietHoursStart,
+        endTime: quietHoursEnd,
+      );
 
   NotificationPreferences({
     required this.userId,
@@ -576,8 +576,7 @@ class NotificationPreferences {
           json['enable_email_notifications'] as bool? ?? false,
       enableSmsNotifications:
           json['enable_sms_notifications'] as bool? ?? false,
-      typeSettings:
-          (json['type_settings'] as Map<String, dynamic>?)?.map(
+      typeSettings: (json['type_settings'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(
               NotificationType.fromString(key),
               NotificationTypeSetting.fromJson(value as Map<String, dynamic>),
@@ -678,8 +677,7 @@ class NotificationPreferences {
           enableQuietHours ?? quietHoursEnabled ?? this.enableQuietHours,
       quietHoursStart: quietHoursStart ?? this.quietHoursStart,
       quietHoursEnd: quietHoursEnd ?? this.quietHoursEnd,
-      soundSetting:
-          soundSetting ??
+      soundSetting: soundSetting ??
           (notificationSound != null
               ? NotificationSound.fromString(notificationSound)
               : this.soundSetting),

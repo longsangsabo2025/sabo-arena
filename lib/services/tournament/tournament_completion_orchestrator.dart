@@ -1,34 +1,35 @@
-import 'reward_execution_service.dart'; 
+import 'reward_execution_service.dart';
 import 'voucher_issuance_service.dart';
 import 'tournament_status_service.dart';
 import 'statistics_update_service.dart';
 import 'social_integration_service.dart';
 import 'chat_integration_service.dart';
+import 'notification_service.dart'; // 🚀 ELON MODE: Direct user notifications
 import 'tournament_result_history_service.dart';
 import '../tournament_result_service.dart';
 import 'ui_data_capture.dart';
 // ELON_MODE_AUTO_FIX // Simple UI data capture
 
 /// Orchestrator for tournament completion workflow (CLEAN v4.0)
-/// 
+///
 /// PROBLEM SOLVED: UI vs Database inconsistency
 /// - UI had correct live calculation ✅
-/// - Backend re-calculated with wrong logic ❌ 
+/// - Backend re-calculated with wrong logic ❌
 /// - Result: UI showed 75 ELO, DB saved 35 ELO
-/// 
+///
 /// SOLUTION: Ultra-simple approach
 /// 1. UI calculates once (correct logic) ✅
 /// 2. Complete button captures UI data (no re-calculation) ✅
 /// 3. Save exact UI data to database ✅
 /// 4. UI reads from database (consistent everywhere) ✅
-/// 
+///
 /// Result: No waste, perfect consistency ✅
 class TournamentCompletionOrchestrator {
   static final TournamentCompletionOrchestrator _instance =
       TournamentCompletionOrchestrator._internal();
-  
+
   factory TournamentCompletionOrchestrator() => _instance;
-  
+
   TournamentCompletionOrchestrator._internal();
 
   static TournamentCompletionOrchestrator get instance => _instance;
@@ -40,6 +41,7 @@ class TournamentCompletionOrchestrator {
   final _statsService = StatisticsUpdateService();
   final _socialService = SocialIntegrationService();
   final _chatService = ChatIntegrationService();
+  final _notificationService = TournamentNotificationService(); // 🚀 ELON MODE
   final _historyService = TournamentResultHistoryService();
   final _resultService = TournamentResultService.instance;
 
@@ -47,15 +49,19 @@ class TournamentCompletionOrchestrator {
   Function(String step, double progress)? onProgress;
 
   /// Complete tournament with all steps (REFACTORED to Single Source of Truth pattern)
+  ///
+  /// ✅ ELON MODE: Auto-execute rewards on completion (ONE-STEP WORKFLOW)
+  /// When admin clicks "Complete Tournament", rewards are distributed automatically
+  /// No manual button needed - tournament completion = FULLY COMPLETE
   Future<Map<String, dynamic>> completeTournament({
     required String tournamentId,
     bool updateElo = true,
     bool distributePrizes = true,
     bool issueVouchers = true,
     bool sendNotifications = true,
-    bool executeRewards = false, // 🆕 NEW PARAMETER: Disable reward execution by default
+    bool executeRewards =
+        true, // 🚀 AUTO-EXECUTE: Distribute rewards immediately on completion
   }) async {
-
     try {
       // STEP 1: Validate tournament readiness (10%)
       _updateProgress('Kiểm tra trận đấu...', 0.1);
@@ -75,7 +81,7 @@ class TournamentCompletionOrchestrator {
       // ═══════════════════════════════════════════════════════════════
       // 🎯 ULTRA SIMPLE: Just capture what UI is showing (no re-calculation)
       // ═══════════════════════════════════════════════════════════════
-      
+
       // CAPTURE: Get exact same data that UI is showing
       _updateProgress('Capturing UI ranking data...', 0.2);
       final standings = await UIDataCapture.captureUIRankings(tournamentId);
@@ -86,7 +92,6 @@ class TournamentCompletionOrchestrator {
           'error': 'No standings captured from UI',
         };
       }
-
 
       // RECORD: Write ONCE to tournament_results (SOURCE OF TRUTH) (40%)
       _updateProgress('Lưu kết quả vào bảng tournament_results...', 0.4);
@@ -103,12 +108,10 @@ class TournamentCompletionOrchestrator {
         executionSuccess = await _executionService.executeRewardsFromResults(
           tournamentId: tournamentId,
         );
-        
+
         if (!executionSuccess) {
-        } else {
-        }
-      } else {
-      }
+        } else {}
+      } else {}
 
       // ═══════════════════════════════════════════════════════════════
       // REMAINING STEPS: Vouchers, Social, Notifications (OLD FLOW)
@@ -148,17 +151,19 @@ class TournamentCompletionOrchestrator {
 
       // STEP: Send chat messages (95%)
       _updateProgress('Gửi tin nhắn chúc mừng...', 0.95);
-      
+
       // Build prizeRecipients from standings (for chat messages)
-      final prizeRecipients = standings.map((s) => {
-        'participant_id': s['participant_id'],
-        'participant_name': s['participant_name'],
-        'position': s['position'],
-        'spa_reward': s['spa_reward'],
-        'elo_change': s['elo_change'],
-        'prize_money_vnd': s['prize_money_vnd'],
-      }).toList();
-      
+      final prizeRecipients = standings
+          .map((s) => {
+                'participant_id': s['participant_id'],
+                'participant_name': s['participant_name'],
+                'position': s['position'],
+                'spa_reward': s['spa_reward'],
+                'elo_change': s['elo_change'],
+                'prize_money_vnd': s['prize_money_vnd'],
+              })
+          .toList();
+
       await _chatService.sendCongratulatoryChatMessages(
         tournamentId: tournamentId,
         standings: standings,
@@ -169,27 +174,36 @@ class TournamentCompletionOrchestrator {
       // STEP: Send notifications (if enabled) (98%)
       if (sendNotifications) {
         _updateProgress('Gửi thông báo...', 0.98);
-        // TODO: Implement notification service
+        // 🚀 ELON MODE: Send DIRECT notifications to each player
+        await _notificationService.sendTournamentCompletionNotifications(
+          tournamentId: tournamentId,
+          standings: standings,
+          tournament: tournament,
+        );
       }
 
       // STEP: Record completion history for audit trail (99%)
       _updateProgress('Lưu lịch sử giải đấu...', 0.99);
-      
+
       // Build eloUpdates from standings
-      final eloUpdates = standings.map((s) => {
-        'user_id': s['participant_id'],
-        'old_elo': 1500, // Will be calculated in history service
-        'new_elo': 1500 + (s['elo_change'] as int),
-        'elo_change': s['elo_change'],
-        'reason': 'Tournament completion',
-      }).toList();
-      
+      final eloUpdates = standings
+          .map((s) => {
+                'user_id': s['participant_id'],
+                'old_elo': 1500, // Will be calculated in history service
+                'new_elo': 1500 + (s['elo_change'] as int),
+                'elo_change': s['elo_change'],
+                'reason': 'Tournament completion',
+              })
+          .toList();
+
       await _recordTournamentResultHistory(
         tournament: tournament,
         standings: standings,
         eloUpdates: eloUpdates,
         spaDistribution: prizeRecipients,
-        prizeDistribution: prizeRecipients.where((p) => ((p['prize_money_vnd'] as num?) ?? 0) > 0).toList(),
+        prizeDistribution: prizeRecipients
+            .where((p) => ((p['prize_money_vnd'] as num?) ?? 0) > 0)
+            .toList(),
         options: {
           'updateElo': updateElo,
           'distributePrizes': distributePrizes,
@@ -201,16 +215,13 @@ class TournamentCompletionOrchestrator {
       // DONE (100%)
       _updateProgress('Hoàn thành!', 1.0);
 
-
       return {
         'success': true,
         'standings': standings,
         'prizeRecipients': prizeRecipients,
         'tournament': tournament,
       };
-
     } catch (e, stackTrace) {
-
       return {
         'success': false,
         'error': e.toString(),
@@ -250,7 +261,9 @@ class TournamentCompletionOrchestrator {
     try {
       await _historyService.recordTournamentResult(
         tournamentId: tournament['id'] as String? ?? '',
-        tournamentName: tournament['name'] as String? ?? tournament['title'] as String? ?? 'Unknown Tournament',
+        tournamentName: tournament['name'] as String? ??
+            tournament['title'] as String? ??
+            'Unknown Tournament',
         tournamentFormat: tournament['format'] as String? ?? 'unknown',
         totalParticipants: standings.length,
         totalMatches: tournament['total_matches'] as int? ?? 0,
@@ -258,7 +271,8 @@ class TournamentCompletionOrchestrator {
         standings: standings,
         eloUpdates: eloUpdates,
         spaDistribution: spaDistribution,
-        prizeDistribution: prizeDistribution.isNotEmpty ? prizeDistribution : null,
+        prizeDistribution:
+            prizeDistribution.isNotEmpty ? prizeDistribution : null,
         options: options,
       );
     } catch (e) {
@@ -266,4 +280,3 @@ class TournamentCompletionOrchestrator {
     }
   }
 }
-

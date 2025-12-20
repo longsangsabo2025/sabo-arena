@@ -17,7 +17,8 @@ class FullTournamentIframeView extends StatefulWidget {
   });
 
   @override
-  State<FullTournamentIframeView> createState() => _FullTournamentIframeViewState();
+  State<FullTournamentIframeView> createState() =>
+      _FullTournamentIframeViewState();
 }
 
 class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
@@ -28,7 +29,8 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
   @override
   void initState() {
     super.initState();
-    _iframeId = 'tournament-iframe-${widget.tournamentId}-${DateTime.now().millisecondsSinceEpoch}';
+    _iframeId =
+        'tournament-iframe-${widget.tournamentId}-${DateTime.now().millisecondsSinceEpoch}';
     _registerIframe();
     _simulateLoading();
   }
@@ -39,7 +41,8 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
         _iframeId,
         (int viewId) {
           final iframe = html.IFrameElement()
-            ..src = 'https://saboarena.com/tournament/${widget.tournamentId}/full'
+            ..src =
+                'https://saboarena.com/tournament/${widget.tournamentId}/full'
             ..style.border = 'none'
             ..style.width = '100%'
             ..style.height = '100%'
@@ -99,7 +102,8 @@ class _FullTournamentIframeViewState extends State<FullTournamentIframeView> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
-      _iframeId = 'tournament-iframe-${widget.tournamentId}-${DateTime.now().millisecondsSinceEpoch}';
+      _iframeId =
+          'tournament-iframe-${widget.tournamentId}-${DateTime.now().millisecondsSinceEpoch}';
       _registerIframe();
       _simulateLoading();
     });

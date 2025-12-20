@@ -17,7 +17,7 @@ class PaymentSettingsScreen extends StatefulWidget {
 class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   bool cashPaymentEnabled = true;
   bool bankTransferEnabled = false;
   bool eWalletEnabled = false;
@@ -222,7 +222,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               children: [
                 // Tab 1: Payment Methods (from payment_methods table)
                 PaymentMethodsTab(clubId: widget.clubId),
-                
+
                 // Tab 2: Settings (old UI with bank_accounts JSONB)
                 _buildSettingsTab(),
               ],
@@ -288,16 +288,20 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Cài đặt thanh toán', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Cài đặt thanh toán',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Thiết lập các phương thức thanh toán cho CLB', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondaryLight,
-                  ),
+                  'Thiết lập các phương thức thanh toán cho CLB',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondaryLight,
+                      ),
                 ),
               ],
             ),
@@ -312,10 +316,12 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Phương thức thanh toán', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Phương thức thanh toán',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -438,7 +444,8 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title, style: TextStyle(
+                  title,
+                  style: TextStyle(
                     color: AppTheme.textPrimaryLight,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -446,7 +453,8 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle, style: TextStyle(
+                  subtitle,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -475,14 +483,18 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tài khoản ngân hàng', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Tài khoản ngân hàng',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Thông tin tài khoản để nhận chuyển khoản', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Thông tin tài khoản để nhận chuyển khoản',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -557,7 +569,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  account['bankName'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                  account['bankName'],
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textPrimaryLight,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -565,7 +579,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'STK: ${account['accountNumber']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'STK: ${account['accountNumber']}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.primaryLight,
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
@@ -573,7 +589,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  account['accountName'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                  account['accountName'],
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -619,7 +637,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
                   children: [
                     const Icon(Icons.delete, color: Colors.red),
                     const SizedBox(width: 12),
-                    Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                    Text('Xóa',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.red)),
                   ],
                 ),
               ),
@@ -650,14 +670,18 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Ví điện tử', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Ví điện tử',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Thông tin ví điện tử để nhận thanh toán', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Thông tin ví điện tử để nhận thanh toán',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -732,7 +756,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  wallet['name'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                  wallet['name'],
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.textPrimaryLight,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -740,7 +766,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'SĐT: ${wallet['phoneNumber']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'SĐT: ${wallet['phoneNumber']}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppTheme.primaryLight,
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
@@ -787,7 +815,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
                   children: [
                     const Icon(Icons.delete, color: Colors.red),
                     const SizedBox(width: 12),
-                    Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                    Text('Xóa',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.red)),
                   ],
                 ),
               ),
@@ -836,7 +866,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
           onTap: _savePaymentSettings,
           child: const Center(
             child: Text(
-              'Lưu cài đặt thanh toán', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lưu cài đặt thanh toán',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -1016,9 +1048,8 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
   }
 
   Future<void> _generateQRCode(Map<String, dynamic> paymentMethod) async {
-    final accountType = paymentMethod.containsKey('bankName')
-        ? 'bank'
-        : 'ewallet';
+    final accountType =
+        paymentMethod.containsKey('bankName') ? 'bank' : 'ewallet';
     final accountId = paymentMethod['id'] ?? '';
 
     showDialog(
@@ -1061,7 +1092,8 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
             const SizedBox(height: 16),
             const Text(
               'Chọn ảnh QR Code từ thư viện',
-              textAlign: TextAlign.center, style: TextStyle(fontSize: 14),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -1127,7 +1159,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white)),
+            child: const Text('Xóa',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -1193,14 +1227,18 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Cấu hình VNPay', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Cấu hình VNPay',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Cấu hình VNPay QR Code để thanh toán tự động', overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
+          'Cấu hình VNPay QR Code để thanh toán tự động',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
         ),
         const SizedBox(height: 16),
         Container(
@@ -1265,7 +1303,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen>
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Để sử dụng VNPay, bạn cần đăng ký tài khoản merchant tại vnpay.vn', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, color: Colors.blue[700]),
+                        'Để sử dụng VNPay, bạn cần đăng ký tài khoản merchant tại vnpay.vn',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 13, color: Colors.blue[700]),
                       ),
                     ),
                   ],

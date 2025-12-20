@@ -7,7 +7,7 @@ class ClubPermission {
   final String clubId;
   final String userId;
   final ClubRole role;
-  
+
   // Detailed permissions
   final bool canVerifyRank;
   final bool canInputScore;
@@ -15,7 +15,7 @@ class ClubPermission {
   final bool canViewReports;
   final bool canManageMembers;
   final bool canManagePermissions;
-  
+
   // Metadata
   final String? grantedBy;
   final DateTime grantedAt;
@@ -67,7 +67,9 @@ class ClubPermission {
       'can_view_reports': canViewReports,
       'can_manage_members': canManageMembers,
       'can_manage_permissions': canManagePermissions,
-      'granted_by': grantedBy?.isEmpty == true ? null : grantedBy, // Fix: convert empty string to null
+      'granted_by': grantedBy?.isEmpty == true
+          ? null
+          : grantedBy, // Fix: convert empty string to null
       'granted_at': grantedAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -143,7 +145,7 @@ class ClubMemberWithPermissions {
   final String? skillLevel;
   final ClubRole role;
   final DateTime joinedAt;
-  
+
   // Optional: Detailed permissions if custom
   final ClubPermission? customPermissions;
 

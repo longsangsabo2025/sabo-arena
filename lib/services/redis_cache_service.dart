@@ -7,19 +7,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Redis Cache Service with Circuit Breaker and Fallback
 /// Server-side caching layer for frequently accessed data
-/// 
+///
 /// Features:
 /// - Circuit breaker protection
 /// - Automatic fallback to database if Redis fails
 /// - Graceful degradation
-/// 
+///
 /// NOTE: This is a client-side wrapper for Redis caching.
 /// Actual Redis instance should be set up on Supabase or external service.
 /// For now, this uses Supabase Edge Functions or HTTP endpoints for caching.
 class RedisCacheService {
   static RedisCacheService? _instance;
-  static RedisCacheService get instance =>
-      _instance ??= RedisCacheService._();
+  static RedisCacheService get instance => _instance ??= RedisCacheService._();
 
   RedisCacheService._();
 
@@ -31,18 +30,18 @@ class RedisCacheService {
 
   // Redis endpoint (configure via environment variable)
   String? _redisEndpoint;
-  
+
   // Circuit breaker for Redis
-  final CircuitBreaker _circuitBreaker = CircuitBreakerManager.instance.getBreaker('redis');
-  
+  final CircuitBreaker _circuitBreaker =
+      CircuitBreakerManager.instance.getBreaker('redis');
+
   // Supabase client for fallback
   final SupabaseClient _supabase = Supabase.instance.client;
 
   /// Initialize Redis cache service
   void initialize({String? redisEndpoint}) {
     _redisEndpoint = redisEndpoint;
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Get cached tournament data with fallback to database
@@ -52,16 +51,14 @@ class RedisCacheService {
         final cacheKey = 'tournament:$tournamentId';
         final cached = await _get(cacheKey);
         if (cached != null) {
-          if (kDebugMode) {
-          }
+          if (kDebugMode) {}
           return jsonDecode(cached) as Map<String, dynamic>;
         }
         return null;
       },
       fallback: () async {
         // Fallback to database if Redis fails
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
         try {
           final response = await _supabase
               .from('tournaments')
@@ -70,8 +67,7 @@ class RedisCacheService {
               .single();
           return response as Map<String, dynamic>?;
         } catch (e) {
-          if (kDebugMode) {
-          }
+          if (kDebugMode) {}
           return null;
         }
       },
@@ -92,11 +88,9 @@ class RedisCacheService {
         jsonData,
         ttl ?? _defaultTournamentTTL,
       );
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -105,11 +99,9 @@ class RedisCacheService {
     try {
       final cacheKey = 'tournament:$tournamentId';
       await _delete(cacheKey);
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -119,14 +111,12 @@ class RedisCacheService {
       final cacheKey = 'user:$userId';
       final cached = await _get(cacheKey);
       if (cached != null) {
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
         return jsonDecode(cached) as Map<String, dynamic>;
       }
       return null;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -146,8 +136,7 @@ class RedisCacheService {
         ttl ?? _defaultUserTTL,
       );
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -157,8 +146,7 @@ class RedisCacheService {
       final cacheKey = 'user:$userId';
       await _delete(cacheKey);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -191,8 +179,7 @@ class RedisCacheService {
         ttl ?? _defaultClubTTL,
       );
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -202,8 +189,7 @@ class RedisCacheService {
       final cacheKey = 'club:$clubId';
       await _delete(cacheKey);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -239,8 +225,7 @@ class RedisCacheService {
         ttl ?? _defaultLeaderboardTTL,
       );
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -250,8 +235,7 @@ class RedisCacheService {
       final cacheKey = 'leaderboard:$type';
       await _delete(cacheKey);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -268,8 +252,7 @@ class RedisCacheService {
         );
       }
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -291,8 +274,7 @@ class RedisCacheService {
       }
       return null;
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return null;
     }
   }
@@ -314,8 +296,7 @@ class RedisCacheService {
         }),
       );
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -329,8 +310,7 @@ class RedisCacheService {
         Uri.parse('$_redisEndpoint/delete?key=$key'),
       );
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -344,5 +324,3 @@ class RedisCacheService {
     };
   }
 }
-
-

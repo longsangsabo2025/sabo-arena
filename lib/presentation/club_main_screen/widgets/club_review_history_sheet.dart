@@ -113,9 +113,8 @@ class _ClubReviewHistorySheetState extends State<ClubReviewHistorySheet> {
                               Text(
                                 '${widget.club.rating.toStringAsFixed(1)} (${widget.club.totalReviews} đánh giá)',
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurface.withValues(
-                                    alpha: 0.7,
-                                  ),
+                                  color: colorScheme.onSurface
+                                      .withValues(alpha: 0.7),
                                 ),
                               ),
                             ],
@@ -138,49 +137,47 @@ class _ClubReviewHistorySheetState extends State<ClubReviewHistorySheet> {
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _reviews.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.rate_review_outlined,
-                              size: 64,
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.3,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Chưa có đánh giá nào',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: colorScheme.onSurface.withValues(
-                                  alpha: 0.5,
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.rate_review_outlined,
+                                  size: 64,
+                                  color: colorScheme.onSurface
+                                      .withValues(alpha: 0.3),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Hãy là người đầu tiên đánh giá câu lạc bộ này!',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurface.withValues(
-                                  alpha: 0.4,
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Chưa có đánh giá nào',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: colorScheme.onSurface
+                                        .withValues(alpha: 0.5),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Hãy là người đầu tiên đánh giá câu lạc bộ này!',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurface
+                                        .withValues(alpha: 0.4),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )
-                    : ListView.separated(
-                        controller: scrollController,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        itemCount: _reviews.length,
-                        separatorBuilder: (context, index) =>
-                            const Divider(height: 1, indent: 72),
-                        itemBuilder: (context, index) {
-                          final review = _reviews[index];
-                          return _buildReviewItem(review, colorScheme, theme);
-                        },
-                      ),
+                          )
+                        : ListView.separated(
+                            controller: scrollController,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            itemCount: _reviews.length,
+                            separatorBuilder: (context, index) =>
+                                const Divider(height: 1, indent: 72),
+                            itemBuilder: (context, index) {
+                              final review = _reviews[index];
+                              return _buildReviewItem(
+                                  review, colorScheme, theme);
+                            },
+                          ),
               ),
             ],
           ),

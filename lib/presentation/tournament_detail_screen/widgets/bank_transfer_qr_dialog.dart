@@ -443,9 +443,8 @@ class BankTransferQRDialog extends StatelessWidget {
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: row.highlighted
-                        ? Colors.amber.shade50
-                        : Colors.white,
+                    color:
+                        row.highlighted ? Colors.amber.shade50 : Colors.white,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: row.highlighted
@@ -457,9 +456,8 @@ class BankTransferQRDialog extends StatelessWidget {
                     row.value,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: row.highlighted
-                          ? FontWeight.bold
-                          : FontWeight.w500,
+                      fontWeight:
+                          row.highlighted ? FontWeight.bold : FontWeight.w500,
                       color: row.highlighted
                           ? Colors.amber.shade900
                           : Colors.grey.shade900,

@@ -9,6 +9,7 @@ import 'widgets/enhanced_basic_info_step.dart';
 import 'widgets/enhanced_schedule_step.dart';
 import 'widgets/enhanced_prizes_step_v2.dart';
 import 'widgets/enhanced_rules_review_step.dart';
+import '../../widgets/common/app_button.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
 class TournamentCreationWizard extends StatefulWidget {
@@ -120,19 +121,25 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
     try {
       final club = await ClubService.instance.getClubById(widget.clubId!);
       setState(() {
-        if (_tournamentData['venue'] == null || _tournamentData['venue'].isEmpty) {
+        if (_tournamentData['venue'] == null ||
+            _tournamentData['venue'].isEmpty) {
           _tournamentData['venue'] = club.address;
         }
-        if (_tournamentData['venueContact'] == null || _tournamentData['venueContact'].isEmpty) {
-          _tournamentData['venueContact'] = club.name; // Default contact is club name
+        if (_tournamentData['venueContact'] == null ||
+            _tournamentData['venueContact'].isEmpty) {
+          _tournamentData['venueContact'] =
+              club.name; // Default contact is club name
         }
-        if (_tournamentData['venuePhone'] == null || _tournamentData['venuePhone'].isEmpty) {
+        if (_tournamentData['venuePhone'] == null ||
+            _tournamentData['venuePhone'].isEmpty) {
           _tournamentData['venuePhone'] = club.phone;
         }
       });
-      ProductionLogger.info('✅ Auto-filled club data: ${club.name}', tag: 'tournament_creation_wizard');
+      ProductionLogger.info('✅ Auto-filled club data: ${club.name}',
+          tag: 'tournament_creation_wizard');
     } catch (e) {
-      ProductionLogger.info('⚠️ Failed to load club data: $e', tag: 'tournament_creation_wizard');
+      ProductionLogger.info('⚠️ Failed to load club data: $e',
+          tag: 'tournament_creation_wizard');
     }
   }
 
@@ -227,7 +234,7 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
                 children: List.generate(4, (index) {
                   final isActive = index == _currentStep;
                   final isCompleted = index < _currentStep;
-                  
+
                   return Expanded(
                     child: Row(
                       children: [
@@ -247,11 +254,14 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
                                     ),
                                     child: Center(
                                       child: isCompleted
-                                          ? Icon(Icons.check, size: 16, color: Colors.white)
+                                          ? Icon(Icons.check,
+                                              size: 16, color: Colors.white)
                                           : Text(
                                               '${index + 1}',
                                               style: TextStyle(
-                                                color: isActive ? Colors.white : Colors.grey,
+                                                color: isActive
+                                                    ? Colors.white
+                                                    : Colors.grey,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14.sp,
                                               ),
@@ -274,7 +284,9 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
                                 _stepTitles[index],
                                 style: TextStyle(
                                   fontSize: 11.sp,
-                                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                                  fontWeight: isActive
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
                                   color: isActive
                                       ? theme.colorScheme.primary
                                       : Colors.grey,
@@ -292,7 +304,7 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
                 }),
               ),
             ),
-            
+
             // Step content
             Expanded(
               child: PageView(
@@ -336,57 +348,44 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
             Container(
               padding: EdgeInsets.all(20.h),
               child: Row(
-              children: [
-                if (_currentStep > 0)
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _previousStep,
-                      child: const Text(
-                        'Quay lại',
-                        overflow: TextOverflow.ellipsis,
+                children: [
+                  if (_currentStep > 0)
+                    Expanded(
+                      child: AppButton(
+                        label: 'Quay lại',
+                        type: AppButtonType.outline,
+                        size: AppButtonSize.medium,
+                        fullWidth: true,
+                        onPressed: _previousStep,
                       ),
                     ),
+                  if (_currentStep > 0) SizedBox(width: 16.w),
+                  Expanded(
+                    child: AppButton(
+                      label: _currentStep < _stepTitles.length - 1
+                          ? 'Tiếp tục'
+                          : 'Hoàn tất',
+                      type: AppButtonType.primary,
+                      size: AppButtonSize.medium,
+                      isLoading: _isCreating,
+                      fullWidth: true,
+                      onPressed: _isCreating
+                          ? null
+                          : (_currentStep < _stepTitles.length - 1
+                              ? _nextStep
+                              : _validateAndPublish),
+                    ),
                   ),
-                if (_currentStep > 0) SizedBox(width: 16.w),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isCreating
-                        ? null
-                        : (_currentStep < _stepTitles.length - 1
-                            ? _nextStep
-                            : _validateAndPublish),
-                    child: _isCreating
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 16.w,
-                                height: 16.h,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text('Đang tạo...'),
-                            ],
-                          )
-                        : Text(_currentStep < _stepTitles.length - 1
-                            ? 'Tiếp theo'
-                            : 'Tạo giải đấu'),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
   void _validateAndPublish() async {
-
     // First sync final data from controllers to ensure _tournamentData is up to date
     // Note: Controllers might be empty if using enhanced steps,
     // so only sync if controllers have data
@@ -461,13 +460,14 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
       return;
     }
 
-
     /// Setup prize vouchers for tournament
     Future<void> setupPrizeVouchers(String tournamentId) async {
       try {
         final prizes = _tournamentData['prizes'] as List?;
         if (prizes == null || prizes.isEmpty) {
-          ProductionLogger.info('ℹ️ No prizes configured, skipping voucher setup', tag: 'tournament_creation_wizard');
+          ProductionLogger.info(
+              'ℹ️ No prizes configured, skipping voucher setup',
+              tag: 'tournament_creation_wizard');
           return;
         }
 
@@ -478,21 +478,24 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
         }).toList();
 
         if (prizeVouchers.isEmpty) {
-          ProductionLogger.info('ℹ️ No prize vouchers configured, skipping', tag: 'tournament_creation_wizard');
+          ProductionLogger.info('ℹ️ No prize vouchers configured, skipping',
+              tag: 'tournament_creation_wizard');
           return;
         }
 
-        ProductionLogger.info('🎁 Setting up ${prizeVouchers.length} prize vouchers...', tag: 'tournament_creation_wizard');
+        ProductionLogger.info(
+            '🎁 Setting up ${prizeVouchers.length} prize vouchers...',
+            tag: 'tournament_creation_wizard');
 
         // Convert to TournamentPrizeConfig format
         final prizeConfigs = prizeVouchers.map((p) {
           final position = p['position'] as int;
           final value = p['voucherValueVnd'] as int;
           final validDays = p['voucherValidDays'] as int? ?? 30;
-          
+
           String positionLabel;
           String codePrefix;
-          
+
           switch (position) {
             case 1:
               positionLabel = 'Nhất';
@@ -527,9 +530,12 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
           prizes: prizeConfigs,
         );
 
-        ProductionLogger.info('✅ Prize vouchers setup complete: ${prizeConfigs.length} configs saved', tag: 'tournament_creation_wizard');
+        ProductionLogger.info(
+            '✅ Prize vouchers setup complete: ${prizeConfigs.length} configs saved',
+            tag: 'tournament_creation_wizard');
       } catch (e) {
-        ProductionLogger.info('⚠️ Failed to setup prize vouchers: $e', tag: 'tournament_creation_wizard');
+        ProductionLogger.info('⚠️ Failed to setup prize vouchers: $e',
+            tag: 'tournament_creation_wizard');
         // Don't throw - tournament creation should still succeed
       }
     }
@@ -543,19 +549,20 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
       if (_tournamentData['coverImageBytes'] != null &&
           _tournamentData['coverImageFileName'] != null) {
         try {
-          ProductionLogger.info('📤 Pre-uploading tournament cover image...', tag: 'tournament_creation_wizard');
+          ProductionLogger.info('📤 Pre-uploading tournament cover image...',
+              tag: 'tournament_creation_wizard');
           final fileName = _tournamentData['coverImageFileName'] as String;
-          final tempPath = 'temp_covers/${DateTime.now().millisecondsSinceEpoch}_$fileName';
-          
+          final tempPath =
+              'temp_covers/${DateTime.now().millisecondsSinceEpoch}_$fileName';
+
           // Determine content type
           String contentType = 'image/jpeg';
           final ext = fileName.split('.').last.toLowerCase();
-          if (ext == 'png') contentType = 'image/png';
+          if (ext == 'png')
+            contentType = 'image/png';
           else if (ext == 'webp') contentType = 'image/webp';
 
-          await _supabase.storage
-              .from('tournament-covers')
-              .uploadBinary(
+          await _supabase.storage.from('tournament-covers').uploadBinary(
                 tempPath,
                 _tournamentData['coverImageBytes'],
                 fileOptions: FileOptions(
@@ -566,10 +573,31 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
           uploadedCoverUrl = _supabase.storage
               .from('tournament-covers')
               .getPublicUrl(tempPath);
-          ProductionLogger.info('✅ Cover image pre-uploaded: $uploadedCoverUrl', tag: 'tournament_creation_wizard');
+          ProductionLogger.info('✅ Cover image pre-uploaded: $uploadedCoverUrl',
+              tag: 'tournament_creation_wizard');
         } catch (uploadError) {
-          ProductionLogger.info('⚠️ Cover image upload failed, will create tournament without cover: $uploadError', tag: 'tournament_creation_wizard');
+          ProductionLogger.info(
+              '⚠️ Cover image upload failed, will create tournament without cover: $uploadError',
+              tag: 'tournament_creation_wizard');
         }
+      }
+
+      // 🚀 ELON MODE DEBUG: Log tournament data before creation
+      final template = _tournamentData['prizeTemplate'] ??
+          _tournamentData['prizeDistribution'] ??
+          'top_3';
+      final customDist = _tournamentData['customDistribution'];
+      ProductionLogger.info('🚀 [WIZARD] Creating tournament with:',
+          tag: 'tournament_creation_wizard');
+      ProductionLogger.info('  Template: $template',
+          tag: 'tournament_creation_wizard');
+      ProductionLogger.info(
+          '  CustomDistribution: ${customDist != null ? "SET (${(customDist as List).length} items)" : "NULL"}',
+          tag: 'tournament_creation_wizard');
+      if (customDist != null && customDist is List) {
+        ProductionLogger.info(
+            '  Custom values: ${customDist.map((p) => "${p['position']}: ${p['cashAmount']}").join(", ")}',
+            tag: 'tournament_creation_wizard');
       }
 
       // Create tournament using service with proper parameters
@@ -591,10 +619,10 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
         coverImageUrl: uploadedCoverUrl, // Pass uploaded cover URL
         // Enhanced prize configuration
         prizeSource: _tournamentData['prizeSource'] ?? 'entry_fees',
-        distributionTemplate: _tournamentData['prizeTemplate'] ?? _tournamentData['prizeDistribution'] ?? 'top_3',
-        organizerFeePercent: _tournamentData['organizerFeePercent'] ?? 10.0,
+        distributionTemplate: template,
+        organizerFeePercent: _tournamentData['organizerFeePercent'] ?? 0.0,
         sponsorContribution: _tournamentData['sponsorContribution'] ?? 0.0,
-        customDistribution: _tournamentData['customDistribution'],
+        customDistribution: customDist,
         // Rank restrictions
         minRank: _tournamentData['minRank'],
         maxRank: _tournamentData['maxRank'],
@@ -610,11 +638,15 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
 
       // 🔍 VERIFY TOURNAMENT WAS ACTUALLY CREATED
       if (tournament.id.isEmpty) {
-        throw Exception('Tournament creation failed - no tournament ID returned');
+        throw Exception(
+            'Tournament creation failed - no tournament ID returned');
       }
 
-      ProductionLogger.info('✅ Tournament created successfully with ID: ${tournament.id}', tag: 'tournament_creation_wizard');
-      ProductionLogger.info('📋 Tournament details: ${tournament.title}', tag: 'tournament_creation_wizard');
+      ProductionLogger.info(
+          '✅ Tournament created successfully with ID: ${tournament.id}',
+          tag: 'tournament_creation_wizard');
+      ProductionLogger.info('📋 Tournament details: ${tournament.title}',
+          tag: 'tournament_creation_wizard');
 
       // 🎁 Setup prize vouchers if configured
       await setupPrizeVouchers(tournament.id);
@@ -707,7 +739,8 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Giải đấu "${tournament.title}" đã được tạo thành công!'),
+            content:
+                Text('Giải đấu "${tournament.title}" đã được tạo thành công!'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 3),
           ),
@@ -719,11 +752,79 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
         Navigator.of(context).pop(tournament);
       }
     } catch (e) {
+      ProductionLogger.info('❌ Tournament creation error: $e',
+          tag: 'tournament_creation_wizard');
+
+      // 🚀 ELON MODE: Translate technical errors to user-friendly Vietnamese
+      String userMessage = 'Không thể tạo giải đấu';
+      String details = '';
+
+      final errorStr = e.toString().toLowerCase();
+
+      if (errorStr.contains('rangerror') ||
+          errorStr.contains('invalid value')) {
+        userMessage = '❌ Lỗi dữ liệu không hợp lệ';
+        details = 'Vui lòng kiểm tra lại thông tin đã nhập:\n'
+            '• Mô tả không được quá ngắn\n'
+            '• Tên giải đấu phải rõ ràng\n'
+            '• Tất cả thông tin bắt buộc đã điền';
+      } else if (errorStr.contains('prize') ||
+          errorStr.contains('distribution')) {
+        userMessage = '💰 Lỗi cấu hình giải thưởng';
+        details = 'Vui lòng kiểm tra:\n'
+            '• Tổng giải thưởng không vượt quá prize pool\n'
+            '• Phần trăm phân bổ hợp lý (tổng ≤ 100%)\n'
+            '• Ít nhất 1 giải thưởng có giá trị > 0';
+      } else if (errorStr.contains('database') ||
+          errorStr.contains('connection')) {
+        userMessage = '🔌 Lỗi kết nối server';
+        details = 'Vui lòng:\n'
+            '• Kiểm tra kết nối internet\n'
+            '• Thử lại sau vài giây';
+      } else if (errorStr.contains('permission') ||
+          errorStr.contains('unauthorized')) {
+        userMessage = '🔐 Không có quyền tạo giải đấu';
+        details = 'Vui lòng đăng nhập lại hoặc liên hệ quản trị viên';
+      } else if (errorStr.contains('validation')) {
+        userMessage = '⚠️ Thông tin chưa đầy đủ';
+        details = 'Vui lòng điền đầy đủ các trường bắt buộc';
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi khi tạo giải đấu: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userMessage,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                if (details.isNotEmpty) ...[
+                  SizedBox(height: 8),
+                  Text(
+                    details,
+                    style: TextStyle(fontSize: 13),
+                  ),
+                ],
+                SizedBox(height: 4),
+                Text(
+                  'Chi tiết kỹ thuật: ${e.toString().split('\n').first}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red.shade700,
+            duration: Duration(seconds: 8),
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -814,4 +915,3 @@ class _TournamentCreationWizardState extends State<TournamentCreationWizard>
     );
   }
 }
-

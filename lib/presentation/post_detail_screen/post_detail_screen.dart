@@ -21,7 +21,8 @@ class PostDetailScreen extends StatefulWidget {
     this.postId,
     this.userId,
     this.initialIndex = 0,
-  }) : assert(post != null || postId != null, 'Either post or postId must be provided');
+  }) : assert(post != null || postId != null,
+            'Either post or postId must be provided');
 
   @override
   State<PostDetailScreen> createState() => _PostDetailScreenState();
@@ -34,7 +35,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   // Posts list with lazy loading
   List<PostModel> _posts = [];
-  bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _hasMorePosts = true;
   int _currentOffset = 0;
@@ -55,7 +55,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Future<void> _initData() async {
     if (widget.post != null) {
       _posts = [widget.post!];
-      _isLoading = false;
       _loadInitialPosts(); // Load more posts related to this user/context
     } else if (widget.postId != null) {
       try {
@@ -64,23 +63,20 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           if (mounted) {
             setState(() {
               _posts = [post];
-              _isLoading = false;
             });
             _loadInitialPosts();
           }
         } else {
           // Handle post not found
           if (mounted) {
-             setState(() => _isLoading = false);
-             ScaffoldMessenger.of(context).showSnackBar(
-               const SnackBar(content: Text('Post not found')),
-             );
-             Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Post not found')),
+            );
+            Navigator.pop(context);
           }
         }
       } catch (e) {
         if (mounted) {
-          setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error loading post: $e')),
           );
@@ -98,8 +94,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   Future<void> _loadInitialPosts() async {
     // If userId is not provided, try to get it from the first post
-    final targetUserId = widget.userId ?? (_posts.isNotEmpty ? _posts.first.authorId : null);
-    
+    final targetUserId =
+        widget.userId ?? (_posts.isNotEmpty ? _posts.first.authorId : null);
+
     if (targetUserId == null) return;
 
     try {
@@ -113,14 +110,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         setState(() {
           // If we already have a post (from notification), keep it at the top if it's not in the list
           if (_posts.isNotEmpty && widget.userId == null) {
-             final currentPostId = _posts.first.id;
-             // Filter out the current post from the fetched list to avoid duplicates
-             final newPosts = posts.where((p) => p.id != currentPostId).toList();
-             _posts.addAll(newPosts);
+            final currentPostId = _posts.first.id;
+            // Filter out the current post from the fetched list to avoid duplicates
+            final newPosts = posts.where((p) => p.id != currentPostId).toList();
+            _posts.addAll(newPosts);
           } else {
-             _posts = posts;
+            _posts = posts;
           }
-          
+
           _currentOffset = _posts.length;
           _hasMorePosts = posts.length >= _pageSize;
         });
@@ -141,8 +138,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   Future<void> _loadMorePosts() async {
     if (_isLoadingMore || !_hasMorePosts) return;
-    
-    final targetUserId = widget.userId ?? (_posts.isNotEmpty ? _posts.first.authorId : null);
+
+    final targetUserId =
+        widget.userId ?? (_posts.isNotEmpty ? _posts.first.authorId : null);
     if (targetUserId == null) return;
 
     setState(() {
@@ -150,7 +148,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     });
 
     try {
-
       final morePosts = await _postRepository.getUserPostsByUserId(
         targetUserId,
         limit: _pageSize,
@@ -164,7 +161,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           _hasMorePosts = morePosts.length >= _pageSize;
           _isLoadingMore = false;
         });
-
       }
     } catch (e) {
       if (mounted) {
@@ -302,12 +298,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         postTitle: post['content'] ?? 'Bài viết',
         postContent: post['content'],
         postImageUrl: post['imageUrl'],
-        authorName: post['authorName'] ?? post['author_name'] ?? 'Không xác định',
+        authorName:
+            post['authorName'] ?? post['author_name'] ?? 'Không xác định',
         authorAvatar: post['authorAvatarUrl'] ?? post['author_avatar_url'],
         likeCount: post['likeCount'] ?? post['like_count'] ?? 0,
         commentCount: post['commentCount'] ?? post['comment_count'] ?? 0,
         shareCount: post['shareCount'] ?? post['share_count'] ?? 0,
-        createdAt: DateTime.tryParse(post['createdAt']?.toString() ?? post['created_at']?.toString() ?? '') ?? DateTime.now(),
+        createdAt: DateTime.tryParse(post['createdAt']?.toString() ??
+                post['created_at']?.toString() ??
+                '') ??
+            DateTime.now(),
       ),
     );
 
@@ -404,8 +404,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       'id': post.id,
       'userId': post.authorId,
       'userName': post.authorName,
-      'userAvatar':
-          post.authorAvatarUrl ??
+      'userAvatar': post.authorAvatarUrl ??
           'https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png',
       'userRank': null,
       'content': post.content,
@@ -514,7 +513,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        'Đang tải thêm...', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Đang tải thêm...',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -530,4 +531,3 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 }
-

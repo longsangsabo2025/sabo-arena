@@ -239,8 +239,10 @@ class ErrorHandlingService {
   /// Log error for debugging and monitoring
   void logError(dynamic error, String context) {
     if (kDebugMode) {
-      ProductionLogger.info('🔥 Error in $context: $error', tag: 'error_handling_service');
-      ProductionLogger.info('Stack trace: ${StackTrace.current}', tag: 'error_handling_service');
+      ProductionLogger.info('🔥 Error in $context: $error',
+          tag: 'error_handling_service');
+      ProductionLogger.info('Stack trace: ${StackTrace.current}',
+          tag: 'error_handling_service');
     }
 
     // In production, send to error tracking service like Sentry
@@ -373,7 +375,6 @@ class EnhancedErrorStateWidget extends StatelessWidget {
             _buildErrorIcon(dialogConfig['icon'] as String),
             const SizedBox(height: 16),
           ],
-
           Text(
             title ?? dialogConfig['title'] as String,
             style: const TextStyle(
@@ -383,9 +384,7 @@ class EnhancedErrorStateWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-
           const SizedBox(height: 8),
-
           Text(
             description ?? dialogConfig['message'] as String,
             textAlign: TextAlign.center,
@@ -395,7 +394,6 @@ class EnhancedErrorStateWidget extends StatelessWidget {
               height: 1.4,
             ),
           ),
-
           if (showDetails && error != null) ...[
             const SizedBox(height: 8),
             Container(
@@ -415,7 +413,6 @@ class EnhancedErrorStateWidget extends StatelessWidget {
               ),
             ),
           ],
-
           if (onRetry != null && (dialogConfig['isRetryable'] as bool)) ...[
             const SizedBox(height: 24),
             ElevatedButton.icon(

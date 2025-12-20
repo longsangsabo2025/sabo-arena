@@ -37,7 +37,8 @@ class RecentActivitiesList extends StatelessWidget {
     );
   }
 
-  Widget _buildActivityItem(BuildContext context, ClubActivity activity, int index) {
+  Widget _buildActivityItem(
+      BuildContext context, ClubActivity activity, int index) {
     // Temporarily disabled: final l10n = // AppLocalizations.of(context)!;
     String title = '';
     String subtitle = '';

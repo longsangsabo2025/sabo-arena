@@ -77,8 +77,8 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
 
     if (promotion.discountPercentage != null) {
       _isPercentageDiscount = true;
-      _discountPercentageController.text = promotion.discountPercentage
-          .toString();
+      _discountPercentageController.text =
+          promotion.discountPercentage.toString();
     } else if (promotion.discountAmount != null) {
       _isPercentageDiscount = false;
       _discountAmountController.text = promotion.discountAmount.toString();
@@ -112,7 +112,9 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
         title: Text(
           widget.editingPromotion != null
               ? 'Chỉnh sửa khuyến mãi'
-              : 'Tạo khuyến mãi mới', overflow: TextOverflow.ellipsis, style: TextStyle(
+              : 'Tạo khuyến mãi mới',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimaryLight,
@@ -130,7 +132,9 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
           TextButton(
             onPressed: _validateAndSave,
             child: Text(
-              'Lưu', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lưu',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.primaryLight,
@@ -259,17 +263,16 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            items:
-                [
-                  PromotionStatus.draft,
-                  PromotionStatus.active,
-                  PromotionStatus.paused,
-                ].map((status) {
-                  return DropdownMenuItem(
-                    value: status,
-                    child: Text(status.displayName),
-                  );
-                }).toList(),
+            items: [
+              PromotionStatus.draft,
+              PromotionStatus.active,
+              PromotionStatus.paused,
+            ].map((status) {
+              return DropdownMenuItem(
+                value: status,
+                child: Text(status.displayName),
+              );
+            }).toList(),
             onChanged: (value) {
               setState(() {
                 _selectedStatus = value!;
@@ -424,7 +427,9 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
           if (_endDate.isBefore(_startDate)) ...[
             SizedBox(height: 8),
             Text(
-              'Ngày kết thúc phải sau ngày bắt đầu', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red, fontSize: 12.sp),
+              'Ngày kết thúc phải sau ngày bắt đầu',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.red, fontSize: 12.sp),
             ),
           ],
         ],
@@ -439,7 +444,9 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Chọn các dịch vụ mà khuyến mãi này áp dụng:', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Chọn các dịch vụ mà khuyến mãi này áp dụng:',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 14.sp,
               color: AppTheme.textSecondaryLight,
             ),
@@ -541,7 +548,8 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title, style: TextStyle(
+            title,
+            style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               color: AppTheme.textPrimaryLight,
@@ -557,8 +565,8 @@ class _CreatePromotionScreenState extends State<CreatePromotionScreen> {
   void _generatePromoCode() {
     // Generate a random promo code
     final random = DateTime.now().millisecondsSinceEpoch.toString().substring(
-      7,
-    );
+          7,
+        );
     _promoCodeController.text = 'PROMO$random';
   }
 

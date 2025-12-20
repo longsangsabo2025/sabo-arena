@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/design_system/design_system.dart';
+import '../../../widgets/common/app_button.dart';
 
 class ClubSearchDialog extends StatefulWidget {
   final String initialQuery;
@@ -77,12 +78,14 @@ class _ClubSearchDialogState extends State<ClubSearchDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Hủy'),
         ),
-        ElevatedButton(
+        AppButton(
+          label: 'Tìm kiếm',
+          type: AppButtonType.primary,
+          size: AppButtonSize.medium,
           onPressed: () {
             widget.onSearch(_controller.text);
             Navigator.of(context).pop();
           },
-          child: const Text('Tìm kiếm'),
         ),
       ],
     );

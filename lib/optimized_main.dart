@@ -62,7 +62,8 @@ class OptimizedHomePage extends StatelessWidget {
         actions: [
           // Connection status indicator
           StreamBuilder<bool>(
-            stream: OptimizedRealtimeService().eventStream
+            stream: OptimizedRealtimeService()
+                .eventStream
                 .where((event) => event.type == RealtimeEventType.connection)
                 .map((event) => event.data['status'] == 'connected'),
             builder: (context, snapshot) {
@@ -140,7 +141,7 @@ class OptimizedHomePage extends StatelessWidget {
                       'LRU connection pooling with 5-channel limit',
                     ),
                     _buildOptimizationItem(
-                      '📊 Query Performance', 
+                      '📊 Query Performance',
                       'Cursor pagination + separate user cache',
                     ),
                     _buildOptimizationItem(

@@ -19,13 +19,13 @@ class OpponentMatchingService {
     double radiusKm = 500.0, // Increased default radius for better results
     String? rankFilter,
     int limit = 20,
+    int offset = 0,
   }) async {
     try {
       final currentUser = _supabase.auth.currentUser;
       if (currentUser == null) {
         throw Exception('User not authenticated');
       }
-
 
       // Get current user's location with permission check (fail safe)
       double? currentLat;
@@ -35,7 +35,8 @@ class OpponentMatchingService {
         currentLat = position.latitude;
         currentLon = position.longitude;
       } catch (e) {
-        ProductionLogger.warning('⚠️ Could not get location for matching: $e', tag: 'opponent_matching');
+        ProductionLogger.warning('⚠️ Could not get location for matching: $e',
+            tag: 'opponent_matching');
         // Continue without location
       }
 
@@ -48,7 +49,6 @@ class OpponentMatchingService {
 
       final currentRank = currentUserProfile['rank'] as String?;
       final currentElo = currentUserProfile['elo_rating'] as int? ?? 1000;
-
 
       // Fetch all users except current user
       final response = await _supabase
@@ -80,7 +80,7 @@ class OpponentMatchingService {
           .neq('id', currentUser.id)
           // .eq('is_active', true) // Commented out for testing visibility
           .order('elo_rating', ascending: false)
-          .limit(limit * 2); // Query more for filtering
+          .range(offset, offset + (limit * 2) - 1); // Query more for filtering
 
       final users = List<Map<String, dynamic>>.from(response);
 
@@ -95,7 +95,10 @@ class OpponentMatchingService {
 
         // Calculate distance (if location available)
         double? distance;
-        if (userLat != null && userLon != null && currentLat != null && currentLon != null) {
+        if (userLat != null &&
+            userLon != null &&
+            currentLat != null &&
+            currentLon != null) {
           distance = _calculateDistance(
             currentLat,
             currentLon,
@@ -117,8 +120,7 @@ class OpponentMatchingService {
 
         // Calculate total match score
         // Weight: 50% rank similarity, 30% distance, 20% activity
-        final matchScore =
-            (rankScore * 0.5) +
+        final matchScore = (rankScore * 0.5) +
             (distanceScore * 0.3) +
             (20.0); // Base activity score
 
@@ -141,9 +143,8 @@ class OpponentMatchingService {
       // Apply rank filter if specified
       List<Map<String, dynamic>> filteredUsers = scoredUsers;
       if (rankFilter != null && rankFilter != 'all') {
-        filteredUsers = scoredUsers
-            .where((user) => user['rank'] == rankFilter)
-            .toList();
+        filteredUsers =
+            scoredUsers.where((user) => user['rank'] == rankFilter).toList();
       }
 
       // Convert to UserProfile objects
@@ -151,15 +152,13 @@ class OpponentMatchingService {
         return UserProfile(
           id: userData['id'] as String,
           email: userData['email'] as String? ?? '',
-          fullName:
-              userData['display_name'] as String? ?? userData['full_name'] as String? ??
+          fullName: userData['display_name'] as String? ??
+              userData['full_name'] as String? ??
               'Unknown',
-          displayName:
-              userData['display_name'] as String? ?? userData['full_name'] as String? ??
+          displayName: userData['display_name'] as String? ??
+              userData['full_name'] as String? ??
               'Unknown',
-          username:
-              userData['username'] as String? ??
-              'unknown',
+          username: userData['username'] as String? ?? 'unknown',
           avatarUrl: userData['avatar_url'] as String?,
           role: userData['role'] as String? ?? 'player',
           skillLevel: userData['skill_level'] as String? ?? 'beginner',
@@ -184,15 +183,15 @@ class OpponentMatchingService {
 
       // Return limited results with distance info
       final limitedOpponents = opponents.take(limit).toList();
-      
+
       ProductionLogger.info(
-        '⚙️ Found ${opponents.length} potential opponents, returning ${limitedOpponents.length}',
-        tag: 'opponent_matching'
-      );
-      
+          '⚙️ Found ${opponents.length} potential opponents, returning ${limitedOpponents.length}',
+          tag: 'opponent_matching');
+
       return limitedOpponents;
     } catch (e) {
-      ProductionLogger.error('❌ Opponent matching failed: $e', tag: 'opponent_matching');
+      ProductionLogger.error('❌ Opponent matching failed: $e',
+          tag: 'opponent_matching');
       rethrow;
     }
   }
@@ -209,8 +208,7 @@ class OpponentMatchingService {
     final dLat = _toRadians(lat2 - lat1);
     final dLon = _toRadians(lon2 - lon1);
 
-    final a =
-        math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(_toRadians(lat1)) *
             math.cos(_toRadians(lat2)) *
             math.sin(dLon / 2) *
@@ -225,26 +223,24 @@ class OpponentMatchingService {
   }
 
   /// Calculate rank similarity score (0-100)
-  /// Uses Vietnamese billiards rank system: K, K+, I, I+, H, H+, G, G+, F, F+, E, D, C
+  /// Uses Vietnamese billiards rank system: K, I, H, H+, G, G+, F, F+, E, D, C (10 ranks, K+/I+ removed)
   double _calculateRankSimilarity(String? rank1, String? rank2) {
     if (rank1 == null || rank2 == null) return 0.0;
     if (rank1 == rank2) return 100.0;
 
-    // Define rank hierarchy - Vietnamese billiards system
+    // Define rank hierarchy - MIGRATED 2025: Removed K+/I+
     final ranks = [
-      'K', // Tập Sự (1000-1099)
-      'K+', // Tập Sự+ (1100-1199)
-      'I', // Sơ Cấp (1200-1299)
-      'I+', // Sơ Cấp+ (1300-1399)
-      'H', // Trung Cấp (1400-1499)
-      'H+', // Trung Cấp+ (1500-1599)
-      'G', // Khá (1600-1699)
-      'G+', // Khá+ (1700-1799)
-      'F', // Giỏi (1800-1899)
-      'F+', // Giỏi+ (1900-1999)
-      'E', // Xuất Sắc (1900-1999)
-      'D', // Huyền Thoại (2000-2099)
-      'C', // Vô Địch (2100-2199)
+      'K', // 1000-1099: 1-2 Bi
+      'I', // 1100-1199: 1-3 Bi
+      'H', // 1200-1299: 3-5 Bi
+      'H+', // 1300-1399: 3-5 Bi (ổn định)
+      'G', // 1400-1499: 5-6 Bi
+      'G+', // 1500-1599: 5-6 Bi (ổn định)
+      'F', // 1600-1699: 6-8 Bi
+      'F+', // 1700-1799: 2 Chấm
+      'E', // 1800-1899: 3 Chấm
+      'D', // 1900-1999: 4 Chấm
+      'C', // 2000-2099: 5 Chấm
     ];
 
     final index1 = ranks.indexOf(rank1);
@@ -264,14 +260,12 @@ class OpponentMatchingService {
     return 5.0; // Way too far apart
   }
 
-  /// Get rank options for filter
+  /// Get rank options for filter - MIGRATED 2025: Removed K+/I+
   List<String> getRankOptions() {
     return [
       'all',
       'K', // Tập Sự
-      'K+', // Tập Sự+
       'I', // Sơ Cấp
-      'I+', // Sơ Cấp+
       'H', // Trung Cấp
       'H+', // Trung Cấp+
       'G', // Khá
@@ -284,13 +278,11 @@ class OpponentMatchingService {
     ];
   }
 
-  /// Get rank display name (Vietnamese)
+  /// Get rank display name (Vietnamese) - MIGRATED 2025: Removed K+/I+
   String getRankDisplayName(String rank) {
     final displayNames = {
       'K': 'Tập Sự',
-      'K+': 'Tập Sự+',
       'I': 'Sơ Cấp',
-      'I+': 'Sơ Cấp+',
       'H': 'Trung Cấp',
       'H+': 'Trung Cấp+',
       'G': 'Khá',
@@ -363,4 +355,3 @@ class OpponentMatchingService {
     return eligible;
   }
 }
-

@@ -13,14 +13,12 @@ class ChallengeManagementService {
     String? responseMessage,
   }) async {
     try {
-
       await _supabase.from('challenges').update({
         'status': 'accepted',
         'responded_at': DateTime.now().toIso8601String(),
         'response_message': responseMessage,
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
-
     } catch (e) {
       rethrow;
     }
@@ -31,13 +29,11 @@ class ChallengeManagementService {
     required String challengeId,
   }) async {
     try {
-
       await _supabase.from('challenges').update({
         'status': 'in_progress',
         'start_time': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
-
     } catch (e) {
       rethrow;
     }
@@ -51,7 +47,6 @@ class ChallengeManagementService {
     required int player2Score,
   }) async {
     try {
-
       final updates = {
         'status': 'completed',
         'winner_id': winnerId,
@@ -62,7 +57,6 @@ class ChallengeManagementService {
       };
 
       await _supabase.from('challenges').update(updates).eq('id', challengeId);
-
     } catch (e) {
       rethrow;
     }
@@ -75,13 +69,11 @@ class ChallengeManagementService {
     required int player2Score,
   }) async {
     try {
-
       await _supabase.from('challenges').update({
         'player1_score': player1Score,
         'player2_score': player2Score,
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
-
     } catch (e) {
       rethrow;
     }
@@ -93,14 +85,12 @@ class ChallengeManagementService {
     String? responseMessage,
   }) async {
     try {
-
       await _supabase.from('challenges').update({
         'status': 'rejected',
         'responded_at': DateTime.now().toIso8601String(),
         'response_message': responseMessage,
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
-
     } catch (e) {
       rethrow;
     }
@@ -111,12 +101,10 @@ class ChallengeManagementService {
     required String challengeId,
   }) async {
     try {
-
       await _supabase.from('challenges').update({
         'status': 'cancelled',
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', challengeId);
-
     } catch (e) {
       rethrow;
     }
@@ -127,10 +115,7 @@ class ChallengeManagementService {
     required String challengeId,
   }) async {
     try {
-
-      final response = await _supabase
-          .from('challenges')
-          .select('''
+      final response = await _supabase.from('challenges').select('''
             *,
             challenger:users!fk_challenges_challenger_id(
               id,
@@ -151,9 +136,7 @@ class ChallengeManagementService {
               name,
               logo_url
             )
-          ''')
-          .eq('id', challengeId)
-          .single();
+          ''').eq('id', challengeId).single();
 
       return response;
     } catch (e) {
@@ -161,4 +144,3 @@ class ChallengeManagementService {
     }
   }
 }
-

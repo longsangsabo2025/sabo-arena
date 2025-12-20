@@ -35,9 +35,12 @@ class _ReferralHistoryScreenState extends State<ReferralHistoryScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final history = await ReferralService.instance.getReferralHistory(widget.userId);
-      final totalSpa = await ReferralService.instance.getTotalSpaEarnedFromReferrals(widget.userId);
-      final stats = await ReferralService.instance.getReferralStats(widget.userId);
+      final history =
+          await ReferralService.instance.getReferralHistory(widget.userId);
+      final totalSpa = await ReferralService.instance
+          .getTotalSpaEarnedFromReferrals(widget.userId);
+      final stats =
+          await ReferralService.instance.getReferralStats(widget.userId);
 
       setState(() {
         _history = history;
@@ -81,7 +84,8 @@ class _ReferralHistoryScreenState extends State<ReferralHistoryScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         children: [
-                          Icon(Icons.people, color: AppColors.primary, size: 20),
+                          Icon(Icons.people,
+                              color: AppColors.primary, size: 20),
                           const SizedBox(width: 8),
                           Text(
                             'Người Đã Giới Thiệu (${_history.length})',
@@ -448,4 +452,3 @@ class _ReferralHistoryScreenState extends State<ReferralHistoryScreen> {
     );
   }
 }
-

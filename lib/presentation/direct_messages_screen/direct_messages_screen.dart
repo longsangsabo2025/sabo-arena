@@ -9,6 +9,7 @@ import '../../models/user_profile.dart';
 import '../../services/messages_cache_service.dart';
 import '../../services/direct_messaging_service.dart';
 import '../../core/utils/user_display_name.dart';
+import '../../widgets/common/app_button.dart';
 import '../other_user_profile_screen/other_user_profile_screen.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
@@ -64,13 +65,16 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
         return;
       }
 
-      ProductionLogger.info('🔍 Loading conversations for user: $currentUserId', tag: 'direct_messages_screen');
+      ProductionLogger.info('🔍 Loading conversations for user: $currentUserId',
+          tag: 'direct_messages_screen');
 
       // STEP 1: Load from cache first (instant)
       final cachedConversations =
           await MessagesCacheService.getCachedConversations();
       if (cachedConversations.isNotEmpty) {
-        ProductionLogger.info('⚡ Loaded ${cachedConversations.length} conversations from cache',  tag: 'direct_messages_screen');
+        ProductionLogger.info(
+            '⚡ Loaded ${cachedConversations.length} conversations from cache',
+            tag: 'direct_messages_screen');
         setState(() {
           _conversations = cachedConversations
               .map(
@@ -93,10 +97,12 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
       }
 
       // STEP 3: Sync with server in background
-      ProductionLogger.info('� Syncing with server...', tag: 'direct_messages_screen');
+      ProductionLogger.info('� Syncing with server...',
+          tag: 'direct_messages_screen');
 
       // NEW APPROACH: Query chat_rooms with JOIN to members directly
-      ProductionLogger.info('🔍 Querying chat_rooms joined with members...', tag: 'direct_messages_screen');
+      ProductionLogger.info('🔍 Querying chat_rooms joined with members...',
+          tag: 'direct_messages_screen');
       final rooms = await _supabase
           .from('chat_rooms')
           .select(
@@ -106,10 +112,12 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
           .eq('chat_room_members.user_id', currentUserId)
           .order('updated_at', ascending: false);
 
-      ProductionLogger.info('💬 Found ${rooms.length} direct message rooms', tag: 'direct_messages_screen');
+      ProductionLogger.info('💬 Found ${rooms.length} direct message rooms',
+          tag: 'direct_messages_screen');
 
       if (rooms.isEmpty) {
-        ProductionLogger.info('📭 No conversations found', tag: 'direct_messages_screen');
+        ProductionLogger.info('📭 No conversations found',
+            tag: 'direct_messages_screen');
         setState(() {
           _conversations = [];
           _isLoading = false;
@@ -129,7 +137,9 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
               .eq('room_id', room['id']);
 
           if (members.length != 2) {
-            ProductionLogger.info('⚠️  Room ${room['id']} has ${members.length} members, skipping',  tag: 'direct_messages_screen');
+            ProductionLogger.info(
+                '⚠️  Room ${room['id']} has ${members.length} members, skipping',
+                tag: 'direct_messages_screen');
             continue;
           }
 
@@ -146,7 +156,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
               .maybeSingle();
 
           if (otherUser == null) {
-            ProductionLogger.info('⚠️  User $otherUserId not found, skipping', tag: 'direct_messages_screen');
+            ProductionLogger.info('⚠️  User $otherUserId not found, skipping',
+                tag: 'direct_messages_screen');
             continue;
           }
 
@@ -182,18 +193,22 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             updatedAt: room['updated_at'],
           );
         } catch (e) {
-          ProductionLogger.info('❌ Error processing room ${room['id']}: $e', tag: 'direct_messages_screen');
+          ProductionLogger.info('❌ Error processing room ${room['id']}: $e',
+              tag: 'direct_messages_screen');
         }
       }
 
-      ProductionLogger.info('✅ Synced ${conversations.length} conversations from server', tag: 'direct_messages_screen');
+      ProductionLogger.info(
+          '✅ Synced ${conversations.length} conversations from server',
+          tag: 'direct_messages_screen');
 
       setState(() {
         _conversations = conversations;
         _isLoading = false;
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading conversations: $e', tag: 'direct_messages_screen');
+      ProductionLogger.info('❌ Error loading conversations: $e',
+          tag: 'direct_messages_screen');
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(
@@ -249,7 +264,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
         _isSearching = false;
       });
     } catch (e) {
-      ProductionLogger.info('Error searching users: $e', tag: 'direct_messages_screen');
+      ProductionLogger.info('Error searching users: $e',
+          tag: 'direct_messages_screen');
       setState(() => _isSearching = false);
     }
   }
@@ -293,7 +309,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
       _loadConversations();
       setState(() => _showSearch = false);
     } catch (e) {
-      ProductionLogger.info('Error opening conversation: $e', tag: 'direct_messages_screen');
+      ProductionLogger.info('Error opening conversation: $e',
+          tag: 'direct_messages_screen');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -351,7 +368,9 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             Icon(Icons.search, size: 80, color: Colors.grey[300]),
             SizedBox(height: 2.h),
             Text(
-              'Tìm kiếm người dùng để nhắn tin', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+              'Tìm kiếm người dùng để nhắn tin',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -366,7 +385,9 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             Icon(Icons.person_off, size: 80, color: Colors.grey[300]),
             SizedBox(height: 2.h),
             Text(
-              'Không tìm thấy người dùng', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+              'Không tìm thấy người dùng',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -414,7 +435,9 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey[300]),
             SizedBox(height: 2.h),
             Text(
-              'Chưa có tin nhắn nào', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Chưa có tin nhắn nào',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 16.sp,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w600,
@@ -422,18 +445,20 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             ),
             SizedBox(height: 1.h),
             Text(
-              'Tìm kiếm người dùng để bắt đầu chat', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.sp, color: Colors.grey[500]),
+              'Tìm kiếm người dùng để bắt đầu chat',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12.sp, color: Colors.grey[500]),
             ),
             SizedBox(height: 3.h),
-            ElevatedButton.icon(
+            AppButton(
+              label: 'Tìm kiếm người dùng',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              icon: Icons.search,
+              iconTrailing: false,
               onPressed: () {
                 setState(() => _showSearch = true);
               },
-              icon: const Icon(Icons.search),
-              label: const Text('Tìm kiếm người dùng'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
-              ),
             ),
           ],
         ),
@@ -502,19 +527,18 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             title: Text(
               UserDisplayName.fromMap(otherUser),
               style: TextStyle(
-                fontWeight: unreadCount > 0
-                    ? FontWeight.bold
-                    : FontWeight.normal,
+                fontWeight:
+                    unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
               ),
             ),
             subtitle: Text(
               lastMessage.isEmpty ? 'Bắt đầu cuộc trò chuyện' : lastMessage,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis, style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: unreadCount > 0 ? Colors.black87 : Colors.grey[600],
-                fontWeight: unreadCount > 0
-                    ? FontWeight.w500
-                    : FontWeight.normal,
+                fontWeight:
+                    unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
               ),
             ),
             trailing: Text(
@@ -524,9 +548,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                 color: unreadCount > 0
                     ? Theme.of(context).primaryColor
                     : Colors.grey[500],
-                fontWeight: unreadCount > 0
-                    ? FontWeight.bold
-                    : FontWeight.normal,
+                fontWeight:
+                    unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
               ),
             ),
             onTap: () => _openConversation(
@@ -789,14 +812,17 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
   /// Strategy: Load from cache first (instant), then sync with server
   Future<void> _loadMessages() async {
     try {
-      ProductionLogger.info('🔍 Loading messages for room: ${widget.roomId}', tag: 'direct_messages_screen');
+      ProductionLogger.info('🔍 Loading messages for room: ${widget.roomId}',
+          tag: 'direct_messages_screen');
 
       // STEP 1: Load from cache first (instant)
       final cachedMessages = await MessagesCacheService.getCachedMessages(
         widget.roomId,
       );
       if (cachedMessages.isNotEmpty) {
-        ProductionLogger.info('⚡ Loaded ${cachedMessages.length} messages from cache', tag: 'direct_messages_screen');
+        ProductionLogger.info(
+            '⚡ Loaded ${cachedMessages.length} messages from cache',
+            tag: 'direct_messages_screen');
         setState(() {
           _messages = cachedMessages
               .map(
@@ -825,7 +851,8 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
       }
 
       // STEP 2: Sync with server in background
-      ProductionLogger.info('🔄 Syncing messages with server...', tag: 'direct_messages_screen');
+      ProductionLogger.info('🔄 Syncing messages with server...',
+          tag: 'direct_messages_screen');
 
       final messages = await _supabase
           .from('chat_messages')
@@ -833,7 +860,8 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
           .eq('room_id', widget.roomId)
           .order('created_at', ascending: true);
 
-      ProductionLogger.info('✅ Synced ${messages.length} messages from server', tag: 'direct_messages_screen');
+      ProductionLogger.info('✅ Synced ${messages.length} messages from server',
+          tag: 'direct_messages_screen');
 
       // Cache all messages
       for (var message in messages) {
@@ -858,7 +886,8 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
         }
       });
     } catch (e) {
-      ProductionLogger.info('❌ Error loading messages: $e', tag: 'direct_messages_screen');
+      ProductionLogger.info('❌ Error loading messages: $e',
+          tag: 'direct_messages_screen');
       setState(() => _isLoading = false);
     }
   }
@@ -911,7 +940,8 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
           .eq('room_id', widget.roomId)
           .eq('user_id', currentUserId);
     } catch (e) {
-      ProductionLogger.info('Error marking as read: $e', tag: 'direct_messages_screen');
+      ProductionLogger.info('Error marking as read: $e',
+          tag: 'direct_messages_screen');
     }
   }
 
@@ -924,11 +954,13 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
 
       final currentUserId = _supabase.auth.currentUser?.id;
       if (currentUserId == null) {
-        ProductionLogger.info('❌ No current user', tag: 'direct_messages_screen');
+        ProductionLogger.info('❌ No current user',
+            tag: 'direct_messages_screen');
         return;
       }
 
-      ProductionLogger.info('👍 Sending like to room ${widget.roomId}', tag: 'direct_messages_screen');
+      ProductionLogger.info('👍 Sending like to room ${widget.roomId}',
+          tag: 'direct_messages_screen');
 
       final result = await _supabase
           .from('chat_messages')
@@ -980,12 +1012,13 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
       // Update room's updated_at
       await _supabase
           .from('chat_rooms')
-          .update({'updated_at': DateTime.now().toIso8601String()})
-          .eq('id', widget.roomId);
+          .update({'updated_at': DateTime.now().toIso8601String()}).eq(
+              'id', widget.roomId);
 
       setState(() => _isSending = false);
     } catch (e) {
-      ProductionLogger.info('❌ Error sending like: $e', tag: 'direct_messages_screen');
+      ProductionLogger.info('❌ Error sending like: $e',
+          tag: 'direct_messages_screen');
       setState(() => _isSending = false);
     }
   }
@@ -1000,11 +1033,14 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
 
       final currentUserId = _supabase.auth.currentUser?.id;
       if (currentUserId == null) {
-        ProductionLogger.info('❌ No current user', tag: 'direct_messages_screen');
+        ProductionLogger.info('❌ No current user',
+            tag: 'direct_messages_screen');
         return;
       }
 
-      ProductionLogger.info('📤 Sending message: "$text" to room ${widget.roomId}', tag: 'direct_messages_screen');
+      ProductionLogger.info(
+          '📤 Sending message: "$text" to room ${widget.roomId}',
+          tag: 'direct_messages_screen');
 
       final result = await _supabase
           .from('chat_messages')
@@ -1017,8 +1053,10 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
           .select()
           .single();
 
-      ProductionLogger.info('✅ Message sent successfully', tag: 'direct_messages_screen');
-      ProductionLogger.info('📊 Result: $result', tag: 'direct_messages_screen');
+      ProductionLogger.info('✅ Message sent successfully',
+          tag: 'direct_messages_screen');
+      ProductionLogger.info('📊 Result: $result',
+          tag: 'direct_messages_screen');
 
       // Cache the message
       await MessagesCacheService.cacheMessage(
@@ -1041,7 +1079,9 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
         setState(() {
           _messages.add(Map<String, dynamic>.from(result));
         });
-        ProductionLogger.info('✅ Added to list, total messages: ${_messages.length}', tag: 'direct_messages_screen');
+        ProductionLogger.info(
+            '✅ Added to list, total messages: ${_messages.length}',
+            tag: 'direct_messages_screen');
       }
 
       // Scroll to bottom
@@ -1058,13 +1098,14 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
       // Update room's updated_at
       await _supabase
           .from('chat_rooms')
-          .update({'updated_at': DateTime.now().toIso8601String()})
-          .eq('id', widget.roomId);
+          .update({'updated_at': DateTime.now().toIso8601String()}).eq(
+              'id', widget.roomId);
 
       _messageController.clear();
       setState(() => _isSending = false);
     } catch (e) {
-      ProductionLogger.info('❌ Error sending message: $e', tag: 'direct_messages_screen');
+      ProductionLogger.info('❌ Error sending message: $e',
+          tag: 'direct_messages_screen');
       setState(() => _isSending = false);
       if (mounted) {
         ScaffoldMessenger.of(
@@ -1109,84 +1150,90 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _messages.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.chat_bubble_outline,
-                          size: 60,
-                          color: Colors.grey[300],
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 60,
+                              color: Colors.grey[300],
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              'Bắt đầu cuộc trò chuyện',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          'Bắt đầu cuộc trò chuyện', overflow: TextOverflow.ellipsis, style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: EdgeInsets.all(2.w),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final message = _messages[index];
-                      final isMe = message['sender_id'] == currentUserId;
-                      final createdAt = DateTime.parse(message['created_at']);
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: EdgeInsets.all(2.w),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          final message = _messages[index];
+                          final isMe = message['sender_id'] == currentUserId;
+                          final createdAt =
+                              DateTime.parse(message['created_at']);
 
-                      return Align(
-                        alignment: isMe
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            top: 4,
-                            bottom: 4,
-                            left: isMe ? 60 : 8,
-                            right: isMe ? 8 : 60,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isMe
-                                ? const Color(
-                                    0xFF0084FF,
-                                  ) // Facebook Messenger blue
-                                : const Color(0xFFE4E6EB), // Facebook gray
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                message['message'], overflow: TextOverflow.ellipsis, style: TextStyle(
-                                  color: isMe ? Colors.white : Colors.black87,
-                                  fontSize: 15,
-                                  height: 1.4,
-                                ),
+                          return Align(
+                            alignment: isMe
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                top: 4,
+                                bottom: 4,
+                                left: isMe ? 60 : 8,
+                                right: isMe ? 8 : 60,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                timeago.format(createdAt, locale: 'vi'),
-                                style: TextStyle(
-                                  color: isMe
-                                      ? Colors.white.withValues(alpha: 0.8)
-                                      : Colors.grey[600],
-                                  fontSize: 11,
-                                ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
                               ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                              decoration: BoxDecoration(
+                                color: isMe
+                                    ? const Color(
+                                        0xFF0084FF,
+                                      ) // Facebook Messenger blue
+                                    : const Color(0xFFE4E6EB), // Facebook gray
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    message['message'],
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color:
+                                          isMe ? Colors.white : Colors.black87,
+                                      fontSize: 15,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    timeago.format(createdAt, locale: 'vi'),
+                                    style: TextStyle(
+                                      color: isMe
+                                          ? Colors.white.withValues(alpha: 0.8)
+                                          : Colors.grey[600],
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
           ),
 
           // Message input
@@ -1217,7 +1264,9 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
                       ),
                       prefixIcon: IconButton(
                         icon: Text(
-                          _showEmojiPicker ? '⌨️' : '😊', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 20),
+                          _showEmojiPicker ? '⌨️' : '😊',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 20),
                         ),
                         onPressed: () {
                           if (_showEmojiPicker) {
@@ -1265,7 +1314,9 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
                 // Send button or Like button
                 _messageController.text.trim().isEmpty
                     ? IconButton(
-                        icon: const Text('👍', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 28)),
+                        icon: const Text('👍',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 28)),
                         onPressed: _isSending ? null : () => _sendLike(),
                         padding: EdgeInsets.zero,
                       )

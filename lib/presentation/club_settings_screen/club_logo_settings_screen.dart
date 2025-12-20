@@ -192,10 +192,12 @@ class _ClubLogoSettingsScreenState extends State<ClubLogoSettingsScreen> {
       child: Column(
         children: [
           Text(
-            'Logo hiện tại', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppTheme.textPrimaryLight,
-              fontWeight: FontWeight.w600,
-            ),
+            'Logo hiện tại',
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppTheme.textPrimaryLight,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 24),
           Container(
@@ -231,9 +233,11 @@ class _ClubLogoSettingsScreenState extends State<ClubLogoSettingsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            _club?.logoUrl != null ? 'Logo đã được thiết lập' : 'Chưa có logo', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryLight,
-            ),
+            _club?.logoUrl != null ? 'Logo đã được thiết lập' : 'Chưa có logo',
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textSecondaryLight,
+                ),
           ),
         ],
       ),
@@ -245,10 +249,12 @@ class _ClubLogoSettingsScreenState extends State<ClubLogoSettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Thao tác', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Thao tác',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -284,15 +290,19 @@ class _ClubLogoSettingsScreenState extends State<ClubLogoSettingsScreen> {
                   ),
                 ),
                 title: Text(
-                  'Tải lên logo mới', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Tải lên logo mới',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 subtitle: Text(
-                  'Chọn ảnh từ thư viện', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppTheme.textSecondaryLight,
-                  ),
+                  'Chọn ảnh từ thư viện',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textSecondaryLight,
+                      ),
                 ),
                 trailing: _isUploading
                     ? const SizedBox(
@@ -326,15 +336,19 @@ class _ClubLogoSettingsScreenState extends State<ClubLogoSettingsScreen> {
                     ),
                   ),
                   title: Text(
-                    'Xóa logo', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.red,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    'Xóa logo',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                   subtitle: Text(
-                    'Xóa logo và sử dụng icon mặc định', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textSecondaryLight,
-                    ),
+                    'Xóa logo và sử dụng icon mặc định',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textSecondaryLight,
+                        ),
                   ),
                   trailing: _isUploading
                       ? const SizedBox(
@@ -376,10 +390,12 @@ class _ClubLogoSettingsScreenState extends State<ClubLogoSettingsScreen> {
               Icon(Icons.info_outline, color: AppTheme.primaryLight, size: 20),
               const SizedBox(width: 8),
               Text(
-                'Hướng dẫn', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.primaryLight,
-                  fontWeight: FontWeight.w600,
-                ),
+                'Hướng dẫn',
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppTheme.primaryLight,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),
@@ -391,9 +407,9 @@ class _ClubLogoSettingsScreenState extends State<ClubLogoSettingsScreen> {
             '• Kích thước file tối đa: 2MB\n'
             '• Nên sử dụng ảnh có nền trong suốt (PNG)',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryLight,
-              height: 1.5,
-            ),
+                  color: AppTheme.textSecondaryLight,
+                  height: 1.5,
+                ),
           ),
         ],
       ),

@@ -41,22 +41,28 @@ class TournamentResultHistoryService {
         'vouchers_issued': vouchersIssued,
         'elo_updated': options['updateElo'] ?? false,
         'spa_distributed': options['distributePrizes'] ?? false,
-        'prizes_recorded': prizeDistribution != null && prizeDistribution.isNotEmpty,
-        'vouchers_issued_flag': vouchersIssued != null && vouchersIssued.isNotEmpty,
+        'prizes_recorded':
+            prizeDistribution != null && prizeDistribution.isNotEmpty,
+        'vouchers_issued_flag':
+            vouchersIssued != null && vouchersIssued.isNotEmpty,
         'options': options,
         'errors': errors,
         'processing_time_ms': processingTimeMs,
       });
 
-      ProductionLogger.info('✅ Tournament result history recorded: $tournamentName', tag: 'tournament_result_history_service');
+      ProductionLogger.info(
+          '✅ Tournament result history recorded: $tournamentName',
+          tag: 'tournament_result_history_service');
     } catch (e) {
-      ProductionLogger.info('❌ Failed to record tournament result history: $e', tag: 'tournament_result_history_service');
+      ProductionLogger.info('❌ Failed to record tournament result history: $e',
+          tag: 'tournament_result_history_service');
       // Don't throw - history recording is not critical
     }
   }
 
   /// Get tournament result history for a specific tournament
-  Future<Map<String, dynamic>?> getTournamentResultHistory(String tournamentId) async {
+  Future<Map<String, dynamic>?> getTournamentResultHistory(
+      String tournamentId) async {
     try {
       final response = await _supabase
           .from('tournament_result_history')
@@ -68,7 +74,8 @@ class TournamentResultHistoryService {
 
       return response;
     } catch (e) {
-      ProductionLogger.info('❌ Error fetching tournament result history: $e', tag: 'tournament_result_history_service');
+      ProductionLogger.info('❌ Error fetching tournament result history: $e',
+          tag: 'tournament_result_history_service');
       return null;
     }
   }
@@ -87,13 +94,15 @@ class TournamentResultHistoryService {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.info('❌ Error fetching all tournament results: $e', tag: 'tournament_result_history_service');
+      ProductionLogger.info('❌ Error fetching all tournament results: $e',
+          tag: 'tournament_result_history_service');
       return [];
     }
   }
 
   /// Get user's tournament history
-  Future<List<Map<String, dynamic>>> getUserTournamentResults(String userId) async {
+  Future<List<Map<String, dynamic>>> getUserTournamentResults(
+      String userId) async {
     try {
       final response = await _supabase
           .from('tournament_result_history')
@@ -103,20 +112,23 @@ class TournamentResultHistoryService {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      ProductionLogger.info('❌ Error fetching user tournament results: $e', tag: 'tournament_result_history_service');
+      ProductionLogger.info('❌ Error fetching user tournament results: $e',
+          tag: 'tournament_result_history_service');
       return [];
     }
   }
 
   /// Get statistics from result history
-  Future<Map<String, dynamic>> getTournamentStatistics(String tournamentId) async {
+  Future<Map<String, dynamic>> getTournamentStatistics(
+      String tournamentId) async {
     try {
       final result = await getTournamentResultHistory(tournamentId);
       if (result == null) return {};
 
       final standings = result['standings'] as List<dynamic>? ?? [];
       final eloUpdates = result['elo_updates'] as List<dynamic>? ?? [];
-      final spaDistribution = result['spa_distribution'] as List<dynamic>? ?? [];
+      final spaDistribution =
+          result['spa_distribution'] as List<dynamic>? ?? [];
 
       // Calculate stats
       int totalEloGained = 0;
@@ -146,7 +158,8 @@ class TournamentResultHistoryService {
         'completed_at': result['completed_at'],
       };
     } catch (e) {
-      ProductionLogger.info('❌ Error calculating tournament statistics: $e', tag: 'tournament_result_history_service');
+      ProductionLogger.info('❌ Error calculating tournament statistics: $e',
+          tag: 'tournament_result_history_service');
       return {};
     }
   }

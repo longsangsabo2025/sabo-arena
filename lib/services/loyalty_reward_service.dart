@@ -18,10 +18,8 @@ class LoyaltyRewardService {
     bool activeOnly = true,
   }) async {
     try {
-      var query = _supabase
-          .from('loyalty_rewards')
-          .select()
-          .eq('club_id', clubId);
+      var query =
+          _supabase.from('loyalty_rewards').select().eq('club_id', clubId);
 
       if (activeOnly) {
         query = query.eq('is_active', true);
@@ -42,10 +40,8 @@ class LoyaltyRewardService {
     bool activeOnly = true,
   }) async {
     try {
-      var query = _supabase
-          .from('loyalty_rewards')
-          .select()
-          .eq('club_id', clubId);
+      var query =
+          _supabase.from('loyalty_rewards').select().eq('club_id', clubId);
 
       if (activeOnly) {
         query = query.eq('is_active', true);
@@ -56,7 +52,7 @@ class LoyaltyRewardService {
       final userTierLevel = tierOrder[tier] ?? 0;
 
       final response = await query.order('points_cost', ascending: true);
-      
+
       // Client-side filtering by tier
       final filtered = (response as List).where((reward) {
         final requiredTier = reward['tier_required'] as String?;
@@ -169,7 +165,7 @@ class LoyaltyRewardService {
   }) async {
     try {
       final updates = <String, dynamic>{};
-      
+
       if (rewardName != null) updates['reward_name'] = rewardName;
       if (description != null) updates['description'] = description;
       if (imageUrl != null) updates['image_url'] = imageUrl;
@@ -177,9 +173,12 @@ class LoyaltyRewardService {
       if (rewardValue != null) updates['reward_value'] = rewardValue;
       if (tierRequired != null) updates['tier_required'] = tierRequired;
       if (quantityTotal != null) updates['quantity_total'] = quantityTotal;
-      if (quantityAvailable != null) updates['quantity_available'] = quantityAvailable;
-      if (validFrom != null) updates['valid_from'] = validFrom.toIso8601String();
-      if (validUntil != null) updates['valid_until'] = validUntil.toIso8601String();
+      if (quantityAvailable != null)
+        updates['quantity_available'] = quantityAvailable;
+      if (validFrom != null)
+        updates['valid_from'] = validFrom.toIso8601String();
+      if (validUntil != null)
+        updates['valid_until'] = validUntil.toIso8601String();
       if (isActive != null) updates['is_active'] = isActive;
 
       await _supabase
@@ -198,8 +197,7 @@ class LoyaltyRewardService {
     try {
       await _supabase
           .from('loyalty_rewards')
-          .update({'is_active': false})
-          .eq('id', rewardId);
+          .update({'is_active': false}).eq('id', rewardId);
     } catch (e) {
       throw Exception('Failed to delete reward: $e');
     }
@@ -240,22 +238,18 @@ class LoyaltyRewardService {
     int limit = 50,
   }) async {
     try {
-      var query = _supabase
-          .from('loyalty_reward_redemptions')
-          .select('''
+      var query = _supabase.from('loyalty_reward_redemptions').select('''
             *,
             reward:loyalty_rewards(reward_name, reward_type, reward_value, image_url),
             club:clubs(id, name, avatar_url)
-          ''')
-          .eq('user_id', userId);
+          ''').eq('user_id', userId);
 
       if (clubId != null) {
         query = query.eq('club_id', clubId);
       }
 
-      final response = await query
-          .order('created_at', ascending: false)
-          .limit(limit);
+      final response =
+          await query.order('created_at', ascending: false).limit(limit);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
@@ -270,22 +264,18 @@ class LoyaltyRewardService {
     int limit = 100,
   }) async {
     try {
-      var query = _supabase
-          .from('loyalty_reward_redemptions')
-          .select('''
+      var query = _supabase.from('loyalty_reward_redemptions').select('''
             *,
             user:users(id, full_name, avatar_url, phone_number),
             reward:loyalty_rewards(reward_name, reward_type, points_cost)
-          ''')
-          .eq('club_id', clubId);
+          ''').eq('club_id', clubId);
 
       if (status != null) {
         query = query.eq('status', status);
       }
 
-      final response = await query
-          .order('created_at', ascending: false)
-          .limit(limit);
+      final response =
+          await query.order('created_at', ascending: false).limit(limit);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
@@ -298,16 +288,13 @@ class LoyaltyRewardService {
     required String redemptionId,
   }) async {
     try {
-      final response = await _supabase
-          .from('loyalty_reward_redemptions')
-          .select('''
+      final response =
+          await _supabase.from('loyalty_reward_redemptions').select('''
             *,
             user:users(id, full_name, avatar_url, phone_number),
             reward:loyalty_rewards(reward_name, reward_type, reward_value),
             club:clubs(id, name, avatar_url)
-          ''')
-          .eq('id', redemptionId)
-          .maybeSingle();
+          ''').eq('id', redemptionId).maybeSingle();
 
       return response;
     } catch (e) {
@@ -325,14 +312,11 @@ class LoyaltyRewardService {
     String? notes,
   }) async {
     try {
-      await _supabase
-          .from('loyalty_reward_redemptions')
-          .update({
-            'status': 'approved',
-            'approved_at': DateTime.now().toIso8601String(),
-            'notes': notes,
-          })
-          .eq('id', redemptionId);
+      await _supabase.from('loyalty_reward_redemptions').update({
+        'status': 'approved',
+        'approved_at': DateTime.now().toIso8601String(),
+        'notes': notes,
+      }).eq('id', redemptionId);
     } catch (e) {
       throw Exception('Failed to approve redemption: $e');
     }
@@ -344,13 +328,10 @@ class LoyaltyRewardService {
     String? notes,
   }) async {
     try {
-      await _supabase
-          .from('loyalty_reward_redemptions')
-          .update({
-            'status': 'ready_to_collect',
-            'notes': notes,
-          })
-          .eq('id', redemptionId);
+      await _supabase.from('loyalty_reward_redemptions').update({
+        'status': 'ready_to_collect',
+        'notes': notes,
+      }).eq('id', redemptionId);
     } catch (e) {
       throw Exception('Failed to mark ready to collect: $e');
     }
@@ -362,14 +343,11 @@ class LoyaltyRewardService {
     String? notes,
   }) async {
     try {
-      await _supabase
-          .from('loyalty_reward_redemptions')
-          .update({
-            'status': 'fulfilled',
-            'fulfilled_at': DateTime.now().toIso8601String(),
-            'notes': notes,
-          })
-          .eq('id', redemptionId);
+      await _supabase.from('loyalty_reward_redemptions').update({
+        'status': 'fulfilled',
+        'fulfilled_at': DateTime.now().toIso8601String(),
+        'notes': notes,
+      }).eq('id', redemptionId);
     } catch (e) {
       throw Exception('Failed to mark fulfilled: $e');
     }
@@ -381,13 +359,10 @@ class LoyaltyRewardService {
     String? notes,
   }) async {
     try {
-      await _supabase
-          .from('loyalty_reward_redemptions')
-          .update({
-            'status': 'cancelled',
-            'notes': notes,
-          })
-          .eq('id', redemptionId);
+      await _supabase.from('loyalty_reward_redemptions').update({
+        'status': 'cancelled',
+        'notes': notes,
+      }).eq('id', redemptionId);
     } catch (e) {
       throw Exception('Failed to cancel redemption: $e');
     }
@@ -408,14 +383,17 @@ class LoyaltyRewardService {
           .eq('reward_id', rewardId);
 
       final redemptions = List<Map<String, dynamic>>.from(response);
-      
+
       return {
         'total_redemptions': redemptions.length,
         'pending': redemptions.where((r) => r['status'] == 'pending').length,
         'approved': redemptions.where((r) => r['status'] == 'approved').length,
-        'ready_to_collect': redemptions.where((r) => r['status'] == 'ready_to_collect').length,
-        'fulfilled': redemptions.where((r) => r['status'] == 'fulfilled').length,
-        'cancelled': redemptions.where((r) => r['status'] == 'cancelled').length,
+        'ready_to_collect':
+            redemptions.where((r) => r['status'] == 'ready_to_collect').length,
+        'fulfilled':
+            redemptions.where((r) => r['status'] == 'fulfilled').length,
+        'cancelled':
+            redemptions.where((r) => r['status'] == 'cancelled').length,
         'expired': redemptions.where((r) => r['status'] == 'expired').length,
       };
     } catch (e) {
@@ -438,11 +416,11 @@ class LoyaltyRewardService {
 
     // Check validity dates
     final now = DateTime.now();
-    final validFrom = reward['valid_from'] != null 
-        ? DateTime.parse(reward['valid_from']) 
+    final validFrom = reward['valid_from'] != null
+        ? DateTime.parse(reward['valid_from'])
         : null;
-    final validUntil = reward['valid_until'] != null 
-        ? DateTime.parse(reward['valid_until']) 
+    final validUntil = reward['valid_until'] != null
+        ? DateTime.parse(reward['valid_until'])
         : null;
 
     if (validFrom != null && now.isBefore(validFrom)) return false;
@@ -469,7 +447,7 @@ class LoyaltyRewardService {
     final tierOrder = {'bronze': 0, 'silver': 1, 'gold': 2, 'platinum': 3};
     final userTierLevel = tierOrder[userTier] ?? 0;
     final requiredLevel = tierOrder[requiredTier] ?? 0;
-    
+
     if (userTierLevel < requiredLevel) return false;
 
     return true;

@@ -36,8 +36,7 @@ class PushService {
     try {
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp();
-      } else {
-      }
+      } else {}
     } catch (e) {
       _initialized = true; // Mark as initialized to prevent retry loops
       return; // Can't continue without Firebase
@@ -53,10 +52,10 @@ class PushService {
     try {
       await FirebaseMessaging.instance
           .setForegroundNotificationPresentationOptions(
-            alert: true,
-            badge: true,
-            sound: true,
-          );
+        alert: true,
+        badge: true,
+        sound: true,
+      );
     } catch (e) {
       // REMOVED: if (kDebugMode) print('Error setting foreground options: $e');
     }
@@ -116,9 +115,8 @@ class PushService {
     if (token == null || token.isEmpty) return;
 
     try {
-      final platform = Platform.isIOS
-          ? 'ios'
-          : (Platform.isAndroid ? 'android' : 'web');
+      final platform =
+          Platform.isIOS ? 'ios' : (Platform.isAndroid ? 'android' : 'web');
 
       await _supabase.from('device_tokens').upsert({
         'user_id': userId,
@@ -132,9 +130,8 @@ class PushService {
 
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       try {
-        final platform = Platform.isIOS
-            ? 'ios'
-            : (Platform.isAndroid ? 'android' : 'other');
+        final platform =
+            Platform.isIOS ? 'ios' : (Platform.isAndroid ? 'android' : 'other');
         await _supabase.from('device_tokens').upsert({
           'user_id': userId,
           'token': newToken,
@@ -147,4 +144,3 @@ class PushService {
     });
   }
 }
-

@@ -38,7 +38,6 @@ class DashboardCacheService {
   void set<T>(String key, T data, {Duration? ttl}) {
     final expiry = DateTime.now().add(ttl ?? defaultTTL);
     _cache[key] = CacheEntry<T>(data, expiry);
-
   }
 
   /// Get data from cache if not expired
@@ -82,14 +81,12 @@ class DashboardCacheService {
 
   /// Clear cache for specific club
   void clearClubCache(String clubId) {
-    final keysToRemove = _cache.keys
-        .where((key) => key.startsWith('club_$clubId'))
-        .toList();
+    final keysToRemove =
+        _cache.keys.where((key) => key.startsWith('club_$clubId')).toList();
 
     for (final key in keysToRemove) {
       _cache.remove(key);
     }
-
   }
 
   /// Get or fetch data with caching
@@ -124,8 +121,7 @@ class DashboardCacheService {
       _cache.remove(key);
     }
 
-    if (expiredKeys.isNotEmpty) {
-    }
+    if (expiredKeys.isNotEmpty) {}
   }
 
   /// Get cache statistics
@@ -207,4 +203,3 @@ class CacheTTL {
   static const Duration profileData = Duration(minutes: 15);
   static const Duration analyticsData = Duration(minutes: 30);
 }
-

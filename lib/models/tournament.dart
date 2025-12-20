@@ -16,7 +16,7 @@ class Tournament {
   final String? skillLevelRequired;
   final String format; // Game type (8-ball, 9-ball, 10-ball)
   final String
-  tournamentType; // Tournament elimination format (single_elimination, double_elimination)
+      tournamentType; // Tournament elimination format (single_elimination, double_elimination)
   final String? rules;
   final String? requirements;
   final bool isPublic;
@@ -28,11 +28,11 @@ class Tournament {
   // Enhanced prize fields
   final String prizeSource; // 'entry_fees', 'sponsor', 'hybrid'
   final String
-  distributionTemplate; // 'winner_takes_all', 'top_3', 'top_4', 'dong_hang_3', 'custom'
+      distributionTemplate; // 'winner_takes_all', 'top_3', 'top_4', 'dong_hang_3', 'custom'
   final double organizerFeePercent; // Organizer fee percentage (0-100)
   final double sponsorContribution; // Additional sponsor money
   final List<Map<String, dynamic>>?
-  customDistribution; // Custom distribution array
+      customDistribution; // Custom distribution array
 
   // Rank restriction fields
   final String? minRank; // Minimum rank required
@@ -109,9 +109,8 @@ class Tournament {
       clubId: json['club_id'],
       organizerId: json['organizer_id'],
       startDate: DateTime.parse(json['start_date']),
-      endDate: json['end_date'] != null
-          ? DateTime.parse(json['end_date'])
-          : null,
+      endDate:
+          json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
       registrationStart: json['registration_start'] != null
           ? DateTime.parse(json['registration_start'])
           : null,
@@ -125,8 +124,7 @@ class Tournament {
       // CLEAN SCHEMA: Use proper field mapping with new columns
       format:
           json['game_format'] ?? '8-ball', // Game type from game_format field
-      tournamentType:
-          json['bracket_format'] ??
+      tournamentType: json['bracket_format'] ??
           'single_elimination', // Tournament format from bracket_format field
       rules: json['rules'],
       requirements: json['requirements'],

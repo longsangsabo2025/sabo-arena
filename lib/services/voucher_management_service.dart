@@ -4,7 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Service quản lý voucher xác thực từ phía quán
 /// Handles voucher verification and redemption by club staff
 class VoucherManagementService {
-  static final VoucherManagementService _instance = VoucherManagementService._internal();
+  static final VoucherManagementService _instance =
+      VoucherManagementService._internal();
   factory VoucherManagementService() => _instance;
   VoucherManagementService._internal();
 
@@ -17,7 +18,6 @@ class VoucherManagementService {
     String clubId,
   ) async {
     try {
-
       // Tìm voucher với code này cho quán này
       final response = await _supabase
           .from('user_vouchers')
@@ -46,7 +46,8 @@ class VoucherManagementService {
       if (response == null) {
         return {
           'success': false,
-          'error': 'Mã voucher không tồn tại, đã được sử dụng, hoặc không thuộc quán này',
+          'error':
+              'Mã voucher không tồn tại, đã được sử dụng, hoặc không thuộc quán này',
         };
       }
 
@@ -80,7 +81,6 @@ class VoucherManagementService {
     String clubId,
   ) async {
     try {
-
       // Verify voucher trước khi sử dụng
       final verification = await verifyVoucherCode(voucherCode, clubId);
       if (verification['success'] != true) {
@@ -99,7 +99,6 @@ class VoucherManagementService {
           })
           .eq('voucher_code', voucherCode)
           .eq('club_id', clubId);
-
 
       // Tạo log sử dụng voucher (optional)
       try {
@@ -138,7 +137,6 @@ class VoucherManagementService {
   /// Lấy danh sách voucher chưa sử dụng của quán
   Future<List<Map<String, dynamic>>> getPendingVouchers(String clubId) async {
     try {
-
       final response = await _supabase
           .from('user_vouchers')
           .select('''
@@ -171,7 +169,6 @@ class VoucherManagementService {
     int limit = 50,
   }) async {
     try {
-
       final response = await _supabase
           .from('user_vouchers')
           .select('''
@@ -202,7 +199,6 @@ class VoucherManagementService {
   /// Lấy tất cả voucher của quán để thống kê
   Future<Map<String, dynamic>> getVoucherStats(String clubId) async {
     try {
-
       // Get all vouchers
       final allVouchers = await _supabase
           .from('user_vouchers')
@@ -213,19 +209,18 @@ class VoucherManagementService {
       final total = allVouchers.length;
       final used = allVouchers.where((v) => v['is_used'] == true).length;
       final pending = total - used;
-      
+
       // Calculate total value
       final totalValue = allVouchers.fold<double>(
         0.0,
         (sum, voucher) => sum + (voucher['voucher_value'] ?? 0.0),
       );
-      
-      final usedValue = allVouchers
-          .where((v) => v['is_used'] == true)
-          .fold<double>(
-            0.0,
-            (sum, voucher) => sum + (voucher['voucher_value'] ?? 0.0),
-          );
+
+      final usedValue =
+          allVouchers.where((v) => v['is_used'] == true).fold<double>(
+                0.0,
+                (sum, voucher) => sum + (voucher['voucher_value'] ?? 0.0),
+              );
 
       return {
         'success': true,

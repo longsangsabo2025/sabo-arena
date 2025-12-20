@@ -163,8 +163,7 @@ class DSEmptyState extends StatelessWidget {
         constraints: maxWidth != null
             ? BoxConstraints(maxWidth: maxWidth!)
             : const BoxConstraints(maxWidth: 400),
-        padding:
-            padding ??
+        padding: padding ??
             DesignTokens.only(
               left: DesignTokens.space32,
               right: DesignTokens.space32,

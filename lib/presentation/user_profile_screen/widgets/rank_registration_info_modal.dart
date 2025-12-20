@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../../core/app_export.dart';
+import '../../../widgets/common/app_button.dart';
 
 class RankRegistrationInfoModal extends StatelessWidget {
   final VoidCallback onStartRegistration;
@@ -71,25 +72,13 @@ class RankRegistrationInfoModal extends StatelessWidget {
           ),
           SizedBox(height: 4.h),
 
-          // Call to Action Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onStartRegistration,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 2.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                'Bắt đầu đăng ký',
-                style: AppTheme.lightTheme.textTheme.titleMedium?.copyWith(
-                  color: AppTheme.lightTheme.colorScheme.onPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+          // Call to Action Button - iOS style
+          AppButton(
+            label: 'Bắt đầu đăng ký',
+            type: AppButtonType.primary,
+            size: AppButtonSize.large,
+            fullWidth: true,
+            onPressed: onStartRegistration,
           ),
           SizedBox(height: 1.h),
           Center(

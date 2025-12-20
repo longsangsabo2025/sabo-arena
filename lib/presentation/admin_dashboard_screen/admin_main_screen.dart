@@ -98,21 +98,29 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
         _errorMessage = null;
       });
 
-      final results = await Future.wait([
-        _adminService.getAdminStats(),
-        _adminService.getRecentActivities(limit: 10),
-      ]);
+      // Load stats first (fast)
+      final stats = await _adminService.getAdminStats();
+      if (mounted) {
+        setState(() {
+          _stats = stats;
+        });
+      }
 
-      setState(() {
-        _stats = results[0] as Map<String, dynamic>;
-        _recentActivities = results[1] as List<Map<String, dynamic>>;
-        _isLoading = false;
-      });
+      // Load activities independently (slower)
+      final activities = await _adminService.getRecentActivities(limit: 10);
+      if (mounted) {
+        setState(() {
+          _recentActivities = activities;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Lỗi tải dữ liệu dashboard: $e';
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Lỗi tải dữ liệu dashboard: $e';
+        });
+      }
     }
   }
 
@@ -148,11 +156,11 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildWelcomeSection(),
-            SizedBox(height: 24),
+            SizedBox(height: 8),
             _buildStatsCards(),
-            SizedBox(height: 24),
+            SizedBox(height: 8),
             _buildQuickActions(),
-            SizedBox(height: 24),
+            SizedBox(height: 8),
             _buildRecentActivities(),
           ],
         ),
@@ -178,16 +186,20 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Chào mừng Admin!', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppTheme.onPrimaryLight,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  'Chào mừng Admin!',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppTheme.onPrimaryLight,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Quản lý hệ thống Sabo Arena', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.onPrimaryLight.withValues(alpha: 0.8),
-                  ),
+                  'Quản lý hệ thống Sabo Arena',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.onPrimaryLight.withValues(alpha: 0.8),
+                      ),
                 ),
               ],
             ),
@@ -290,16 +302,18 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
           ),
           Spacer(),
           Text(
-            value, style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimaryLight,
-            ),
+            value,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimaryLight,
+                ),
           ),
           SizedBox(height: 4),
           Text(
-            title, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryLight,
-            ),
+            title,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textSecondaryLight,
+                ),
           ),
         ],
       ),
@@ -311,7 +325,9 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Thao tác nhanh', overflow: TextOverflow.ellipsis, style: Theme.of(
+          'Thao tác nhanh',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
@@ -382,10 +398,11 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
             ),
             SizedBox(height: 12),
             Text(
-              title, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimaryLight,
-              ),
+              title,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimaryLight,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -399,7 +416,9 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hoạt động gần đây', overflow: TextOverflow.ellipsis, style: Theme.of(
+          'Hoạt động gần đây',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
@@ -413,7 +432,9 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
             ),
             child: Center(
               child: Text(
-                'Chưa có hoạt động nào', overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight),
+                'Chưa có hoạt động nào',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: AppTheme.textSecondaryLight),
               ),
             ),
           )
@@ -451,7 +472,9 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  activity['description'] ?? 'Hoạt động không xác định', overflow: TextOverflow.ellipsis, style: Theme.of(
+                  activity['description'] ?? 'Hoạt động không xác định',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
@@ -459,8 +482,8 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
                 Text(
                   _formatTimeAgo(activity['created_at']),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppTheme.textSecondaryLight,
-                  ),
+                        color: AppTheme.textSecondaryLight,
+                      ),
                 ),
               ],
             ),
@@ -524,7 +547,9 @@ class _AdminMoreTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thêm tùy chọn', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Thêm tùy chọn',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimaryLight,
@@ -578,7 +603,8 @@ class _AdminMoreTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title, style: TextStyle(
+          title,
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimaryLight,
@@ -592,9 +618,8 @@ class _AdminMoreTab extends StatelessWidget {
             border: Border.all(color: AppTheme.dividerLight),
           ),
           child: Column(
-            children: options
-                .map((option) => _buildMoreOptionTile(option))
-                .toList(),
+            children:
+                options.map((option) => _buildMoreOptionTile(option)).toList(),
           ),
         ),
       ],
@@ -612,13 +637,15 @@ class _AdminMoreTab extends StatelessWidget {
         child: Icon(option.icon, color: AppTheme.primaryLight, size: 20),
       ),
       title: Text(
-        option.title, style: TextStyle(
+        option.title,
+        style: TextStyle(
           fontWeight: FontWeight.w600,
           color: AppTheme.textPrimaryLight,
         ),
       ),
       subtitle: Text(
-        option.subtitle, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
+        option.subtitle,
+        style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
       ),
       trailing: Icon(
         Icons.arrow_forward_ios,

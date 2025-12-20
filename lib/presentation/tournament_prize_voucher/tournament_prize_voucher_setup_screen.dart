@@ -22,12 +22,12 @@ class TournamentPrizeVoucherSetupScreen extends StatefulWidget {
 class _TournamentPrizeVoucherSetupScreenState
     extends State<TournamentPrizeVoucherSetupScreen> {
   final _service = TournamentPrizeVoucherService();
-  
+
   // Prize configs
   final _firstPrizeController = TextEditingController(text: '700000');
   final _secondPrizeController = TextEditingController(text: '500000');
   final _thirdPrizeController = TextEditingController(text: '300000');
-  
+
   int _validDays = 30;
   bool _isLoading = false;
   List<Map<String, dynamic>> _existingPrizes = [];
@@ -41,15 +41,16 @@ class _TournamentPrizeVoucherSetupScreenState
   Future<void> _loadExistingPrizes() async {
     setState(() => _isLoading = true);
     try {
-      final prizes = await _service.getTournamentPrizeVouchers(widget.tournamentId);
+      final prizes =
+          await _service.getTournamentPrizeVouchers(widget.tournamentId);
       setState(() => _existingPrizes = prizes);
-      
+
       // Populate fields nếu đã có config
       if (prizes.isNotEmpty) {
         for (var prize in prizes) {
           final position = prize['position'] as int;
           final value = prize['voucher_value'].toString();
-          
+
           if (position == 1) {
             _firstPrizeController.text = value;
           } else if (position == 2) {
@@ -58,7 +59,7 @@ class _TournamentPrizeVoucherSetupScreenState
             _thirdPrizeController.text = value;
           }
         }
-        
+
         if (prizes.first['valid_days'] != null) {
           _validDays = prizes.first['valid_days'] as int;
         }
@@ -75,17 +76,17 @@ class _TournamentPrizeVoucherSetupScreenState
     final first = double.tryParse(_firstPrizeController.text);
     final second = double.tryParse(_secondPrizeController.text);
     final third = double.tryParse(_thirdPrizeController.text);
-    
+
     if (first == null || first <= 0) {
       _showError('Nhập giá trị giải Nhất hợp lệ');
       return;
     }
-    
+
     if (second == null || second <= 0) {
       _showError('Nhập giá trị giải Nhì hợp lệ');
       return;
     }
-    
+
     if (third == null || third <= 0) {
       _showError('Nhập giá trị giải Ba hợp lệ');
       return;
@@ -180,55 +181,56 @@ class _TournamentPrizeVoucherSetupScreenState
                     ),
                   ),
                   SizedBox(height: 1.h),
-                  
+
                   Text(
                     'Cài đặt mệnh giá voucher cho từng giải thưởng. User thắng giải sẽ tự động nhận voucher để thanh toán tiền bàn.',
                     style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                   ),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Quick template
                   OutlinedButton.icon(
                     onPressed: _useTemplateFromPoster,
                     icon: const Icon(Icons.auto_awesome),
                     label: const Text('Dùng mẫu từ Poster (700K-500K-300K)'),
                   ),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Prize inputs
                   _buildPrizeInput(
                     label: '🥇 Giải Nhất',
                     controller: _firstPrizeController,
                     color: const Color(0xFFFFD700),
                   ),
-                  
+
                   SizedBox(height: 2.h),
-                  
+
                   _buildPrizeInput(
                     label: '🥈 Giải Nhì',
                     controller: _secondPrizeController,
                     color: const Color(0xFFC0C0C0),
                   ),
-                  
+
                   SizedBox(height: 2.h),
-                  
+
                   _buildPrizeInput(
                     label: '🥉 Giải Ba',
                     controller: _thirdPrizeController,
                     color: const Color(0xFFCD7F32),
                   ),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Valid days
                   Text(
                     'Thời hạn voucher',
-                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                    style:
+                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 1.h),
-                  
+
                   Row(
                     children: [
                       Expanded(
@@ -245,7 +247,8 @@ class _TournamentPrizeVoucherSetupScreenState
                       ),
                       SizedBox(width: 3.w),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 3.w, vertical: 1.h),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -261,9 +264,9 @@ class _TournamentPrizeVoucherSetupScreenState
                       ),
                     ],
                   ),
-                  
+
                   SizedBox(height: 3.h),
-                  
+
                   // Save button
                   SizedBox(
                     width: double.infinity,
@@ -278,11 +281,12 @@ class _TournamentPrizeVoucherSetupScreenState
                       ),
                       child: Text(
                         'Lưu cài đặt',
-                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
-                  
+
                   // Existing prizes preview
                   if (_existingPrizes.isNotEmpty) ...[
                     SizedBox(height: 4.h),
@@ -290,15 +294,16 @@ class _TournamentPrizeVoucherSetupScreenState
                     SizedBox(height: 2.h),
                     Text(
                       'Cài đặt hiện tại',
-                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 1.h),
-                    
                     ..._existingPrizes.map((prize) {
                       return ListTile(
                         leading: Text(
                           prize['position_label'],
-                          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 16.sp, fontWeight: FontWeight.bold),
                         ),
                         title: Text(
                           '${(prize['voucher_value'] as num).toStringAsFixed(0)} VND',
@@ -309,7 +314,8 @@ class _TournamentPrizeVoucherSetupScreenState
                           style: TextStyle(fontSize: 11.sp),
                         ),
                         trailing: prize['is_issued'] == true
-                            ? const Icon(Icons.check_circle, color: Colors.green)
+                            ? const Icon(Icons.check_circle,
+                                color: Colors.green)
                             : const Icon(Icons.pending, color: Colors.orange),
                       );
                     }),
@@ -333,7 +339,6 @@ class _TournamentPrizeVoucherSetupScreenState
           style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 0.5.h),
-        
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: color, width: 2),
@@ -345,7 +350,8 @@ class _TournamentPrizeVoucherSetupScreenState
             keyboardType: TextInputType.number,
             style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
               border: InputBorder.none,
               suffixText: 'VND',
               suffixStyle: TextStyle(fontSize: 12.sp, color: Colors.grey),

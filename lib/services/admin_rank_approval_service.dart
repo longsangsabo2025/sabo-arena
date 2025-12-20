@@ -76,7 +76,6 @@ class AdminRankApprovalService {
         throw Exception('Người dùng chưa đăng nhập');
       }
 
-
       // Check if user is system admin
       final userResponse = await _supabase
           .from('users')
@@ -87,7 +86,6 @@ class AdminRankApprovalService {
       final isSystemAdmin = userResponse['role'] == 'admin';
 
       if (isSystemAdmin) {
-        
         // System admin: Get ALL pending requests from rank_requests table
         final response = await _supabase
             .from('rank_requests')
@@ -112,7 +110,7 @@ class AdminRankApprovalService {
         return List<Map<String, dynamic>>.from(response);
       } else {
         // Club owner: Get requests for their club
-        
+
         // First, find which club this user owns
         final clubResponse = await _supabase
             .from('clubs')
@@ -157,19 +155,14 @@ class AdminRankApprovalService {
       final currentUserId = _supabase.auth.currentUser?.id;
       if (currentUserId == null) return null;
 
-      final response = await _supabase
-          .from('club_members')
-          .select('''
+      final response = await _supabase.from('club_members').select('''
             role,
             clubs!inner(
               id,
               name,
               description
             )
-          ''')
-          .eq('user_id', currentUserId)
-          .eq('role', 'owner')
-          .maybeSingle();
+          ''').eq('user_id', currentUserId).eq('role', 'owner').maybeSingle();
 
       return response;
     } catch (e) {
@@ -185,7 +178,6 @@ class AdminRankApprovalService {
         throw Exception('User not authenticated');
       }
 
-
       // Check if user is system admin
       final userResponse = await _supabase
           .from('users')
@@ -196,11 +188,8 @@ class AdminRankApprovalService {
       final isSystemAdmin = userResponse['role'] == 'admin';
 
       if (isSystemAdmin) {
-        
         // System admin: Get ALL approved/rejected requests
-        final response = await _supabase
-            .from('rank_requests')
-            .select('''
+        final response = await _supabase.from('rank_requests').select('''
               *,
               users!rank_requests_user_id_fkey (
                 id,
@@ -214,14 +203,15 @@ class AdminRankApprovalService {
                 id,
                 name
               )
-            ''')
-            .inFilter('status', ['approved', 'rejected'])
-            .order('reviewed_at', ascending: false);
+            ''').inFilter('status', [
+          'approved',
+          'rejected'
+        ]).order('reviewed_at', ascending: false);
 
         return List<Map<String, dynamic>>.from(response);
       } else {
         // Club owner: Get requests for their club
-        
+
         // First, find which club this user owns
         final clubResponse = await _supabase
             .from('clubs')
@@ -260,4 +250,3 @@ class AdminRankApprovalService {
     }
   }
 }
-

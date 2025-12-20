@@ -9,6 +9,7 @@ import '../../routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../services/social_auth_service.dart';
 import '../../services/enhanced_validation_service.dart';
+import '../../widgets/common/app_button.dart';
 import 'registration_result_screen.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
@@ -44,7 +45,8 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _userRole = args?['userRole'];
     if (kDebugMode && _userRole != null) {
-      ProductionLogger.info('🎯 Register: Received role: $_userRole', tag: 'register_screen_ios');
+      ProductionLogger.info('🎯 Register: Received role: $_userRole',
+          tag: 'register_screen_ios');
     }
   }
 
@@ -59,15 +61,21 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
   }
 
   Future<void> _handleRegister() async {
-    if (kDebugMode) ProductionLogger.info('🎯 REGISTER: _handleRegister called', tag: 'register_screen_ios');
+    if (kDebugMode)
+      ProductionLogger.info('🎯 REGISTER: _handleRegister called',
+          tag: 'register_screen_ios');
 
     if (!_formKey.currentState!.validate()) {
-      if (kDebugMode) ProductionLogger.info('❌ REGISTER: Form validation failed', tag: 'register_screen_ios');
+      if (kDebugMode)
+        ProductionLogger.info('❌ REGISTER: Form validation failed',
+            tag: 'register_screen_ios');
       return;
     }
 
     if (!_acceptTerms) {
-      if (kDebugMode) ProductionLogger.info('⚠️ REGISTER: Terms not accepted', tag: 'register_screen_ios');
+      if (kDebugMode)
+        ProductionLogger.info('⚠️ REGISTER: Terms not accepted',
+            tag: 'register_screen_ios');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Vui lòng đồng ý với điều khoản và chính sách bảo mật'),
@@ -78,7 +86,9 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
       return;
     }
 
-    if (kDebugMode) ProductionLogger.info('✅ REGISTER: Form valid, starting registration...', tag: 'register_screen_ios');
+    if (kDebugMode)
+      ProductionLogger.info('✅ REGISTER: Form valid, starting registration...',
+          tag: 'register_screen_ios');
     setState(() => _isLoading = true);
 
     try {
@@ -87,15 +97,19 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
 
       if (_isEmailTab) {
         // ✅ Fix: Handle empty string role, not just null
-        final effectiveRole = (_userRole == null || _userRole!.isEmpty) 
-            ? 'player' 
-            : _userRole!;
-            
+        final effectiveRole =
+            (_userRole == null || _userRole!.isEmpty) ? 'player' : _userRole!;
+
         if (kDebugMode) {
-          ProductionLogger.info('📧 REGISTER: Email registration', tag: 'register_screen_ios');
-          ProductionLogger.info('   Email: ${_emailController.text.trim()}', tag: 'register_screen_ios');
-          ProductionLogger.info('   Name: ${_fullNameController.text.trim()}', tag: 'register_screen_ios');
-          ProductionLogger.info('   Role: $effectiveRole (original: $_userRole)', tag: 'register_screen_ios');
+          ProductionLogger.info('📧 REGISTER: Email registration',
+              tag: 'register_screen_ios');
+          ProductionLogger.info('   Email: ${_emailController.text.trim()}',
+              tag: 'register_screen_ios');
+          ProductionLogger.info('   Name: ${_fullNameController.text.trim()}',
+              tag: 'register_screen_ios');
+          ProductionLogger.info(
+              '   Role: $effectiveRole (original: $_userRole)',
+              tag: 'register_screen_ios');
         }
         final response = await authService.signUpWithEmail(
           email: _emailController.text.trim(),
@@ -114,7 +128,8 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                 isSuccess: true,
                 userId: response.user!.id,
                 email: response.user!.email ?? _emailController.text.trim(),
-                userRole: effectiveRole, // ✅ Use effectiveRole instead of _userRole
+                userRole:
+                    effectiveRole, // ✅ Use effectiveRole instead of _userRole
                 needsEmailVerification: needsVerification,
               ),
             ),
@@ -178,7 +193,7 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF007AFF),
+                    backgroundColor: const Color(0xFF1E8A6F),
                   ),
                   child: const Text('Đăng ký bằng Email'),
                 ),
@@ -186,10 +201,10 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
             ),
           );
         }
-        
+
         setState(() => _isLoading = false);
         return;
-        
+
         // COMMENTED OUT - ORIGINAL PHONE REGISTRATION CODE
         /*
         // Phone registration - Check if phone exists first
@@ -227,13 +242,15 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Đóng'),
                   ),
-                  ElevatedButton(
+                  AppButton(
+                    label: 'Đến trang đăng nhập',
+                    type: AppButtonType.primary,
+                    size: AppButtonSize.medium,
                     onPressed: () {
                       Navigator.of(context).pop();
                       // Navigate to login
                       Navigator.of(context).pushReplacementNamed('/login');
                     },
-                    child: const Text('Đến trang đăng nhập'),
                   ),
                 ],
               ),
@@ -273,18 +290,19 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
       }
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('❌ REGISTER ERROR: $e', tag: 'register_screen_ios');
+        ProductionLogger.info('❌ REGISTER ERROR: $e',
+            tag: 'register_screen_ios');
       }
-      
+
       if (mounted) {
         // ✅ Extract user-friendly message
         String errorMessage = e.toString();
-        
+
         // Remove "Exception: " prefix if present
         if (errorMessage.startsWith('Exception: ')) {
           errorMessage = errorMessage.substring(11);
         }
-        
+
         // Show error in a dialog for better visibility
         showDialog(
           context: context,
@@ -329,8 +347,7 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
       if (response?.user != null && mounted) {
         // Update user metadata in our database
         await AuthService.instance.upsertUserRecord(
-          fullName:
-              response!.user!.userMetadata?['full_name'] ??
+          fullName: response!.user!.userMetadata?['full_name'] ??
               response.user!.userMetadata?['name'] ??
               'User',
           role: 'player',
@@ -494,7 +511,8 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                               boxShadow: _isEmailTab
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.15),
+                                        color: Colors.black
+                                            .withValues(alpha: 0.15),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -508,7 +526,7 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                   color: _isEmailTab
-                                      ? const Color(0xFF007AFF)
+                                      ? const Color(0xFF1E8A6F)
                                       : const Color(0xFF8E8E93),
                                 ),
                               ),
@@ -530,7 +548,8 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                               boxShadow: !_isEmailTab
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.15),
+                                        color: Colors.black
+                                            .withValues(alpha: 0.15),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -544,7 +563,7 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                   color: !_isEmailTab
-                                      ? const Color(0xFF007AFF)
+                                      ? const Color(0xFF1E8A6F)
                                       : const Color(0xFF8E8E93),
                                 ),
                               ),
@@ -814,11 +833,11 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                               height: 24,
                               decoration: BoxDecoration(
                                 color: _acceptTerms
-                                    ? const Color(0xFF007AFF)
+                                    ? const Color(0xFF1E8A6F)
                                     : Colors.white,
                                 border: Border.all(
                                   color: _acceptTerms
-                                      ? const Color(0xFF007AFF)
+                                      ? const Color(0xFF1E8A6F)
                                       : const Color(0xFFE5E5EA),
                                   width: 2,
                                 ),
@@ -853,7 +872,7 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                                       child: const Text(
                                         'Điều khoản sử dụng',
                                         style: TextStyle(
-                                          color: Color(0xFF007AFF),
+                                          color: Color(0xFF1E8A6F),
                                           fontWeight: FontWeight.w500,
                                           fontSize: 15,
                                           decoration: TextDecoration.underline,
@@ -872,7 +891,7 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                                       child: const Text(
                                         'Chính sách bảo mật',
                                         style: TextStyle(
-                                          color: Color(0xFF007AFF),
+                                          color: Color(0xFF1E8A6F),
                                           fontWeight: FontWeight.w500,
                                           fontSize: 15,
                                           decoration: TextDecoration.underline,
@@ -889,40 +908,17 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
 
                       const SizedBox(height: 20),
 
-                      // Register Button - iOS Style
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _handleRegister,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF007AFF),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            disabledBackgroundColor: const Color(0xFF8E8E93),
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : const Text(
-                                  'Tạo tài khoản',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
+                      // Register Button - iOS Style với brand color
+                      AppButton(
+                        label: 'Tạo tài khoản',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.large,
+                        isLoading: _isLoading,
+                        customColor:
+                            const Color(0xFF1E8A6F), // Brand teal green
+                        customTextColor: Colors.white,
+                        fullWidth: true,
+                        onPressed: _isLoading ? null : _handleRegister,
                       ),
 
                       const SizedBox(height: 24),
@@ -949,58 +945,45 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
 
                       // Social Login Buttons - Ẩn Google trên iOS và Apple trên Android
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: _buildDisabledSocialButton(
-                              'Facebook',
-                              Icons.facebook,
-                              const Color(0xFF1877F2),
-                              'Đăng ký Facebook sẽ được phát triển trong tương lai',
-                            ),
+                          // Facebook - Disabled temporarily
+                          _buildDisabledSocialButton(
+                            Icons.facebook,
+                            const Color(0xFF1877F2),
+                            'Đăng ký Facebook sẽ được phát triển trong tương lai',
                           ),
                           // Ẩn Apple trên Android
                           if (!kIsWeb && Platform.isIOS) ...[
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _buildSocialButton(
-                                'Apple',
-                                Icons.apple,
-                                Colors.black,
-                                () => _handleSocialRegister('apple'),
-                              ),
+                            const SizedBox(width: 24),
+                            _buildSocialIconButton(
+                              Icons.apple,
+                              Colors.black,
+                              () => _handleSocialRegister('apple'),
                             ),
                           ],
                           // Ẩn Google trên iOS
                           if (!kIsWeb && Platform.isAndroid) ...[
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _buildSocialButton(
-                                'Google',
-                                Icons.g_mobiledata,
-                                const Color(0xFF4285F4),
-                                () => _handleSocialRegister('google'),
-                              ),
+                            const SizedBox(width: 24),
+                            _buildSocialIconButton(
+                              Icons.g_mobiledata,
+                              const Color(0xFF4285F4),
+                              () => _handleSocialRegister('google'),
                             ),
                           ],
                           // Trên Web, hiển thị cả 2
                           if (kIsWeb) ...[
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _buildSocialButton(
-                                'Apple',
-                                Icons.apple,
-                                Colors.black,
-                                () => _handleSocialRegister('apple'),
-                              ),
+                            const SizedBox(width: 24),
+                            _buildSocialIconButton(
+                              Icons.apple,
+                              Colors.black,
+                              () => _handleSocialRegister('apple'),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _buildSocialButton(
-                                'Google',
-                                Icons.g_mobiledata,
-                                const Color(0xFF4285F4),
-                                () => _handleSocialRegister('google'),
-                              ),
+                            const SizedBox(width: 24),
+                            _buildSocialIconButton(
+                              Icons.g_mobiledata,
+                              const Color(0xFF4285F4),
+                              () => _handleSocialRegister('google'),
                             ),
                           ],
                         ],
@@ -1035,7 +1018,7 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF007AFF),
+                                color: Color(0xFF1E8A6F),
                               ),
                             ),
                           ),
@@ -1054,75 +1037,66 @@ class _RegisterScreenIOSState extends State<RegisterScreenIOS> {
     );
   }
 
-  Widget _buildSocialButton(
-    String text,
+  Widget _buildSocialIconButton(
     IconData icon,
     Color color,
     VoidCallback onPressed,
   ) {
-    return SizedBox(
-      height: 44,
-      child: OutlinedButton.icon(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Color(0xFFE5E5EA)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          backgroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFFE5E5EA), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        icon: Icon(icon, color: color, size: 16),
-        label: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF1C1C1E),
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
+        child: Icon(icon, color: color, size: 24),
       ),
     );
   }
 
   Widget _buildDisabledSocialButton(
-    String text,
     IconData icon,
     Color color,
     String message,
   ) {
-    return SizedBox(
-      height: 44,
-      child: OutlinedButton.icon(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: Colors.grey[700],
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        },
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Color(0xFFE5E5EA)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          backgroundColor: Colors.grey[100],
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        ),
-        icon: Opacity(
-          opacity: 0.4,
-          child: Icon(icon, color: color, size: 16),
-        ),
-        label: Opacity(
-          opacity: 0.4,
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF1C1C1E),
-            ),
-            overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Colors.grey[700],
+            duration: const Duration(seconds: 3),
           ),
+        );
+      },
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.grey[100],
+          border: Border.all(color: const Color(0xFFE5E5EA), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Opacity(
+          opacity: 0.4,
+          child: Icon(icon, color: color, size: 24),
         ),
       ),
     );

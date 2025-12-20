@@ -217,8 +217,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     // Determine if we should show back button
-    final shouldShowBack =
-        showBackButton ??
+    final shouldShowBack = showBackButton ??
         (leading == null && ModalRoute.of(context)?.canPop == true);
 
     return AppBar(
@@ -322,7 +321,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        Icons.sports_esports,
+                        Icons.sports_baseball,
                         color: AppColors.surface,
                         size: 24,
                       ),

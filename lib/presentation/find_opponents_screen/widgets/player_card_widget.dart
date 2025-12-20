@@ -96,8 +96,8 @@ class PlayerCardWidget extends StatelessWidget {
                         const SizedBox(height: 2),
                         // Club name from real Supabase data
                         FutureBuilder<String>(
-                          future: OpponentClubService.instance
-                              .getRandomClubName(),
+                          future:
+                              OpponentClubService.instance.getRandomClubName(),
                           builder: (context, snapshot) {
                             return Text(
                               snapshot.data ?? 'CLB SABO ARENA',
@@ -248,100 +248,34 @@ class PlayerCardWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFFE53935), Color(0xFFD32F2F)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFFE53935).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: () =>
-                              _showChallengeModal(context, 'thach_dau'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 16 : 12,
-                              vertical: isTablet ? 12 : 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.sports,
-                            size: 18,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Thách đấu ngay',
-                            style: TextStyle(
-                              fontSize: isTablet ? 13 : 11,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
+                      child: AppButton(
+                        label: 'Thách đấu ngay',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.medium,
+                        icon: Icons.sports,
+                        iconTrailing: false,
+                        customColor:
+                            const Color(0xFFE53935), // Red for challenge
+                        customTextColor: Colors.white,
+                        fullWidth: true,
+                        onPressed: () =>
+                            _showChallengeModal(context, 'thach_dau'),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       flex: 1,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF1E88E5).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: () => _showScheduleModal(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 12 : 8,
-                              vertical: isTablet ? 12 : 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.calendar_today,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Hẹn lịch',
-                            style: TextStyle(
-                              fontSize: isTablet ? 13 : 11,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
+                      child: AppButton(
+                        label: 'Hẹn lịch',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.medium,
+                        icon: Icons.calendar_today,
+                        iconTrailing: false,
+                        customColor:
+                            const Color(0xFF1E88E5), // Blue for schedule
+                        customTextColor: Colors.white,
+                        fullWidth: true,
+                        onPressed: () => _showScheduleModal(context),
                       ),
                     ),
                   ],
@@ -353,100 +287,34 @@ class PlayerCardWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF43A047), Color(0xFF2E7D32)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF43A047).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: () =>
-                              _showChallengeModal(context, 'giao_luu'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 16 : 12,
-                              vertical: isTablet ? 12 : 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.sports,
-                            size: 18,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Giao lưu',
-                            style: TextStyle(
-                              fontSize: isTablet ? 13 : 11,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
+                      child: AppButton(
+                        label: 'Giao lưu',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.medium,
+                        icon: Icons.sports,
+                        iconTrailing: false,
+                        customColor:
+                            const Color(0xFF43A047), // Green for social
+                        customTextColor: Colors.white,
+                        fullWidth: true,
+                        onPressed: () =>
+                            _showChallengeModal(context, 'giao_luu'),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       flex: 1,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF1E88E5), Color(0xFF1565C0)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF1E88E5).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: () => _showScheduleModal(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 24 : 20,
-                              vertical: isTablet ? 12 : 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.calendar_today,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Hẹn lịch',
-                            style: TextStyle(
-                              fontSize: isTablet ? 13 : 11,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
+                      child: AppButton(
+                        label: 'Hẹn lịch',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.medium,
+                        icon: Icons.calendar_today,
+                        iconTrailing: false,
+                        customColor:
+                            const Color(0xFF1E88E5), // Blue for schedule
+                        customTextColor: Colors.white,
+                        fullWidth: true,
+                        onPressed: () => _showScheduleModal(context),
                       ),
                     ),
                   ],
@@ -553,7 +421,7 @@ class PlayerCardWidget extends StatelessWidget {
         _showRegistrationRequiredDialog(context, 'thách đấu cược SPA');
         return;
       }
-      
+
       // ✅ Check rank eligibility (only for competitive challenges)
       final canChallenge = await _checkRankEligibility(context);
       if (!context.mounted) return;
@@ -622,27 +490,28 @@ class PlayerCardWidget extends StatelessWidget {
     try {
       final userService = UserService.instance;
       final currentUser = await userService.getCurrentUserProfile();
-      
+
       if (currentUser == null) return false;
-      
+
       final currentUserRank = currentUser.rank;
       final opponentRank = player.rank;
-      
+
       // If either has no rank, allow (will be caught by _checkUserRank)
       if (currentUserRank == null || opponentRank == null) {
         return true;
       }
-      
+
       // Check rank eligibility using ChallengeRulesService
       final rulesService = ChallengeRulesService.instance;
-      final canChallenge = rulesService.canChallenge(currentUserRank, opponentRank);
-      
+      final canChallenge =
+          rulesService.canChallenge(currentUserRank, opponentRank);
+
       if (!canChallenge) {
         // Show error with eligible ranks
         final eligibleRanks = rulesService.getEligibleRanks(currentUserRank);
-        
+
         if (!context.mounted) return false;
-        
+
         AppSnackbar.error(
           context: context,
           message: '❌ Không thể thách đấu!\n'
@@ -650,10 +519,10 @@ class PlayerCardWidget extends StatelessWidget {
               'Bạn chỉ có thể thách đấu với các hạng:\n${eligibleRanks.join(", ")}',
           duration: const Duration(seconds: 5),
         );
-        
+
         return false;
       }
-      
+
       return true;
     } catch (e) {
       return true; // Allow by default if error
@@ -700,4 +569,3 @@ class PlayerCardWidget extends StatelessWidget {
     );
   }
 }
-

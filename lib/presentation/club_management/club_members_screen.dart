@@ -96,7 +96,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
     });
   }
 
-  Future<void> _showGrantPermissionDialog(ClubMemberWithPermissions member) async {
+  Future<void> _showGrantPermissionDialog(
+      ClubMemberWithPermissions member) async {
     if (!_canManagePermissions) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Bạn không có quyền cấp quyền')),
@@ -130,7 +131,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
           Text(role.icon, style: const TextStyle(fontSize: 12)),
           const SizedBox(width: 4),
           Text(
-            role.displayName, style: const TextStyle(
+            role.displayName,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -149,7 +151,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        label, style: TextStyle(
+        label,
+        style: TextStyle(
           color: hasPermission ? Colors.green.shade800 : Colors.grey.shade600,
           fontSize: 10,
         ),
@@ -169,7 +172,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
           children: [
             Expanded(
               child: Text(
-                member.userName, style: const TextStyle(fontWeight: FontWeight.bold),
+                member.userName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             _buildRoleChip(member.role),
@@ -181,7 +185,9 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
             const SizedBox(height: 4),
             if (member.userRank != null)
               Text(
-                'Hạng: ${member.userRank}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12),
+                'Hạng: ${member.userRank}',
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 12),
               ),
             const SizedBox(height: 4),
             Text(
@@ -228,7 +234,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
             children: [
               // Search bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -246,7 +253,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
               // Role filter chips
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     FilterChip(
@@ -290,7 +298,7 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
   Widget _buildResponsiveBody() {
     final isIPad = DeviceInfo.isIPad(context);
     final maxWidth = isIPad ? 900.0 : double.infinity;
-    
+
     final bodyWidget = _isLoading
         ? const Center(child: CircularProgressIndicator())
         : _filteredMembers.isEmpty
@@ -298,12 +306,16 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.people_outline, size: 64, color: Colors.grey),
+                    const Icon(Icons.people_outline,
+                        size: 64, color: Colors.grey),
                     const SizedBox(height: 16),
                     Text(
-                      _searchController.text.isNotEmpty || _selectedRoleFilter != null
+                      _searchController.text.isNotEmpty ||
+                              _selectedRoleFilter != null
                           ? 'Không tìm thấy thành viên'
-                          : 'Chưa có thành viên', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, color: Colors.grey),
+                          : 'Chưa có thành viên',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -317,7 +329,7 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
                   },
                 ),
               );
-    
+
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth),

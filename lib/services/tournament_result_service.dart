@@ -18,15 +18,15 @@ class TournamentResultService {
     required List<Map<String, dynamic>> standings,
   }) async {
     try {
-
       for (final standing in standings) {
         // Extract data from enhanced standing (includes ALL reward data)
         final userId = standing['participant_id']?.toString() ?? '';
-        final participantName = standing['participant_name']?.toString() ?? 'Unknown';
+        final participantName =
+            standing['participant_name']?.toString() ?? 'Unknown';
         final position = standing['position'] as int? ?? 0;
         final matchesWon = standing['wins'] as int? ?? 0;
         final matchesLost = standing['losses'] as int? ?? 0;
-        
+
         // Reward data (calculated by RankingService - SINGLE SOURCE OF TRUTH)
         final spaReward = standing['spa_reward'] as int? ?? 0;
         final eloChange = standing['elo_change'] as int? ?? 0;
@@ -36,7 +36,6 @@ class TournamentResultService {
         if (userId.isEmpty) {
           continue;
         }
-
 
         // Save to tournament_results (PRIMARY record - source of truth)
         await _saveTournamentResult(
@@ -51,7 +50,6 @@ class TournamentResultService {
           prizeMoney: prizeMoney,
         );
       }
-
     } catch (e) {
       throw Exception('Failed to save tournament results: $e');
     }
@@ -71,21 +69,20 @@ class TournamentResultService {
     required double prizeMoney,
   }) async {
     try {
-
       // Get user's current ELO
       final userResponse = await _supabase
           .from('users')
           .select('elo_rating')
           .eq('id', userId)
           .maybeSingle();
-      
+
       final oldElo = userResponse?['elo_rating'] as int? ?? 1500;
       final newElo = oldElo + eloChange;
-      
+
       // Voucher eligibility (top 4 only)
       String? voucherCode;
       int? voucherDiscount;
-      
+
       if (position == 1) {
         voucherCode = 'WINNER_50';
         voucherDiscount = 50;
@@ -136,10 +133,11 @@ class TournamentResultService {
             .from('tournament_results')
             .update(dataToSave)
             .eq('tournament_id', tournamentId)
-            .eq('participant_id', userId); // ✅ FIXED: participant_id (not user_id)
+            .eq('participant_id',
+                userId); // ✅ FIXED: participant_id (not user_id)
       } else {
         // Create new record
-        
+
         await _supabase.from('tournament_results').insert({
           'tournament_id': tournamentId,
           'participant_id': userId, // ✅ FIXED: participant_id (not user_id)
@@ -183,7 +181,8 @@ class TournamentResultService {
             users!tournament_results_participant_id_fkey(id, full_name, username, avatar_url)
           ''')
           .eq('tournament_id', tournamentId)
-          .order('position', ascending: true); // ✅ FIXED: position (not final_position)
+          .order('position',
+              ascending: true); // ✅ FIXED: position (not final_position)
 
       return results;
     } catch (e) {
@@ -191,4 +190,3 @@ class TournamentResultService {
     }
   }
 }
-

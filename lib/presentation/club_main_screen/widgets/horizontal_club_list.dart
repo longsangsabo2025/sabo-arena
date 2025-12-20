@@ -60,7 +60,8 @@ class HorizontalClubList extends StatelessWidget {
         Expanded(
           child: NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification scrollInfo) {
-              if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+              if (scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 200) {
                 onLoadMore?.call();
               }
               return false;
@@ -137,7 +138,10 @@ class HorizontalClubList extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) => Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.7)],
+                          colors: [
+                            AppColors.primary,
+                            AppColors.primary.withValues(alpha: 0.7)
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -147,7 +151,10 @@ class HorizontalClubList extends StatelessWidget {
                 : Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.7)],
+                        colors: [
+                          AppColors.primary,
+                          AppColors.primary.withValues(alpha: 0.7)
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),

@@ -65,7 +65,6 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
         _errorMessage = null;
       });
 
-
       // Load each status separately to identify which one fails
       List<Club> pendingClubs = [];
       List<Club> approvedClubs = [];
@@ -99,7 +98,6 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
         _rejectedClubs = rejectedClubs;
         _isLoading = false;
       });
-
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -127,8 +125,8 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-          ? _buildErrorState()
-          : _buildContent(),
+              ? _buildErrorState()
+              : _buildContent(),
     );
   }
 
@@ -140,7 +138,9 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
           Icon(Icons.error_outline, size: 64, color: AppTheme.errorLight),
           SizedBox(height: 16),
           Text(
-            _errorMessage!, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge,
+            _errorMessage!,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
@@ -317,7 +317,8 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
           Icon(icon, size: 64, color: AppTheme.textDisabledLight),
           SizedBox(height: 16),
           Text(
-            message, style: Theme.of(
+            message,
+            style: Theme.of(
               context,
             ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondaryLight),
           ),
@@ -411,7 +412,8 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
                         ),
                         SizedBox(width: 4),
                         Text(
-                          statusText, style: TextStyle(
+                          statusText,
+                          style: TextStyle(
                             color: AppTheme.onPrimaryLight,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -432,9 +434,10 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  club.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  club.name,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 if (club.address != null) ...[
                   SizedBox(height: 4),
@@ -448,7 +451,11 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
                       SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          club.address!, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall
+                          club.address!,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
                               ?.copyWith(color: AppTheme.textSecondaryLight),
                         ),
                       ),
@@ -476,9 +483,11 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
                 if (club.description != null) ...[
                   SizedBox(height: 12),
                   Text(
-                    club.description!, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textSecondaryLight,
-                    ),
+                    club.description!,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textSecondaryLight,
+                        ),
                     maxLines: 2,
                   ),
                 ],
@@ -504,7 +513,11 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Lý do từ chối: ${club.rejectionReason}', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall
+                            'Lý do từ chối: ${club.rejectionReason}',
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
                                 ?.copyWith(color: AppTheme.errorLight),
                           ),
                         ),
@@ -576,7 +589,8 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
           Icon(icon, size: 14, color: AppTheme.primaryLight),
           SizedBox(width: 4),
           Text(
-            text, style: TextStyle(
+            text,
+            style: TextStyle(
               color: AppTheme.primaryLight,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -651,7 +665,9 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
               backgroundColor: AppTheme.errorLight,
             ),
             child: Text(
-              'Từ chối', overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.onPrimaryLight),
+              'Từ chối',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: AppTheme.onPrimaryLight),
             ),
           ),
         ],
@@ -696,32 +712,44 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               if (club.description != null) ...[
-                Text('Mô tả:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Mô tả:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(club.description!),
                 SizedBox(height: 16),
               ],
               if (club.address != null) ...[
-                Text('Địa chỉ:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Địa chỉ:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(club.address!),
                 SizedBox(height: 16),
               ],
               if (club.phone != null) ...[
                 Text(
-                  'Điện thoại:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),
+                  'Điện thoại:',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(club.phone!),
                 SizedBox(height: 16),
               ],
               if (club.email != null) ...[
-                Text('Email:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Email:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(club.email!),
                 SizedBox(height: 16),
               ],
-              Text('Số bàn:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Số bàn:',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               Text(club.totalTables.toString()),
               if (club.pricePerHour != null) ...[
                 SizedBox(height: 16),
-                Text('Giá/giờ:', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Giá/giờ:',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Text('${club.pricePerHour!.toInt()},000 VNĐ'),
               ],
             ],
@@ -737,4 +765,3 @@ class _ClubApprovalScreenState extends State<ClubApprovalScreen>
     );
   }
 }
-

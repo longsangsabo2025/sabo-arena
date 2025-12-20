@@ -135,7 +135,9 @@ class _AdminGuideViewerScreenState extends State<AdminGuideViewerScreen> {
             child: Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Text(
-                '${_currentStep + 1}/${widget.guide.steps.length}', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                '${_currentStep + 1}/${widget.guide.steps.length}',
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -238,13 +240,15 @@ class _AdminGuideViewerScreenState extends State<AdminGuideViewerScreen> {
 
           // Title
           Text(
-            step.title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            step.title,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
 
           // Description
           Text(
-            step.description, style: TextStyle(
+            step.description,
+            style: TextStyle(
               fontSize: 16,
               color: Colors.grey[700],
               height: 1.5,
@@ -269,7 +273,9 @@ class _AdminGuideViewerScreenState extends State<AdminGuideViewerScreen> {
                       Icon(Icons.lightbulb, color: Colors.blue, size: 20),
                       SizedBox(width: 8),
                       Text(
-                        'Điểm chính', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Điểm chính',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
@@ -285,7 +291,9 @@ class _AdminGuideViewerScreenState extends State<AdminGuideViewerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            '• ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            '• ',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,
@@ -293,7 +301,8 @@ class _AdminGuideViewerScreenState extends State<AdminGuideViewerScreen> {
                           ),
                           Expanded(
                             child: Text(
-                              point, style: const TextStyle(fontSize: 14, height: 1.4),
+                              point,
+                              style: const TextStyle(fontSize: 14, height: 1.4),
                             ),
                           ),
                         ],

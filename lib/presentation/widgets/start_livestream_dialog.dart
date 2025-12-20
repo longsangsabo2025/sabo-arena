@@ -75,7 +75,10 @@ class _StartLivestreamDialogState extends State<StartLivestreamDialog> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.primaryContainer],
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.primaryContainer
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -298,7 +301,7 @@ class _PlatformCard extends StatelessWidget {
 Future<void> openLivestreamUrl(String url, BuildContext context) async {
   try {
     final uri = Uri.parse(url);
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(
         uri,

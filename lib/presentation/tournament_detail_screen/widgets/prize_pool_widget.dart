@@ -68,21 +68,37 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
   Widget build(BuildContext context) {
     // ✅ NEW: Get prize distribution from tournament data
     final prizeDistribution = widget.tournament.prizeDistribution;
-    final customDistribution = prizeDistribution?['distribution'] as List?;
-    
+    // Check both sources for custom distribution
+    final customDistribution = (prizeDistribution?['distribution'] as List?) ??
+        widget.tournament.customDistribution;
+
     // Build prize data from custom distribution or fallback to old prizePool
     Map<String, dynamic> prizePool;
-    
+
     if (customDistribution != null && customDistribution.isNotEmpty) {
       // ✅ Use custom distribution (array format)
       prizePool = {
-        'first': _formatAmount(customDistribution.isNotEmpty ? customDistribution[0]['cashAmount'] ?? 0 : 0),
-        'second': _formatAmount(customDistribution.length > 1 ? customDistribution[1]['cashAmount'] ?? 0 : 0),
-        'third': _formatAmount(customDistribution.length > 2 ? customDistribution[2]['cashAmount'] ?? 0 : 0),
-        'fourth': customDistribution.length > 3 ? _formatAmount(customDistribution[3]['cashAmount'] ?? 0) : null,
+        'first': _formatAmount(customDistribution.isNotEmpty
+            ? customDistribution[0]['cashAmount'] ?? 0
+            : 0),
+        'second': _formatAmount(customDistribution.length > 1
+            ? customDistribution[1]['cashAmount'] ?? 0
+            : 0),
+        'third': _formatAmount(customDistribution.length > 2
+            ? customDistribution[2]['cashAmount'] ?? 0
+            : 0),
+        'fourth': customDistribution.length > 3
+            ? _formatAmount(customDistribution[3]['cashAmount'] ?? 0)
+            : null,
+        'fifth_to_eighth': customDistribution.length > 4
+            ? _formatAmount(customDistribution[4]['cashAmount'] ?? 0)
+            : null,
       };
-      ProductionLogger.info('✅ [PRIZE POOL WIDGET] Using custom distribution array: $prizePool', tag: 'prize_pool_widget');
-    } else if (prizeDistribution != null && prizeDistribution.containsKey('first')) {
+      ProductionLogger.info(
+          '✅ [PRIZE POOL WIDGET] Using custom distribution array: $prizePool',
+          tag: 'prize_pool_widget');
+    } else if (prizeDistribution != null &&
+        prizeDistribution.containsKey('first')) {
       // ✅ NEW: Use direct prize_distribution with text values (first, second, third keys)
       prizePool = {
         'first': prizeDistribution['first'] ?? '0 VND',
@@ -91,20 +107,24 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
         'fourth': prizeDistribution['fourth'],
         'fifth_to_eighth': prizeDistribution['fifth_to_eighth'],
       };
-      ProductionLogger.info('✅ [PRIZE POOL WIDGET] Using prize_distribution text: $prizePool', tag: 'prize_pool_widget');
+      ProductionLogger.info(
+          '✅ [PRIZE POOL WIDGET] Using prize_distribution text: $prizePool',
+          tag: 'prize_pool_widget');
     } else {
       // Fallback to old prizePool structure or calculate from prize_pool
       // Note: In the new model, we don't have a separate 'prizePool' map field, only int prizePool.
       // If the old map structure was stored in prizeDistribution, it's handled above.
       // If not, we calculate from the total int amount.
-      
+
       final totalPrizePool = widget.tournament.prizePool;
       prizePool = {
         'first': _formatAmount((totalPrizePool * 0.5).toInt()),
         'second': _formatAmount((totalPrizePool * 0.3).toInt()),
         'third': _formatAmount((totalPrizePool * 0.2).toInt()),
       };
-      ProductionLogger.info('⚠️ [PRIZE POOL WIDGET] Calculating from prize_pool: $totalPrizePool', tag: 'prize_pool_widget');
+      ProductionLogger.info(
+          '⚠️ [PRIZE POOL WIDGET] Calculating from prize_pool: $totalPrizePool',
+          tag: 'prize_pool_widget');
     }
 
     return Container(
@@ -168,22 +188,23 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
   Map<String, dynamic> _parsePrizeString(String prizeStr) {
     // Pattern: "1.000.000 VNĐ + 500k Voucher + Bảng vinh danh"
     final parts = prizeStr.split('+').map((s) => s.trim()).toList();
-    
+
     String? cash;
     String? voucher;
     bool hasHonorBoard = false;
-    
+
     for (final part in parts) {
       if (part.contains('VNĐ') || part.contains('VND')) {
         cash = part;
       } else if (part.toLowerCase().contains('voucher')) {
         voucher = part.replaceAll(RegExp(r'[Vv]oucher\s*:?\s*'), '').trim();
         if (voucher.isEmpty) voucher = part;
-      } else if (part.toLowerCase().contains('bảng vinh danh') || part.toLowerCase().contains('vinh danh')) {
+      } else if (part.toLowerCase().contains('bảng vinh danh') ||
+          part.toLowerCase().contains('vinh danh')) {
         hasHonorBoard = true;
       }
     }
-    
+
     return {
       'cash': cash,
       'voucher': voucher,
@@ -219,7 +240,7 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
         'bgGradient': [const Color(0xFFFFF5EB), const Color(0xFFFFEED9)],
       },
     ];
-    
+
     // ✅ Add 4th position if exists (for SABO DE16 with 2x 3rd place)
     if (prizePool["fourth"] != null) {
       prizes.add({
@@ -231,7 +252,7 @@ class _PrizePoolWidgetState extends State<PrizePoolWidget> {
         'bgGradient': [const Color(0xFFFFF5EB), const Color(0xFFFFEED9)],
       });
     }
-    
+
     // ✅ Add Top 5-8 if exists
     if (prizePool["fifth_to_eighth"] != null) {
       prizes.add({

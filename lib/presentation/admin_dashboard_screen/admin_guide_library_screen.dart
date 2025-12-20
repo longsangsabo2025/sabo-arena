@@ -57,8 +57,7 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredGuides = _guides.where((guide) {
-        final matchesSearch =
-            query.isEmpty ||
+        final matchesSearch = query.isEmpty ||
             guide.title.toLowerCase().contains(query) ||
             guide.description.toLowerCase().contains(query) ||
             guide.tags.any((tag) => tag.toLowerCase().contains(query));
@@ -98,8 +97,8 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _filteredGuides.isEmpty
-                ? _buildEmptyState()
-                : _buildGuidesList(),
+                    ? _buildEmptyState()
+                    : _buildGuidesList(),
           ),
         ],
       ),
@@ -224,7 +223,9 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '${guides.length}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      '${guides.length}',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppTheme.primaryLight,
                         fontWeight: FontWeight.bold,
@@ -263,7 +264,8 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
                   // Title
                   Expanded(
                     child: Text(
-                      guide.title, style: const TextStyle(
+                      guide.title,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -282,7 +284,9 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Text(
-                        'MỚI', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'MỚI',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 10,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -308,13 +312,17 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
                   Icon(Icons.schedule, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
-                    '${guide.estimatedMinutes} phút', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    '${guide.estimatedMinutes} phút',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                   const SizedBox(width: 16),
                   Icon(Icons.list_alt, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
-                    '${guide.steps.length} bước', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    '${guide.steps.length} bước',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -337,7 +345,8 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
                         border: Border.all(color: Colors.blue[200]!),
                       ),
                       child: Text(
-                        tag, style: TextStyle(fontSize: 10, color: Colors.blue[700]),
+                        tag,
+                        style: TextStyle(fontSize: 10, color: Colors.blue[700]),
                       ),
                     );
                   }).toList(),
@@ -358,11 +367,15 @@ class _AdminGuideLibraryScreenState extends State<AdminGuideLibraryScreen> {
           Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            'Không tìm thấy hướng dẫn', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+            'Không tìm thấy hướng dẫn',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
           ),
           const SizedBox(height: 8),
           Text(
-            'Thử tìm kiếm với từ khóa khác', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            'Thử tìm kiếm với từ khóa khác',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
         ],
       ),

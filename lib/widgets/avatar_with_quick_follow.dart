@@ -383,7 +383,8 @@ class _AvatarWithQuickFollowState extends State<AvatarWithQuickFollow>
                   width: widget.size * 0.35,
                   height: widget.size * 0.35,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.8),
+                    color:
+                        Theme.of(context).primaryColor.withValues(alpha: 0.8),
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
                   ),

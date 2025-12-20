@@ -26,7 +26,6 @@ class OpponentClubService {
         return _cachedClubs!;
       }
 
-
       final response = await _supabase
           .from('clubs')
           .select('''
@@ -60,7 +59,6 @@ class OpponentClubService {
 
       return clubs;
     } catch (error) {
-
       // Return fallback mock data if Supabase fails
       return _getFallbackClubs();
     }
@@ -178,12 +176,11 @@ class OpponentClubService {
         'average_rating': clubs.isEmpty
             ? 0
             : (clubs.map((c) => c.rating).reduce((a, b) => a + b) /
-                      clubs.length)
-                  .round(),
+                    clubs.length)
+                .round(),
       };
     } catch (error) {
       return {'total_clubs': 0, 'verified_clubs': 0, 'average_rating': 0};
     }
   }
 }
-

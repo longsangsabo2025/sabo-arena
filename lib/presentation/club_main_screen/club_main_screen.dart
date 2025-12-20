@@ -10,8 +10,6 @@ import 'widgets/horizontal_club_list.dart';
 import 'widgets/club_detail_section.dart';
 import 'controllers/club_list_controller.dart';
 import 'dialogs/club_registration_dialog.dart';
-import 'dialogs/club_search_dialog.dart';
-import 'dialogs/club_filter_dialog.dart';
 // ELON_MODE_AUTO_FIX
 
 class ClubMainScreen extends StatefulWidget {
@@ -62,83 +60,13 @@ class _ClubMainScreenState extends State<ClubMainScreen> {
             title: app_theme.AppBarTheme.buildGradientTitle('Câu lạc bộ'),
             centerTitle: false,
             actions: [
-              // Filter button
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: IconButton(
-                  onPressed: _showFilterDialog,
-                  icon: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.gray200),
-                    ),
-                    child: Icon(
-                      Icons.filter_list,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                  ),
-                  tooltip: 'Lọc câu lạc bộ',
-                ),
-              ),
-              // Search button
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: Stack(
-                  children: [
-                    IconButton(
-                      onPressed: _showSearchDialog,
-                      icon: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.gray200),
-                        ),
-                        child: Icon(
-                          Icons.search,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                      ),
-                      tooltip: 'Tìm kiếm câu lạc bộ',
-                    ),
-                    // Filter active indicator
-                    if (_controller.searchQuery.isNotEmpty)
-                      Positioned(
-                        right: 8,
-                        top: 8,
-                        child: GestureDetector(
-                          onTap: () => _controller.search(''),
-                          child: Container(
-                            width: 16,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: const Icon(
-                              Icons.close,
-                              size: 10,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
               // Rank management button
               Padding(
                 padding: const EdgeInsets.only(right: 4.0),
                 child: IconButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.rankManagementScreen);
+                    Navigator.pushNamed(
+                        context, AppRoutes.rankManagementScreen);
                   },
                   icon: Container(
                     width: 40,
@@ -272,7 +200,9 @@ class _ClubMainScreenState extends State<ClubMainScreen> {
                 : Center(
                     key: const ValueKey('empty'),
                     child: Text(
-                      'Chọn một câu lạc bộ để xem chi tiết', overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(
+                      'Chọn một câu lạc bộ để xem chi tiết',
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -282,11 +212,6 @@ class _ClubMainScreenState extends State<ClubMainScreen> {
       ],
     );
   }
-
-
-
-
-
 
   //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
   //       title: Row(
@@ -368,21 +293,4 @@ class _ClubMainScreenState extends State<ClubMainScreen> {
   //     ),
   //   );
   // }
-
-
-
-
-
-  void _showSearchDialog() {
-    ClubSearchDialog.show(
-      context,
-      initialQuery: _controller.searchQuery,
-      onSearch: _controller.search,
-    );
-  }
-
-  void _showFilterDialog() {
-    ClubFilterDialog.show(context);
-  }
 }
-

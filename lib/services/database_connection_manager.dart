@@ -23,8 +23,7 @@ class DatabaseConnectionManager {
   /// Initialize connection manager
   void initialize() {
     _startHealthChecks();
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Start periodic health checks
@@ -44,8 +43,7 @@ class DatabaseConnectionManager {
       final duration = DateTime.now().difference(startTime);
 
       if (duration.inMilliseconds > 1000) {
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
       }
 
       _isHealthy = true;
@@ -55,12 +53,10 @@ class DatabaseConnectionManager {
       _consecutiveFailures++;
       _isHealthy = false;
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       if (_consecutiveFailures >= _maxFailures) {
-        if (kDebugMode) {
-        }
+        if (kDebugMode) {}
       }
 
       return false;
@@ -134,5 +130,3 @@ class DatabaseConnectionManager {
     _healthCheckTimer = null;
   }
 }
-
-

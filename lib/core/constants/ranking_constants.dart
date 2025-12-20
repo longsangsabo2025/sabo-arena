@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 /// Vietnamese billiards ranking system with verification requirements
 
 class RankingConstants {
-  // Rank codes in progression order
+  // Rank codes in progression order - MIGRATED 2025: Removed K+ and I+
   static const String unranked = 'UNRANKED';
   static const String RANK_K = 'K';
-  static const String RANK_K_PLUS = 'K+';
   static const String RANK_I = 'I';
-  static const String RANK_I_PLUS = 'I+';
   static const String RANK_H = 'H';
   static const String RANK_H_PLUS = 'H+';
   static const String RANK_G = 'G';
@@ -17,152 +15,149 @@ class RankingConstants {
   static const String RANK_F = 'F';
   static const String RANK_F_PLUS = 'F+';
   static const String RANK_E = 'E';
-  static const String RANK_D = 'D'; // NEW: Huyền Thoại
-  static const String RANK_C = 'C'; // NEW: Vô địch
+  static const String RANK_D = 'D';
+  static const String RANK_C = 'C';
 
-  // Rank progression order (from lowest to highest) - UPDATED FROM DATABASE
+  // Rank progression order (from lowest to highest) - MIGRATED 2025
   static const List<String> RANK_ORDER = [
-    RANK_K, // 1000-1099: Người mới
-    RANK_K_PLUS, // 1100-1199: Học việc
-    RANK_I, // 1200-1299: Thợ 3
-    RANK_I_PLUS, // 1300-1399: Thợ 2
-    RANK_H, // 1400-1499: Thợ 1
-    RANK_H_PLUS, // 1500-1599: Thợ chính
-    RANK_G, // 1600-1699: Thợ giỏi
-    RANK_G_PLUS, // 1700-1799: Thợ cả
-    RANK_F, // 1800-1899: Chuyên gia
-    RANK_E, // 1900-1999: Cao thủ
-    RANK_D, // 2000-2099: Huyền Thoại
-    RANK_C, // 2100-2199: Vô địch
+    RANK_K, // 1000-1099: 1-2 Bi
+    RANK_I, // 1100-1199: 1-3 Bi
+    RANK_H, // 1200-1299: 3-5 Bi
+    RANK_H_PLUS, // 1300-1399: 3-5 Bi (ổn định)
+    RANK_G, // 1400-1499: 5-6 Bi
+    RANK_G_PLUS, // 1500-1599: 5-6 Bi (ổn định)
+    RANK_F, // 1600-1699: 6-8 Bi
+    RANK_F_PLUS, // 1700-1799: 2 Chấm
+    RANK_E, // 1800-1899: 3 Chấm
+    RANK_D, // 1900-1999: 4 Chấm
+    RANK_C, // 2000-2099: 5 Chấm
   ];
 
-  // ELO ranges for each rank (UPDATED FROM DATABASE rank_system table)
+  // ELO ranges for each rank - MIGRATED 2025: Removed K+/I+, shifted ranges
   static const Map<String, Map<String, int>> RANK_ELO_RANGES = {
-    RANK_K: {'min': 1000, 'max': 1099}, // Người mới
-    RANK_K_PLUS: {'min': 1100, 'max': 1199}, // Học việc
-    RANK_I: {'min': 1200, 'max': 1299}, // Thợ 3
-    RANK_I_PLUS: {'min': 1300, 'max': 1399}, // Thợ 2
-    RANK_H: {'min': 1400, 'max': 1499}, // Thợ 1
-    RANK_H_PLUS: {'min': 1500, 'max': 1599}, // Thợ chính
-    RANK_G: {'min': 1600, 'max': 1699}, // Thợ giỏi
-    RANK_G_PLUS: {'min': 1700, 'max': 1799}, // Thợ cả
-    RANK_F: {'min': 1800, 'max': 1899}, // Chuyên gia
-    RANK_E: {'min': 1900, 'max': 1999}, // Cao thủ (CORRECTED!)
-    RANK_D: {'min': 2000, 'max': 2099}, // Huyền Thoại (NEW!)
-    RANK_C: {'min': 2100, 'max': 2199}, // Vô địch (NEW!)
+    RANK_K: {'min': 1000, 'max': 1099}, // 1-2 Bi
+    RANK_I: {'min': 1100, 'max': 1199}, // 1-3 Bi
+    RANK_H: {'min': 1200, 'max': 1299}, // 3-5 Bi
+    RANK_H_PLUS: {'min': 1300, 'max': 1399}, // 3-5 Bi (ổn định)
+    RANK_G: {'min': 1400, 'max': 1499}, // 5-6 Bi
+    RANK_G_PLUS: {'min': 1500, 'max': 1599}, // 5-6 Bi (ổn định)
+    RANK_F: {'min': 1600, 'max': 1699}, // 6-8 Bi
+    RANK_F_PLUS: {'min': 1700, 'max': 1799}, // 2 Chấm
+    RANK_E: {'min': 1800, 'max': 1899}, // 3 Chấm
+    RANK_D: {'min': 1900, 'max': 1999}, // 4 Chấm
+    RANK_C: {'min': 2000, 'max': 2099}, // 5 Chấm
   };
 
   // Icons for each rank
   static const Map<String, IconData> RANK_ICONS = {
     RANK_K: Icons.star_border,
-    RANK_K_PLUS: Icons.star_half,
     RANK_I: Icons.star,
-    RANK_I_PLUS: Icons.stars,
     RANK_H: Icons.military_tech_outlined,
     RANK_H_PLUS: Icons.military_tech,
     RANK_G: Icons.shield_outlined,
     RANK_G_PLUS: Icons.shield,
     RANK_F: Icons.local_fire_department_outlined,
     RANK_F_PLUS: Icons.local_fire_department,
-    RANK_E: Icons.verified_user_outlined, // Cao thủ
-    RANK_D: Icons.verified_user, // Huyền Thoại
-    RANK_C: Icons.diamond, // Vô địch
+    RANK_E: Icons.verified_user_outlined,
+    RANK_D: Icons.verified_user,
+    RANK_C: Icons.diamond,
     unranked: Icons.help_outline,
   };
 
-  // Vietnamese rank names and descriptions - NEW NAMING SYSTEM
+  // Vietnamese rank names and descriptions - MIGRATED 2025
   static const Map<String, Map<String, String>> RANK_DETAILS = {
     RANK_K: {
       'name': 'K',
       'name_en': 'Beginner',
-      'description': '2-4 bi khi hình dễ; mới tập',
-      'description_en': '2-4 balls on easy shots; just starting',
+      'description': '1-2 Bi',
+      'description_en': '1-2 balls',
+      'stability': 'Không ổn định, chỉ biết các kỹ thuật như cule, trỏ',
       'color': '#8B4513',
-    },
-    RANK_K_PLUS: {
-      'name': 'K+',
-      'name_en': 'Apprentice',
-      'description': 'Sắt ngưỡng lên Thợ 3',
-      'description_en': 'About to reach Thợ 3 rank',
-      'color': '#A0522D',
     },
     RANK_I: {
       'name': 'I',
-      'name_en': 'Worker Level 3',
-      'description': '3-5 bi; chưa điều được chấm',
-      'description_en': '3-5 balls; cannot control dots yet',
+      'name_en': 'Novice',
+      'description': '1-3 Bi',
+      'description_en': '1-3 balls',
+      'stability':
+          'Không ổn định, chỉ biết đơn và biết các kỹ thuật như cule, trỏ',
       'color': '#CD853F',
-    },
-    RANK_I_PLUS: {
-      'name': 'I+',
-      'name_en': 'Worker Level 2',
-      'description': 'Sắt ngưỡng lên Thợ 1',
-      'description_en': 'About to reach Thợ 1 rank',
-      'color': '#DEB887',
     },
     RANK_H: {
       'name': 'H',
-      'name_en': 'Worker Level 1',
-      'description': '5-8 bi; có thể "rứa" 1 chấm hình dễ',
-      'description_en': '5-8 balls; can clear 1 dot on easy layouts',
+      'name_en': 'Amateur',
+      'description': '3-5 Bi',
+      'description_en': '3-5 balls',
+      'stability': 'Chưa ổn định, không có khả năng đi chấm, biết 1 ít ắp phẻ',
       'color': '#C0C0C0',
     },
     RANK_H_PLUS: {
       'name': 'H+',
-      'name_en': 'Chief Worker',
-      'description': 'Chuẩn bị lên Thợ giỏi',
-      'description_en': 'Preparing for skilled worker rank',
+      'name_en': 'Amateur+',
+      'description': '3-5 Bi',
+      'description_en': '3-5 balls',
+      'stability':
+          'Ổn định, không có khả năng đi chấm, Don 1-2 hình trên 1 race 7',
       'color': '#B0B0B0',
     },
     RANK_G: {
       'name': 'G',
-      'name_en': 'Skilled Worker',
-      'description': 'Clear 1 chấm + 3-7 bi kế; bắt đầu điều bi 3 băng',
-      'description_en': 'Clear 1 dot + 3-7 balls; starting 3-cushion control',
+      'name_en': 'Intermediate',
+      'description': '5-6 Bi',
+      'description_en': '5-6 balls',
+      'stability':
+          'Chưa ổn định, đi được 1 chấm / race chấm 7, Don 3 hình trên 1 race 7',
       'color': '#FFD700',
     },
     RANK_G_PLUS: {
       'name': 'G+',
-      'name_en': 'Master',
-      'description': 'Trình phong trào "ngon"; sắt ngưỡng lên Chuyên gia',
-      'description_en': 'Good recreational level; about to reach Expert',
+      'name_en': 'Intermediate+',
+      'description': '5-6 Bi',
+      'description_en': '5-6 balls',
+      'stability':
+          'Ổn định, đi được 1 chấm / race chấm 7, Don 4 hình trên 1 race 7',
       'color': '#FFA500',
     },
     RANK_F: {
       'name': 'F',
-      'name_en': 'Expert',
-      'description': '60-80% clear 1 chấm, đôi khi phá 2 chấm',
-      'description_en': '60-80% clear 1 dot, sometimes break 2 dots',
+      'name_en': 'Advanced',
+      'description': '6-8 Bi',
+      'description_en': '6-8 balls',
+      'stability':
+          'Rất ổn định, đi được 2 chấm / race chấm 7, Đi hình, don bàn khá tốt',
       'color': '#FF6347',
     },
     RANK_F_PLUS: {
       'name': 'F+',
-      'name_en': 'Grand Master',
-      'description':
-          'Safety & spin control khá chắc; sắt ngưỡng lên Huyền thoại',
-      'description_en': 'Good safety & spin control; about to reach Legend',
+      'name_en': 'Expert',
+      'description': '2 Chấm',
+      'description_en': '2 dots',
+      'stability': 'Cực kỳ ổn định, khả năng đi 2 chấm thông',
       'color': '#FF4500',
     },
     RANK_E: {
       'name': 'E',
       'name_en': 'Master',
-      'description': 'Cao thủ - kỹ thuật ổn định',
-      'description_en': 'Master - stable technique',
-      'color': '#D32F2F', // From database color_hex
+      'description': '3 Chấm',
+      'description_en': '3 dots',
+      'stability': 'Chuyên gia, khả năng đi 3 chấm thông',
+      'color': '#D32F2F',
     },
     RANK_D: {
       'name': 'D',
-      'name_en': 'Legend',
-      'description': 'Huyền Thoại - đẳng cấp cao',
-      'description_en': 'Legend - high level',
-      'color': '#795548', // From database color_hex
+      'name_en': 'Grand Master',
+      'description': '4 Chấm',
+      'description_en': '4 dots',
+      'stability': 'Huyền thoại, khả năng đi 4 chấm thông',
+      'color': '#795548',
     },
     RANK_C: {
       'name': 'C',
       'name_en': 'Champion',
-      'description': 'Vô địch - đỉnh cao kỹ thuật',
-      'description_en': 'Champion - peak technical level',
-      'color': '#FFD700', // From database color_hex
+      'description': '5 Chấm',
+      'description_en': '5 dots',
+      'stability': 'Vô địch, khả năng đi 5 chấm thông',
+      'color': '#FFD700',
     },
   };
 

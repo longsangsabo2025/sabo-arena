@@ -12,21 +12,20 @@ class ModernSearchScreen extends StatefulWidget {
 }
 
 class _ModernSearchScreenState extends State<ModernSearchScreen> {
-  
   // Services
   final PostRepository _postRepository = PostRepository();
-  
+
   // Search state
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   Timer? _debounceTimer;
-  
+
   // Results state
   List<dynamic> _searchResults = [];
   bool _isLoading = false;
   bool _showResults = false;
   String _currentQuery = '';
-  
+
   // Recent searches
   List<String> _recentSearches = [];
 
@@ -45,13 +44,13 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
     _debounceTimer?.cancel();
     super.dispose();
   }
-  
+
   void _loadRecentSearches() {
     setState(() {
       _recentSearches = ['billiards', 'tournament', 'challenge'];
     });
   }
-  
+
   void _saveRecentSearch(String query) {
     if (!_recentSearches.contains(query)) {
       setState(() {
@@ -66,7 +65,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
   /// 🚀 DEBOUNCED SEARCH
   void _onSearchChanged() {
     final query = _searchController.text.trim();
-    
+
     if (query.isEmpty) {
       _debounceTimer?.cancel();
       if (mounted) {
@@ -77,7 +76,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
       }
       return;
     }
-    
+
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       _performSearch(query);
@@ -87,30 +86,32 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
   /// Perform search
   Future<void> _performSearch(String query) async {
     if (query.isEmpty || !mounted) return;
-    
+
     setState(() {
       _isLoading = true;
       _currentQuery = query;
     });
-    
+
     try {
       _saveRecentSearch(query);
-      
+
       // Get PostModels and convert to dynamic for compatibility
       final posts = await _postRepository.searchPosts(query);
-      
-      final postsAsMap = posts.map((post) => {
-        'id': post.id,
-        'content': post.content,
-        'created_at': post.createdAt.toString(),
-        'like_count': post.likeCount,
-        'comment_count': post.commentCount,
-        'user': {
-          'display_name': post.authorName,
-          'username': post.authorId,
-        },
-      }).toList();
-      
+
+      final postsAsMap = posts
+          .map((post) => {
+                'id': post.id,
+                'content': post.content,
+                'created_at': post.createdAt.toString(),
+                'like_count': post.likeCount,
+                'comment_count': post.commentCount,
+                'user': {
+                  'display_name': post.authorName,
+                  'username': post.authorId,
+                },
+              })
+          .toList();
+
       if (mounted) {
         setState(() {
           _searchResults = postsAsMap;
@@ -118,7 +119,6 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
           _isLoading = false;
         });
       }
-      
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -130,7 +130,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
       }
     }
   }
-  
+
   void _clearSearch() {
     _searchController.clear();
     if (mounted) {
@@ -149,7 +149,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
       body: _showResults ? _buildSearchResults() : _buildSearchHome(),
     );
   }
-  
+
   /// Modern search AppBar
   PreferredSizeWidget _buildSearchAppBar() {
     return AppBar(
@@ -203,7 +203,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
       ),
     );
   }
-  
+
   /// Search home khi chưa search
   Widget _buildSearchHome() {
     return SingleChildScrollView(
@@ -261,7 +261,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
             ),
             const SizedBox(height: 32),
           ],
-          
+
           // Search suggestions
           const Text(
             'Gợi ý tìm kiếm',
@@ -272,7 +272,8 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          ...['Giải đấu', 'Thách đấu', 'Billiards', 'Pool', 'Tournament'].map((suggestion) {
+          ...['Giải đấu', 'Thách đấu', 'Billiards', 'Pool', 'Tournament']
+              .map((suggestion) {
             return ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.trending_up, color: Colors.blue[600]),
@@ -287,7 +288,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
       ),
     );
   }
-  
+
   /// Search results
   Widget _buildSearchResults() {
     if (_isLoading) {
@@ -295,7 +296,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
         child: CircularProgressIndicator(),
       );
     }
-    
+
     if (_searchResults.isEmpty) {
       return Center(
         child: Column(
@@ -329,7 +330,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
         ),
       );
     }
-    
+
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: _searchResults.length,
@@ -340,11 +341,12 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
       },
     );
   }
-  
+
   Widget _buildPostItem(dynamic post) {
     final user = post['user'] as Map<String, dynamic>?;
-    final userName = user?['display_name'] ?? user?['username'] ?? 'Người dùng ẩn danh';
-    
+    final userName =
+        user?['display_name'] ?? user?['username'] ?? 'Người dùng ẩn danh';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -368,8 +370,8 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
                 radius: 16,
                 backgroundColor: Colors.blue[100],
                 child: Icon(
-                  Icons.person, 
-                  size: 18, 
+                  Icons.person,
+                  size: 18,
                   color: Colors.blue[600],
                 ),
               ),
@@ -387,7 +389,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Post content
           Text(
             post['content'] ?? 'Không có nội dung',
@@ -400,7 +402,7 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 12),
-          
+
           // Post meta
           Row(
             children: [
@@ -424,7 +426,8 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
                 ),
               ),
               const SizedBox(width: 16),
-              Icon(Icons.mode_comment_outlined, size: 16, color: Colors.grey[600]),
+              Icon(Icons.mode_comment_outlined,
+                  size: 16, color: Colors.grey[600]),
               const SizedBox(width: 4),
               Text(
                 '${post['comment_count'] ?? 0}',
@@ -439,14 +442,14 @@ class _ModernSearchScreenState extends State<ModernSearchScreen> {
       ),
     );
   }
-  
+
   String _formatDate(String? dateString) {
     if (dateString == null) return 'Không xác định';
     try {
       final date = DateTime.parse(dateString);
       final now = DateTime.now();
       final difference = now.difference(date);
-      
+
       if (difference.inDays > 0) {
         return '${difference.inDays} ngày trước';
       } else if (difference.inHours > 0) {

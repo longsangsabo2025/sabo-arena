@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import '../device/device_info.dart';
 
 /// iPad-optimized typography system with automatic scaling
-/// 
+///
 /// Provides text styles that automatically scale based on iPad model:
 /// - iPad Mini: 1.12x scaling
 /// - iPad Air/Pro 11": 1.18x scaling
 /// - iPad Pro 12.9": 1.25x scaling
 /// - iPhone: 1.0x (base size)
-/// 
+///
 /// Usage:
 /// ```dart
 /// Text(
 ///   'Hello World',
 ///   style: TypographyIPad.title(context),
 /// )
-/// 
+///
 /// // Or use extension
 /// Text('Body text').responsive(context)
 /// ```
@@ -27,7 +27,7 @@ class TypographyIPad {
   // ============================================================================
 
   /// Get scale factor based on iPad model
-  /// 
+  ///
   /// - iPad Pro 12.9": 1.25x (largest screen needs largest text)
   /// - iPad Air/Pro 11": 1.18x (medium iPads)
   /// - iPad Mini: 1.12x (smaller but still larger than iPhone)
@@ -333,7 +333,7 @@ class TypographyIPad {
 /// Extension on Text widget for easy responsive styling
 extension TextIPadExtension on Text {
   /// Make text responsive to iPad screen sizes
-  /// 
+  ///
   /// Usage:
   /// ```dart
   /// Text('Hello').responsive(context)
@@ -365,5 +365,6 @@ extension TypographyContextExtension on BuildContext {
   double get textScaleFactor => TypographyIPad.getScaleFactor(this);
 
   /// Scale a font size for current device
-  double scaleFont(double baseSize) => TypographyIPad.scaledSize(this, baseSize);
+  double scaleFont(double baseSize) =>
+      TypographyIPad.scaledSize(this, baseSize);
 }

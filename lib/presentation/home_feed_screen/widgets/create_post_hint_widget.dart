@@ -54,8 +54,7 @@ class _CreatePostHintWidgetState extends State<CreatePostHintWidget> {
   @override
   Widget build(BuildContext context) {
     // Use avatar URL or fallback to default
-    final avatarUrl =
-        _userAvatarUrl ??
+    final avatarUrl = _userAvatarUrl ??
         'https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png';
 
     return Container(
@@ -144,4 +143,3 @@ class _CreatePostHintWidgetState extends State<CreatePostHintWidget> {
     );
   }
 }
-

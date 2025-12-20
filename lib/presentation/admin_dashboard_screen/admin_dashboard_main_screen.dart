@@ -3,6 +3,7 @@ import '../../theme/app_theme.dart';
 import '../../services/admin_service.dart';
 import '../../routes/app_routes.dart';
 import './widgets/admin_scaffold_wrapper.dart';
+import './widgets/musk_dashboard_widget.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -14,6 +15,7 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final AdminService _adminService = AdminService.instance;
   Map<String, dynamic>? _stats;
+  Map<String, dynamic>? _muskMetrics;
   List<Map<String, dynamic>> _recentActivities = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -31,15 +33,27 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         _errorMessage = null;
       });
 
-      final results = await Future.wait([
-        _adminService.getAdminStats(),
-        _adminService.getRecentActivities(limit: 10),
-      ]);
-
+      // Load stats first (fast)
+      final stats = await _adminService.getAdminStats();
       if (mounted) {
         setState(() {
-          _stats = results[0] as Map<String, dynamic>;
-          _recentActivities = results[1] as List<Map<String, dynamic>>;
+          _stats = stats;
+        });
+      }
+
+      // Load Musk Metrics (God Mode)
+      final muskMetrics = await _adminService.getMuskMetrics();
+      if (mounted) {
+        setState(() {
+          _muskMetrics = muskMetrics;
+        });
+      }
+
+      // Load activities independently (slower)
+      final activities = await _adminService.getRecentActivities(limit: 10);
+      if (mounted) {
+        setState(() {
+          _recentActivities = activities;
           _isLoading = false;
         });
       }
@@ -94,11 +108,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildWelcomeSection(),
-            SizedBox(height: 24),
+            SizedBox(height: 16),
+            if (_muskMetrics != null)
+              MuskDashboardWidget(metrics: _muskMetrics!),
+            SizedBox(height: 16),
             _buildStatsCards(),
-            SizedBox(height: 24),
+            SizedBox(height: 8),
             _buildQuickActions(),
-            SizedBox(height: 24),
+            SizedBox(height: 8),
             _buildRecentActivities(),
           ],
         ),
@@ -124,16 +141,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Chào mừng Admin!', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppTheme.onPrimaryLight,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  'Chào mừng Admin!',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppTheme.onPrimaryLight,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Quản lý hệ thống Sabo Arena', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.onPrimaryLight.withValues(alpha: 0.8),
-                  ),
+                  'Quản lý hệ thống Sabo Arena',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.onPrimaryLight.withValues(alpha: 0.8),
+                      ),
                 ),
               ],
             ),
@@ -236,16 +257,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           Spacer(),
           Text(
-            value, style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimaryLight,
-            ),
+            value,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimaryLight,
+                ),
           ),
           SizedBox(height: 4),
           Text(
-            title, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryLight,
-            ),
+            title,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textSecondaryLight,
+                ),
           ),
         ],
       ),
@@ -257,7 +280,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Thao tác nhanh', overflow: TextOverflow.ellipsis, style: TextStyle(
+          'Thao tác nhanh',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppTheme.textPrimaryLight,
@@ -331,7 +356,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                title, style: TextStyle(
+                title,
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: AppTheme.textPrimaryLight,
                 ),
@@ -348,7 +374,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hoạt động gần đây', overflow: TextOverflow.ellipsis, style: TextStyle(
+          'Hoạt động gần đây',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppTheme.textPrimaryLight,
@@ -374,7 +402,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'Chưa có hoạt động gần đây', overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight),
+                          'Chưa có hoạt động gần đây',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: AppTheme.textSecondaryLight),
                         ),
                       ],
                     ),
@@ -389,9 +419,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     final activity = _recentActivities[index];
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: AppTheme.primaryLight.withValues(
-                          alpha: 0.1,
-                        ),
+                        backgroundColor:
+                            AppTheme.primaryLight.withValues(alpha: 0.1),
                         child: Icon(
                           Icons.notifications,
                           color: AppTheme.primaryLight,
@@ -401,7 +430,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       title: Text(activity['title'] ?? ''),
                       subtitle: Text(activity['description'] ?? ''),
                       trailing: Text(
-                        activity['time'] ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        activity['time'] ?? '',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: AppTheme.textSecondaryLight,
                           fontSize: 12,
                         ),

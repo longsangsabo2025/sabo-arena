@@ -58,7 +58,7 @@ class PostRepository {
         final authorName = clubId != null && club != null
             ? club['name'] ?? 'Anonymous Club'
             : user?['display_name'] ?? user?['username'] ?? 'Anonymous';
-        
+
         final authorAvatar = clubId != null && club != null
             ? club['logo_url']
             : user?['avatar_url'];
@@ -108,7 +108,6 @@ class PostRepository {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not logged in');
 
-
       // Prepare image URLs array
       List<String>? finalImageUrls;
       if (inputImageUrls != null && inputImageUrls.isNotEmpty) {
@@ -128,11 +127,9 @@ class PostRepository {
         'video_platform': videoPlatform ?? 'youtube',
         'video_duration': videoDuration,
         'video_thumbnail_url': videoThumbnailUrl,
-        'video_uploaded_at': videoUrl != null
-            ? DateTime.now().toIso8601String()
-            : null,
+        'video_uploaded_at':
+            videoUrl != null ? DateTime.now().toIso8601String() : null,
       };
-
 
       final response = await _supabase.from('posts').insert(postData).select('''
         id,
@@ -153,7 +150,6 @@ class PostRepository {
         comment_count,
         share_count
       ''').single();
-
 
       final userInfo = response['users'];
       final responseImageUrls = response['image_urls'] as List?;
@@ -194,7 +190,7 @@ class PostRepository {
 
       // Check current like status using NEW table (post_interactions)
       final isCurrentlyLiked = await hasUserLikedPost(postId);
-      
+
       if (isCurrentlyLiked) {
         await unlikePost(postId);
       } else {
@@ -210,9 +206,7 @@ class PostRepository {
   // Lấy bài viết theo ID
   Future<PostModel?> getPostById(String postId) async {
     try {
-      final response = await _supabase
-          .from('posts')
-          .select('''
+      final response = await _supabase.from('posts').select('''
             id,
             content,
             image_urls,
@@ -224,9 +218,7 @@ class PostRepository {
             like_count,
             comment_count,
             share_count
-          ''')
-          .eq('id', postId)
-          .single();
+          ''').eq('id', postId).single();
 
       final user = response['users'];
       final imageUrls = response['image_urls'] as List?;
@@ -327,7 +319,6 @@ class PostRepository {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-
       // Get post owner ID for notification (before insert)
       final currentPost = await _supabase
           .from('posts')
@@ -342,7 +333,6 @@ class PostRepository {
         'user_id': user.id,
         'interaction_type': 'like',
       });
-
 
       // 🔔 Gửi thông báo cho post owner (không gửi cho chính mình)
       final postOwnerId = currentPost['user_id'] as String?;
@@ -372,7 +362,6 @@ class PostRepository {
       final user = _supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-
       // Delete like record from post_interactions table
       // ✅ Database trigger will automatically decrement like_count
       await _supabase
@@ -381,7 +370,6 @@ class PostRepository {
           .eq('post_id', postId)
           .eq('user_id', user.id)
           .eq('interaction_type', 'like');
-
     } catch (e) {
       rethrow;
     }
@@ -584,8 +572,7 @@ class PostRepository {
             content: post['content'] ?? '',
             imageUrl: imageUrls?.isNotEmpty == true ? imageUrls!.first : null,
             authorId: post['user_id'],
-            authorName:
-                userInfo?['display_name'] ??
+            authorName: userInfo?['display_name'] ??
                 userInfo?['username'] ??
                 'Anonymous',
             authorAvatarUrl: userInfo?['avatar_url'],
@@ -677,7 +664,7 @@ class PostRepository {
       for (final item in response) {
         final isLiked = await hasUserLikedPost(item['post_id']);
 
-        // 🎱 Functions now return author_name and author_avatar 
+        // 🎱 Functions now return author_name and author_avatar
         // with club info prioritized (done in SQL)
         posts.add(
           PostModel(
@@ -726,7 +713,7 @@ class PostRepository {
       for (final item in response) {
         final isLiked = await hasUserLikedPost(item['post_id']);
 
-        // 🎱 Functions now return author_name and author_avatar 
+        // 🎱 Functions now return author_name and author_avatar
         // with club info prioritized (done in SQL)
         posts.add(
           PostModel(
@@ -860,8 +847,7 @@ class PostRepository {
             content: item['content'] ?? '',
             imageUrl: imageUrls?.isNotEmpty == true ? imageUrls!.first : null,
             authorId: item['user_id'],
-            authorName:
-                userInfo?['display_name'] ??
+            authorName: userInfo?['display_name'] ??
                 userInfo?['username'] ??
                 'Anonymous',
             authorAvatarUrl: userInfo?['avatar_url'],
@@ -888,7 +874,6 @@ class PostRepository {
     int offset = 0,
   }) async {
     try {
-
       // Query posts WITHOUT JOIN (FK doesn't exist!)
       final response = await _supabase
           .from('posts')
@@ -908,7 +893,6 @@ class PostRepository {
           .eq('user_id', userId)
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
-
 
       if (response.isEmpty) {
         return [];
@@ -959,4 +943,3 @@ class PostRepository {
     }
   }
 }
-

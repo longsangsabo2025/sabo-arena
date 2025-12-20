@@ -11,7 +11,7 @@ import 'package:sabo_arena/utils/production_logger.dart';
 /// This ensures registration is never blocked by complex setup logic
 class UserOnboardingCompletionService {
   static UserOnboardingCompletionService? _instance;
-  static UserOnboardingCompletionService get instance => 
+  static UserOnboardingCompletionService get instance =>
       _instance ??= UserOnboardingCompletionService._();
   UserOnboardingCompletionService._();
 
@@ -74,8 +74,8 @@ class UserOnboardingCompletionService {
         tag: 'Onboarding',
       );
 
-      return successCount >= (totalSteps * 0.8); // 80% success rate is acceptable
-
+      return successCount >=
+          (totalSteps * 0.8); // 80% success rate is acceptable
     } catch (error, stackTrace) {
       StandardizedErrorHandler.handleError(
         error,
@@ -112,7 +112,8 @@ class UserOnboardingCompletionService {
       );
       return true;
     } catch (e) {
-      ProductionLogger.warning('Welcome notification failed', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Welcome notification failed',
+          error: e, tag: 'Onboarding');
       return false;
     }
   }
@@ -123,7 +124,8 @@ class UserOnboardingCompletionService {
       await ReferralService.instance.createReferralCodeForUser(userId);
       return true;
     } catch (e) {
-      ProductionLogger.warning('Referral code creation failed', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Referral code creation failed',
+          error: e, tag: 'Onboarding');
       return false;
     }
   }
@@ -131,9 +133,9 @@ class UserOnboardingCompletionService {
   /// 🎯 Claim pending referral from server-side tracking (NEW!)
   Future<bool> _claimPendingReferral(String userId) async {
     try {
-      final result = await PendingReferralService.instance
-          .claimPendingReferral(userId);
-      
+      final result =
+          await PendingReferralService.instance.claimPendingReferral(userId);
+
       if (result['claimed'] == true) {
         ProductionLogger.info(
           'Claimed pending referral: ${result['referral_code']}, Bonus: ${result['referee_bonus']} SPA (${result['match_method']})',
@@ -141,11 +143,14 @@ class UserOnboardingCompletionService {
         );
         return true;
       } else {
-        ProductionLogger.debug('No pending referral to claim: ${result['message']}', tag: 'Onboarding');
+        ProductionLogger.debug(
+            'No pending referral to claim: ${result['message']}',
+            tag: 'Onboarding');
         return true; // Still return true since it's not an error
       }
     } catch (e) {
-      ProductionLogger.warning('Pending referral claim failed', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Pending referral claim failed',
+          error: e, tag: 'Onboarding');
       return false;
     }
   }
@@ -153,21 +158,23 @@ class UserOnboardingCompletionService {
   /// 🎯 Process stored referral code (fallback - non-critical)
   Future<bool> _processStoredReferralCode(String userId) async {
     try {
-      final storedReferralCode = await DeepLinkService.instance
-          .getStoredReferralCodeForNewUser();
-      
+      final storedReferralCode =
+          await DeepLinkService.instance.getStoredReferralCodeForNewUser();
+
       if (storedReferralCode != null && storedReferralCode.isNotEmpty) {
         await ReferralService.instance.useReferralCode(
           storedReferralCode,
           userId,
         );
         await DeepLinkService.instance.clearStoredReferralCode();
-        
-        ProductionLogger.info('Applied referral code: $storedReferralCode', tag: 'Onboarding');
+
+        ProductionLogger.info('Applied referral code: $storedReferralCode',
+            tag: 'Onboarding');
       }
       return true;
     } catch (e) {
-      ProductionLogger.warning('Referral code processing failed', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Referral code processing failed',
+          error: e, tag: 'Onboarding');
       return false;
     }
   }
@@ -177,11 +184,13 @@ class UserOnboardingCompletionService {
     try {
       // Initialize user analytics tracking
       // This could include setting up user properties, tracking first visit, etc.
-      
-      ProductionLogger.debug('User analytics setup completed', tag: 'Onboarding');
+
+      ProductionLogger.debug('User analytics setup completed',
+          tag: 'Onboarding');
       return true;
     } catch (e) {
-      ProductionLogger.warning('Analytics setup failed', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Analytics setup failed',
+          error: e, tag: 'Onboarding');
       return false;
     }
   }
@@ -195,50 +204,49 @@ class UserOnboardingCompletionService {
           .select('id')
           .eq('name', 'First Tournament')
           .maybeSingle();
-      
+
       if (achievementsResponse != null) {
         final achievementId = achievementsResponse['id'];
-        
+
         // Award the achievement to user
-        await _supabase
-            .from('user_achievements')
-            .insert({
-              'user_id': userId,
-              'achievement_id': achievementId,
-            });
-        
-        ProductionLogger.info('Initial achievement awarded: First Tournament', tag: 'Onboarding');
+        await _supabase.from('user_achievements').insert({
+          'user_id': userId,
+          'achievement_id': achievementId,
+        });
+
+        ProductionLogger.info('Initial achievement awarded: First Tournament',
+            tag: 'Onboarding');
       } else {
-        ProductionLogger.debug('No welcome achievement found in master list', tag: 'Onboarding');
+        ProductionLogger.debug('No welcome achievement found in master list',
+            tag: 'Onboarding');
       }
-      
+
       return true;
     } catch (e) {
-      ProductionLogger.warning('Achievements setup failed', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Achievements setup failed',
+          error: e, tag: 'Onboarding');
       return false;
     }
   }
 
   /// 📝 Update user initialization status in database
   Future<void> _updateUserInitializationStatus(
-    String userId, 
+    String userId,
     String status,
   ) async {
     try {
-      await _supabase
-          .from('users')
-          .update({
-            'initialization_status': status,
-            'initialization_completed_at': status == 'completed' 
-                ? DateTime.now().toIso8601String() 
-                : null,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
+      await _supabase.from('users').update({
+        'initialization_status': status,
+        'initialization_completed_at':
+            status == 'completed' ? DateTime.now().toIso8601String() : null,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
 
-      ProductionLogger.debug('User initialization status updated: $status', tag: 'Onboarding');
+      ProductionLogger.debug('User initialization status updated: $status',
+          tag: 'Onboarding');
     } catch (e) {
-      ProductionLogger.warning('Could not update initialization status', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Could not update initialization status',
+          error: e, tag: 'Onboarding');
       // Don't throw - this is just for tracking
     }
   }
@@ -253,11 +261,12 @@ class UserOnboardingCompletionService {
           .maybeSingle();
 
       if (response == null) return false;
-      
+
       final status = response['initialization_status'] as String?;
       return status == 'completed';
     } catch (e) {
-      ProductionLogger.warning('Could not check initialization status', error: e, tag: 'Onboarding');
+      ProductionLogger.warning('Could not check initialization status',
+          error: e, tag: 'Onboarding');
       return false;
     }
   }

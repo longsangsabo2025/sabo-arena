@@ -68,7 +68,8 @@ class AppRoutes {
   static const String splashScreen = '/splash';
   static const String onboardingScreen = '/onboarding';
   // static const String appTutorialScreen = '/app_tutorial'; // ARCHIVED - Not used anymore
-  static const String mainScreen = '/main'; // 🎯 NEW: Persistent tabs main screen
+  static const String mainScreen =
+      '/main'; // 🎯 NEW: Persistent tabs main screen
   static const String homeFeedScreen = '/home_feed_screen';
   static const String tournamentListScreen = '/tournament_list_screen';
   static const String findOpponentsScreen = '/find_opponents_screen';
@@ -110,7 +111,7 @@ class AppRoutes {
   static const String notificationListScreen = '/notification_list';
   static const String postDetailScreen = '/post_detail';
   static const String userVoucherScreen = '/user_voucher';
-  
+
   // 🧪 TEST SCREENS
   static const String crossPlatformAuthTest = '/cross_platform_auth_test';
 
@@ -141,149 +142,150 @@ class AppRoutes {
   static const String initial = splashScreen; // Back to normal flow
 
   static Map<String, WidgetBuilder> get routes => {
-    splashScreen: (context) => const SplashScreen(),
-    onboardingScreen: (context) => const OnboardingScreen(),
-    // appTutorialScreen: (context) => const AppTutorialScreen(), // ARCHIVED
-    // 🚀 PHASE 1: Main screen with persistent tabs
-    mainScreen: (context) => const PersistentTabScaffold(),
-    homeFeedScreen: (context) => const HomeFeedScreen(),
-    tournamentListScreen: (context) => const TournamentListScreen(),
-    findOpponentsScreen: (context) => const FindOpponentsScreen(),
-    findOpponentsListScreen: (context) => const FindOpponentsListScreen(),
-    clubMainScreen: (context) => const ClubMainScreen(),
-    clubProfileScreen: (context) => const ClubProfileScreen(),
-    clubRegistrationScreen: (context) => const ClubRegistrationScreen(),
-    userProfileScreen: (context) => const UserProfileScreen(),
-    emailVerificationScreen: (context) {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return EmailVerificationScreen(
-        email: args?['email'] as String? ?? '',
-        userId: args?['userId'] as String? ?? '',
-      );
-    },
-    profileSetupScreen: (context) => const ProfileSetupScreen(),
-    postBackgroundSettingsScreen: (context) =>
-        const PostBackgroundSettingsScreenEnhanced(),
-    tournamentDetailScreen: (context) => const TournamentDetailScreen(),
-    loginScreen: (context) => const LoginScreenIOS(),
-    registerScreen: (context) => const RegisterScreenIOS(),
-    registrationResultScreen: (context) {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return RegistrationResultScreen(
-        isSuccess: args?['isSuccess'] as bool? ?? false,
-        userId: args?['userId'] as String?,
-        email: args?['email'] as String?,
-        errorMessage: args?['errorMessage'] as String?,
-        userRole: args?['userRole'] as String?,
-        needsEmailVerification:
-            args?['needsEmailVerification'] as bool? ?? false,
-      );
-    },
-    forgotPasswordScreen: (context) => const ForgotPasswordScreen(),
-    otpVerificationScreen: (context) {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return OTPVerificationScreen(
-        phoneNumber: args?['phone'] as String? ?? '',
-      );
-    },
-    resetPasswordScreen: (context) => const ResetPasswordScreen(),
-    adminDashboardScreen: (context) => const AdminDashboardScreen(),
-    adminMainScreen: (context) => const AdminMainScreen(),
-    clubApprovalScreen: (context) => const AdminClubApprovalMainScreen(),
-    adminTournamentScreen: (context) => const AdminTournamentMainScreen(),
-    adminUserManagementScreen: (context) =>
-        const AdminUserManagementMainScreen(),
-    adminMoreScreen: (context) => const AdminMoreMainScreen(),
-    myClubsScreen: (context) => const MyClubsScreen(),
-    clubSelectionScreen: (context) => const ClubSelectionScreen(),
-    rankManagementScreen: (context) => const RankManagementScreen(),
-    rankStatisticsScreen: (context) => const RankStatisticsScreen(),
-    leaderboardScreen: (context) => const LeaderboardScreen(),
-    messagingScreen: (context) => const MessagingScreen(),
-    directMessagesScreen: (context) => const DirectMessagesScreen(),
-    memberManagementScreen: (context) {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      final clubId = args?['clubId'] as String? ?? '';
-      return MemberManagementScreen(clubId: clubId);
-    },
-    clubDashboardScreen: (context) => const ClubOwnerMainScreen(clubId: ''),
-    notificationAnalyticsDashboard: (context) =>
-        const NotificationAnalyticsDashboard(),
-    termsOfServiceScreen: (context) => const TermsOfServiceScreen(),
-    privacyPolicyScreen: (context) => const PrivacyPolicyScreen(),
-    notificationListScreen: (context) => const NotificationListScreen(),
-    postDetailScreen: (context) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Map<String, dynamic>) {
-        return PostDetailScreen(
-          post: args['post'],
-          postId: args['postId'],
-          userId: args['userId'],
-          initialIndex: args['initialIndex'] ?? 0,
-        );
-      }
-      // Fallback if args are missing or incorrect type
-      return const Scaffold(body: Center(child: Text('Invalid arguments')));
-    },
-    userVoucherScreen: (context) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is String) {
-        return UserVoucherScreen(userId: args);
-      }
-      // Fallback
-      return const Scaffold(body: Center(child: Text('Invalid arguments')));
-    },
+        splashScreen: (context) => const SplashScreen(),
+        onboardingScreen: (context) => const OnboardingScreen(),
+        // appTutorialScreen: (context) => const AppTutorialScreen(), // ARCHIVED
+        // 🚀 PHASE 1: Main screen with persistent tabs
+        mainScreen: (context) => const PersistentTabScaffold(),
+        homeFeedScreen: (context) => const HomeFeedScreen(),
+        tournamentListScreen: (context) => const TournamentListScreen(),
+        findOpponentsScreen: (context) => const FindOpponentsScreen(),
+        findOpponentsListScreen: (context) => const FindOpponentsListScreen(),
+        clubMainScreen: (context) => const ClubMainScreen(),
+        clubProfileScreen: (context) => const ClubProfileScreen(),
+        clubRegistrationScreen: (context) => const ClubRegistrationScreen(),
+        userProfileScreen: (context) => const UserProfileScreen(),
+        emailVerificationScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>?;
+          return EmailVerificationScreen(
+            email: args?['email'] as String? ?? '',
+            userId: args?['userId'] as String? ?? '',
+          );
+        },
+        profileSetupScreen: (context) => const ProfileSetupScreen(),
+        postBackgroundSettingsScreen: (context) =>
+            const PostBackgroundSettingsScreenEnhanced(),
+        tournamentDetailScreen: (context) => const TournamentDetailScreen(),
+        loginScreen: (context) => const LoginScreenIOS(),
+        registerScreen: (context) => const RegisterScreenIOS(),
+        registrationResultScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>?;
+          return RegistrationResultScreen(
+            isSuccess: args?['isSuccess'] as bool? ?? false,
+            userId: args?['userId'] as String?,
+            email: args?['email'] as String?,
+            errorMessage: args?['errorMessage'] as String?,
+            userRole: args?['userRole'] as String?,
+            needsEmailVerification:
+                args?['needsEmailVerification'] as bool? ?? false,
+          );
+        },
+        forgotPasswordScreen: (context) => const ForgotPasswordScreen(),
+        otpVerificationScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>?;
+          return OTPVerificationScreen(
+            phoneNumber: args?['phone'] as String? ?? '',
+          );
+        },
+        resetPasswordScreen: (context) => const ResetPasswordScreen(),
+        adminDashboardScreen: (context) => const AdminDashboardScreen(),
+        adminMainScreen: (context) => const AdminMainScreen(),
+        clubApprovalScreen: (context) => const AdminClubApprovalMainScreen(),
+        adminTournamentScreen: (context) => const AdminTournamentMainScreen(),
+        adminUserManagementScreen: (context) =>
+            const AdminUserManagementMainScreen(),
+        adminMoreScreen: (context) => const AdminMoreMainScreen(),
+        myClubsScreen: (context) => const MyClubsScreen(),
+        clubSelectionScreen: (context) => const ClubSelectionScreen(),
+        rankManagementScreen: (context) => const RankManagementScreen(),
+        rankStatisticsScreen: (context) => const RankStatisticsScreen(),
+        leaderboardScreen: (context) => const LeaderboardScreen(),
+        messagingScreen: (context) => const MessagingScreen(),
+        directMessagesScreen: (context) => const DirectMessagesScreen(),
+        memberManagementScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>?;
+          final clubId = args?['clubId'] as String? ?? '';
+          return MemberManagementScreen(clubId: clubId);
+        },
+        clubDashboardScreen: (context) => const ClubOwnerMainScreen(clubId: ''),
+        notificationAnalyticsDashboard: (context) =>
+            const NotificationAnalyticsDashboard(),
+        termsOfServiceScreen: (context) => const TermsOfServiceScreen(),
+        privacyPolicyScreen: (context) => const PrivacyPolicyScreen(),
+        notificationListScreen: (context) => const NotificationListScreen(),
+        postDetailScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          if (args is Map<String, dynamic>) {
+            return PostDetailScreen(
+              post: args['post'],
+              postId: args['postId'],
+              userId: args['userId'],
+              initialIndex: args['initialIndex'] ?? 0,
+            );
+          }
+          // Fallback if args are missing or incorrect type
+          return const Scaffold(body: Center(child: Text('Invalid arguments')));
+        },
+        userVoucherScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          if (args is String) {
+            return UserVoucherScreen(userId: args);
+          }
+          // Fallback
+          return const Scaffold(body: Center(child: Text('Invalid arguments')));
+        },
 
-    // Voucher Management System
-    voucherManagementMainScreen: (context) {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return VoucherManagementMainScreen(
-        userId: args?['userId'] as String? ?? '',
-        clubId: args?['clubId'] as String?,
-        isAdmin: args?['isAdmin'] as bool? ?? false,
-      );
-    },
+        // Voucher Management System
+        voucherManagementMainScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>?;
+          return VoucherManagementMainScreen(
+            userId: args?['userId'] as String? ?? '',
+            clubId: args?['clubId'] as String?,
+            isAdmin: args?['isAdmin'] as bool? ?? false,
+          );
+        },
 
-    // Notification Management System
-    adminNotificationManagementScreen: (context) =>
-        const AdminNotificationManagementScreen(),
+        // Notification Management System
+        adminNotificationManagementScreen: (context) =>
+            const AdminNotificationManagementScreen(),
 
-    // Admin Guide System
-    // adminGuideLibraryScreen: (context) => const AdminGuideLibraryScreen(), // TODO: Fix this class
-    adminGuideViewerScreen: (context) {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return AdminGuideViewerScreen(
-        guide: args?['guide'] as dynamic, // AdminGuide object
-      );
-    },
+        // Admin Guide System
+        // adminGuideLibraryScreen: (context) => const AdminGuideLibraryScreen(), // TODO: Fix this class
+        adminGuideViewerScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>?;
+          return AdminGuideViewerScreen(
+            guide: args?['guide'] as dynamic, // AdminGuide object
+          );
+        },
 
-    // Welcome Voucher Campaign System
-    adminWelcomeCampaignScreen: (context) => const AdminWelcomeCampaignScreen(),
-    clubWelcomeCampaignScreen: (context) {
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return ClubWelcomeCampaignScreen(
-        clubId: args?['clubId'] as String? ?? '',
-        clubName: args?['clubName'] as String? ?? 'Club',
-      );
-    },
+        // Welcome Voucher Campaign System
+        adminWelcomeCampaignScreen: (context) =>
+            const AdminWelcomeCampaignScreen(),
+        clubWelcomeCampaignScreen: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>?;
+          return ClubWelcomeCampaignScreen(
+            clubId: args?['clubId'] as String? ?? '',
+            clubName: args?['clubName'] as String? ?? 'Club',
+          );
+        },
 
-    // User Promotion Screen
-    userPromotionScreen: (context) => const UserPromotionScreen(),
+        // User Promotion Screen
+        userPromotionScreen: (context) => const UserPromotionScreen(),
 
-    // Cache Management System
-    cacheManagementScreen: (context) => const CacheManagementScreen(),
-    
-    // AI Image Generator
-    aiImageGeneratorScreen: (context) => const AiImageGeneratorScreen(),
-    
-    // 🧪 TEST SCREENS
-    // crossPlatformAuthTest: (context) => const CrossPlatformAuthTest(), // ARCHIVED
-  };
+        // Cache Management System
+        cacheManagementScreen: (context) => const CacheManagementScreen(),
+
+        // AI Image Generator
+        aiImageGeneratorScreen: (context) => const AiImageGeneratorScreen(),
+
+        // 🧪 TEST SCREENS
+        // crossPlatformAuthTest: (context) => const CrossPlatformAuthTest(), // ARCHIVED
+      };
 }

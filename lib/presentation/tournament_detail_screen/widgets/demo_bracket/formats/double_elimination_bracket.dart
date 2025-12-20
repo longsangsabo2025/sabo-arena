@@ -46,7 +46,7 @@ class DoubleEliminationBracket extends StatelessWidget {
   Widget _buildWinnersBracket() {
     final winnersRounds =
         TournamentDataGenerator.calculateDoubleEliminationWinners(playerCount);
- // Debug
+    // Debug
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +126,7 @@ class DoubleEliminationBracket extends StatelessWidget {
   Widget _buildLosersBracket() {
     final losersRounds =
         TournamentDataGenerator.calculateDoubleEliminationLosers(playerCount);
- // Debug
+    // Debug
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,8 +206,8 @@ class DoubleEliminationBracket extends StatelessWidget {
   Widget _buildGrandFinal() {
     final grandFinalRounds =
         TournamentDataGenerator.calculateDoubleEliminationGrandFinal(
-          playerCount,
-        );
+      playerCount,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,4 +369,3 @@ class DoubleEliminationBracket extends StatelessWidget {
     );
   }
 }
-

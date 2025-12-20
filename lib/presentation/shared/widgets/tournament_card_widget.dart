@@ -26,13 +26,19 @@ class TournamentCardWidget extends StatelessWidget {
     this.onShareTap,
     this.onDelete,
     this.onHide,
-  }) : assert(tournamentMap != null || tournamentObj != null, 'Either tournamentMap or tournamentObj must be provided');
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (tournamentMap == null && tournamentObj == null) {
+      return const SizedBox.shrink();
+    }
+
     // ELON AUDIT: Prefer strong-typed object over Map
-    final name = tournamentObj?.title ?? tournamentMap?['name'] as String? ?? 'Tournament';
-    
+    final name = tournamentObj?.title ??
+        tournamentMap?['name'] as String? ??
+        'Tournament';
+
     String date;
     if (tournamentObj != null) {
       date = DateFormat('dd/MM').format(tournamentObj!.startDate);
@@ -40,54 +46,71 @@ class TournamentCardWidget extends StatelessWidget {
       date = tournamentMap?['date'] as String? ?? '06/09 - Thứ 7';
     }
 
-    final startTime = tournamentObj != null 
+    final startTime = tournamentObj != null
         ? DateFormat('h a').format(tournamentObj!.startDate)
         : tournamentMap?['startTime'] as String? ?? '9AM';
-        
+
     final playersCount = tournamentObj != null
         ? '${tournamentObj!.currentParticipants}/${tournamentObj!.maxParticipants}'
         : tournamentMap?['playersCount'] as String? ?? '16/16';
-        
+
+    // 🚀 ELON MODE: Chỉ format số, KHÔNG tính toán gì thêm
     final prizePool = tournamentObj != null
-        ? NumberFormat.compact().format(tournamentObj!.prizePool)
-        : tournamentMap?['prizePool'] as String? ?? '10 Million';
-        
+        ? _formatPrizeSimple(tournamentObj!.prizePool.toDouble())
+        : tournamentMap?['prizePool'] as String? ?? '0 VNĐ';
+
     final rating = tournamentObj != null
         ? tournamentObj!.rankRange
         : tournamentMap?['rating'] as String? ?? 'I → H+';
-        
-    final iconNumber = tournamentObj?.iconNumber ?? tournamentMap?['iconNumber'] as String? ?? '9';
-    final clubLogo = tournamentObj?.clubLogo ?? tournamentMap?['clubLogo'] as String?;
-    final clubName = tournamentObj?.clubName ?? tournamentMap?['clubName'] as String? ?? 'Sabo';
-    
+
+    final iconNumber = tournamentObj?.iconNumber ??
+        tournamentMap?['iconNumber'] as String? ??
+        '9';
+    final clubLogo =
+        tournamentObj?.clubLogo ?? tournamentMap?['clubLogo'] as String?;
+    final clubName = tournamentObj?.clubName ??
+        tournamentMap?['clubName'] as String? ??
+        'Sabo';
+
     final isLive = tournamentObj != null
-        ? tournamentObj!.status == 'active' || tournamentObj!.status == 'live'
+        ? tournamentObj!.status == 'active' ||
+            tournamentObj!.status == 'live' ||
+            tournamentObj!.status == 'ongoing'
         : tournamentMap?['isLive'] as bool? ?? false;
-        
-    final status = tournamentObj?.status ?? tournamentMap?['status'] as String? ?? 'ready';
-    final tournamentType = tournamentObj?.tournamentType ?? tournamentMap?['tournamentType'] as String?;
-    
+
+    final status =
+        tournamentObj?.status ?? tournamentMap?['status'] as String? ?? 'ready';
+    final tournamentType = tournamentObj?.tournamentType ??
+        tournamentMap?['tournamentType'] as String?;
+
     // NEW: Extract enhancement data
     final entryFee = tournamentObj != null
-        ? (tournamentObj!.entryFee > 0 ? NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(tournamentObj!.entryFee) : 'Free')
+        ? (tournamentObj!.entryFee > 0
+            ? NumberFormat.currency(locale: 'vi_VN', symbol: 'đ')
+                .format(tournamentObj!.entryFee)
+            : 'Free')
         : tournamentMap?['entryFee'] as String?;
-        
-    final registrationDeadline = tournamentObj?.registrationDeadline.toIso8601String() 
-        ?? tournamentMap?['registrationDeadline'] as String?;
-        
-    final prizeBreakdown = tournamentObj?.prizeDistribution 
-        ?? tournamentMap?['prizeBreakdown'] as Map<String, dynamic>?;
-        
-    final venue = tournamentObj?.venueAddress ?? tournamentMap?['venue'] as String?;
+
+    final registrationDeadline =
+        tournamentObj?.registrationDeadline.toIso8601String() ??
+            tournamentMap?['registrationDeadline'] as String?;
+
+    final prizeBreakdown = tournamentObj?.prizeDistribution ??
+        tournamentMap?['prizeBreakdown'] as Map<String, dynamic>?;
+
+    final venue =
+        tournamentObj?.venueAddress ?? tournamentMap?['venue'] as String?;
 
     // Logic Mạng (Lives)
     int mangCount = 1;
     if (tournamentObj != null) {
       mangCount = tournamentObj!.mangCount;
     } else if (tournamentType != null) {
-      if (tournamentType.toLowerCase().contains('double') || tournamentType.toLowerCase().contains('de')) {
+      if (tournamentType.toLowerCase().contains('double') ||
+          tournamentType.toLowerCase().contains('de')) {
         mangCount = 2;
-      } else if (tournamentType.toLowerCase().contains('single') || tournamentType.toLowerCase().contains('se')) {
+      } else if (tournamentType.toLowerCase().contains('single') ||
+          tournamentType.toLowerCase().contains('se')) {
         mangCount = 1;
       } else {
         mangCount = tournamentMap?['mangCount'] as int? ?? 1;
@@ -96,27 +119,30 @@ class TournamentCardWidget extends StatelessWidget {
       // Fallback if tournamentType is missing (e.g. Club Detail tab)
       mangCount = tournamentMap?['mangCount'] as int? ?? 1;
     }
-    
+
     // Calculate registration progress
     final int currentPlayers;
     final int maxPlayers;
-    
+
     if (tournamentObj != null) {
       currentPlayers = tournamentObj!.currentParticipants;
       maxPlayers = tournamentObj!.maxParticipants;
     } else {
       final registrationParts = playersCount.split('/');
       currentPlayers = int.tryParse(registrationParts[0]) ?? 0;
-      maxPlayers = (registrationParts.length > 1) ? (int.tryParse(registrationParts[1]) ?? 64) : 64;
+      maxPlayers = (registrationParts.length > 1)
+          ? (int.tryParse(registrationParts[1]) ?? 64)
+          : 64;
     }
-    
-    final registrationProgress = maxPlayers > 0 ? currentPlayers / maxPlayers : 0.0;
-    
+
+    final registrationProgress =
+        maxPlayers > 0 ? currentPlayers / maxPlayers : 0.0;
+
     // 🚀 ELON STYLE: Smart Status Logic (Fixed)
     // Calculate time difference accurately
     Duration? timeUntilDeadline;
     bool isPastDeadline = false;
-    
+
     if (registrationDeadline != null) {
       try {
         final deadline = DateTime.parse(registrationDeadline);
@@ -133,37 +159,37 @@ class TournamentCardWidget extends StatelessWidget {
     String? badgeText;
     Color badgeColor = AppColors.error;
     String badgeEmoji = '🔥';
-    
+
     if (status == 'completed' || status == 'done' || status == 'cancelled') {
-       badgeText = null; // Clean look for completed
+      badgeText = null; // Clean look for completed
     } else if (isLive) {
-       badgeText = 'LIVE';
-       badgeColor = AppColors.error;
-       badgeEmoji = '🔴';
+      badgeText = 'LIVE';
+      badgeColor = AppColors.error;
+      badgeEmoji = '🔴';
     } else if (currentPlayers >= maxPlayers && maxPlayers > 0) {
-       badgeText = 'FULL';
-       badgeColor = AppColors.textSecondary;
-       badgeEmoji = '⛔';
+      badgeText = 'FULL';
+      badgeColor = AppColors.textSecondary;
+      badgeEmoji = '⛔';
     } else if (isPastDeadline) {
-       badgeText = 'CLOSED'; // Show closed if past deadline
-       badgeColor = AppColors.textSecondary;
-       badgeEmoji = '🔒';
+      badgeText = 'CLOSED'; // Show closed if past deadline
+      badgeColor = AppColors.textSecondary;
+      badgeEmoji = '🔒';
     } else if (timeUntilDeadline != null) {
-       if (timeUntilDeadline.inHours <= 24) {
-          badgeText = 'HÔM NAY';
-          badgeColor = AppColors.error;
-          badgeEmoji = '🔥';
-       } else if (timeUntilDeadline.inDays <= 2) {
-          badgeText = 'GẤP';
-          badgeColor = AppColors.warning;
-          badgeEmoji = '⚠️';
-       }
+      if (timeUntilDeadline.inHours <= 24) {
+        badgeText = 'HÔM NAY';
+        badgeColor = AppColors.error;
+        badgeEmoji = '🔥';
+      } else if (timeUntilDeadline.inDays <= 2) {
+        badgeText = 'GẤP';
+        badgeColor = AppColors.warning;
+        badgeEmoji = '⚠️';
+      }
     }
 
     final bool showBadge = badgeText != null;
     final bool isAlmostFull = registrationProgress >= 0.8;
     final bool shouldHighlight = showBadge || isAlmostFull;
-    
+
     // 💰 Calculate TOTAL prize value (cash + vouchers)
     final totalPrizeDisplay = _calculateTotalPrize(prizeBreakdown, prizePool);
 
@@ -179,7 +205,7 @@ class TournamentCardWidget extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: shouldHighlight 
+              color: shouldHighlight
                   ? badgeColor.withValues(alpha: 0.25)
                   : AppColors.shadowDark,
               blurRadius: shouldHighlight ? 16 : 12,
@@ -202,7 +228,7 @@ class TournamentCardWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Dark overlay for text readability
               Positioned.fill(
                 child: Container(
@@ -219,7 +245,7 @@ class TournamentCardWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Decorative balls in corner
               Positioned(
                 right: -20,
@@ -242,9 +268,10 @@ class TournamentCardWidget extends StatelessWidget {
                 children: [
                   // 🏢 CLUB HEADER
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                            color: AppColors.shadowDark,
+                      color: AppColors.shadowDark,
                     ),
                     child: Row(
                       children: [
@@ -268,7 +295,8 @@ class TournamentCardWidget extends StatelessWidget {
                                 ? Image.network(
                                     clubLogo,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => _buildClubLogoFallback(clubName),
+                                    errorBuilder: (_, __, ___) =>
+                                        _buildClubLogoFallback(clubName),
                                   )
                                 : _buildClubLogoFallback(clubName),
                           ),
@@ -293,7 +321,9 @@ class TournamentCardWidget extends StatelessWidget {
                               if (venue != null && venue.isNotEmpty)
                                 Row(
                                   children: [
-                                    const Icon(Icons.location_on, size: 10, color: AppColors.textOnPrimary),
+                                    const Icon(Icons.location_on,
+                                        size: 10,
+                                        color: AppColors.textOnPrimary),
                                     const SizedBox(width: 2),
                                     Expanded(
                                       child: Text(
@@ -315,7 +345,8 @@ class TournamentCardWidget extends StatelessWidget {
                         // Smart Status Badge
                         if (showBadge)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: badgeColor,
                               borderRadius: BorderRadius.circular(12),
@@ -323,7 +354,8 @@ class TournamentCardWidget extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(badgeEmoji, style: const TextStyle(fontSize: 10)),
+                                Text(badgeEmoji,
+                                    style: const TextStyle(fontSize: 10)),
                                 const SizedBox(width: 2),
                                 Text(
                                   badgeText,
@@ -337,7 +369,7 @@ class TournamentCardWidget extends StatelessWidget {
                               ],
                             ),
                           ),
-                        
+
                         // 🚀 ELON STYLE: Menu Button
                         const SizedBox(width: 8),
                         _buildMenuButton(context),
@@ -390,17 +422,22 @@ class TournamentCardWidget extends StatelessWidget {
 
                                   // Date + Time Badge
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
-                                        colors: [Colors.blue.shade700, Colors.blue.shade900],
+                                        colors: [
+                                          Colors.blue.shade700,
+                                          Colors.blue.shade900
+                                        ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
                                       borderRadius: BorderRadius.circular(8),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.blue.withValues(alpha: 0.3),
+                                          color: Colors.blue
+                                              .withValues(alpha: 0.3),
                                           blurRadius: 6,
                                           offset: const Offset(0, 2),
                                         ),
@@ -409,7 +446,8 @@ class TournamentCardWidget extends StatelessWidget {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(Icons.calendar_month_rounded, size: 14, color: Colors.white),
+                                        const Icon(Icons.calendar_month_rounded,
+                                            size: 14, color: Colors.white),
                                         const SizedBox(width: 6),
                                         Text(
                                           '$date · $startTime',
@@ -440,7 +478,8 @@ class TournamentCardWidget extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.emoji_events, size: 14, color: AppColors.warning),
+                                  const Icon(Icons.emoji_events,
+                                      size: 14, color: AppColors.warning),
                                   const SizedBox(width: 6),
                                   Text(
                                     'TỔNG GIẢI THƯỞNG',
@@ -448,7 +487,8 @@ class TournamentCardWidget extends StatelessWidget {
                                       fontFamily: '.SF Pro Text',
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
-                                      color: AppColors.warning.withValues(alpha: 0.9),
+                                      color: AppColors.warning
+                                          .withValues(alpha: 0.9),
                                       letterSpacing: 1.2,
                                     ),
                                   ),
@@ -485,10 +525,12 @@ class TournamentCardWidget extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   if (_hasVoucher(prizeBreakdown))
-                                    _buildPrizeTag('🎁 Voucher', AppColors.success),
+                                    _buildPrizeTag(
+                                        '🎁 Voucher', AppColors.success),
                                   if (_hasHonorBoard(prizeBreakdown)) ...[
                                     const SizedBox(width: 6),
-                                    _buildPrizeTag('📜 Vinh danh', AppColors.warning),
+                                    _buildPrizeTag(
+                                        '📜 Vinh danh', AppColors.warning),
                                   ],
                                 ],
                               ),
@@ -502,11 +544,15 @@ class TournamentCardWidget extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: Colors.orange.shade800.withValues(alpha: 0.9),
+                              color:
+                                  Colors.orange.shade800.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.orange.shade300.withValues(alpha: 0.5)),
+                              border: Border.all(
+                                  color: Colors.orange.shade300
+                                      .withValues(alpha: 0.5)),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black26,
@@ -518,7 +564,8 @@ class TournamentCardWidget extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.favorite, size: 14, color: Colors.white),
+                                const Icon(Icons.favorite,
+                                    size: 14, color: Colors.white),
                                 const SizedBox(width: 6),
                                 Text(
                                   '$mangCount Mạng',
@@ -539,7 +586,8 @@ class TournamentCardWidget extends StatelessWidget {
 
                   // 📊 BOTTOM STATS BAR
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.textOnPrimary,
                       borderRadius: const BorderRadius.only(
@@ -550,20 +598,37 @@ class TournamentCardWidget extends StatelessWidget {
                     child: Row(
                       children: [
                         // Slots
-                        _buildStatChip('👥', playersCount, isAlmostFull ? AppColors.error : AppColors.textTertiary),
-                        const SizedBox(width: 8),
-                        // Rank
-                        _buildStatChip('🎯', rating, AppColors.info),
-                        const SizedBox(width: 8),
-                        // Entry Fee
-                        _buildStatChip(
-                          entryFee?.toLowerCase() == 'free' || entryFee == '0' ? '🆓' : '💵',
-                          entryFee?.toLowerCase() == 'free' || entryFee == '0' ? 'FREE' : 'Lệ phí ${entryFee ?? '100K'}',
-                          entryFee?.toLowerCase() == 'free' || entryFee == '0' ? AppColors.success : AppColors.textTertiary,
+                        Flexible(
+                          child: _buildStatChip(
+                              '👥',
+                              playersCount,
+                              isAlmostFull
+                                  ? AppColors.error
+                                  : AppColors.textTertiary),
                         ),
-                        
+                        const SizedBox(width: 6),
+                        // Rank
+                        Flexible(
+                          child: _buildStatChip('🎯', rating, AppColors.info),
+                        ),
+                        const SizedBox(width: 6),
+                        // Entry Fee
+                        Flexible(
+                          child: _buildStatChip(
+                            entryFee?.toLowerCase() == 'free' || entryFee == '0'
+                                ? '🆓'
+                                : '💵',
+                            entryFee?.toLowerCase() == 'free' || entryFee == '0'
+                                ? 'FREE'
+                                : 'Lệ phí ${entryFee ?? '100K'}',
+                            entryFee?.toLowerCase() == 'free' || entryFee == '0'
+                                ? AppColors.success
+                                : AppColors.textTertiary,
+                          ),
+                        ),
+
                         const Spacer(),
-                        
+
                         // Action Button
                         _buildActionButtonNew(status, isLive),
                       ],
@@ -598,53 +663,37 @@ class TournamentCardWidget extends StatelessWidget {
   }
 
   // Calculate total prize value
-  String _calculateTotalPrize(Map<String, dynamic>? prizeBreakdown, String prizePool) {
-    if (prizeBreakdown == null) return prizePool;
-    
-    double totalCash = 0;
-    double totalVoucher = 0;
-    
-    for (final value in prizeBreakdown.values) {
-      if (value is String) {
-        // Parse cash amounts like "1.000.000 VNĐ"
-        final cashMatch = RegExp(r'([\d.,]+)\s*(triệu|tr|M|VNĐ|VND|k|K)').firstMatch(value);
-        if (cashMatch != null) {
-          String numStr = cashMatch.group(1)!.replaceAll('.', '').replaceAll(',', '');
-          double amount = double.tryParse(numStr) ?? 0;
-          String unit = cashMatch.group(2)?.toLowerCase() ?? '';
-          
-          if (unit == 'triệu' || unit == 'tr' || unit == 'm') {
-            amount *= 1000000;
-          } else if (unit == 'k') {
-            amount *= 1000;
-          }
-          totalCash += amount;
-        }
-        
-        // Parse voucher amounts like "500k Voucher"
-        final voucherMatch = RegExp(r'([\d.,]+)\s*k?\s*[Vv]oucher').firstMatch(value);
-        if (voucherMatch != null) {
-          String numStr = voucherMatch.group(1)!.replaceAll('.', '').replaceAll(',', '');
-          double amount = double.tryParse(numStr) ?? 0;
-          if (value.toLowerCase().contains('k')) {
-            amount *= 1000;
-          }
-          totalVoucher += amount;
-        }
+  // 🚀 ELON MODE: BỎ TOÀN BỘ LOGIC TÍNH TOÁN
+  // Chỉ format số từ totalPrizePool trong prize_distribution
+  // Hoặc fallback về prizePool string đã format sẵn
+  String _calculateTotalPrize(
+      Map<String, dynamic>? prizeBreakdown, String prizePool) {
+    // Nếu có totalPrizePool trong prize_distribution, dùng nó
+    if (prizeBreakdown != null &&
+        prizeBreakdown.containsKey('totalPrizePool')) {
+      final total =
+          (prizeBreakdown['totalPrizePool'] as num?)?.toDouble() ?? 0.0;
+      if (total > 0) {
+        return _formatPrizeSimple(total);
       }
     }
-    
-    double total = totalCash + totalVoucher;
-    
-    if (total >= 1000000) {
-      return '${(total / 1000000).toStringAsFixed(1)}M VNĐ';
-    } else if (total >= 1000) {
-      return '${(total / 1000).toStringAsFixed(0)}K VNĐ';
-    } else if (total > 0) {
-      return '${total.toStringAsFixed(0)} VNĐ';
-    }
-    
+
+    // Không tính toán gì cả, trả về string đã format sẵn
     return prizePool;
+  }
+
+  // 🚀 ELON MODE: Helper đơn giản để format số thành VNĐ
+  String _formatPrizeSimple(double amount) {
+    if (amount >= 1000000) {
+      final val = amount / 1000000;
+      final str = val.toStringAsFixed(1);
+      // Bỏ .0 nếu là số nguyên (10.0M -> 10M)
+      return '${str.endsWith('.0') ? str.substring(0, str.length - 2) : str}M VNĐ';
+    } else if (amount >= 1000) {
+      return '${(amount / 1000).toStringAsFixed(0)}K VNĐ';
+    } else {
+      return '${amount.toStringAsFixed(0)} VNĐ';
+    }
   }
 
   // Stat Chip for bottom bar
@@ -700,7 +749,7 @@ class TournamentCardWidget extends StatelessWidget {
     Color bgColor;
     String text;
     IconData icon;
-    
+
     if (status == 'done' || status == 'completed') {
       bgColor = AppColors.primary; // Highlighted color for results
       text = 'Kết quả';
@@ -714,7 +763,7 @@ class TournamentCardWidget extends StatelessWidget {
       text = 'Xem';
       icon = Icons.arrow_forward;
     }
-    
+
     return GestureDetector(
       onTap: () {
         if (status == 'done' || status == 'completed') {
@@ -847,11 +896,21 @@ class TournamentCardWidget extends StatelessWidget {
     );
   }
 
-  /// Check if prize breakdown contains voucher
+  /// 🎟️ Check if prize breakdown contains voucher
   bool _hasVoucher(Map<String, dynamic>? prizeBreakdown) {
     if (prizeBreakdown == null) return false;
-    
-    // Check all prize entries for "voucher" keyword
+
+    // 🚀 ELON MODE: Check trong 'distribution' array (từ DB structure mới)
+    if (prizeBreakdown.containsKey('distribution') &&
+        prizeBreakdown['distribution'] is List) {
+      final distribution = prizeBreakdown['distribution'] as List;
+      return distribution.any((prize) =>
+          prize is Map &&
+          prize['voucherId'] != null &&
+          prize['voucherId'] != '');
+    }
+
+    // Fallback: Check old format (string values)
     for (final value in prizeBreakdown.values) {
       if (value is String && value.toLowerCase().contains('voucher')) {
         return true;
@@ -860,15 +919,27 @@ class TournamentCardWidget extends StatelessWidget {
     return false;
   }
 
-  /// Check if prize breakdown contains honor board (bảng vinh danh)
+  /// 🏆 Check if prize breakdown contains physical prizes (cúp, bảng vinh danh)
   bool _hasHonorBoard(Map<String, dynamic>? prizeBreakdown) {
     if (prizeBreakdown == null) return false;
-    
-    // Check all prize entries for "vinh danh" or "bảng" keyword
+
+    // 🚀 ELON MODE: Check trong 'distribution' array
+    if (prizeBreakdown.containsKey('distribution') &&
+        prizeBreakdown['distribution'] is List) {
+      final distribution = prizeBreakdown['distribution'] as List;
+      return distribution.any((prize) =>
+          prize is Map &&
+          prize['physicalPrize'] != null &&
+          prize['physicalPrize'] != '');
+    }
+
+    // Fallback: Check old format
     for (final value in prizeBreakdown.values) {
-      if (value is String && 
-          (value.toLowerCase().contains('vinh danh') || 
-           value.toLowerCase().contains('bảng vinh'))) {
+      if (value is String &&
+          (value.toLowerCase().contains('vinh danh') ||
+              value.toLowerCase().contains('bảng vinh') ||
+              value.toLowerCase().contains('cúp') ||
+              value.toLowerCase().contains('trophy'))) {
         return true;
       }
     }
@@ -880,11 +951,13 @@ class TournamentCardWidget extends StatelessWidget {
       data: Theme.of(context).copyWith(
         popupMenuTheme: PopupMenuThemeData(
           color: AppColors.surface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       child: PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert, color: AppColors.textOnPrimary, size: 20),
+        icon: const Icon(Icons.more_vert,
+            color: AppColors.textOnPrimary, size: 20),
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(minWidth: 160),
         offset: const Offset(0, 40),
@@ -907,9 +980,12 @@ class TournamentCardWidget extends StatelessWidget {
             height: 40,
             child: Row(
               children: [
-                Icon(Icons.share_outlined, size: 18, color: AppColors.textPrimary),
+                Icon(Icons.share_outlined,
+                    size: 18, color: AppColors.textPrimary),
                 SizedBox(width: 12),
-                Text('Chia sẻ', style: TextStyle(fontSize: 14, color: AppColors.textPrimary)),
+                Text('Chia sẻ',
+                    style:
+                        TextStyle(fontSize: 14, color: AppColors.textPrimary)),
               ],
             ),
           ),
@@ -919,9 +995,12 @@ class TournamentCardWidget extends StatelessWidget {
               height: 40,
               child: Row(
                 children: [
-                  Icon(Icons.visibility_off_outlined, size: 18, color: AppColors.textPrimary),
+                  Icon(Icons.visibility_off_outlined,
+                      size: 18, color: AppColors.textPrimary),
                   SizedBox(width: 12),
-                  Text('Ẩn giải đấu', style: TextStyle(fontSize: 14, color: AppColors.textPrimary)),
+                  Text('Ẩn giải đấu',
+                      style: TextStyle(
+                          fontSize: 14, color: AppColors.textPrimary)),
                 ],
               ),
             ),
@@ -933,7 +1012,8 @@ class TournamentCardWidget extends StatelessWidget {
                 children: [
                   Icon(Icons.delete_outline, size: 18, color: AppColors.error),
                   SizedBox(width: 12),
-                  Text('Xóa giải đấu', style: TextStyle(fontSize: 14, color: AppColors.error)),
+                  Text('Xóa giải đấu',
+                      style: TextStyle(fontSize: 14, color: AppColors.error)),
                 ],
               ),
             ),
@@ -942,4 +1022,3 @@ class TournamentCardWidget extends StatelessWidget {
     );
   }
 }
-

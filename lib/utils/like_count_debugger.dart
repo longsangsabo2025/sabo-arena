@@ -81,12 +81,9 @@ class LikeCountDebugger {
   /// 🔧 Sửa like count cho một post cụ thể
   static Future<bool> fixPostLikeCount(String postId) async {
     try {
-
       // 1. Migrate legacy likes to post_interactions if any
-      final legacyLikes = await _supabase
-          .from('post_likes')
-          .select('*')
-          .eq('post_id', postId);
+      final legacyLikes =
+          await _supabase.from('post_likes').select('*').eq('post_id', postId);
 
       for (final like in legacyLikes) {
         // Check if already exists in post_interactions
@@ -119,9 +116,7 @@ class LikeCountDebugger {
       // 3. Update post like_count
       await _supabase
           .from('posts')
-          .update({'like_count': actualLikes.length})
-          .eq('id', postId);
-
+          .update({'like_count': actualLikes.length}).eq('id', postId);
 
       return true;
     } catch (e) {
@@ -156,8 +151,7 @@ class LikeCountDebugger {
         if (post['like_count'] != actualLikes.length) {
           await _supabase
               .from('posts')
-              .update({'like_count': actualLikes.length})
-              .eq('id', postId);
+              .update({'like_count': actualLikes.length}).eq('id', postId);
           // fixedCount++;
         }
       }

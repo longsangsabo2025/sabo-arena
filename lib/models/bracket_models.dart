@@ -1,4 +1,3 @@
-
 /// Tournament participant data
 class TournamentParticipant {
   final String id;
@@ -18,13 +17,13 @@ class TournamentParticipant {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'rank': rank,
-    'elo': elo,
-    'seed': seed,
-    'metadata': metadata,
-  };
+        'id': id,
+        'name': name,
+        'rank': rank,
+        'elo': elo,
+        'seed': seed,
+        'metadata': metadata,
+      };
 
   factory TournamentParticipant.fromJson(Map<String, dynamic> json) {
     return TournamentParticipant(
@@ -73,18 +72,18 @@ class TournamentMatch {
   bool get isReady => player1 != null && player2 != null;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'roundId': roundId,
-    'roundNumber': roundNumber,
-    'matchNumber': matchNumber,
-    'player1': player1?.toJson(),
-    'player2': player2?.toJson(),
-    'winner': winner?.toJson(),
-    'status': status,
-    'result': result,
-    'scheduledTime': scheduledTime?.toIso8601String(),
-    'metadata': metadata,
-  };
+        'id': id,
+        'roundId': roundId,
+        'roundNumber': roundNumber,
+        'matchNumber': matchNumber,
+        'player1': player1?.toJson(),
+        'player2': player2?.toJson(),
+        'winner': winner?.toJson(),
+        'status': status,
+        'result': result,
+        'scheduledTime': scheduledTime?.toIso8601String(),
+        'metadata': metadata,
+      };
 }
 
 /// Tournament round representation
@@ -106,13 +105,13 @@ class TournamentRound {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'roundNumber': roundNumber,
-    'name': name,
-    'type': type,
-    'matches': matches.map((m) => m.toJson()).toList(),
-    'metadata': metadata,
-  };
+        'id': id,
+        'roundNumber': roundNumber,
+        'name': name,
+        'type': type,
+        'matches': matches.map((m) => m.toJson()).toList(),
+        'metadata': metadata,
+      };
 }
 
 /// Bracket structure
@@ -130,9 +129,9 @@ class Bracket {
   });
 
   Map<String, dynamic> toJson() => {
-    'tournamentId': tournamentId,
-    'type': type,
-    'rounds': rounds.map((r) => r.toJson()).toList(),
-    'metadata': metadata,
-  };
+        'tournamentId': tournamentId,
+        'type': type,
+        'rounds': rounds.map((r) => r.toJson()).toList(),
+        'metadata': metadata,
+      };
 }

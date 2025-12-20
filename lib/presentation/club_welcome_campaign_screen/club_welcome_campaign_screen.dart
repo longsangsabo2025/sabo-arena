@@ -73,7 +73,8 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
           children: [
             const Text('Chiến Dịch Chào Mừng'),
             Text(
-              widget.clubName, style: const TextStyle(
+              widget.clubName,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
               ),
@@ -147,10 +148,10 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              label, style: TextStyle(
-                color: isSelected
-                    ? Theme.of(context).primaryColor
-                    : Colors.grey,
+              label,
+              style: TextStyle(
+                color:
+                    isSelected ? Theme.of(context).primaryColor : Colors.grey,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
@@ -159,13 +160,14 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey,
+                  color:
+                      isSelected ? Theme.of(context).primaryColor : Colors.grey,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  '$count', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                  '$count',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -194,11 +196,15 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
             Icon(Icons.campaign_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'Không có chiến dịch nào đang hoạt động', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              'Không có chiến dịch nào đang hoạt động',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             Text(
-              'Vui lòng quay lại sau để xem các chiến dịch mới', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[500]),
+              'Vui lòng quay lại sau để xem các chiến dịch mới',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey[500]),
             ),
           ],
         ),
@@ -248,14 +254,18 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        campaign['name'] ?? 'Chiến dịch chưa đặt tên', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                        campaign['name'] ?? 'Chiến dịch chưa đặt tên',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       if (campaign['description'] != null)
                         Text(
-                          campaign['description'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                          campaign['description'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 14,
                           ),
@@ -279,7 +289,9 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Chi tiết Voucher', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Chi tiết Voucher',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey,
                             fontWeight: FontWeight.w500,
@@ -287,7 +299,9 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          template['name'] ?? 'Voucher Chào Mừng', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                          template['name'] ?? 'Voucher Chào Mừng',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -295,7 +309,9 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                         if (template['description'] != null) ...[
                           const SizedBox(height: 4),
                           Text(
-                            template['description'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                            template['description'],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
                             ),
@@ -371,7 +387,8 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 12,
               color: color,
               fontWeight: FontWeight.w600,
@@ -397,11 +414,15 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
             Icon(Icons.inbox_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'Chưa có đăng ký nào', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              'Chưa có đăng ký nào',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             Text(
-              'Đăng ký tham gia chiến dịch ở tab Khả Dụng', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[500]),
+              'Đăng ký tham gia chiến dịch ở tab Khả Dụng',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey[500]),
             ),
           ],
         ),
@@ -457,7 +478,9 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    campaign['name'] ?? 'Chiến Dịch', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                    campaign['name'] ?? 'Chiến Dịch',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -478,7 +501,8 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                       Icon(statusIcon, size: 16, color: statusColor),
                       const SizedBox(width: 4),
                       Text(
-                        statusText, style: TextStyle(
+                        statusText,
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: statusColor,
@@ -518,7 +542,9 @@ class _ClubWelcomeCampaignScreenState extends State<ClubWelcomeCampaignScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        registration['rejection_reason'], overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red[900], fontSize: 14),
+                        registration['rejection_reason'],
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.red[900], fontSize: 14),
                       ),
                     ),
                   ],

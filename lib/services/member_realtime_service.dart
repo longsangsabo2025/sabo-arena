@@ -71,8 +71,7 @@ class MemberRealtimeService {
   /// Initialize real-time connections for a specific club
   Future<void> initializeForClub(String clubId) async {
     try {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       // Disconnect existing connections
       await disconnect();
@@ -89,11 +88,9 @@ class MemberRealtimeService {
       _isConnected = true;
       _connectionController.add(true);
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       _connectionController.add(false);
       rethrow;
     }
@@ -102,17 +99,14 @@ class MemberRealtimeService {
   /// Initialize real-time connections for a specific user
   Future<void> initializeForUser(String userId) async {
     try {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       // Subscribe to user notifications
       await _subscribeToNotifications(userId);
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       rethrow;
     }
   }
@@ -120,16 +114,13 @@ class MemberRealtimeService {
   /// Initialize chat room real-time connections
   Future<void> initializeForChatRoom(String roomId) async {
     try {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       await _subscribeToChatMessages(roomId);
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       rethrow;
     }
   }
@@ -137,8 +128,7 @@ class MemberRealtimeService {
   /// Disconnect all real-time subscriptions
   Future<void> disconnect() async {
     try {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
 
       // Unsubscribe from all channels
       await _membersSubscription?.unsubscribe();
@@ -157,11 +147,9 @@ class MemberRealtimeService {
       _isConnected = false;
       _connectionController.add(false);
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -174,7 +162,7 @@ class MemberRealtimeService {
     try {
       // 🚀 SPACEX FIX: Load initial data FIRST to prevent race conditions
       await _loadInitialMembers(clubId);
-      
+
       _membersSubscription = _supabase
           .channel('club_memberships_$clubId')
           .onPostgresChanges(
@@ -206,7 +194,7 @@ class MemberRealtimeService {
     try {
       // 🚀 TESLA FIX: Load initial data FIRST
       await _loadInitialRequests(clubId);
-      
+
       _requestsSubscription = _supabase
           .channel('membership_requests_$clubId')
           .onPostgresChanges(
@@ -254,11 +242,9 @@ class MemberRealtimeService {
       // Load initial data
       await _loadInitialChatMessages(roomId);
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       rethrow;
     }
   }
@@ -284,11 +270,9 @@ class MemberRealtimeService {
       // Load initial data
       await _loadInitialNotifications(userId);
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       rethrow;
     }
   }
@@ -314,11 +298,9 @@ class MemberRealtimeService {
       // Load initial data
       await _loadInitialActivities(clubId);
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       rethrow;
     }
   }
@@ -360,18 +342,17 @@ class MemberRealtimeService {
     }
 
     _dataCache[cacheKey] = currentData;
-    
+
     // 🚀 TESLA OPTIMIZATION: Limit cache size
     _cleanupCacheIfNeeded();
-    
+
     if (!_membersController.isClosed) {
       _membersController.add(currentData);
     }
   }
 
   void _handleRequestsChange(PostgresChangePayload payload, String clubId) {
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
 
     final cacheKey = 'requests_$clubId';
     final currentData = List<Map<String, dynamic>>.from(
@@ -404,18 +385,17 @@ class MemberRealtimeService {
     }
 
     _dataCache[cacheKey] = currentData;
-    
+
     // 🚀 TESLA OPTIMIZATION: Limit cache size
     _cleanupCacheIfNeeded();
-    
+
     if (!_membersController.isClosed) {
       _membersController.add(currentData);
     }
   }
 
   void _handleChatMessagesChange(PostgresChangePayload payload, String roomId) {
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
 
     final cacheKey = 'messages_$roomId';
     final currentData = List<Map<String, dynamic>>.from(
@@ -452,8 +432,7 @@ class MemberRealtimeService {
     PostgresChangePayload payload,
     String userId,
   ) {
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
 
     final cacheKey = 'notifications_$userId';
     final currentData = List<Map<String, dynamic>>.from(
@@ -489,8 +468,7 @@ class MemberRealtimeService {
   }
 
   void _handleActivitiesChange(PostgresChangePayload payload, String clubId) {
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
 
     final cacheKey = 'activities_$clubId';
     final currentData = List<Map<String, dynamic>>.from(
@@ -539,8 +517,7 @@ class MemberRealtimeService {
       _dataCache[cacheKey] = List<Map<String, dynamic>>.from(response);
       _membersController.add(_dataCache[cacheKey]!);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -556,8 +533,7 @@ class MemberRealtimeService {
       _dataCache[cacheKey] = List<Map<String, dynamic>>.from(response);
       _requestsController.add(_dataCache[cacheKey]!);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -575,8 +551,7 @@ class MemberRealtimeService {
       _dataCache[cacheKey] = List<Map<String, dynamic>>.from(response);
       _chatMessagesController.add(_dataCache[cacheKey]!);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -593,8 +568,7 @@ class MemberRealtimeService {
       _dataCache[cacheKey] = List<Map<String, dynamic>>.from(response);
       _notificationsController.add(_dataCache[cacheKey]!);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -611,8 +585,7 @@ class MemberRealtimeService {
       _dataCache[cacheKey] = List<Map<String, dynamic>>.from(response);
       _activitiesController.add(_dataCache[cacheKey]!);
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -624,8 +597,7 @@ class MemberRealtimeService {
   void _showLocalNotification(Map<String, dynamic> notification) {
     // This would integrate with flutter_local_notifications
     // For now, just log it
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Get cached data for a specific key
@@ -643,7 +615,7 @@ class MemberRealtimeService {
     return _isConnected;
   }
 
-  /// 🚀 SPACEX METHOD: Clean cache when it grows too large  
+  /// 🚀 SPACEX METHOD: Clean cache when it grows too large
   void _cleanupCacheIfNeeded() {
     if (_dataCache.length > _maxCacheSize) {
       // Remove oldest entries (simple LRU)
@@ -681,7 +653,7 @@ class MemberRealtimeService {
   /// Dispose all resources
   void dispose() {
     disconnect();
-    
+
     // Close controllers with null checks to prevent multiple disposal
     if (!_membersController.isClosed) _membersController.close();
     if (!_requestsController.isClosed) _requestsController.close();
@@ -689,9 +661,8 @@ class MemberRealtimeService {
     if (!_notificationsController.isClosed) _notificationsController.close();
     if (!_activitiesController.isClosed) _activitiesController.close();
     if (!_connectionController.isClosed) _connectionController.close();
-    
+
     // Clear cache to prevent memory leaks
     _dataCache.clear();
   }
 }
-

@@ -70,8 +70,7 @@ class DSDialog {
                     top: DesignTokens.space24,
                     bottom: DesignTokens.space12,
                   ),
-                  child:
-                      titleWidget ??
+                  child: titleWidget ??
                       Text(
                         title!,
                         style: TextStyle(
@@ -85,16 +84,14 @@ class DSDialog {
               ],
               if (content != null || contentWidget != null) ...[
                 Padding(
-                  padding:
-                      contentPadding ??
+                  padding: contentPadding ??
                       DesignTokens.only(
                         left: DesignTokens.space24,
                         right: DesignTokens.space24,
                         top: DesignTokens.space8,
                         bottom: DesignTokens.space24,
                       ),
-                  child:
-                      contentWidget ??
+                  child: contentWidget ??
                       Text(
                         content!,
                         style: TextStyle(

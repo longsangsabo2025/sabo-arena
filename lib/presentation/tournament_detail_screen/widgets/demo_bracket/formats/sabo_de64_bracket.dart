@@ -30,9 +30,11 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
       final group = match['bracket_group'] as String? ?? 'null';
       groupCounts[group] = (groupCounts[group] ?? 0) + 1;
     }
-    ProductionLogger.info('📊 SABO DE64 bracket_group distribution:', tag: 'sabo_de64_bracket');
+    ProductionLogger.info('📊 SABO DE64 bracket_group distribution:',
+        tag: 'sabo_de64_bracket');
     groupCounts.forEach((group, count) {
-      ProductionLogger.info('   $group: $count matches', tag: 'sabo_de64_bracket');
+      ProductionLogger.info('   $group: $count matches',
+          tag: 'sabo_de64_bracket');
     });
 
     // Sync tab and page controller
@@ -58,19 +60,23 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
   List<Map<String, dynamic>> _getMatchesByGroup(String group) {
     final filtered = widget.matches.where((m) {
       final bracketGroup = m['bracket_group'] as String?;
-      
+
       // Handle Cross Finals - match both 'Cross' and matches not in A,B,C,D
       if (group == 'Cross') {
         return bracketGroup?.toUpperCase() == 'CROSS' ||
-               bracketGroup?.toLowerCase() == 'cross' ||
-               (bracketGroup != 'A' && bracketGroup != 'B' && 
-                bracketGroup != 'C' && bracketGroup != 'D');
+            bracketGroup?.toLowerCase() == 'cross' ||
+            (bracketGroup != 'A' &&
+                bracketGroup != 'B' &&
+                bracketGroup != 'C' &&
+                bracketGroup != 'D');
       }
-      
+
       return bracketGroup == group;
     }).toList();
 
-    ProductionLogger.info('🔍 SABO DE64: Filtering group=$group, found ${filtered.length} matches',  tag: 'sabo_de64_bracket');
+    ProductionLogger.info(
+        '🔍 SABO DE64: Filtering group=$group, found ${filtered.length} matches',
+        tag: 'sabo_de64_bracket');
 
     return filtered;
   }
@@ -144,9 +150,12 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
     final groupMatches = _getMatchesByGroup(group);
 
     // Separate by bracket type: WB, LB-A, LB-B
-    final wbMatches = groupMatches.where((m) => m['bracket_type'] == 'WB').toList();
-    final lbAMatches = groupMatches.where((m) => m['bracket_type'] == 'LB-A').toList();
-    final lbBMatches = groupMatches.where((m) => m['bracket_type'] == 'LB-B').toList();
+    final wbMatches =
+        groupMatches.where((m) => m['bracket_type'] == 'WB').toList();
+    final lbAMatches =
+        groupMatches.where((m) => m['bracket_type'] == 'LB-A').toList();
+    final lbBMatches =
+        groupMatches.where((m) => m['bracket_type'] == 'LB-B').toList();
 
     return Column(
       children: [
@@ -237,7 +246,8 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
   }
 
   // Build bracket tree view with horizontal scroll
-  Widget _buildBracketTreeView(List<Map<String, dynamic>> matches, Color color, String group) {
+  Widget _buildBracketTreeView(
+      List<Map<String, dynamic>> matches, Color color, String group) {
     if (matches.isEmpty) {
       return Center(
         child: Column(
@@ -269,15 +279,20 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
       final bracketGroup = m['bracket_group'] as String?;
       // Include matches with 'Cross' or any value not A,B,C,D
       return bracketGroup?.toUpperCase() == 'CROSS' ||
-             bracketGroup?.toLowerCase() == 'cross' ||
-             (bracketGroup != 'A' && bracketGroup != 'B' && 
-              bracketGroup != 'C' && bracketGroup != 'D');
+          bracketGroup?.toLowerCase() == 'cross' ||
+          (bracketGroup != 'A' &&
+              bracketGroup != 'B' &&
+              bracketGroup != 'C' &&
+              bracketGroup != 'D');
     }).toList();
 
-    ProductionLogger.info('🔍 Cross Finals: Found ${crossMatches.length} matches', tag: 'sabo_de64_bracket');
+    ProductionLogger.info(
+        '🔍 Cross Finals: Found ${crossMatches.length} matches',
+        tag: 'sabo_de64_bracket');
     if (crossMatches.isNotEmpty) {
       final sampleGroup = crossMatches.first['bracket_group'];
-      ProductionLogger.info('   Sample bracket_group: $sampleGroup', tag: 'sabo_de64_bracket');
+      ProductionLogger.info('   Sample bracket_group: $sampleGroup',
+          tag: 'sabo_de64_bracket');
     }
 
     return Column(
@@ -313,7 +328,8 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
             child: SingleChildScrollView(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: _buildBracketTree(crossMatches, Colors.purple, 'Cross'),
               ),
             ),
@@ -346,11 +362,13 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
   }
 
   // Build bracket tree structure (horizontal scroll with rounds)
-  Widget _buildBracketTree(List<Map<String, dynamic>> matches, Color color, String group) {
+  Widget _buildBracketTree(
+      List<Map<String, dynamic>> matches, Color color, String group) {
     // Group matches by round_number
     final rounds = <int, List<Map<String, dynamic>>>{};
     for (var match in matches) {
-      final round = match['round_number'] as int? ?? match['stage_round'] as int? ?? 1;
+      final round =
+          match['round_number'] as int? ?? match['stage_round'] as int? ?? 1;
       rounds[round] = [...(rounds[round] ?? []), match];
     }
 
@@ -422,9 +440,9 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
           const SizedBox(height: 12),
           // Matches in this round
           ...matches.map((match) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildCompactMatchCard(match, color, isLastRound),
-          )),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildCompactMatchCard(match, color, isLastRound),
+              )),
         ],
       ),
     );
@@ -432,17 +450,17 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
 
   // Compact match card for bracket tree
   Widget _buildCompactMatchCard(
-    Map<String, dynamic> match, 
-    Color color, 
+    Map<String, dynamic> match,
+    Color color,
     bool highlightWinner, // Highlight winner if this is last round
   ) {
     final status = match['status'] as String? ?? 'pending';
     final player1 = match['player1'] as Map<String, dynamic>?;
     final player2 = match['player2'] as Map<String, dynamic>?;
-    final player1Name = player1?['name'] as String? ?? 
-                        player1?['username'] as String? ?? 'TBD';
-    final player2Name = player2?['name'] as String? ?? 
-                        player2?['username'] as String? ?? 'TBD';
+    final player1Name =
+        player1?['name'] as String? ?? player1?['username'] as String? ?? 'TBD';
+    final player2Name =
+        player2?['name'] as String? ?? player2?['username'] as String? ?? 'TBD';
     final player1Score = match['player1_score'] as int? ?? 0;
     final player2Score = match['player2_score'] as int? ?? 0;
     final winnerId = match['winner_id'] as String?;
@@ -460,10 +478,14 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
         border: Border.all(
           color: highlightWinner && status == 'completed'
               ? Colors.purple // Purple border for last round winner
-              : status == 'completed' 
-              ? color.withValues(alpha: 0.5)
-              : Colors.grey.shade300,
-          width: highlightWinner && status == 'completed' ? 3 : status == 'completed' ? 2 : 1,
+              : status == 'completed'
+                  ? color.withValues(alpha: 0.5)
+                  : Colors.grey.shade300,
+          width: highlightWinner && status == 'completed'
+              ? 3
+              : status == 'completed'
+                  ? 2
+                  : 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -483,7 +505,8 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
             player1Score,
             isPlayer1Winner,
             color,
-            highlightWinner && isPlayer1Winner, // Extra highlight for Cross Finals qualifier
+            highlightWinner &&
+                isPlayer1Winner, // Extra highlight for Cross Finals qualifier
           ),
           Divider(height: 1, color: Colors.grey.shade300),
           // Player 2
@@ -492,7 +515,8 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
             player2Score,
             isPlayer2Winner,
             color,
-            highlightWinner && isPlayer2Winner, // Extra highlight for Cross Finals qualifier
+            highlightWinner &&
+                isPlayer2Winner, // Extra highlight for Cross Finals qualifier
           ),
         ],
       ),
@@ -501,19 +525,20 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
 
   // Build player row for compact match card
   Widget _buildPlayerRow(
-    String name, 
-    int score, 
-    bool isWinner, 
+    String name,
+    int score,
+    bool isWinner,
     Color color,
     bool extraHighlight, // Purple highlight for Cross Finals qualifier
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: extraHighlight 
-          ? Colors.purple.withValues(alpha: 0.2) // Purple background for qualifier
-          : isWinner 
-          ? color.withValues(alpha: 0.1) 
-          : Colors.transparent,
+      color: extraHighlight
+          ? Colors.purple
+              .withValues(alpha: 0.2) // Purple background for qualifier
+          : isWinner
+              ? color.withValues(alpha: 0.1)
+              : Colors.transparent,
       child: Row(
         children: [
           Expanded(
@@ -528,12 +553,14 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
                     name,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: extraHighlight || isWinner ? FontWeight.bold : FontWeight.normal,
-                      color: extraHighlight 
+                      fontWeight: extraHighlight || isWinner
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: extraHighlight
                           ? Colors.purple
-                          : isWinner 
-                          ? color 
-                          : Colors.black87,
+                          : isWinner
+                              ? color
+                              : Colors.black87,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -545,11 +572,11 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: extraHighlight 
+              color: extraHighlight
                   ? Colors.purple
-                  : isWinner 
-                  ? color 
-                  : Colors.grey.shade200,
+                  : isWinner
+                      ? color
+                      : Colors.grey.shade200,
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -557,7 +584,8 @@ class _SaboDE64BracketState extends State<SaboDE64Bracket>
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: extraHighlight || isWinner ? Colors.white : Colors.black87,
+                color:
+                    extraHighlight || isWinner ? Colors.white : Colors.black87,
               ),
             ),
           ),

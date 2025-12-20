@@ -11,7 +11,8 @@ class OptimizedMessagingScreen extends StatefulWidget {
   const OptimizedMessagingScreen({super.key, this.chatId, this.chatName});
 
   @override
-  State<OptimizedMessagingScreen> createState() => _OptimizedMessagingScreenState();
+  State<OptimizedMessagingScreen> createState() =>
+      _OptimizedMessagingScreenState();
 }
 
 class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
@@ -21,7 +22,8 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
   final MessagingService _messagingService = MessagingService.instance;
 
   List<Map<String, dynamic>> _messages = [];
-  final Map<String, dynamic> _userCache = {}; // 🚀 CACHE user data instead of JOINing
+  final Map<String, dynamic> _userCache =
+      {}; // 🚀 CACHE user data instead of JOINing
   String? _selectedChatId;
   String? _selectedChatName;
   bool _isLoading = false;
@@ -35,7 +37,7 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
     super.initState();
     _selectedChatId = widget.chatId;
     _selectedChatName = widget.chatName;
-    
+
     if (_selectedChatId != null) {
       _initializeChat();
     }
@@ -47,32 +49,31 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
     _typingTimer?.cancel();
     _messageController.dispose();
     _scrollController.dispose();
-    
+
     if (_selectedChatId != null) {
       _realtimeService.disconnectFromRoom(_selectedChatId!);
     }
-    
+
     super.dispose();
   }
 
   /// 🚀 INITIALIZE chat with optimized loading
   Future<void> _initializeChat() async {
     if (_selectedChatId == null) return;
-    
+
     try {
       setState(() => _isLoading = true);
-      
+
       // Connect to real-time service
       await _realtimeService.connectToRoom(_selectedChatId!, 'current_user_id');
-      
+
       // Subscribe to message events
       _messageSubscription = _realtimeService
           .subscribeToEvent(RealtimeEventType.message, _selectedChatId)
           .listen(_handleRealtimeMessage);
-      
+
       // Load initial messages
       await _loadMessages();
-      
     } catch (e) {
       _showError('Failed to initialize chat: $e');
     } finally {
@@ -83,45 +84,45 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
   /// 🚀 LOAD messages with cursor pagination (no OFFSET!)
   Future<void> _loadMessages({bool isLoadingMore = false}) async {
     if (_selectedChatId == null) return;
-    
+
     try {
       final messages = await _messagingService.getChatMessages(
         _selectedChatId!,
         limit: 50,
         beforeTimestamp: isLoadingMore ? _lastMessageTimestamp : null,
       );
-      
+
       // Cache user data for all senders
       await _cacheUsersForMessages(messages);
-      
+
       setState(() {
         if (isLoadingMore) {
           _messages.addAll(messages);
         } else {
           _messages = messages;
         }
-        
+
         if (messages.isNotEmpty) {
           _lastMessageTimestamp = messages.last['created_at'];
         }
       });
-      
+
       if (!isLoadingMore && _messages.isNotEmpty) {
         _scrollToBottom();
       }
-      
     } catch (e) {
       _showError('Failed to load messages: $e');
     }
   }
 
   /// 🚀 CACHE user data separately (no expensive JOINs)
-  Future<void> _cacheUsersForMessages(List<Map<String, dynamic>> messages) async {
+  Future<void> _cacheUsersForMessages(
+      List<Map<String, dynamic>> messages) async {
     final userIds = messages
         .map((msg) => msg['sender_id'] as String)
         .where((id) => !_userCache.containsKey(id))
         .toSet();
-    
+
     for (final userId in userIds) {
       final userData = await _messagingService.getUserData(userId);
       if (userData != null) {
@@ -134,14 +135,14 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
   void _handleRealtimeMessage(RealtimeEvent event) {
     final data = event.data as Map<String, dynamic>;
     final action = data['action'] as String;
-    
+
     switch (action) {
       case 'insert':
         final newMessage = data['message'] as Map<String, dynamic>;
         setState(() {
           _messages.insert(0, newMessage); // Add to top (newest first)
         });
-        
+
         // Cache user data if not cached
         final senderId = newMessage['sender_id'] as String;
         if (!_userCache.containsKey(senderId)) {
@@ -151,20 +152,21 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
             }
           });
         }
-        
+
         _scrollToBottom();
         break;
-        
+
       case 'update':
         final updatedMessage = data['message'] as Map<String, dynamic>;
         setState(() {
-          final index = _messages.indexWhere((msg) => msg['id'] == updatedMessage['id']);
+          final index =
+              _messages.indexWhere((msg) => msg['id'] == updatedMessage['id']);
           if (index != -1) {
             _messages[index] = updatedMessage;
           }
         });
         break;
-        
+
       case 'delete':
         final messageId = data['messageId'] as String;
         setState(() {
@@ -176,20 +178,21 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
 
   /// 🚀 SEND message with optimized UI updates
   Future<void> _sendMessage() async {
-    if (_selectedChatId == null || _messageController.text.trim().isEmpty) return;
-    
+    if (_selectedChatId == null || _messageController.text.trim().isEmpty)
+      return;
+
     final messageContent = _messageController.text.trim();
     _messageController.clear();
-    
+
     // Stop typing indicator
     _setTyping(false);
-    
+
     try {
       final success = await _messagingService.sendMessage(
         roomId: _selectedChatId!,
         content: messageContent,
       );
-      
+
       if (!success) {
         _showError('Failed to send message');
         // Restore message content for retry
@@ -206,7 +209,7 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
     if (text.isNotEmpty && !_isTyping) {
       _setTyping(true);
     }
-    
+
     // Reset typing timer
     _typingTimer?.cancel();
     _typingTimer = Timer(const Duration(seconds: 2), () {
@@ -216,11 +219,12 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
 
   void _setTyping(bool isTyping) {
     if (_isTyping == isTyping) return;
-    
+
     setState(() => _isTyping = isTyping);
-    
+
     if (_selectedChatId != null) {
-      _realtimeService.sendTypingIndicator(_selectedChatId!, 'current_user_id', isTyping);
+      _realtimeService.sendTypingIndicator(
+          _selectedChatId!, 'current_user_id', isTyping);
     }
   }
 
@@ -248,7 +252,7 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
     final content = message['content'] as String;
     final timestamp = DateTime.parse(message['created_at']);
     final userData = _userCache[senderId];
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       child: Row(
@@ -256,7 +260,7 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundImage: userData?['avatar_url'] != null 
+            backgroundImage: userData?['avatar_url'] != null
                 ? NetworkImage(userData!['avatar_url'])
                 : null,
             child: userData?['avatar_url'] == null
@@ -315,7 +319,8 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
                 : NotificationListener<ScrollNotification>(
                     onNotification: (scrollInfo) {
                       // Load more when near bottom
-                      if (scrollInfo.metrics.pixels > scrollInfo.metrics.maxScrollExtent * 0.8) {
+                      if (scrollInfo.metrics.pixels >
+                          scrollInfo.metrics.maxScrollExtent * 0.8) {
                         _loadMessages(isLoadingMore: true);
                       }
                       return false;
@@ -329,14 +334,15 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
                     ),
                   ),
           ),
-          
+
           // Typing indicator
           if (_isTyping)
             Container(
               padding: const EdgeInsets.all(8),
-              child: const Text('You are typing...', style: TextStyle(fontStyle: FontStyle.italic)),
+              child: const Text('You are typing...',
+                  style: TextStyle(fontStyle: FontStyle.italic)),
             ),
-          
+
           // Message input
           Container(
             padding: const EdgeInsets.all(8),
@@ -353,7 +359,8 @@ class _OptimizedMessagingScreenState extends State<OptimizedMessagingScreen> {
                     decoration: const InputDecoration(
                       hintText: 'Type a message...',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
                     maxLines: null,
                     textInputAction: TextInputAction.send,

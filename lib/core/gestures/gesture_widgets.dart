@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // ELON_MODE_AUTO_FIX
 
 /// Pinch-to-zoom widget for bracket visualization and images
-/// 
+///
 /// Usage:
 /// ```dart
 /// PinchToZoomWidget(
@@ -58,7 +58,7 @@ class _PinchToZoomWidgetState extends State<PinchToZoomWidget> {
 }
 
 /// Long-press context menu for iPad
-/// 
+///
 /// Usage:
 /// ```dart
 /// LongPressContextMenu(
@@ -92,8 +92,9 @@ class LongPressContextMenu extends StatelessWidget {
   }
 
   void _showContextMenu(BuildContext context, Offset position) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -134,7 +135,7 @@ class ContextMenuItem {
 }
 
 /// Swipeable page navigation widget
-/// 
+///
 /// Usage:
 /// ```dart
 /// SwipeablePages(
@@ -189,7 +190,7 @@ class _SwipeablePagesState extends State<SwipeablePages> {
 }
 
 /// Double-tap to zoom widget
-/// 
+///
 /// Usage:
 /// ```dart
 /// DoubleTapToZoom(

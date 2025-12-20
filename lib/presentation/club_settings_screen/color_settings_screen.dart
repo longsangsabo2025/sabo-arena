@@ -87,16 +87,20 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tùy chỉnh màu sắc', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Tùy chỉnh màu sắc',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Cá nhân hóa giao diện CLB của bạn', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondaryLight,
-                  ),
+                  'Cá nhân hóa giao diện CLB của bạn',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondaryLight,
+                      ),
                 ),
               ],
             ),
@@ -111,10 +115,12 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Xem trước giao diện', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Xem trước giao diện',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -146,7 +152,9 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                     Icon(Icons.menu, color: Colors.white, size: 20),
                     const SizedBox(width: 12),
                     Text(
-                      'SABO Arena', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'SABO Arena',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -176,7 +184,9 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Thành viên', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Thành viên',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               color: primaryColor,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
@@ -185,7 +195,9 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '150', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            '150',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               color: primaryColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -211,7 +223,9 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Doanh thu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Doanh thu',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               color: secondaryColor,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
@@ -220,7 +234,9 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '5.2M', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            '5.2M',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               color: secondaryColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -247,7 +263,9 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    'Tạo giải đấu mới', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Tạo giải đấu mới',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -267,10 +285,12 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Tùy chỉnh màu chính', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Tùy chỉnh màu chính',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -362,7 +382,8 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title, style: TextStyle(
+                  title,
+                  style: TextStyle(
                     color: AppTheme.textPrimaryLight,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -370,7 +391,8 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  subtitle, style: TextStyle(
+                  subtitle,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 12,
                   ),
@@ -396,14 +418,18 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Bộ màu có sẵn', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Bộ màu có sẵn',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Chọn một bộ màu để áp dụng nhanh', overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
+          'Chọn một bộ màu để áp dụng nhanh',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
         ),
         const SizedBox(height: 16),
         Container(
@@ -498,7 +524,9 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
           onTap: _saveColorSettings,
           child: const Center(
             child: Text(
-              'Áp dụng màu sắc', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Áp dụng màu sắc',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -544,9 +572,8 @@ class _ColorSettingsScreenState extends State<ColorSettingsScreen> {
                         color: color,
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: isSelected
-                              ? Colors.black
-                              : Colors.grey.shade300,
+                          color:
+                              isSelected ? Colors.black : Colors.grey.shade300,
                           width: isSelected ? 2 : 1,
                         ),
                       ),

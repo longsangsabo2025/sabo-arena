@@ -15,7 +15,6 @@ class FirstMatchBonusService {
     String clubId,
   ) async {
     try {
-
       final response = await _supabase
           .from('user_first_match_tracking')
           .select()
@@ -34,7 +33,6 @@ class FirstMatchBonusService {
 
       final bonusAwarded = response['bonus_awarded'] as bool? ?? false;
       final bonusAmount = response['bonus_amount'] as num? ?? 100.0;
-
 
       return {
         'is_eligible': !bonusAwarded,
@@ -64,7 +62,6 @@ class FirstMatchBonusService {
     String matchId,
   ) async {
     try {
-
       final response = await _supabase.rpc(
         'check_and_award_first_match_bonus',
         params: {
@@ -88,8 +85,7 @@ class FirstMatchBonusService {
         // Bonus awarded successfully
       } else {
         if (result['is_first_match'] == true) {
-        } else {
-        }
+        } else {}
       }
 
       return result;
@@ -110,7 +106,6 @@ class FirstMatchBonusService {
     String clubId,
     String matchId,
   ) async {
-
     final player1Result = await awardFirstMatchBonus(
       player1Id,
       clubId,
@@ -136,7 +131,6 @@ class FirstMatchBonusService {
     String clubId,
   ) async {
     try {
-
       final response = await _supabase
           .from('user_first_match_tracking')
           .select('*, matches(*), clubs(name)')
@@ -145,8 +139,7 @@ class FirstMatchBonusService {
           .maybeSingle();
 
       if (response != null) {
-      } else {
-      }
+      } else {}
 
       return response;
     } catch (e) {
@@ -159,7 +152,6 @@ class FirstMatchBonusService {
     String userId,
   ) async {
     try {
-
       final response = await _supabase
           .from('user_first_match_tracking')
           .select('*, clubs(name)')
@@ -176,7 +168,6 @@ class FirstMatchBonusService {
   /// Get first match bonus statistics for a club (Admin only)
   Future<Map<String, dynamic>?> getClubStats(String clubId) async {
     try {
-
       final response = await _supabase
           .from('first_match_bonus_stats')
           .select()
@@ -184,8 +175,7 @@ class FirstMatchBonusService {
           .maybeSingle();
 
       if (response != null) {
-      } else {
-      }
+      } else {}
 
       return response;
     } catch (e) {
@@ -196,7 +186,6 @@ class FirstMatchBonusService {
   /// Get all club statistics (Super Admin only)
   Future<List<Map<String, dynamic>>> getAllClubsStats() async {
     try {
-
       final response = await _supabase
           .from('first_match_bonus_stats')
           .select()
@@ -208,4 +197,3 @@ class FirstMatchBonusService {
     }
   }
 }
-

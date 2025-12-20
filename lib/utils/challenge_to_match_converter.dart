@@ -24,13 +24,15 @@ class ChallengeToMatchConverter {
     // ✅ FIX: For open challenges (challenged = null), always show challenger as player1
     // regardless of currentUserId to avoid showing "Player 1" instead of real name
     final bool isOpenChallenge = challenged == null;
-    
-    final player1 = (currentUserId != null && !isCurrentUserChallenger && !isOpenChallenge)
-        ? challenged
-        : challenger;
-    final player2 = (currentUserId != null && !isCurrentUserChallenger && !isOpenChallenge)
-        ? challenger
-        : challenged;
+
+    final player1 =
+        (currentUserId != null && !isCurrentUserChallenger && !isOpenChallenge)
+            ? challenged
+            : challenger;
+    final player2 =
+        (currentUserId != null && !isCurrentUserChallenger && !isOpenChallenge)
+            ? challenger
+            : challenged;
 
     // Get match parameters with fallback priority:
     // 1. Direct column on challenge table (race_to, stakes_amount)
@@ -89,8 +91,7 @@ class ChallengeToMatchConverter {
     }
 
     // Format date/time from scheduled_time or created_at
-    final scheduledTime =
-        challenge['scheduled_time'] as String? ??
+    final scheduledTime = challenge['scheduled_time'] as String? ??
         matchConditions?['scheduled_time'] as String?;
     final createdAt = challenge['created_at'] as String?;
 
@@ -130,9 +131,8 @@ class ChallengeToMatchConverter {
 
     // Get match type
     final challengeType = challenge['challenge_type'] as String? ?? 'giao_luu';
-    final matchTypeLabel = challengeType == 'thach_dau'
-        ? 'Thách đấu'
-        : 'Giao lưu';
+    final matchTypeLabel =
+        challengeType == 'thach_dau' ? 'Thách đấu' : 'Giao lưu';
 
     return {
       'id': challenge['id'],
@@ -166,10 +166,10 @@ class ChallengeToMatchConverter {
       'prize': NumberFormatter.formatWithUnit(stakesAmount, 'SPA'),
       'raceInfo': 'Race to $raceToValue',
       'currentTable': currentTable,
-      
+
       // Winner info (for completed matches)
       'winnerId': challenge['winner_id'], // ✅ NEW: Highlight winner
-      
+
       // Live streaming info (from joined matches table)
       'is_live': _getIsLive(challenge['match']),
       'video_url': _getFirstVideoUrl(challenge['match']),
@@ -179,28 +179,28 @@ class ChallengeToMatchConverter {
   /// Check if match is live - handle both List and Map cases
   static bool _getIsLive(dynamic matchData) {
     if (matchData == null) return false;
-    
+
     // Handle List (when using !column_name join)
     if (matchData is List) {
       if (matchData.isEmpty) return false;
       final match = matchData[0] as Map<String, dynamic>?;
       return match?['is_live'] as bool? ?? false;
     }
-    
+
     // Handle Map (when using !fk_name join)
     if (matchData is Map<String, dynamic>) {
       return matchData['is_live'] as bool? ?? false;
     }
-    
+
     return false;
   }
 
   /// Extract first video URL from video_urls array
   static String? _getFirstVideoUrl(dynamic matchData) {
     if (matchData == null) return null;
-    
+
     Map<String, dynamic>? match;
-    
+
     // Handle List (when using !column_name join)
     if (matchData is List) {
       if (matchData.isEmpty) return null;
@@ -210,12 +210,12 @@ class ChallengeToMatchConverter {
     else if (matchData is Map<String, dynamic>) {
       match = matchData;
     }
-    
+
     if (match == null) return null;
-    
+
     final videoUrls = match['video_urls'] as List?;
     if (videoUrls == null || videoUrls.isEmpty) return null;
-    
+
     return videoUrls[0] as String?;
   }
 }

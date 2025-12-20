@@ -23,7 +23,9 @@ class DeepLinkService {
 
         if (referralCode != null && referralCode.isNotEmpty) {
           if (kDebugMode)
-            ProductionLogger.info('🔗 Detected referral code in QR: $referralCode', tag: 'deep_link_service');
+            ProductionLogger.info(
+                '🔗 Detected referral code in QR: $referralCode',
+                tag: 'deep_link_service');
 
           return {
             'type': 'user_profile_with_ref',
@@ -43,7 +45,9 @@ class DeepLinkService {
       // Handle other URL types
       return {'type': 'unknown', 'url': url, 'action': 'open_external'};
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Error parsing QR URL: $error', tag: 'deep_link_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error parsing QR URL: $error',
+            tag: 'deep_link_service');
       return {
         'type': 'error',
         'error': error.toString(),
@@ -59,7 +63,9 @@ class DeepLinkService {
   ) async {
     try {
       if (kDebugMode)
-        ProductionLogger.info('🎯 Processing referral code: $referralCode for user: $currentUserId',  tag: 'deep_link_service');
+        ProductionLogger.info(
+            '🎯 Processing referral code: $referralCode for user: $currentUserId',
+            tag: 'deep_link_service');
 
       // Use the referral code
       final success = await ReferralService.instance.useReferralCode(
@@ -68,14 +74,20 @@ class DeepLinkService {
       );
 
       if (success) {
-        if (kDebugMode) ProductionLogger.info('✅ Referral code processed successfully', tag: 'deep_link_service');
+        if (kDebugMode)
+          ProductionLogger.info('✅ Referral code processed successfully',
+              tag: 'deep_link_service');
         return true;
       } else {
-        if (kDebugMode) ProductionLogger.info('❌ Failed to process referral code', tag: 'deep_link_service');
+        if (kDebugMode)
+          ProductionLogger.info('❌ Failed to process referral code',
+              tag: 'deep_link_service');
         return false;
       }
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Error processing referral code: $error', tag: 'deep_link_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error processing referral code: $error',
+            tag: 'deep_link_service');
       return false;
     }
   }
@@ -87,15 +99,18 @@ class DeepLinkService {
       await prefs.setString('pending_referral_code', referralCode);
 
       // Also store timestamp for expiration (30 days)
-      final expiryTime = DateTime.now()
-          .add(const Duration(days: 30))
-          .millisecondsSinceEpoch;
+      final expiryTime =
+          DateTime.now().add(const Duration(days: 30)).millisecondsSinceEpoch;
       await prefs.setInt('referral_code_expiry', expiryTime);
 
       if (kDebugMode)
-        ProductionLogger.info('💾 Stored referral code for new user: $referralCode', tag: 'deep_link_service');
+        ProductionLogger.info(
+            '💾 Stored referral code for new user: $referralCode',
+            tag: 'deep_link_service');
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Error storing referral code: $error', tag: 'deep_link_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error storing referral code: $error',
+            tag: 'deep_link_service');
     }
   }
 
@@ -111,18 +126,24 @@ class DeepLinkService {
         final now = DateTime.now().millisecondsSinceEpoch;
         if (now < expiryTime) {
           if (kDebugMode)
-            ProductionLogger.info('✅ Retrieved stored referral code: $referralCode', tag: 'deep_link_service');
+            ProductionLogger.info(
+                '✅ Retrieved stored referral code: $referralCode',
+                tag: 'deep_link_service');
           return referralCode;
         } else {
           // Code expired, clear it
-          if (kDebugMode) ProductionLogger.info('⏰ Referral code expired, clearing...', tag: 'deep_link_service');
+          if (kDebugMode)
+            ProductionLogger.info('⏰ Referral code expired, clearing...',
+                tag: 'deep_link_service');
           await clearStoredReferralCode();
         }
       }
 
       return null;
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Error getting stored referral code: $error', tag: 'deep_link_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error getting stored referral code: $error',
+            tag: 'deep_link_service');
       return null;
     }
   }
@@ -134,9 +155,13 @@ class DeepLinkService {
       await prefs.remove('pending_referral_code');
       await prefs.remove('referral_code_expiry');
 
-      if (kDebugMode) ProductionLogger.info('🗑️ Cleared stored referral code', tag: 'deep_link_service');
+      if (kDebugMode)
+        ProductionLogger.info('🗑️ Cleared stored referral code',
+            tag: 'deep_link_service');
     } catch (error) {
-      if (kDebugMode) ProductionLogger.info('❌ Error clearing stored referral code: $error', tag: 'deep_link_service');
+      if (kDebugMode)
+        ProductionLogger.info('❌ Error clearing stored referral code: $error',
+            tag: 'deep_link_service');
     }
   }
 }

@@ -51,12 +51,16 @@ class SupabaseService {
       // ✅ KHÔNG bypass security - uses system trust store
       // ✅ Follows iOS/Android security guidelines
       // ✅ Giải quyết TRIỆT ĐỂ lỗi CERTIFICATE_VERIFY_FAILED
-      
+
       // For web, don't pass httpClient (browser handles it)
       // For mobile, use SSL certificate handler
-      final httpClient = kIsWeb ? null : (kDebugMode
-          ? SSLCertificateHandler.createDebugClient()  // Debug: Accept all (for testing)
-          : SSLCertificateHandler.createSecureClient()); // Production: Proper validation
+      final httpClient = kIsWeb
+          ? null
+          : (kDebugMode
+              ? SSLCertificateHandler
+                  .createDebugClient() // Debug: Accept all (for testing)
+              : SSLCertificateHandler
+                  .createSecureClient()); // Production: Proper validation
 
       ProductionLogger.info(
         '🔐 SSL: Using ${kIsWeb ? 'browser' : (kDebugMode ? 'debug' : 'production-grade')} certificate validation',
@@ -65,7 +69,8 @@ class SupabaseService {
 
       // 🔍 Pre-verify connection (helps detect issues early)
       if (!kDebugMode && !kIsWeb) {
-        final isConnected = await SSLCertificateHandler.verifySupabaseConnection(_url);
+        final isConnected =
+            await SSLCertificateHandler.verifySupabaseConnection(_url);
         if (!isConnected) {
           ProductionLogger.warning(
             '⚠️ Pre-verification failed, but continuing initialization...',

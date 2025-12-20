@@ -11,12 +11,13 @@ class MessagingService {
   static MessagingService get instance => _instance;
 
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   // Get read client (uses replica if available)
   SupabaseClient get _readClient => DatabaseReplicaManager.instance.readClient;
-  
+
   // Get write client (always uses primary)
-  SupabaseClient get _writeClient => DatabaseReplicaManager.instance.writeClient;
+  SupabaseClient get _writeClient =>
+      DatabaseReplicaManager.instance.writeClient;
   final AuthService _authService = AuthService.instance;
 
   /// Get unread message count for current user
@@ -111,7 +112,7 @@ class MessagingService {
           .eq('room_id', roomId)
           .order('created_at', ascending: false)
           .limit(limit);
-      
+
       // 🚀 STARSHIP PAGINATION: Cursor-based instead of OFFSET
       if (beforeTimestamp != null) {
         query = query.order('created_at', ascending: false);
@@ -128,7 +129,7 @@ class MessagingService {
       return [];
     }
   }
-  
+
   /// 🚀 NEW: Get user data for messages (separate cache)
   Future<Map<String, dynamic>?> getUserData(String userId) async {
     try {
@@ -137,7 +138,7 @@ class MessagingService {
           .select('full_name, avatar_url')
           .eq('id', userId)
           .single();
-      
+
       return response;
     } catch (e) {
       ProductionLogger.error(
@@ -173,8 +174,8 @@ class MessagingService {
       // Update room's last message timestamp
       await _supabase
           .from('chat_rooms')
-          .update({'last_message_at': DateTime.now().toIso8601String()})
-          .eq('id', roomId);
+          .update({'last_message_at': DateTime.now().toIso8601String()}).eq(
+              'id', roomId);
 
       return true;
     } catch (e) {

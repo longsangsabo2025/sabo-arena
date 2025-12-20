@@ -3,6 +3,7 @@ import 'package:sizer/sizer.dart';
 import 'package:sabo_arena/core/app_export.dart';
 import 'package:sabo_arena/theme/app_theme.dart';
 import 'package:sabo_arena/services/tournament_service.dart';
+import '../../../widgets/common/app_button.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
 // ELON_MODE_AUTO_FIX
 
@@ -91,18 +92,13 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                 style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
               ),
               SizedBox(height: 24.sp),
-              ElevatedButton.icon(
+              AppButton(
+                label: 'Thử lại',
+                type: AppButtonType.primary,
+                size: AppButtonSize.medium,
+                icon: Icons.refresh,
+                iconTrailing: false,
                 onPressed: _loadParticipants,
-                icon: Icon(Icons.refresh),
-                label: Text('Thử lại'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[600],
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 24.sp,
-                    vertical: 12.sp,
-                  ),
-                ),
               ),
             ],
           ),
@@ -121,8 +117,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                     left: 12.sp,
                     right: 12.sp,
                     top: 8.sp,
-                    bottom:
-                        kBottomNavigationBarHeight +
+                    bottom: kBottomNavigationBarHeight +
                         8.sp, // Add bottom padding for nav bar
                   ),
                   itemCount: _participants.length,
@@ -530,7 +525,10 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
             onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Lưu',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             onPressed: () async {
               try {
                 await _tournamentService.updateParticipantPaymentStatus(
@@ -545,7 +543,8 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                 if (mounted) {
                   ScaffoldMessenger.of(
                     context,
-                  ).showSnackBar(SnackBar(content: Text('Đã cập nhật ghi chú')));
+                  ).showSnackBar(
+                      SnackBar(content: Text('Đã cập nhật ghi chú')));
                   _loadParticipants();
                 }
               } catch (e) {
@@ -559,7 +558,6 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                 }
               }
             },
-            child: Text('Lưu'),
           ),
         ],
       ),
@@ -568,7 +566,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
 
   void _showRemoveParticipantDialog(Map<String, dynamic> participant) {
     final TextEditingController reasonController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -651,11 +649,13 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
               decoration: BoxDecoration(
                 color: AppTheme.errorLight.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.errorLight.withValues(alpha: 0.3)),
+                border: Border.all(
+                    color: AppTheme.errorLight.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 18, color: AppTheme.errorLight),
+                  Icon(Icons.info_outline,
+                      size: 18, color: AppTheme.errorLight),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -683,7 +683,7 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
             onPressed: () async {
               try {
                 Navigator.of(dialogContext).pop();
-                
+
                 // Show loading
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -694,7 +694,8 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         ),
                         SizedBox(width: 12),
@@ -709,8 +710,8 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                 final success = await _tournamentService.removeParticipant(
                   tournamentId: widget.tournamentId,
                   userId: participant['user_id'],
-                  reason: reasonController.text.trim().isNotEmpty 
-                      ? reasonController.text.trim() 
+                  reason: reasonController.text.trim().isNotEmpty
+                      ? reasonController.text.trim()
                       : null,
                 );
 
@@ -734,7 +735,8 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
                                   Expanded(
                                     child: UserDisplayNameText(
                                       userData: participant['user'],
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                   Text(' khỏi giải đấu'),
@@ -796,4 +798,3 @@ class _ParticipantManagementTabState extends State<ParticipantManagementTab> {
     }
   }
 }
-

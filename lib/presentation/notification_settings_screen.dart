@@ -127,7 +127,9 @@ class _NotificationSettingsScreenState
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
-          'Cài đặt thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          'Cài đặt thông báo',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
         backgroundColor: Colors.green[700],
         elevation: 0,
@@ -171,7 +173,9 @@ class _NotificationSettingsScreenState
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Cài đặt chung', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Cài đặt chung',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -182,7 +186,9 @@ class _NotificationSettingsScreenState
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text(
-                'Bật thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                'Bật thông báo',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
               subtitle: const Text('Bật hoặc tắt tất cả thông báo'),
               value: _preferences?.globalEnabled ?? true,
@@ -211,7 +217,9 @@ class _NotificationSettingsScreenState
                 Icon(Icons.category, color: Colors.green[700], size: 24),
                 const SizedBox(width: 12),
                 Text(
-                  'Loại thông báo', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Loại thông báo',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -230,17 +238,18 @@ class _NotificationSettingsScreenState
   }
 
   Widget _buildNotificationTypeItem(NotificationType type) {
-    final setting =
-        _preferences!.typeSettings[type] ??
+    final setting = _preferences!.typeSettings[type] ??
         NotificationTypeSetting.defaultSetting(type);
 
     return ExpansionTile(
       leading: _getTypeIcon(type),
       title: Text(
-        type.displayName, style: const TextStyle(fontWeight: FontWeight.w500),
+        type.displayName,
+        style: const TextStyle(fontWeight: FontWeight.w500),
       ),
       subtitle: Text(
-        type.description, style: TextStyle(color: Colors.grey[600], fontSize: 12),
+        type.description,
+        style: TextStyle(color: Colors.grey[600], fontSize: 12),
       ),
       trailing: Switch(
         value: setting.enabled && (_preferences!.globalEnabled),
@@ -269,8 +278,7 @@ class _NotificationSettingsScreenState
                 CheckboxListTile(
                   title: const Text('Âm thanh'),
                   subtitle: const Text('Phát âm thanh khi có thông báo'),
-                  value:
-                      setting.customSound != null &&
+                  value: setting.customSound != null &&
                       setting.customSound != NotificationSound.none,
                   onChanged: _isSaving
                       ? null
@@ -315,7 +323,9 @@ class _NotificationSettingsScreenState
                 Icon(Icons.bedtime, color: Colors.green[700], size: 24),
                 const SizedBox(width: 12),
                 Text(
-                  'Giờ yên tĩnh', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Giờ yên tĩnh',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -326,7 +336,9 @@ class _NotificationSettingsScreenState
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text(
-                'Bật giờ yên tĩnh', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                'Bật giờ yên tĩnh',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
               subtitle: const Text(
                 'Tắt thông báo trong khoảng thời gian đã chọn',
@@ -377,7 +389,9 @@ class _NotificationSettingsScreenState
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Nâng cao', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Nâng cao',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
@@ -501,7 +515,9 @@ class _NotificationSettingsScreenState
               Navigator.pop(context);
               await _resetToDefaults();
             },
-            child: const Text('Khôi phục', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+            child: const Text('Khôi phục',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

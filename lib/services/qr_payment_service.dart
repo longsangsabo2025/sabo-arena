@@ -296,17 +296,16 @@ class QRPaymentService {
   /// Test kết nối VietQR API
   static Future<bool> testVietQRConnection() async {
     try {
-      final response = await http
-          .get(
-            Uri.parse('$_vietQRBaseUrl/970436-1234567890-compact2.png'),
-            headers: {"User-Agent": 'SaboArena/1.0'},
-          )
-          .timeout(const Duration(seconds: 5));
+      final response = await http.get(
+        Uri.parse('$_vietQRBaseUrl/970436-1234567890-compact2.png'),
+        headers: {"User-Agent": 'SaboArena/1.0'},
+      ).timeout(const Duration(seconds: 5));
 
       return response.statusCode == 200;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('VietQR connection test failed: $e', tag: 'qr_payment_service');
+        ProductionLogger.info('VietQR connection test failed: $e',
+            tag: 'qr_payment_service');
       }
       return false;
     }

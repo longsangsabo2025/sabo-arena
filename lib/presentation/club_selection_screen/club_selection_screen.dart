@@ -129,7 +129,9 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                 Icon(Icons.search_off, size: 64, color: Colors.grey),
                 SizedBox(height: 16),
                 Text(
-                  'Không tìm thấy câu lạc bộ nào.', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                  'Không tìm thấy câu lạc bộ nào.',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -153,16 +155,21 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                   borderRadius: 20,
                 ),
                 title: Text(
-                  club.name, style: TextStyle(fontWeight: FontWeight.bold),
+                  club.name,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (club.address != null)
-                      Text(club.address!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12)),
+                      Text(club.address!,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12)),
                     if (club.totalTables > 0)
                       Text(
-                        '${club.totalTables} bàn bi-a', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                        '${club.totalTables} bàn bi-a',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                       ),
                   ],
                 ),
@@ -176,4 +183,3 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
     );
   }
 }
-

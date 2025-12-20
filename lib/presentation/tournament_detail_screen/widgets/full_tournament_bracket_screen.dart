@@ -57,9 +57,11 @@ class _FullTournamentBracketScreenState
         DeviceOrientation.landscapeRight,
       ]);
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      ProductionLogger.info('✅ Landscape orientation set', tag: 'full_tournament_bracket_screen');
+      ProductionLogger.info('✅ Landscape orientation set',
+          tag: 'full_tournament_bracket_screen');
     } catch (e) {
-      ProductionLogger.info('⚠️ Failed to set landscape: $e', tag: 'full_tournament_bracket_screen');
+      ProductionLogger.info('⚠️ Failed to set landscape: $e',
+          tag: 'full_tournament_bracket_screen');
     }
   }
 
@@ -70,7 +72,9 @@ class _FullTournamentBracketScreenState
     });
 
     try {
-      ProductionLogger.info('🔍 Loading full tournament: ${widget.tournamentId}', tag: 'full_tournament_bracket_screen');
+      ProductionLogger.info(
+          '🔍 Loading full tournament: ${widget.tournamentId}',
+          tag: 'full_tournament_bracket_screen');
 
       // 1. Get tournament format
       final tournamentResponse = await _supabase
@@ -79,13 +83,13 @@ class _FullTournamentBracketScreenState
           .eq('id', widget.tournamentId)
           .maybeSingle();
 
-      final bracketFormat = tournamentResponse?['bracket_format'] ?? 'sabo_de64';
-      ProductionLogger.info('📊 Tournament format: $bracketFormat', tag: 'full_tournament_bracket_screen');
+      final bracketFormat =
+          tournamentResponse?['bracket_format'] ?? 'sabo_de64';
+      ProductionLogger.info('📊 Tournament format: $bracketFormat',
+          tag: 'full_tournament_bracket_screen');
 
       // 2. Get all matches (simple query first, then enhance if needed)
-      final matchesResponse = await _supabase
-          .from('matches')
-          .select('''
+      final matchesResponse = await _supabase.from('matches').select('''
             id,
             round_number,
             match_number,
@@ -98,13 +102,12 @@ class _FullTournamentBracketScreenState
             player1_score,
             player2_score,
             bracket_position
-          ''')
-          .eq('tournament_id', widget.tournamentId)
-          .order('round_number');
+          ''').eq('tournament_id', widget.tournamentId).order('round_number');
 
       final matchesData = matchesResponse as List<dynamic>;
-      ProductionLogger.info('✅ Loaded ${matchesData.length} matches', tag: 'full_tournament_bracket_screen');
-      
+      ProductionLogger.info('✅ Loaded ${matchesData.length} matches',
+          tag: 'full_tournament_bracket_screen');
+
       // 3. For now, use simple match data without player profiles
       final matches = matchesData.map<Map<String, dynamic>>((match) {
         return {
@@ -115,8 +118,8 @@ class _FullTournamentBracketScreenState
       }).toList();
 
       // 4. Build bracket widget using BracketVisualizationService
-      final bracketWidget = await BracketVisualizationService.instance
-          .buildTournamentBracket(
+      final bracketWidget =
+          await BracketVisualizationService.instance.buildTournamentBracket(
         tournamentId: widget.tournamentId,
         bracketData: {
           'id': widget.tournamentId,
@@ -135,8 +138,10 @@ class _FullTournamentBracketScreenState
         _isLoading = false;
       });
     } catch (e, stackTrace) {
-      ProductionLogger.info('❌ Error loading tournament: $e', tag: 'full_tournament_bracket_screen');
-      ProductionLogger.info('Stack trace: $stackTrace', tag: 'full_tournament_bracket_screen');
+      ProductionLogger.info('❌ Error loading tournament: $e',
+          tag: 'full_tournament_bracket_screen');
+      ProductionLogger.info('Stack trace: $stackTrace',
+          tag: 'full_tournament_bracket_screen');
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -333,4 +338,3 @@ class _FullTournamentBracketScreenState
     );
   }
 }
-

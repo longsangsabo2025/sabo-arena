@@ -5,7 +5,7 @@ import 'dart:async';
 
 /// Rate Limit Service
 /// Prevents abuse by limiting API calls, tournament creation, and image uploads
-/// 
+///
 /// Limits:
 /// - API calls: 100 requests/minute per user
 /// - Tournament creation: 5 per hour per user
@@ -29,15 +29,15 @@ class RateLimitService {
   // Action-based rate limiting (for auth actions like login, register, etc.)
   // Map: action -> Map: identifier (IP/userId) -> Queue of timestamps
   final Map<String, Map<String, Queue<DateTime>>> _actionLimits = {};
-  
+
   // Rate limit configurations for actions
   static Map<String, Map<String, dynamic>> get _actionConfigs => {
-    'login': {'max': 5, 'window': const Duration(minutes: 15)},
-    'register': {'max': 3, 'window': const Duration(hours: 1)},
-    'otp_send': {'max': 5, 'window': const Duration(minutes: 15)},
-    'otp_verify': {'max': 10, 'window': const Duration(minutes: 15)},
-    'password_reset': {'max': 3, 'window': const Duration(hours: 1)},
-  };
+        'login': {'max': 5, 'window': const Duration(minutes: 15)},
+        'register': {'max': 3, 'window': const Duration(hours: 1)},
+        'otp_send': {'max': 5, 'window': const Duration(minutes: 15)},
+        'otp_verify': {'max': 10, 'window': const Duration(minutes: 15)},
+        'password_reset': {'max': 3, 'window': const Duration(hours: 1)},
+      };
 
   // Cleanup timer
   Timer? _cleanupTimer;
@@ -49,8 +49,7 @@ class RateLimitService {
       _cleanupOldEntries();
     });
 
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   /// Check if API call is allowed
@@ -109,15 +108,13 @@ class RateLimitService {
     final queue = actionMap.putIfAbsent(userId, () => Queue<DateTime>());
 
     // Remove old entries outside time window
-    while (queue.isNotEmpty &&
-        now.difference(queue.first) > timeWindow) {
+    while (queue.isNotEmpty && now.difference(queue.first) > timeWindow) {
       queue.removeFirst();
     }
 
     // Check if limit exceeded
     if (queue.length >= maxActions) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return false;
     }
 
@@ -174,8 +171,7 @@ class RateLimitService {
     }
 
     // Remove old entries
-    while (queue.isNotEmpty &&
-        now.difference(queue.first) > timeWindow) {
+    while (queue.isNotEmpty && now.difference(queue.first) > timeWindow) {
       queue.removeFirst();
     }
 
@@ -237,7 +233,8 @@ class RateLimitService {
     final timeWindow = config['window'] as Duration;
 
     // Get or create action map
-    final actionMap = _actionLimits.putIfAbsent(action, () => <String, Queue<DateTime>>{});
+    final actionMap =
+        _actionLimits.putIfAbsent(action, () => <String, Queue<DateTime>>{});
     final queue = actionMap.putIfAbsent(identifier, () => Queue<DateTime>());
 
     final now = DateTime.now();
@@ -249,8 +246,7 @@ class RateLimitService {
 
     // Check if limit exceeded
     if (queue.length >= maxActions) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
       return false;
     }
 
@@ -303,4 +299,3 @@ class RateLimitService {
     _actionLimits.clear();
   }
 }
-

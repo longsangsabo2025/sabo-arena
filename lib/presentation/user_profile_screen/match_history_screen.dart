@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/match_management_service.dart';
 import '../../widgets/user/user_widgets.dart';
+import '../../widgets/common/app_button.dart';
 
 /// Screen hiển thị lịch sử tất cả trận đấu của user
 class MatchHistoryScreen extends StatefulWidget {
@@ -102,9 +103,7 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
       case 0: // All
         return _matches;
       case 1: // Wins
-        return _matches
-            .where((m) => m['winner_id'] == widget.userId)
-            .toList();
+        return _matches.where((m) => m['winner_id'] == widget.userId).toList();
       case 2: // Losses
         return _matches
             .where((m) =>
@@ -132,14 +131,17 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Lịch sử trận đấu', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lịch sử trận đấu',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
-              widget.userName, style: const TextStyle(
+              widget.userName,
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -187,12 +189,15 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          textAlign: TextAlign.center, style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton(
+                        AppButton(
+                          label: 'Thử lại',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.medium,
                           onPressed: _loadMatches,
-                          child: const Text('Thử lại'),
                         ),
                       ],
                     ),
@@ -203,11 +208,13 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.sports_esports,
+                          Icon(Icons.sports_baseball,
                               size: 60, color: Colors.grey[400]),
                           const SizedBox(height: 16),
                           Text(
-                            'Chưa có trận đấu nào', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Chưa có trận đấu nào',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[600],
                             ),
@@ -230,8 +237,9 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
   }
 
   Widget _buildStatsBar() {
-    final winRate =
-        _totalMatches > 0 ? ((_wins / _totalMatches) * 100).toStringAsFixed(1) : '0.0';
+    final winRate = _totalMatches > 0
+        ? ((_wins / _totalMatches) * 100).toStringAsFixed(1)
+        : '0.0';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -274,7 +282,8 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
     return Column(
       children: [
         Text(
-          value, style: TextStyle(
+          value,
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: color,
@@ -282,7 +291,8 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
         ),
         const SizedBox(height: 4),
         Text(
-          label, style: const TextStyle(
+          label,
+          style: const TextStyle(
             fontSize: 11,
             color: Colors.white70,
           ),
@@ -354,7 +364,8 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
                 Icon(resultIcon, color: resultColor, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  resultText, style: TextStyle(
+                  resultText,
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: resultColor,
@@ -393,14 +404,18 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
                       child: Column(
                         children: [
                           Text(
-                            '$player1Score - $player2Score', overflow: TextOverflow.ellipsis, style: const TextStyle(
+                            '$player1Score - $player2Score',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
                               color: Colors.black87,
                             ),
                           ),
                           const Text(
-                            'VS', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'VS',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                               color: Colors.grey,
@@ -436,7 +451,9 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
                             size: 16, color: Color(0xFF00695C)),
                         const SizedBox(width: 8),
                         Text(
-                          'Từ giải đấu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Từ giải đấu',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[700],
                             fontWeight: FontWeight.w500,
@@ -508,7 +525,9 @@ class _MatchHistoryScreenState extends State<MatchHistoryScreen>
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Text(
-              'Bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Bạn',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF00695C),

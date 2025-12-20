@@ -64,8 +64,8 @@ class _SystemAdminRankManagementScreenState
           )
           .order('created_at', ascending: false);
 
-      final List<Map<String, dynamic>> allRequests = response
-          .cast<Map<String, dynamic>>();
+      final List<Map<String, dynamic>> allRequests =
+          response.cast<Map<String, dynamic>>();
 
       // Separate pending vs completed
       final pending = <Map<String, dynamic>>[];
@@ -166,7 +166,9 @@ class _SystemAdminRankManagementScreenState
       backgroundColor: AppTheme.backgroundLight,
       appBar: AppBar(
         title: Text(
-          'System Admin - Phê duyệt hạng', overflow: TextOverflow.ellipsis, style: TextStyle(
+          'System Admin - Phê duyệt hạng',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             color: AppTheme.textPrimaryLight,
             fontWeight: FontWeight.bold,
             fontSize: 18.sp,
@@ -194,7 +196,9 @@ class _SystemAdminRankManagementScreenState
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        '${_pendingAdminRequests.length}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        '${_pendingAdminRequests.length}',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.sp,
                           fontWeight: FontWeight.bold,
@@ -224,11 +228,11 @@ class _SystemAdminRankManagementScreenState
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: Colors.red))
           : _errorMessage != null
-          ? _buildErrorState()
-          : TabBarView(
-              controller: _tabController,
-              children: [_buildPendingTab(), _buildCompletedTab()],
-            ),
+              ? _buildErrorState()
+              : TabBarView(
+                  controller: _tabController,
+                  children: [_buildPendingTab(), _buildCompletedTab()],
+                ),
     );
   }
 
@@ -244,7 +248,9 @@ class _SystemAdminRankManagementScreenState
           ),
           SizedBox(height: 16),
           Text(
-            _errorMessage!, overflow: TextOverflow.ellipsis, style: TextStyle(
+            _errorMessage!,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: AppTheme.textSecondaryLight,
               fontSize: 16.sp,
             ),
@@ -322,7 +328,8 @@ class _SystemAdminRankManagementScreenState
           ),
           SizedBox(height: 16),
           Text(
-            title, style: TextStyle(
+            title,
+            style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
               color: AppTheme.textSecondaryLight,
@@ -331,7 +338,8 @@ class _SystemAdminRankManagementScreenState
           ),
           SizedBox(height: 8),
           Text(
-            subtitle, style: TextStyle(
+            subtitle,
+            style: TextStyle(
               fontSize: 14.sp,
               color: AppTheme.textSecondaryLight,
             ),
@@ -399,7 +407,9 @@ class _SystemAdminRankManagementScreenState
                   ),
                   SizedBox(width: 8),
                   Text(
-                    isPending ? 'CHỜ ADMIN PHÊ DUYỆT' : 'ĐÃ XỬ LÝ BỞI ADMIN', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    isPending ? 'CHỜ ADMIN PHÊ DUYỆT' : 'ĐÃ XỬ LÝ BỞI ADMIN',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.bold,
                       color: isPending ? Colors.red : Colors.grey,
@@ -443,14 +453,16 @@ class _SystemAdminRankManagementScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userName, style: TextStyle(
+                        userName,
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.sp,
                           color: AppTheme.textPrimaryLight,
                         ),
                       ),
                       Text(
-                        userEmail, style: TextStyle(
+                        userEmail,
+                        style: TextStyle(
                           fontSize: 12.sp,
                           color: AppTheme.textSecondaryLight,
                         ),
@@ -496,7 +508,9 @@ class _SystemAdminRankManagementScreenState
 
             // Reason
             Text(
-              'Lý do:', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lý do:',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14.sp,
                 color: AppTheme.textPrimaryLight,
@@ -504,7 +518,8 @@ class _SystemAdminRankManagementScreenState
             ),
             SizedBox(height: 4),
             Text(
-              reason, style: TextStyle(
+              reason,
+              style: TextStyle(
                 fontSize: 14.sp,
                 color: AppTheme.textSecondaryLight,
               ),
@@ -528,7 +543,9 @@ class _SystemAdminRankManagementScreenState
                     Icon(Icons.check_circle, color: Colors.green, size: 16),
                     SizedBox(width: 8),
                     Text(
-                      'Đã được Club chấp thuận', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Đã được Club chấp thuận',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12.sp,
                         color: Colors.green,
                         fontWeight: FontWeight.bold,
@@ -540,7 +557,9 @@ class _SystemAdminRankManagementScreenState
               if (clubComments.isNotEmpty) ...[
                 SizedBox(height: 4),
                 Text(
-                  'Club: $clubComments', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Club: $clubComments',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 12.sp,
                     color: AppTheme.textSecondaryLight,
                     fontStyle: FontStyle.italic,
@@ -665,7 +684,9 @@ class _SystemAdminRankManagementScreenState
                     Text(
                       workflowStatus == 'completed'
                           ? 'Đã phê duyệt - Rank đã cập nhật'
-                          : 'Đã từ chối', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          : 'Đã từ chối',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12.sp,
                         color: workflowStatus == 'completed'
                             ? Colors.green
@@ -680,7 +701,9 @@ class _SystemAdminRankManagementScreenState
                   request['admin_comments'].isNotEmpty) ...[
                 SizedBox(height: 4),
                 Text(
-                  'Admin: ${request['admin_comments']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Admin: ${request['admin_comments']}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 12.sp,
                     color: AppTheme.textSecondaryLight,
                     fontStyle: FontStyle.italic,
@@ -757,7 +780,9 @@ class _SystemAdminRankManagementScreenState
               _adminReview(requestId, false, comments: reasonController.text);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text('Từ chối', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white)),
+            child: Text('Từ chối',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

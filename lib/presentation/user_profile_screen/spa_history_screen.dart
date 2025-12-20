@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../widgets/common/app_button.dart';
 
 /// Screen hiển thị lịch sử giao dịch SPA của user
 class SpaHistoryScreen extends StatefulWidget {
@@ -69,14 +70,17 @@ class _SpaHistoryScreenState extends State<SpaHistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Lịch sử SPA Points', overflow: TextOverflow.ellipsis, style: TextStyle(
+              'Lịch sử SPA Points',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
-              widget.userName, style: const TextStyle(
+              widget.userName,
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -99,12 +103,15 @@ class _SpaHistoryScreenState extends State<SpaHistoryScreen> {
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
-                          textAlign: TextAlign.center, style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton(
+                        AppButton(
+                          label: 'Thử lại',
+                          type: AppButtonType.primary,
+                          size: AppButtonSize.medium,
                           onPressed: _loadSpaHistory,
-                          child: const Text('Thử lại'),
                         ),
                       ],
                     ),
@@ -119,7 +126,9 @@ class _SpaHistoryScreenState extends State<SpaHistoryScreen> {
                               size: 60, color: Colors.grey[400]),
                           const SizedBox(height: 16),
                           Text(
-                            'Chưa có lịch sử giao dịch SPA', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            'Chưa có lịch sử giao dịch SPA',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[600],
                             ),
@@ -225,7 +234,8 @@ class _SpaHistoryScreenState extends State<SpaHistoryScreen> {
                   decoration: BoxDecoration(
                     color: changeColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: changeColor.withValues(alpha: 0.3)),
+                    border:
+                        Border.all(color: changeColor.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -262,7 +272,8 @@ class _SpaHistoryScreenState extends State<SpaHistoryScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        description, style: const TextStyle(
+                        description,
+                        style: const TextStyle(
                           fontSize: 13,
                           color: Colors.black87,
                         ),
@@ -289,7 +300,9 @@ class _SpaHistoryScreenState extends State<SpaHistoryScreen> {
                   Column(
                     children: [
                       Text(
-                        'Số dư trước', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Số dư trước',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey[600],
                           fontWeight: FontWeight.w500,
@@ -324,7 +337,9 @@ class _SpaHistoryScreenState extends State<SpaHistoryScreen> {
                   Column(
                     children: [
                       Text(
-                        'Số dư sau', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Số dư sau',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 11,
                           color: changeColor,
                           fontWeight: FontWeight.w500,

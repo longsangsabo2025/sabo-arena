@@ -15,9 +15,8 @@ class ShareService {
   /// Generate unique code for user
   static String generateUserCode(String userId) {
     // Generate SABO prefix + last 6 chars of userId
-    final shortId = userId.length > 6
-        ? userId.substring(userId.length - 6)
-        : userId;
+    final shortId =
+        userId.length > 6 ? userId.substring(userId.length - 6) : userId;
     return 'SABO${shortId.toUpperCase()}';
   }
 
@@ -29,7 +28,7 @@ class ShareService {
   }) async {
     try {
       final userCode = generateUserCode(user.id);
-      
+
       // Create shareable card widget (4:5 ratio)
       final cardWidget = ShareableProfileCard(
         user: user,
@@ -107,7 +106,7 @@ class ShareService {
       // Generate share text based on match status
       String shareText;
       final matchTypeLabel = matchType == 'final' ? 'CHUNG KẾT' : 'BÁN KẾT';
-      
+
       if (isLive) {
         shareText = '''
 🔴 ĐANG DIỄN RA!
@@ -235,8 +234,7 @@ ${content.isNotEmpty ? '$content\n\n' : ''}📊 $likeCount lượt thích • $c
   /// Share user profile (Text Only - Legacy)
   static Future<void> shareUserProfile(UserProfile user) async {
     final userCode = generateUserCode(user.id);
-    final shareText =
-        '''
+    final shareText = '''
 🏆 Hãy thách đấu với tôi trên SABO ARENA!
 
 👤 ${user.fullName}
@@ -266,8 +264,7 @@ ${content.isNotEmpty ? '$content\n\n' : ''}📊 $likeCount lượt thích • $c
     required int participants,
     required String prizePool,
   }) async {
-    final shareText =
-        '''
+    final shareText = '''
 🏆 Tham gia giải đấu SABO ARENA!
 
 🎪 $tournamentName
@@ -354,8 +351,7 @@ ${content.isNotEmpty ? '$content\n\n' : ''}📊 $likeCount lượt thích • $c
     required String matchDate,
     String? matchId,
   }) async {
-    final shareText =
-        '''
+    final shareText = '''
 🏸 Kết quả trận đấu SABO ARENA
 
 ⚔️ $player1Name vs $player2Name
@@ -382,8 +378,7 @@ ${matchId != null ? '🔗 Chi tiết: $_baseUrl/match/$matchId\n' : ''}📱 Tả
     required int memberCount,
     String? description,
   }) async {
-    final shareText =
-        '''
+    final shareText = '''
 🏛️ Tham gia CLB $clubName!
 
 📍 Địa điểm: $location
@@ -400,8 +395,7 @@ ${description != null ? '📝 $description\n' : ''}
 
   /// Share app download
   static Future<void> shareApp() async {
-    const shareText =
-        '''
+    const shareText = '''
 🏸 SABO ARENA - Ứng dụng billiards #1 Việt Nam!
 
 ✨ Tính năng nổi bật:
@@ -553,4 +547,3 @@ ${description != null ? '📝 $description\n' : ''}
     return '$_baseUrl/leaderboard/$tournamentId';
   }
 }
-

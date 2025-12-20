@@ -117,20 +117,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
         _isLoading = false;
       });
     } catch (e) {
-
       // Fallback to mock data for development
       _loadMockData();
     }
   }
 
   void _loadMockData() {
-    // Mock leaderboard data for development
+    // Mock leaderboard data for development - MIGRATED 2025: Removed K+/I+
     final mockData = List.generate(50, (index) {
       final ranks = [
         'K',
-        'K+',
         'I',
-        'I+',
         'H',
         'H+',
         'G',
@@ -157,8 +154,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
         'recent_activity': index < 10
             ? 'Very Active'
             : index < 25
-            ? 'Active'
-            : 'Somewhat Active',
+                ? 'Active'
+                : 'Somewhat Active',
       };
     });
 
@@ -188,7 +185,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share, color: app_theme.AppBarTheme.primaryGreen),
+            icon: const Icon(Icons.share,
+                color: app_theme.AppBarTheme.primaryGreen),
             onPressed: _shareLeaderboard,
             tooltip: 'Chia sẻ bảng xếp hạng',
           ),
@@ -220,13 +218,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
               child: CircularProgressIndicator(color: AppColors.primary),
             )
           : _error != null
-          ? _buildErrorWidget()
-          : TabBarView(
-              controller: _tabController,
-              children: _tabs
-                  .map((tab) => _buildModernLeaderboardView())
-                  .toList(),
-            ),
+              ? _buildErrorWidget()
+              : TabBarView(
+                  controller: _tabController,
+                  children: _tabs
+                      .map((tab) => _buildModernLeaderboardView())
+                      .toList(),
+                ),
     );
   }
 
@@ -252,15 +250,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.gray50,
+                color: isSelected ? AppColors.primary : AppColors.gray50,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Center(
                 child: Text(
-                  filter['title'], overflow: TextOverflow.ellipsis, style: TextStyle(
-                    color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
+                  filter['title'],
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isSelected
+                        ? AppColors.textOnPrimary
+                        : AppColors.textSecondary,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                     letterSpacing: -0.2,
@@ -347,8 +347,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                         const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final player = _leaderboardData[index];
-                      final isCurrentUser =
-                          _currentUser != null &&
+                      final isCurrentUser = _currentUser != null &&
                           player['player_id'] == _currentUser!.id;
 
                       return _buildModernPlayerCard(
@@ -427,7 +426,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '#${currentUserData['rank']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    '#${currentUserData['rank']}',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: AppColors.textOnPrimary,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -437,7 +438,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Của bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Của bạn',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: AppColors.textOnPrimary.withValues(alpha: 0.9),
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
@@ -455,7 +458,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _currentUser!.displayName, style: TextStyle(
+                  _currentUser!.displayName,
+                  style: TextStyle(
                     color: AppColors.textOnPrimary,
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
@@ -466,7 +470,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Hạng ${currentUserData['player_rank']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Hạng ${currentUserData['player_rank']}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: AppColors.textOnPrimary.withValues(alpha: 0.85),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -522,7 +528,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     int ranking,
   ) {
     final rankColor = SaboRankSystem.getRankColor(player['player_rank'] ?? 'K');
-    
+
     // Use ranking directly for badge color, but treat 3rd and 4th as bronze (same rank)
     final badgeColor = _getModernRankingColor(ranking);
 
@@ -610,7 +616,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                         ),
                         child: Center(
                           child: Text(
-                            '#$ranking', overflow: TextOverflow.ellipsis, style: TextStyle(
+                            '#$ranking',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
                               color: AppColors.textOnPrimary,
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -655,7 +663,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                         ),
                       ),
                       child: Text(
-                        'Hạng ${player['player_rank']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Hạng ${player['player_rank']}',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: rankColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -675,7 +685,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          'Bạn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'Bạn',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color: AppColors.textOnPrimary,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -729,9 +741,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   }
 
   Color _getModernRankingColor(int ranking) {
-    if (ranking == 1) return const Color(0xFFFFB800); // Gold - Champion (specific ranking color)
+    if (ranking == 1)
+      return const Color(
+          0xFFFFB800); // Gold - Champion (specific ranking color)
     if (ranking == 2) return AppColors.gray500; // Silver - Runner-up
-    if (ranking == 3 || ranking == 4) return const Color(0xFFCD7F32); // Bronze - Both semi-final losers (specific ranking color)
+    if (ranking == 3 || ranking == 4)
+      return const Color(
+          0xFFCD7F32); // Bronze - Both semi-final losers (specific ranking color)
     if (ranking <= 10) return AppColors.primary; // Blue
     if (ranking <= 25) return AppColors.success; // Green
     return AppColors.textSecondary; // Gray
@@ -784,4 +800,3 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     }
   }
 }
-

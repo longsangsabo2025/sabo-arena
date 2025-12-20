@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../core/app_export.dart' hide AppColors;
 import '../../core/design_system/design_system.dart';
@@ -43,9 +44,7 @@ class HomeFeedScreen extends StatefulWidget {
 class _HomeFeedScreenState extends State<HomeFeedScreen>
     with TickerProviderStateMixin {
   int _selectedTabIndex = 0;
-  bool _isLoading = true;
   // bool _isPlayer = true;
-  final ScrollController _scrollController = ScrollController();
   late AnimationController _fabAnimationController;
   late Animation<double> _fabAnimation;
   late AnimationController _logoRotationController;
@@ -54,9 +53,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   // Real Supabase data
   final PostRepository _postRepository = PostRepository();
   final SupabaseClient _supabase = Supabase.instance.client;
-  List<PostModel> _nearbyPosts = [];
-  List<PostModel> _followingPosts = [];
-  String? _errorMessage;
+
+  // 🚀 Infinite Scroll Pagination Controllers
+  final PagingController<int, PostModel> _nearbyPagingController =
+      PagingController(firstPageKey: 0);
+  final PagingController<int, PostModel> _followingPagingController =
+      PagingController(firstPageKey: 0);
 
   // 🎯 iPad: Selected post for master-detail layout
   Map<String, dynamic>? _selectedPost;
@@ -102,11 +104,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
     _fabAnimationController.forward();
 
-    // Setup scroll listener
-    _scrollController.addListener(_onScroll);
+    // Setup paging controllers
+    _nearbyPagingController.addPageRequestListener((pageKey) {
+      _fetchNearbyPage(pageKey);
+    });
+    _followingPagingController.addPageRequestListener((pageKey) {
+      _fetchFollowingPage(pageKey);
+    });
 
-    // Load posts AFTER animation controllers are initialized
-    _loadPosts();
     // Check club owner status
     _checkClubOwnerStatus();
 
@@ -143,8 +148,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           CoachMarkStep(
             targetKey: _createPostKey,
             title: 'Tạo Bài Viết',
-            description:
-                'Nhấn vào đây để chia sẻ khoảnh khắc, ảnh trận đấu, '
+            description: 'Nhấn vào đây để chia sẻ khoảnh khắc, ảnh trận đấu, '
                 'hoặc trải nghiệm của bạn với cộng đồng.',
             icon: Icons.add_photo_alternate_rounded, // 📸 Icon tạo bài viết
           ),
@@ -153,8 +157,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           CoachMarkStep(
             targetKey: _clubsKey,
             title: 'Câu Lạc Bộ',
-            description:
-                'Khám phá và tham gia các câu lạc bộ Bida. '
+            description: 'Khám phá và tham gia các câu lạc bộ Bida. '
                 'Kết nối với đội nhóm và tham gia hoạt động thường xuyên.',
             icon: Icons.groups_rounded, // 👥 Icon câu lạc bộ
           ),
@@ -173,8 +176,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           CoachMarkStep(
             targetKey: _profileKey,
             title: 'Trang Cá Nhân',
-            description:
-                'Quản lý hồ sơ, xem thống kê và hạng của bạn. '
+            description: 'Quản lý hồ sơ, xem thống kê và hạng của bạn. '
                 'Đăng ký xác minh hạng để tham gia giải đấu chính thức.',
             icon: Icons.person_rounded, // 👤 Icon profile
           ),
@@ -189,67 +191,61 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
-  Future<void> _loadPosts() async {
+  // 🚀 Fetch Nearby Feed Page
+  Future<void> _fetchNearbyPage(int pageKey) async {
     try {
-      // 🚀 PHASE 2: Load from cache first for instant display
-      final cachedNearby = await AppCacheService.instance.getCache('home_feed_nearby');
-      final cachedFollowing = await AppCacheService.instance.getCache('home_feed_following');
-      
-      if (cachedNearby != null && cachedFollowing != null) {
-        if (mounted) {
-          setState(() {
-            _nearbyPosts = (cachedNearby as List).map((json) => PostModel.fromJson(json)).toList();
-            _followingPosts = (cachedFollowing as List).map((json) => PostModel.fromJson(json)).toList();
-            _isLoading = false; // No spinner, show cached data immediately
-          });
-        }
+      final newPosts = await _postRepository.getNearbyFeed(
+        offset: pageKey,
+        limit: 20,
+      );
+
+      final isLastPage = newPosts.length < 20;
+      if (isLastPage) {
+        _nearbyPagingController.appendLastPage(newPosts);
       } else {
-        // No cache, show loading spinner
-        if (mounted) {
-          setState(() {
-            _isLoading = true;
-            _errorMessage = null;
-          });
-          _logoRotationController.repeat();
-        }
+        final nextPageKey = pageKey + newPosts.length;
+        _nearbyPagingController.appendPage(newPosts, nextPageKey);
       }
 
-      // 📡 Then fetch fresh data in background (Facebook approach)
-      final nearbyFuture = _postRepository.getNearbyFeed(limit: 20);
-      final followingFuture = _postRepository.getFollowingFeed(limit: 20);
-
-      // Wait for both to complete in parallel
-      final results = await Future.wait([nearbyFuture, followingFuture]);
-
-      if (mounted) {
-        setState(() {
-          _nearbyPosts = results[0]; // Nearby/All posts
-          _followingPosts = results[1]; // Posts from followed users
-          _isLoading = false;
-        });
-        _logoRotationController.stop();
-        
-        // 💾 Save fresh data to cache for next time
+      // 💾 Cache first page for instant display next time
+      if (pageKey == 0 && newPosts.isNotEmpty) {
         await AppCacheService.instance.setCache(
           key: 'home_feed_nearby',
-          data: results[0].map((post) => post.toJson()).toList(),
-          ttl: const Duration(minutes: 5), // Cache for 5 minutes
-        );
-        await AppCacheService.instance.setCache(
-          key: 'home_feed_following',
-          data: results[1].map((post) => post.toJson()).toList(),
+          data: newPosts.map((post) => post.toJson()).toList(),
           ttl: const Duration(minutes: 5),
         );
-        
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = 'Lỗi tải bài đăng: $e';
-        });
-        _logoRotationController.stop();
+    } catch (error) {
+      _nearbyPagingController.error = error;
+    }
+  }
+
+  // 🚀 Fetch Following Feed Page
+  Future<void> _fetchFollowingPage(int pageKey) async {
+    try {
+      final newPosts = await _postRepository.getFollowingFeed(
+        offset: pageKey,
+        limit: 20,
+      );
+
+      final isLastPage = newPosts.length < 20;
+      if (isLastPage) {
+        _followingPagingController.appendLastPage(newPosts);
+      } else {
+        final nextPageKey = pageKey + newPosts.length;
+        _followingPagingController.appendPage(newPosts, nextPageKey);
       }
+
+      // 💾 Cache first page for instant display next time
+      if (pageKey == 0 && newPosts.isNotEmpty) {
+        await AppCacheService.instance.setCache(
+          key: 'home_feed_following',
+          data: newPosts.map((post) => post.toJson()).toList(),
+          ttl: const Duration(minutes: 5),
+        );
+      }
+    } catch (error) {
+      _followingPagingController.error = error;
     }
   }
 
@@ -260,8 +256,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       'userId': post.authorId, // Add userId for navigation
       'userName': post
           .authorName, // Use authorName from PostModel (already prioritizes display_name)
-      'userAvatar':
-          post.authorAvatarUrl ??
+      'userAvatar': post.authorAvatarUrl ??
           'https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659652_640.png',
       'userRank': null, // TODO: Get user rank
       'content': post.content,
@@ -279,90 +274,27 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _nearbyPagingController.dispose();
+    _followingPagingController.dispose();
     _fabAnimationController.dispose();
     _logoRotationController.dispose();
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      _loadMorePosts();
-    }
-  }
-
-  Future<void> _loadMorePosts() async {
-    if (_isLoading) return;
-
-    if (mounted) setState(() => _isLoading = true);
-
-    try {
-      // Load more posts based on current tab with separate feeds
-      final currentList = _selectedTabIndex == 0
-          ? _nearbyPosts
-          : _followingPosts;
-
-      final morePosts = _selectedTabIndex == 0
-          ? await _postRepository.getNearbyFeed(
-              offset: currentList.length,
-              limit: 10,
-            )
-          : await _postRepository.getFollowingFeed(
-              offset: currentList.length,
-              limit: 10,
-            );
-
-      if (mounted) {
-        setState(() {
-          if (_selectedTabIndex == 0) {
-            _nearbyPosts.addAll(morePosts);
-          } else {
-            _followingPosts.addAll(morePosts);
-          }
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              UserFriendlyMessages.getErrorMessage(e, context: 'Tải bài đăng'),
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
   Future<void> _refreshFeed() async {
-    if (mounted) setState(() => _isLoading = true);
+    if (_selectedTabIndex == 0) {
+      _nearbyPagingController.refresh();
+    } else {
+      _followingPagingController.refresh();
+    }
 
-    try {
-      await _loadPosts();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã cập nhật bảng tin'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Lỗi cập nhật: $e'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đang làm mới bảng tin...'),
+          duration: Duration(seconds: 1),
+        ),
+      );
     }
   }
 
@@ -407,34 +339,38 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
 
     // Get current like status (save for error message)
-    final currentlyLiked = postData is PostModel 
-        ? postData.isLiked 
+    final currentlyLiked = postData is PostModel
+        ? postData.isLiked
         : (postData['isLiked'] ?? false);
 
     try {
-
       // 🎯 Optimistic UI update - update the PostModel in list
-      final targetList = _selectedTabIndex == 0 ? _nearbyPosts : _followingPosts;
+      final pagingController = _selectedTabIndex == 0
+          ? _nearbyPagingController
+          : _followingPagingController;
+      final targetList = pagingController.itemList ?? [];
       final index = targetList.indexWhere((p) => p.id == postId);
-      
+
       if (index != -1 && mounted) {
+        final updatedList = List<PostModel>.from(targetList);
+        updatedList[index] = PostModel(
+          id: targetList[index].id,
+          title: targetList[index].title,
+          content: targetList[index].content,
+          authorId: targetList[index].authorId,
+          authorName: targetList[index].authorName,
+          authorAvatarUrl: targetList[index].authorAvatarUrl,
+          imageUrl: targetList[index].imageUrl,
+          createdAt: targetList[index].createdAt,
+          tags: targetList[index].tags,
+          commentCount: targetList[index].commentCount,
+          shareCount: targetList[index].shareCount,
+          // Toggle like
+          isLiked: !currentlyLiked,
+          likeCount: targetList[index].likeCount + (!currentlyLiked ? 1 : -1),
+        );
         setState(() {
-          targetList[index] = PostModel(
-            id: targetList[index].id,
-            title: targetList[index].title,
-            content: targetList[index].content,
-            authorId: targetList[index].authorId,
-            authorName: targetList[index].authorName,
-            authorAvatarUrl: targetList[index].authorAvatarUrl,
-            imageUrl: targetList[index].imageUrl,
-            createdAt: targetList[index].createdAt,
-            tags: targetList[index].tags,
-            commentCount: targetList[index].commentCount,
-            shareCount: targetList[index].shareCount,
-            // Toggle like
-            isLiked: !currentlyLiked,
-            likeCount: targetList[index].likeCount + (!currentlyLiked ? 1 : -1),
-          );
+          pagingController.itemList = updatedList;
         });
       }
 
@@ -443,37 +379,41 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       _pendingLikeRequests[postId] = request;
 
       await request;
-      
+
       // � PHASE 2: Invalidate cache after like/unlike to ensure fresh data next time
       await AppCacheService.instance.removeCache('home_feed_nearby');
       await AppCacheService.instance.removeCache('home_feed_following');
-      
+
       // �🔄 Sync isLiked from DB sau khi API thành công
       await _reloadPost(postId);
     } catch (e) {
-      
       // ✅ Revert on error
-      final targetList = _selectedTabIndex == 0 ? _nearbyPosts : _followingPosts;
+      final pagingController = _selectedTabIndex == 0
+          ? _nearbyPagingController
+          : _followingPagingController;
+      final targetList = pagingController.itemList ?? [];
       final index = targetList.indexWhere((p) => p.id == postId);
-      
+
       if (index != -1 && mounted) {
+        final updatedList = List<PostModel>.from(targetList);
+        updatedList[index] = PostModel(
+          id: targetList[index].id,
+          title: targetList[index].title,
+          content: targetList[index].content,
+          authorId: targetList[index].authorId,
+          authorName: targetList[index].authorName,
+          authorAvatarUrl: targetList[index].authorAvatarUrl,
+          imageUrl: targetList[index].imageUrl,
+          createdAt: targetList[index].createdAt,
+          tags: targetList[index].tags,
+          commentCount: targetList[index].commentCount,
+          shareCount: targetList[index].shareCount,
+          // Revert toggle
+          isLiked: currentlyLiked,
+          likeCount: targetList[index].likeCount + (currentlyLiked ? 1 : -1),
+        );
         setState(() {
-          targetList[index] = PostModel(
-            id: targetList[index].id,
-            title: targetList[index].title,
-            content: targetList[index].content,
-            authorId: targetList[index].authorId,
-            authorName: targetList[index].authorName,
-            authorAvatarUrl: targetList[index].authorAvatarUrl,
-            imageUrl: targetList[index].imageUrl,
-            createdAt: targetList[index].createdAt,
-            tags: targetList[index].tags,
-            commentCount: targetList[index].commentCount,
-            shareCount: targetList[index].shareCount,
-            // Revert toggle
-            isLiked: !targetList[index].isLiked,
-            likeCount: targetList[index].likeCount + (targetList[index].isLiked ? -1 : 1),
-          );
+          pagingController.itemList = updatedList;
         });
       }
 
@@ -544,9 +484,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   Future<void> _reloadPost(String postId) async {
     try {
       // Determine which list to update
-      final targetList = _selectedTabIndex == 0
-          ? _nearbyPosts
-          : _followingPosts;
+      final pagingController = _selectedTabIndex == 0
+          ? _nearbyPagingController
+          : _followingPagingController;
+      final targetList = pagingController.itemList ?? [];
 
       // Find the post in the list
       final index = targetList.indexWhere((p) => p.id == postId);
@@ -558,43 +499,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           .select('comment_count, share_count, like_count')
           .eq('id', postId)
           .single();
-      
+
       // 🔄 Re-check if user has liked this post
       final isLiked = await _postRepository.hasUserLikedPost(postId);
 
       if (mounted) {
-        setState(() {
-          targetList[index] = PostModel(
-            id: targetList[index].id,
-            title: targetList[index].title,
-            content: targetList[index].content,
-            authorId: targetList[index].authorId,
-            authorName: targetList[index].authorName,
-            authorAvatarUrl: targetList[index].authorAvatarUrl,
-            imageUrl: targetList[index].imageUrl,
-            createdAt: targetList[index].createdAt,
-            tags: targetList[index].tags,
-            // 🔄 Update counts and isLiked from database
-            commentCount: response['comment_count'] ?? 0,
-            shareCount: response['share_count'] ?? 0,
-            likeCount: response['like_count'] ?? 0,
-            isLiked: isLiked, // ✅ Sync from database
-          );
-        });
-      }
-    } catch (e) {
-      // Silent fail - counts will sync on next refresh
-    }
-  }
-
-  Future<void> _handleSharePost(Map<String, dynamic> post) async {
-    // Optimistic update: increment share count immediately
-    final targetList = _selectedTabIndex == 0 ? _nearbyPosts : _followingPosts;
-    final index = targetList.indexWhere((p) => p.id == post['id']);
-
-    if (index != -1 && mounted) {
-      setState(() {
-        targetList[index] = PostModel(
+        final updatedList = List<PostModel>.from(targetList);
+        updatedList[index] = PostModel(
           id: targetList[index].id,
           title: targetList[index].title,
           content: targetList[index].content,
@@ -604,12 +515,49 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           imageUrl: targetList[index].imageUrl,
           createdAt: targetList[index].createdAt,
           tags: targetList[index].tags,
-          commentCount: targetList[index].commentCount,
-          likeCount: targetList[index].likeCount,
-          isLiked: targetList[index].isLiked,
-          // 🚀 Increment share count optimistically
-          shareCount: targetList[index].shareCount + 1,
+          // 🔄 Update counts and isLiked from database
+          commentCount: response['comment_count'] ?? 0,
+          shareCount: response['share_count'] ?? 0,
+          likeCount: response['like_count'] ?? 0,
+          isLiked: isLiked, // ✅ Sync from database
         );
+        setState(() {
+          pagingController.itemList = updatedList;
+        });
+      }
+    } catch (e) {
+      // Silent fail - counts will sync on next refresh
+    }
+  }
+
+  Future<void> _handleSharePost(Map<String, dynamic> post) async {
+    // Optimistic update: increment share count immediately
+    final pagingController = _selectedTabIndex == 0
+        ? _nearbyPagingController
+        : _followingPagingController;
+    final targetList = pagingController.itemList ?? [];
+    final index = targetList.indexWhere((p) => p.id == post['id']);
+
+    if (index != -1 && mounted) {
+      final updatedList = List<PostModel>.from(targetList);
+      updatedList[index] = PostModel(
+        id: targetList[index].id,
+        title: targetList[index].title,
+        content: targetList[index].content,
+        authorId: targetList[index].authorId,
+        authorName: targetList[index].authorName,
+        authorAvatarUrl: targetList[index].authorAvatarUrl,
+        imageUrl: targetList[index].imageUrl,
+        createdAt: targetList[index].createdAt,
+        tags: targetList[index].tags,
+        commentCount: targetList[index].commentCount,
+        likeCount: targetList[index].likeCount,
+        isLiked: targetList[index].isLiked,
+        // 🚀 Increment share count optimistically
+        shareCount: targetList[index].shareCount + 1,
+      );
+      setState(() {
+        pagingController.itemList = updatedList;
       });
     }
 
@@ -622,12 +570,16 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         postTitle: post['content'] ?? 'Bài viết',
         postContent: post['content'],
         postImageUrl: post['imageUrl'],
-        authorName: post['authorName'] ?? post['author_name'] ?? 'Không xác định',
+        authorName:
+            post['authorName'] ?? post['author_name'] ?? 'Không xác định',
         authorAvatar: post['authorAvatarUrl'] ?? post['author_avatar_url'],
         likeCount: post['likeCount'] ?? post['like_count'] ?? 0,
         commentCount: post['commentCount'] ?? post['comment_count'] ?? 0,
         shareCount: post['shareCount'] ?? post['share_count'] ?? 0,
-        createdAt: DateTime.tryParse(post['createdAt']?.toString() ?? post['created_at']?.toString() ?? '') ?? DateTime.now(),
+        createdAt: DateTime.tryParse(post['createdAt']?.toString() ??
+                post['created_at']?.toString() ??
+                '') ??
+            DateTime.now(),
       ),
     );
 
@@ -644,30 +596,33 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
       if (mounted && success) {
         // ✅ Update isSaved state in PostModel
-        final targetList = _selectedTabIndex == 0
-            ? _nearbyPosts
-            : _followingPosts;
+        final pagingController = _selectedTabIndex == 0
+            ? _nearbyPagingController
+            : _followingPagingController;
+        final targetList = pagingController.itemList ?? [];
         final index = targetList.indexWhere((p) => p.id == postId);
 
         if (index != -1) {
+          final updatedList = List<PostModel>.from(targetList);
+          updatedList[index] = PostModel(
+            id: targetList[index].id,
+            title: targetList[index].title,
+            content: targetList[index].content,
+            authorId: targetList[index].authorId,
+            authorName: targetList[index].authorName,
+            authorAvatarUrl: targetList[index].authorAvatarUrl,
+            imageUrl: targetList[index].imageUrl,
+            createdAt: targetList[index].createdAt,
+            tags: targetList[index].tags,
+            commentCount: targetList[index].commentCount,
+            shareCount: targetList[index].shareCount,
+            likeCount: targetList[index].likeCount,
+            isLiked: targetList[index].isLiked,
+            // 🔖 Mark as saved
+            isSaved: true,
+          );
           setState(() {
-            targetList[index] = PostModel(
-              id: targetList[index].id,
-              title: targetList[index].title,
-              content: targetList[index].content,
-              authorId: targetList[index].authorId,
-              authorName: targetList[index].authorName,
-              authorAvatarUrl: targetList[index].authorAvatarUrl,
-              imageUrl: targetList[index].imageUrl,
-              createdAt: targetList[index].createdAt,
-              tags: targetList[index].tags,
-              commentCount: targetList[index].commentCount,
-              shareCount: targetList[index].shareCount,
-              likeCount: targetList[index].likeCount,
-              isLiked: targetList[index].isLiked,
-              // 🔖 Mark as saved
-              isSaved: true,
-            );
+            pagingController.itemList = updatedList;
           });
         }
 
@@ -707,12 +662,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
       if (mounted && success) {
         // Remove post from current list
+        final pagingController = _selectedTabIndex == 0
+            ? _nearbyPagingController
+            : _followingPagingController;
+        final updatedList =
+            List<PostModel>.from(pagingController.itemList ?? []);
+        updatedList.removeWhere((p) => p.id == postId);
         setState(() {
-          if (_selectedTabIndex == 0) {
-            _nearbyPosts.removeWhere((p) => p.id == postId);
-          } else {
-            _followingPosts.removeWhere((p) => p.id == postId);
-          }
+          pagingController.itemList = updatedList;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -779,14 +736,21 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   //   }
   // }
 
-  List<Map<String, dynamic>> get _currentPosts {
-    final postModels = _selectedTabIndex == 0 ? _nearbyPosts : _followingPosts;
-    return postModels.map((post) => _postToMap(post)).toList();
-  }
+  // List<Map<String, dynamic>> get _currentPosts {
+  //   final pagingController = _selectedTabIndex == 0
+  //       ? _nearbyPagingController
+  //       : _followingPagingController;
+  //   final postModels = pagingController.itemList ?? [];
+  //   return postModels.map((post) => _postToMap(post)).toList();
+  // }
 
-  bool get _isEmpty {
-    return _currentPosts.isEmpty;
-  }
+  // bool get _isEmpty {
+  //   final pagingController = _selectedTabIndex == 0
+  //       ? _nearbyPagingController
+  //       : _followingPagingController;
+  //   return (pagingController.itemList ?? []).isEmpty &&
+  //          pagingController.error == null;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -821,8 +785,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         animation: _fabAnimation,
         builder: (context, child) {
           return Transform.scale(
-            scale:
-                _fabAnimation.value *
+            scale: _fabAnimation.value *
                 (1 + 0.1 * (1 - _fabAnimation.value)), // Zoom effect
             child: Container(
               key: _createPostKey, // 🎯 Coach mark target
@@ -932,7 +895,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             onSave: () => _handleSavePost(post),
             onHide: () => _handleHidePost(post),
           ),
-          
+
           // Comments section would go here
           const SizedBox(height: 24),
           const Divider(),
@@ -975,156 +938,164 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
         // Feed content
         Expanded(
-              child: _isLoading && _currentPosts.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Rotating Logo Loading
-                          Container(
-                            width: 60,
-                            height: 60,
-                            padding: const EdgeInsets.all(8.0),
-                            child: AnimatedBuilder(
-                              animation: _logoRotationAnimation,
-                              builder: (context, child) {
-                                return Transform.rotate(
-                                  angle: _logoRotationAnimation.value,
-                                  child: SvgPicture.asset(
-                                    'assets/images/logo.svg',
-                                    width: 44,
-                                    height: 44,
-                                    fit: BoxFit.contain,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 3.h),
-                          Text(
-                            'Đang tải bảng tin...', overflow: TextOverflow.ellipsis, style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textSecondary,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          SizedBox(height: 1.h),
-                          Text(
-                            'Vui lòng đợi một chút', overflow: TextOverflow.ellipsis, style: TextStyle(
-                              fontSize: 11.sp,
-                              color: AppColors.textTertiary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : _errorMessage != null
-                  ? RefreshableErrorStateWidget(
-                      errorMessage: _errorMessage,
-                      onRefresh: _refreshFeed,
-                      title: 'Không thể tải bài đăng',
-                      description:
-                          'Đã xảy ra lỗi khi tải bài đăng từ cộng đồng',
-                      showErrorDetails: true,
-                    )
-                  : _isEmpty
-                  ? EmptyFeedWidget(
-                      isNearbyTab: _selectedTabIndex == 0,
-                      onCreatePost: _showCreatePostModal,
-                      onFindFriends: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.findOpponentsScreen,
-                        );
-                      },
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _refreshFeed,
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(bottom: 1.h),
-                        itemCount:
-                            1 +
-                            (_isClubOwner && !_hasClub ? 1 : 0) +
-                            (_showClubReminderBanner ? 1 : 0) + // 🎯 Phase 3
-                            _currentPosts.length +
-                            (_isLoading ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          // Show create post hint first
-                          if (index == 0) {
-                            return CreatePostHintWidget(
-                              onTap: _showCreatePostModal,
-                            );
-                          }
+          child: RefreshIndicator(
+            onRefresh: _refreshFeed,
+            child: PagedListView<int, PostModel>.separated(
+              pagingController: _selectedTabIndex == 0
+                  ? _nearbyPagingController
+                  : _followingPagingController,
+              padding: EdgeInsets.only(bottom: 1.h),
+              separatorBuilder: (context, index) => const SizedBox.shrink(),
+              builderDelegate: PagedChildBuilderDelegate<PostModel>(
+                itemBuilder: (context, post, index) {
+                  final postMap = _postToMap(post);
 
-                          // Show club owner banner if applicable
-                          if (_isClubOwner && !_hasClub && index == 1) {
-                            return _buildClubOwnerBanner();
-                          }
+                  // 🎯 iPad: Handle tap to update selected post
+                  final isIPad = DeviceInfo.isIPad(context);
+                  final isLandscape = MediaQuery.of(context).orientation ==
+                      Orientation.landscape;
+                  final showMasterDetail = isIPad && isLandscape;
+                  final isSelected =
+                      showMasterDetail && _selectedPost?['id'] == post.id;
 
-                          // 🎯 Phase 3: Show CLB reminder banner if applicable
-                          if (_showClubReminderBanner &&
-                              index == (_isClubOwner && !_hasClub ? 2 : 1)) {
-                            return _buildClubReminderBanner();
-                          }
-
-                          // Adjust index for actual posts
-                          int adjustedIndex =
-                              index - 1; // -1 for create post hint
-                          if (_isClubOwner && !_hasClub) adjustedIndex--;
-                          if (_showClubReminderBanner)
-                            adjustedIndex--; // -1 for reminder banner
-                          final postIndex = adjustedIndex;
-                          if (postIndex == _currentPosts.length) {
-                            return Container(
-                              padding: EdgeInsets.all(4.w),
-                              child: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-
-                          final post = _currentPosts[postIndex];
-                          
-                          // 🎯 iPad: Handle tap to update selected post
-                          final isIPad = DeviceInfo.isIPad(context);
-                          final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-                          final showMasterDetail = isIPad && isLandscape;
-                          final isSelected = showMasterDetail && _selectedPost?['id'] == post['id'];
-                          
-                          return GestureDetector(
-                            onTap: showMasterDetail
-                                ? () {
-                                    if (mounted) {
-                                      setState(() {
-                                        _selectedPost = post;
-                                      });
-                                    }
+                  // Add create post hint before first post
+                  if (index == 0) {
+                    return Column(
+                      children: [
+                        CreatePostHintWidget(
+                          onTap: _showCreatePostModal,
+                        ),
+                        if (_isClubOwner && !_hasClub) _buildClubOwnerBanner(),
+                        if (_showClubReminderBanner) _buildClubReminderBanner(),
+                        GestureDetector(
+                          onTap: showMasterDetail
+                              ? () {
+                                  if (mounted) {
+                                    setState(() {
+                                      _selectedPost = postMap;
+                                    });
                                   }
+                                }
+                              : null,
+                          child: Container(
+                            color: isSelected
+                                ? AppColors.primary.withValues(alpha: 0.08)
                                 : null,
-                            child: Container(
-                              color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : null,
-                              child: FeedPostCardWidget(
-                                key: ValueKey(post['id']), // Force rebuild when post changes
-                                post: post,
-                                onLike: () => _handlePostAction('like', post),
-                                onComment: () => _handlePostAction('comment', post),
-                                onShare: () => _handlePostAction('share', post),
-                                onUserTap: () => _handleUserTap(post),
-                                onSave: () => _handleSavePost(post),
-                                onHide: () => _handleHidePost(post),
-                              ),
+                            child: FeedPostCardWidget(
+                              key: ValueKey(post.id),
+                              post: postMap,
+                              onLike: () => _handlePostAction('like', postMap),
+                              onComment: () =>
+                                  _handlePostAction('comment', postMap),
+                              onShare: () =>
+                                  _handlePostAction('share', postMap),
+                              onUserTap: () => _handleUserTap(postMap),
+                              onSave: () => _handleSavePost(postMap),
+                              onHide: () => _handleHidePost(postMap),
                             ),
-                          );
-                        },
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return GestureDetector(
+                    onTap: showMasterDetail
+                        ? () {
+                            if (mounted) {
+                              setState(() {
+                                _selectedPost = postMap;
+                              });
+                            }
+                          }
+                        : null,
+                    child: Container(
+                      color: isSelected
+                          ? AppColors.primary.withValues(alpha: 0.08)
+                          : null,
+                      child: FeedPostCardWidget(
+                        key: ValueKey(post.id),
+                        post: postMap,
+                        onLike: () => _handlePostAction('like', postMap),
+                        onComment: () => _handlePostAction('comment', postMap),
+                        onShare: () => _handlePostAction('share', postMap),
+                        onUserTap: () => _handleUserTap(postMap),
+                        onSave: () => _handleSavePost(postMap),
+                        onHide: () => _handleHidePost(postMap),
                       ),
                     ),
+                  );
+                },
+                firstPageProgressIndicatorBuilder: (context) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        padding: const EdgeInsets.all(8.0),
+                        child: AnimatedBuilder(
+                          animation: _logoRotationAnimation,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _logoRotationAnimation.value,
+                              child: SvgPicture.asset(
+                                'assets/images/logo.svg',
+                                width: 44,
+                                height: 44,
+                                fit: BoxFit.contain,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 3.h),
+                      Text(
+                        'Đang tải bảng tin...',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                newPageProgressIndicatorBuilder: (context) => Container(
+                  padding: EdgeInsets.all(4.w),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                firstPageErrorIndicatorBuilder: (context) =>
+                    RefreshableErrorStateWidget(
+                  errorMessage: _selectedTabIndex == 0
+                      ? _nearbyPagingController.error?.toString()
+                      : _followingPagingController.error?.toString(),
+                  onRefresh: _refreshFeed,
+                  title: 'Không thể tải bài đăng',
+                  description: 'Đã xảy ra lỗi khi tải bài đăng từ cộng đồng',
+                  showErrorDetails: true,
+                ),
+                noItemsFoundIndicatorBuilder: (context) => EmptyFeedWidget(
+                  isNearbyTab: _selectedTabIndex == 0,
+                  onCreatePost: _showCreatePostModal,
+                  onFindFriends: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.findOpponentsScreen,
+                    );
+                  },
+                ),
+              ),
             ),
-          ],
-        );
-      }
+          ),
+        ),
+      ],
+    );
+  }
 
   Future<void> _checkClubOwnerStatus() async {
     try {
@@ -1173,7 +1144,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           _showClubReminderBanner = hasPending && !dismissed && !_hasClub;
         });
       }
-
     } catch (e) {
       // Ignore error
     }
@@ -1207,14 +1177,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       if (mounted) {
         Navigator.of(context)
             .push(
-              MaterialPageRoute(
-                builder: (context) => const ClubRegistrationScreen(),
-              ),
-            )
+          MaterialPageRoute(
+            builder: (context) => const ClubRegistrationScreen(),
+          ),
+        )
             .then((_) {
-              // Refresh club status after returning
-              _checkClubOwnerStatus();
-            });
+          // Refresh club status after returning
+          _checkClubOwnerStatus();
+        });
       }
 
       // Ignore error
@@ -1268,14 +1238,18 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Chủ CLB', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Chủ CLB',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.info700,
                       ),
                     ),
                     Text(
-                      'Bạn chưa đăng ký câu lạc bộ', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Bạn chưa đăng ký câu lạc bộ',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12.sp,
                         color: AppColors.info600,
                       ),
@@ -1304,7 +1278,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           Text(
             '🏢 Tạo và quản lý câu lạc bộ của bạn\n'
             '🎯 Tổ chức giải đấu và sự kiện\n'
-            '👥 Thu hút thành viên mới', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '👥 Thu hút thành viên mới',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 11.sp,
               color: AppColors.info700,
               height: 1.4,
@@ -1375,7 +1351,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               // Title
               Expanded(
                 child: Text(
-                  'Hoàn tất đăng ký CLB', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Hoàn tất đăng ký CLB',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                     color: AppColors.info700,
@@ -1402,7 +1380,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           // Description
           Text(
             'Bạn chưa hoàn thành đăng ký câu lạc bộ.\n'
-            'Hoàn tất ngay để bắt đầu quản lý CLB của bạn!', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Hoàn tất ngay để bắt đầu quản lý CLB của bạn!',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 11.5.sp,
               color: AppColors.textSecondary,
               height: 1.5,
@@ -1441,4 +1421,3 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     );
   }
 }
-

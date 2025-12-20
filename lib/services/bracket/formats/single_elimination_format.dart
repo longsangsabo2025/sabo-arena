@@ -2,14 +2,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/utils/production_logger.dart';
 
 /// Complete Single Elimination Service - Clean Implementation
-/// 
+///
 /// Mathematical advancement formula: nextMatch = ((currentMatch - 1) ~/ 2) + 1
 /// For n players: n-1 total matches, log2(n) rounds
 class CompleteSingleEliminationService {
   static CompleteSingleEliminationService? _instance;
   static CompleteSingleEliminationService get instance =>
       _instance ??= CompleteSingleEliminationService._();
-  
+
   CompleteSingleEliminationService._();
 
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -21,13 +21,15 @@ class CompleteSingleEliminationService {
     required String winnerId,
     required Map<String, int> scores,
   }) async {
-    ProductionLogger.debug('$_tag: Processing match $matchId with winner $winnerId');
+    ProductionLogger.debug(
+        '$_tag: Processing match $matchId with winner $winnerId');
 
     try {
       // 1. Get match details
       final matchResponse = await _supabase
           .from('matches')
-          .select('id, tournament_id, round_number, match_number, player1_id, player2_id, is_completed')
+          .select(
+              'id, tournament_id, round_number, match_number, player1_id, player2_id, is_completed')
           .eq('id', matchId)
           .single();
 
@@ -60,19 +62,17 @@ class CompleteSingleEliminationService {
       }
 
       // 3. Update match result
-      await _supabase
-          .from('matches')
-          .update({
-            'winner_id': winnerId,
-            'player1_score': scores['player1'] ?? 0,
-            'player2_score': scores['player2'] ?? 0,
-            'is_completed': true,
-            'status': 'completed',
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', matchId);
+      await _supabase.from('matches').update({
+        'winner_id': winnerId,
+        'player1_score': scores['player1'] ?? 0,
+        'player2_score': scores['player2'] ?? 0,
+        'is_completed': true,
+        'status': 'completed',
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', matchId);
 
-      ProductionLogger.debug('$_tag: Match $matchId updated with winner $winnerId');
+      ProductionLogger.debug(
+          '$_tag: Match $matchId updated with winner $winnerId');
 
       // 4. Calculate and advance winner to next match
       final advanceResult = await _advanceWinnerToNextMatch(
@@ -106,7 +106,7 @@ class CompleteSingleEliminationService {
     }
   }
 
-  /// Advance winner to next match using mathematical formula
+  /// Advance winner to next match using position-based logic
   Future<Map<String, dynamic>> _advanceWinnerToNextMatch({
     required String tournamentId,
     required int currentRound,
@@ -126,51 +126,95 @@ class CompleteSingleEliminationService {
 
       // Check if this was the final
       if (currentRound >= totalRounds) {
-        ProductionLogger.debug('$_tag: This was the final match - no advancement needed');
+        ProductionLogger.debug(
+            '$_tag: This was the final match - no advancement needed');
         return {'advanced': false, 'reason': 'final_match'};
       }
 
-      // Calculate next match number using mathematical formula
-      // In single elimination: match N advances to match ((N-1)/2)+1 in next round
       final nextRound = currentRound + 1;
-      final nextMatchNumber = _calculateNextMatchNumber(currentMatchNumber);
-      
-      // Determine which slot (player1 or player2)
-      final isOddMatch = currentMatchNumber % 2 == 1;
-      final slotField = isOddMatch ? 'player1_id' : 'player2_id';
 
-      ProductionLogger.debug(
-        '$_tag: Advancing winner to Round $nextRound, Match $nextMatchNumber, Slot: $slotField'
-      );
-
-      // Find next match
-      final nextMatchResponse = await _supabase
+      // 1. Get all matches in current round to find index
+      final currentRoundMatches = await _supabase
           .from('matches')
-          .select('id')
+          .select('id, match_number')
+          .eq('tournament_id', tournamentId)
+          .eq('round_number', currentRound)
+          .order('match_number');
+
+      // 2. Find index of current match in this round (0-based)
+      final currentIndex = currentRoundMatches
+          .indexWhere((m) => m['match_number'] == currentMatchNumber);
+      if (currentIndex == -1) {
+        throw Exception(
+            'Current match $currentMatchNumber not found in round $currentRound');
+      }
+
+      // 3. Calculate next index (e.g., match 0 and 1 go to next match 0)
+      final nextIndex = currentIndex ~/ 2;
+
+      // 4. Get next round matches
+      final nextRoundMatches = await _supabase
+          .from('matches')
+          .select('id, match_number')
           .eq('tournament_id', tournamentId)
           .eq('round_number', nextRound)
-          .eq('match_number', nextMatchNumber)
-          .maybeSingle();
+          .order('match_number');
 
-      if (nextMatchResponse == null) {
-        ProductionLogger.warning('$_tag: Next match not found - may need to create');
+      if (nextIndex >= nextRoundMatches.length) {
+        ProductionLogger.warning(
+            '$_tag: Next match not found at index $nextIndex in round $nextRound');
         return {'advanced': false, 'reason': 'next_match_not_found'};
       }
 
-      // Update next match with winner
-      await _supabase
-          .from('matches')
-          .update({
-            slotField: winnerId,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', nextMatchResponse['id']);
+      final nextMatch = nextRoundMatches[nextIndex];
 
-      ProductionLogger.debug('$_tag: Winner advanced to match ${nextMatchResponse['id']}');
+      // 5. Determine slot (Even index -> Player 1, Odd index -> Player 2)
+      // Example: Index 0 -> P1 of Next Match 0
+      //          Index 1 -> P2 of Next Match 0
+      final isPlayer1Slot = (currentIndex % 2) == 0;
+      final slotField = isPlayer1Slot ? 'player1_id' : 'player2_id';
+
+      ProductionLogger.debug(
+          '$_tag: Advancing winner to Round $nextRound, Match ${nextMatch['match_number']}, Slot: $slotField');
+
+      // 6. Update next match with winner
+      await _supabase.from('matches').update({
+        slotField: winnerId,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', nextMatch['id']);
+
+      // 7. Check if next match is now ready (both players present)
+      final updatedNextMatch = await _supabase
+          .from('matches')
+          .select('player1_id, player2_id')
+          .eq('id', nextMatch['id'])
+          .single();
+
+      final p1 = updatedNextMatch['player1_id'] as String?;
+      final p2 = updatedNextMatch['player2_id'] as String?;
+
+      // ⚡ ELON FIX: Prevent players from facing themselves
+      if (p1 != null && p2 != null && p1 == p2) {
+        ProductionLogger.error(
+          'CRITICAL BUG: Player $p1 would face themselves in next match! This should NEVER happen.',
+          tag: _tag,
+        );
+        throw Exception('Invalid bracket state: Player cannot face themselves');
+      }
+
+      if (p1 != null && p2 != null) {
+        await _supabase
+            .from('matches')
+            .update({'status': 'pending'}) // Ready to play
+            .eq('id', nextMatch['id']);
+      }
+
+      ProductionLogger.debug(
+          '$_tag: Winner advanced to match ${nextMatch['id']}');
 
       return {
         'advanced': true,
-        'next_match_id': nextMatchResponse['id'],
+        'next_match_id': nextMatch['id'],
         'next_round': nextRound,
         'slot': slotField,
       };
@@ -202,7 +246,8 @@ class CompleteSingleEliminationService {
 
       return finalMatch != null && finalMatch['winner_id'] != null;
     } catch (e) {
-      ProductionLogger.error('$_tag: Error checking tournament complete', error: e);
+      ProductionLogger.error('$_tag: Error checking tournament complete',
+          error: e);
       return false;
     }
   }
@@ -221,6 +266,7 @@ class CompleteSingleEliminationService {
 
   /// Calculate next match number using mathematical formula
   /// Formula: ((currentMatch - 1) ~/ 2) + 1
+  /// Currently unused - logic moved inline but keeping for reference
   int _calculateNextMatchNumber(int currentMatchNumber) {
     return ((currentMatchNumber - 1) ~/ 2) + 1;
   }
@@ -231,7 +277,8 @@ class CompleteSingleEliminationService {
     required List<String> participantIds,
   }) async {
     try {
-      ProductionLogger.debug('$_tag: Creating bracket for $tournamentId with ${participantIds.length} players');
+      ProductionLogger.debug(
+          '$_tag: Creating bracket for $tournamentId with ${participantIds.length} players');
 
       if (participantIds.length < 2) {
         return {'success': false, 'error': 'Need at least 2 participants'};
@@ -239,7 +286,7 @@ class CompleteSingleEliminationService {
 
       final totalRounds = _calculateTotalRounds(participantIds.length);
       final totalMatches = participantIds.length - 1;
-      
+
       final matches = <Map<String, dynamic>>[];
       int matchCounter = 1;
 
@@ -247,7 +294,8 @@ class CompleteSingleEliminationService {
       final shuffled = List<String>.from(participantIds)..shuffle();
 
       for (int round = 1; round <= totalRounds; round++) {
-        final matchesInRound = _calculateMatchesInRound(participantIds.length, round);
+        final matchesInRound =
+            _calculateMatchesInRound(participantIds.length, round);
 
         for (int m = 1; m <= matchesInRound; m++) {
           final match = {
@@ -279,7 +327,8 @@ class CompleteSingleEliminationService {
       // Insert matches
       await _supabase.from('matches').insert(matches);
 
-      ProductionLogger.debug('$_tag: Created $totalMatches matches in $totalRounds rounds');
+      ProductionLogger.debug(
+          '$_tag: Created $totalMatches matches in $totalRounds rounds');
 
       return {
         'success': true,
@@ -287,7 +336,8 @@ class CompleteSingleEliminationService {
         'total_rounds': totalRounds,
       };
     } catch (e, stackTrace) {
-      ProductionLogger.error('$_tag: Error creating bracket', error: e, stackTrace: stackTrace);
+      ProductionLogger.error('$_tag: Error creating bracket',
+          error: e, stackTrace: stackTrace);
       return {'success': false, 'error': e.toString()};
     }
   }
@@ -296,4 +346,3 @@ class CompleteSingleEliminationService {
     return totalParticipants ~/ (1 << round); // totalParticipants / 2^round
   }
 }
-

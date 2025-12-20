@@ -31,8 +31,7 @@ class ChatService {
         query = query.eq('club_id', clubId);
       }
 
-    final response = await query
-      .order('updated_at', ascending: false);
+      final response = await query.order('updated_at', ascending: false);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
@@ -112,13 +111,14 @@ class ChatService {
             users!chat_messages_sender_id_fkey(
               id,
               display_name,
+              username,
               avatar_url,
               rank_type
             ),
             reply_message:chat_messages!chat_messages_reply_to_fkey(
               id,
               message,
-              users!chat_messages_sender_id_fkey(display_name)
+              users!chat_messages_sender_id_fkey(display_name, username)
             )
           ''')
           .eq('room_id', roomId)
@@ -153,10 +153,8 @@ class ChatService {
         'attachments': attachments,
       };
 
-      final response = await _supabase
-          .from('chat_messages')
-          .insert(messageData)
-          .select('''
+      final response =
+          await _supabase.from('chat_messages').insert(messageData).select('''
             *,
             users!chat_messages_sender_id_fkey(
               id,
@@ -164,14 +162,11 @@ class ChatService {
               avatar_url,
               rank_type
             )
-          ''')
-          .single();
+          ''').single();
 
       // Update last activity in chat room
-      await _supabase
-          .from('chat_rooms')
-          .update({'updated_at': DateTime.now().toIso8601String()})
-          .eq('id', roomId);
+      await _supabase.from('chat_rooms').update(
+          {'updated_at': DateTime.now().toIso8601String()}).eq('id', roomId);
 
       // Update user's last read time
       await updateLastReadTime(roomId);
@@ -194,7 +189,8 @@ class ChatService {
           .eq('room_id', roomId)
           .eq('user_id', user.id);
     } catch (e) {
-      ProductionLogger.warning('Failed to update last read time', error: e, tag: 'ChatService');
+      ProductionLogger.warning('Failed to update last read time',
+          error: e, tag: 'ChatService');
     }
   }
 
@@ -408,4 +404,3 @@ class ChatService {
     }
   }
 }
-

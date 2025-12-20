@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../models/club.dart';
 import '../../../utils/map_launcher.dart';
+import '../../../widgets/common/app_button.dart';
 
 class ClubDetailHeader extends StatelessWidget {
   final Club club;
@@ -104,9 +105,8 @@ class ClubDetailHeader extends StatelessWidget {
                             club.address ?? 'Không có địa chỉ',
                             style: TextStyle(
                               fontSize: 13,
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -114,7 +114,12 @@ class ClubDetailHeader extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         if (club.latitude != null && club.longitude != null)
-                          OutlinedButton.icon(
+                          AppButton(
+                            label: 'Xem bản đồ',
+                            type: AppButtonType.outline,
+                            size: AppButtonSize.small,
+                            icon: Icons.map_outlined,
+                            iconTrailing: false,
                             onPressed: () {
                               MapLauncher.showMapOptionsDialog(
                                 context: context,
@@ -124,16 +129,6 @@ class ClubDetailHeader extends StatelessWidget {
                                 address: club.address,
                               );
                             },
-                            icon: const Icon(Icons.map_outlined, size: 16),
-                            label: const Text('Xem bản đồ'),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              minimumSize: const Size(0, 32),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
                           ),
                       ],
                     ),
@@ -180,18 +175,16 @@ class ClubDetailHeader extends StatelessWidget {
                                     '(${club.totalReviews})',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: colorScheme.onSurface.withValues(
-                                        alpha: 0.6,
-                                      ),
+                                      color: colorScheme.onSurface
+                                          .withValues(alpha: 0.6),
                                     ),
                                   ),
                                   const SizedBox(width: 4),
                                   Icon(
                                     Icons.chevron_right,
                                     size: 16,
-                                    color: colorScheme.onSurface.withValues(
-                                      alpha: 0.4,
-                                    ),
+                                    color: colorScheme.onSurface
+                                        .withValues(alpha: 0.4),
                                   ),
                                 ],
                               ),
@@ -225,29 +218,14 @@ class ClubDetailHeader extends StatelessWidget {
 
               const SizedBox(width: 12),
 
-              // Nút Đặt Bàn (góc phải trên)
-              SizedBox(
-                height: 36,
-                child: ElevatedButton.icon(
-                  onPressed: onTableReservation,
-                  icon: const Icon(Icons.event_available, size: 16),
-                  label: const Text(
-                    'Đặt Bàn',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 1,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
+              // Nút Đặt Bàn (góc phải trên) - iOS style
+              AppButton(
+                label: 'Đặt Bàn',
+                type: AppButtonType.primary,
+                size: AppButtonSize.small,
+                icon: Icons.event_available,
+                iconTrailing: false,
+                onPressed: onTableReservation,
               ),
             ],
           ),
@@ -266,9 +244,7 @@ class ClubDetailHeader extends StatelessWidget {
                   isLoading: isFollowLoading,
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Expanded(
                 child: _buildHorizontalActionButton(
                   icon: isCurrentUserMember
@@ -279,9 +255,7 @@ class ClubDetailHeader extends StatelessWidget {
                   onPressed: isCurrentUserMember ? null : onJoin,
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Expanded(
                 child: _buildHorizontalActionButton(
                   icon: Icons.emoji_events,
@@ -295,29 +269,15 @@ class ClubDetailHeader extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Hàng 3: Button Phần thưởng SPA
-          SizedBox(
-            width: double.infinity,
-            height: 42,
-            child: ElevatedButton.icon(
-              onPressed: onViewSpaRewards,
-              icon: const Icon(Icons.card_giftcard, size: 20),
-              label: const Text(
-                'Phần thưởng SPA',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.secondaryContainer,
-                foregroundColor: colorScheme.onSecondaryContainer,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                    color: colorScheme.outline.withValues(alpha: 0.3),
-                  ),
-                ),
-              ),
-            ),
+          // Hàng 3: Button Phần thưởng SPA - iOS style
+          AppButton(
+            label: 'Phần thưởng SPA',
+            type: AppButtonType.secondary,
+            size: AppButtonSize.medium,
+            icon: Icons.card_giftcard,
+            iconTrailing: false,
+            fullWidth: true,
+            onPressed: onViewSpaRewards,
           ),
         ],
       ),

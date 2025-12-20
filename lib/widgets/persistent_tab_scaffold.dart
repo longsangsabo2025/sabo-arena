@@ -7,13 +7,13 @@ import '../presentation/user_profile_screen/user_profile_screen.dart';
 import 'package:sabo_arena/utils/production_logger.dart';
 
 /// 🎯 FACEBOOK/INSTAGRAM APPROACH: Persistent Tab Navigation
-/// 
+///
 /// ADVANTAGES:
 /// ✅ Giữ state của tất cả tabs (không rebuild khi chuyển tab)
 /// ✅ Instant switching (không có animation delay)
 /// ✅ Memory efficient (lazy loading screens)
 /// ✅ Smooth user experience
-/// 
+///
 /// HOW IT WORKS:
 /// - IndexedStack giữ tất cả 5 screens trong memory
 /// - Chỉ hiển thị screen hiện tại
@@ -32,11 +32,11 @@ class PersistentTabScaffold extends StatefulWidget {
 
 class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
   late int _currentIndex;
-  
+
   // 🎯 LAZY LOADING: Chỉ build screens khi user truy cập lần đầu
   final List<bool> _hasVisited = [false, false, false, false, false];
   final List<Widget?> _cachedScreens = [null, null, null, null, null];
-  
+
   // 🧠 PHASE 3: Memory Management - Track last access time for cleanup
   final List<DateTime?> _lastAccessed = [null, null, null, null, null];
 
@@ -45,17 +45,17 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
     super.initState();
     _currentIndex = widget.initialIndex;
     _hasVisited[_currentIndex] = true; // Mark initial screen as visited
-    
+
     // 🚀 PHASE 3: Cache Warming - Preload most-used tabs after a short delay
     _warmupCache();
   }
-  
+
   /// 🔥 Cache Warming: Intelligently preload frequently accessed tabs
   /// Loads tabs 0 and 1 (Home & Find Opponents) in background if not already loaded
   void _warmupCache() {
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
-      
+
       // Preload Home tab if not current and not visited
       if (_currentIndex != 0 && !_hasVisited[0]) {
         setState(() {
@@ -64,7 +64,7 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
         });
         ProductionLogger.info('🔥 [Cache Warming] Preloaded Home tab');
       }
-      
+
       // Preload Find Opponents tab if not current and not visited
       if (_currentIndex != 1 && !_hasVisited[1]) {
         Future.delayed(const Duration(milliseconds: 500), () {
@@ -73,7 +73,8 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
             _hasVisited[1] = true;
             _cachedScreens[1] = _getScreenForIndex(1);
           });
-          ProductionLogger.info('🔥 [Cache Warming] Preloaded Find Opponents tab');
+          ProductionLogger.info(
+              '🔥 [Cache Warming] Preloaded Find Opponents tab');
         });
       }
     });
@@ -86,12 +87,12 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
       _hasVisited[index] = true;
       _cachedScreens[index] = _getScreenForIndex(index);
     }
-    
+
     // If already visited but not cached (shouldn't happen), build it
     if (_cachedScreens[index] == null) {
       _cachedScreens[index] = _getScreenForIndex(index);
     }
-    
+
     return _cachedScreens[index]!;
   }
 
@@ -114,20 +115,20 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
 
   void _onTabTapped(int index) {
     if (_currentIndex == index) return; // Prevent unnecessary setState
-    
+
     setState(() {
       _currentIndex = index;
       _lastAccessed[index] = DateTime.now(); // Track access time
     });
-    
+
     // 🚀 PHASE 3: Smart Prefetching
     // Prefetch next likely tab based on user behavior patterns
     _prefetchNextLikelyTab(index);
-    
+
     // 🧠 PHASE 3: Memory Management - Cleanup old screens
     _cleanupInactiveScreens();
   }
-  
+
   /// 🎯 Smart Prefetching: Load next probable tab in background
   /// Based on typical user navigation patterns:
   /// - From Home (0) → likely to go to Find Opponents (1)
@@ -136,7 +137,7 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
   /// - From Clubs (3) → likely to go to Profile (4)
   void _prefetchNextLikelyTab(int currentIndex) {
     int? nextTab;
-    
+
     switch (currentIndex) {
       case 0: // Home → Find Opponents
         nextTab = 1;
@@ -154,7 +155,7 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
         nextTab = 0;
         break;
     }
-    
+
     if (nextTab != null && !_hasVisited[nextTab]) {
       // Delay prefetch to avoid blocking current tab
       final tabToLoad = nextTab; // Capture for closure
@@ -164,38 +165,41 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
             _hasVisited[tabToLoad] = true;
             _cachedScreens[tabToLoad] = _getScreenForIndex(tabToLoad);
           });
-          ProductionLogger.info('🚀 [Prefetch] Loaded tab $tabToLoad in background');
+          ProductionLogger.info(
+              '🚀 [Prefetch] Loaded tab $tabToLoad in background');
         }
       });
     }
   }
-  
+
   /// 🧠 Memory Management: Clear screens not accessed in last 10 minutes
   /// Keeps current screen and adjacent screens to maintain smooth navigation
   void _cleanupInactiveScreens() {
     final now = DateTime.now();
     const inactiveThreshold = Duration(minutes: 10);
-    
+
     for (int i = 0; i < 5; i++) {
       // Skip current screen and adjacent screens
-      if (i == _currentIndex || 
-          i == _currentIndex - 1 || 
+      if (i == _currentIndex ||
+          i == _currentIndex - 1 ||
           i == _currentIndex + 1) {
         continue;
       }
-      
+
       // Skip if not visited yet
       if (!_hasVisited[i] || _cachedScreens[i] == null) continue;
-      
+
       // Check if screen is inactive
       final lastAccess = _lastAccessed[i];
-      if (lastAccess != null && now.difference(lastAccess) > inactiveThreshold) {
+      if (lastAccess != null &&
+          now.difference(lastAccess) > inactiveThreshold) {
         setState(() {
           _cachedScreens[i] = null;
           _hasVisited[i] = false;
           _lastAccessed[i] = null;
         });
-        ProductionLogger.info('🧹 [Cleanup] Removed inactive tab $i from memory');
+        ProductionLogger.info(
+            '🧹 [Cleanup] Removed inactive tab $i from memory');
       }
     }
   }
@@ -230,7 +234,7 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
 
   Widget _buildBottomNavigation() {
     final theme = Theme.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

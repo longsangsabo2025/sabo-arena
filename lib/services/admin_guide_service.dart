@@ -114,7 +114,8 @@ class AdminGuideService {
 
       await _supabase.from('admin_guide_progress').upsert(progress.toJson());
     } catch (e) {
-      ProductionLogger.error('Failed to update guide progress', error: e, tag: 'AdminGuideService');
+      ProductionLogger.error('Failed to update guide progress',
+          error: e, tag: 'AdminGuideService');
     }
   }
 
@@ -452,4 +453,3 @@ class AdminGuideService {
     ],
   };
 }
-

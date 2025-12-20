@@ -24,10 +24,10 @@ class PostBackgroundTheme {
 
   /// Tạo gradient từ colors
   LinearGradient get gradient => LinearGradient(
-    colors: colors,
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 }
 
 enum BackgroundType {
@@ -225,15 +225,15 @@ class PostBackgroundThemes {
 
   /// Danh sách tất cả themes
   static List<PostBackgroundTheme> get allThemes => [
-    billiardGreen, // Default
-    oceanBlue,
-    purpleDream,
-    sunsetOrange,
-    pinkEnergy,
-    calmCyan,
-    darkMinimal,
-    lightBright,
-  ];
+        billiardGreen, // Default
+        oceanBlue,
+        purpleDream,
+        sunsetOrange,
+        pinkEnergy,
+        calmCyan,
+        darkMinimal,
+        lightBright,
+      ];
 
   /// Lấy theme theo ID
   static PostBackgroundTheme? getThemeById(String id) {

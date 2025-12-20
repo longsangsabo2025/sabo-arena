@@ -16,11 +16,11 @@ class PricingSettingsScreen extends StatefulWidget {
 
 class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
   final _pricingService = PricingService();
-  
+
   List<TableRate> tableRates = [];
   List<MembershipFee> membershipFees = [];
   List<AdditionalService> additionalServices = [];
-  
+
   bool _isLoading = true;
   bool _isSaving = false;
 
@@ -115,16 +115,20 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Quản lý bảng giá', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Quản lý bảng giá',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Thiết lập giá cho các dịch vụ và sân chơi', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondaryLight,
-                  ),
+                  'Thiết lập giá cho các dịch vụ và sân chơi',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondaryLight,
+                      ),
                 ),
               ],
             ),
@@ -147,7 +151,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            item.name, overflow: TextOverflow.ellipsis, style: TextStyle(
+            item.name,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: AppTheme.textPrimaryLight,
               fontWeight: FontWeight.w600,
               fontSize: 14,
@@ -165,7 +171,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            item.description, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
+            item.description,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
             maxLines: 2,
           ),
         ],
@@ -187,7 +195,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            item.name, overflow: TextOverflow.ellipsis, style: TextStyle(
+            item.name,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: AppTheme.textPrimaryLight,
               fontWeight: FontWeight.w600,
               fontSize: 16,
@@ -221,7 +231,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            item.benefits, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
+            item.benefits,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
             maxLines: 2,
           ),
         ],
@@ -243,7 +255,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            item.name, overflow: TextOverflow.ellipsis, style: TextStyle(
+            item.name,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: AppTheme.textPrimaryLight,
               fontWeight: FontWeight.w600,
               fontSize: 14,
@@ -261,7 +275,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            item.description, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
+            item.description,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 12),
             maxLines: 2,
           ),
         ],
@@ -289,14 +305,16 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  title,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle, style: TextStyle(
+                  subtitle,
+                  style: TextStyle(
                     color: AppTheme.textSecondaryLight,
                     fontSize: 14,
                   ),
@@ -394,7 +412,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
                               children: [
                                 const Icon(Icons.delete, color: Colors.red),
                                 const SizedBox(width: 12),
-                                Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                                Text('Xóa',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(color: Colors.red)),
                               ],
                             ),
                           ),
@@ -493,7 +513,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
                     ),
                   )
                 : const Text(
-                    'Lưu bảng giá', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Lưu bảng giá',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -607,8 +629,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
                       hourlyRate: double.parse(rateController.text),
                       isActive: true,
                     );
-                    final saved =
-                        await _pricingService.addTableRate(newRate);
+                    final saved = await _pricingService.addTableRate(newRate);
                     setState(() => tableRates.add(saved));
                   } else {
                     final updated = item.copyWith(
@@ -853,8 +874,8 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
                           ? 'lần'
                           : unitController.text,
                     );
-                    final saved = await _pricingService
-                        .updateAdditionalService(updated);
+                    final saved =
+                        await _pricingService.updateAdditionalService(updated);
                     setState(() => additionalServices[index!] = saved);
                   }
                   if (dialogContext.mounted) Navigator.pop(dialogContext);
@@ -973,7 +994,9 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
               onConfirm();
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white)),
+            child: const Text('Xóa',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -986,7 +1009,7 @@ class _PricingSettingsScreenState extends State<PricingSettingsScreen> {
       // Data đã được lưu tự động khi thêm/sửa/xóa
       // Chỉ cần thông báo thành công
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

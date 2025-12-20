@@ -263,8 +263,7 @@ class DSAvatar extends StatelessWidget {
       return BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors:
-              gradientColors ??
+          colors: gradientColors ??
               [AppColors.accent500, AppColors.error500, AppColors.premium500],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -510,9 +509,8 @@ class DSAvatarGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayCount = imageUrls.length > maxAvatars
-        ? maxAvatars
-        : imageUrls.length;
+    final displayCount =
+        imageUrls.length > maxAvatars ? maxAvatars : imageUrls.length;
     final remaining = imageUrls.length - maxAvatars;
 
     return Row(

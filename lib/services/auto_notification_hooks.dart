@@ -26,7 +26,7 @@ class AutoNotificationHooks {
     required String userId,
     required String userName,
     String?
-    registrationMethod, // 'email', 'phone', 'google', 'apple', 'facebook'
+        registrationMethod, // 'email', 'phone', 'google', 'apple', 'facebook'
   }) async {
     try {
       final methodText = registrationMethod != null
@@ -46,11 +46,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -75,11 +73,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -108,11 +104,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -139,11 +133,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -174,11 +166,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -227,11 +217,9 @@ class AutoNotificationHooks {
         );
       }
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -258,11 +246,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -294,11 +280,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -323,11 +307,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -356,11 +338,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -387,11 +367,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -421,11 +399,9 @@ class AutoNotificationHooks {
         );
       }
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -445,13 +421,14 @@ class AutoNotificationHooks {
     try {
       // Send notification to both players
       final participantIds = [player1Id, player2Id];
-      
+
       for (String userId in participantIds) {
         await _notificationService.sendNotification(
           userId: userId,
           type: 'tournament_match',
           title: '🏆 Trận đấu tournament đã sẵn sàng!',
-          message: 'Đối thủ đã được xác định cho $matchName trong giải "$tournamentName". Hãy chuẩn bị thi đấu!',
+          message:
+              'Đối thủ đã được xác định cho $matchName trong giải "$tournamentName". Hãy chuẩn bị thi đấu!',
           data: {
             'screen': 'tournament_detail',
             'tournament_id': tournamentId,
@@ -462,11 +439,9 @@ class AutoNotificationHooks {
         );
       }
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -495,11 +470,9 @@ class AutoNotificationHooks {
         );
       }
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -527,11 +500,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -555,11 +526,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -586,11 +555,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -623,11 +590,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -657,11 +622,9 @@ class AutoNotificationHooks {
         },
       );
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -695,11 +658,9 @@ class AutoNotificationHooks {
         );
       }
 
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     } catch (e) {
-      if (kDebugMode) {
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -772,4 +733,3 @@ class AutoNotificationHooks {
     }
   }
 }
-

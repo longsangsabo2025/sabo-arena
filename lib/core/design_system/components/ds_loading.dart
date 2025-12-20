@@ -20,7 +20,7 @@ class DSLoading extends StatelessWidget {
   final DSLoadingSize size;
 
   const DSLoading({Key? key, this.size = DSLoadingSize.medium})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -127,13 +127,19 @@ class RankVerificationService {
             },
           });
 
-          ProductionLogger.info('✅ Auto-added user $targetUserId to club $clubId as member', tag: 'rank_verification_service');
+          ProductionLogger.info(
+              '✅ Auto-added user $targetUserId to club $clubId as member',
+              tag: 'rank_verification_service');
         } else {
-          ProductionLogger.info('ℹ️ User $targetUserId is already a member of club $clubId', tag: 'rank_verification_service');
+          ProductionLogger.info(
+              'ℹ️ User $targetUserId is already a member of club $clubId',
+              tag: 'rank_verification_service');
         }
       } catch (memberError) {
         // Log error but don't fail the approval process
-        ProductionLogger.info('⚠️ Failed to auto-add user to club: $memberError', tag: 'rank_verification_service');
+        ProductionLogger.info(
+            '⚠️ Failed to auto-add user to club: $memberError',
+            tag: 'rank_verification_service');
       }
 
       return RankRequest.fromJson(response);
@@ -184,9 +190,7 @@ class RankVerificationService {
   /// Lấy tất cả yêu cầu xác minh hạng cho club (bao gồm cả đã xử lý)
   Future<List<RankRequest>> getAllRankRequests(String clubId) async {
     try {
-      final response = await _supabase
-          .from('rank_requests')
-          .select('''
+      final response = await _supabase.from('rank_requests').select('''
             *,
             user:users!rank_requests_user_id_fkey (
               id,
@@ -198,9 +202,7 @@ class RankVerificationService {
               ranking_points,
               elo_rating
             )
-          ''')
-          .eq('club_id', clubId)
-          .order('requested_at', ascending: false);
+          ''').eq('club_id', clubId).order('requested_at', ascending: false);
 
       return response
           .map<RankRequest>((json) => RankRequest.fromJson(json))

@@ -65,13 +65,11 @@ class _AdminUserManagementScreenV2State
 
   void _filterUsers() {
     _filteredUsers = _users.where((user) {
-      final matchesSearch =
-          _searchQuery.isEmpty ||
+      final matchesSearch = _searchQuery.isEmpty ||
           user.displayName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           user.email.toLowerCase().contains(_searchQuery.toLowerCase());
 
-      final matchesFilter =
-          _selectedFilter == 'all' ||
+      final matchesFilter = _selectedFilter == 'all' ||
           (_selectedFilter == 'active' && user.status == 'active') ||
           (_selectedFilter == 'inactive' && user.status == 'inactive') ||
           (_selectedFilter == 'blocked' && user.status == 'blocked') ||
@@ -174,9 +172,8 @@ class _AdminUserManagementScreenV2State
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
-              foregroundColor: isDestructive
-                  ? Colors.red
-                  : AppTheme.primaryLight,
+              foregroundColor:
+                  isDestructive ? Colors.red : AppTheme.primaryLight,
             ),
             child: Text('Xác nhận'),
           ),
@@ -265,9 +262,8 @@ class _AdminUserManagementScreenV2State
         backgroundColor: Colors.white,
         selectedColor: AppTheme.primaryLight.withValues(alpha: 0.2),
         labelStyle: TextStyle(
-          color: isSelected
-              ? AppTheme.primaryDark
-              : AppTheme.textSecondaryLight,
+          color:
+              isSelected ? AppTheme.primaryDark : AppTheme.textSecondaryLight,
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
         ),
       ),

@@ -389,7 +389,8 @@ class DesignTokens {
     double top = 0.0,
     double right = 0.0,
     double bottom = 0.0,
-  }) => EdgeInsets.only(left: left, top: top, right: right, bottom: bottom);
+  }) =>
+      EdgeInsets.only(left: left, top: top, right: right, bottom: bottom);
 
   /// Create BorderRadius with all corners
   static BorderRadius radius(double value) => BorderRadius.circular(value);

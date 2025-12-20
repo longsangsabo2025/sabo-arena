@@ -135,8 +135,8 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-          ? _buildErrorWidget()
-          : _buildContent(),
+              ? _buildErrorWidget()
+              : _buildContent(),
     );
   }
 
@@ -148,11 +148,15 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
           Icon(Icons.error_outline, size: 8.h, color: Colors.red),
           SizedBox(height: 2.h),
           Text(
-            'Có lỗi xảy ra', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            'Có lỗi xảy ra',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 1.h),
           Text(
-            _error!, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+            _error!,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 3.h),
@@ -244,13 +248,17 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hạng hiện tại', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Hạng hiện tại',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.9),
                         fontSize: 14.sp,
                       ),
                     ),
                     Text(
-                      'Hạng ${_userProfile!.rank ?? 'K'}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Hạng ${_userProfile!.rank ?? 'K'}',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
@@ -299,7 +307,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Tiến độ lên hạng', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Tiến độ lên hạng',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 14.sp,
                     ),
@@ -387,7 +397,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                           final date =
                               _rankHistory[value.toInt()]['date'] as DateTime;
                           return Text(
-                            '${date.day}/${date.month}', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10.sp),
+                            '${date.day}/${date.month}',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 10.sp),
                           );
                         }
                         return const Text('');
@@ -444,8 +456,8 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
 
     final winRate = _userStats!['total_wins'] + _userStats!['total_losses'] > 0
         ? (_userStats!['total_wins'] /
-              (_userStats!['total_wins'] + _userStats!['total_losses']) *
-              100)
+            (_userStats!['total_wins'] + _userStats!['total_losses']) *
+            100)
         : 0.0;
 
     return Container(
@@ -465,7 +477,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thống kê hiệu suất', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+            'Thống kê hiệu suất',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 2.h),
 
@@ -481,7 +495,7 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
               _buildStatCard(
                 'Tổng trận',
                 '${_userStats!['total_matches']}',
-                Icons.sports_esports,
+                Icons.sports_baseball,
                 Colors.blue,
               ),
               _buildStatCard(
@@ -528,14 +542,16 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
           Icon(icon, color: color, size: 6.w),
           SizedBox(height: 1.h),
           Text(
-            value, style: TextStyle(
+            value,
+            style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
           Text(
-            title, style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
+            title,
+            style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -564,7 +580,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Trận đấu gần đây', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                'Trận đấu gần đây',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
               ),
               TextButton(
                 onPressed: () {
@@ -605,13 +623,17 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'vs ${match['opponent']}', overflow: TextOverflow.ellipsis, style: TextStyle(
+                          'vs ${match['opponent']}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         Text(
-                          match['date'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                          match['date'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontSize: 12.sp,
                             color: Colors.grey[600],
                           ),
@@ -631,7 +653,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      match['elo_change'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                      match['elo_change'],
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         color: isWin ? Colors.green : Colors.red,
                         fontWeight: FontWeight.bold,
                         fontSize: 12.sp,
@@ -669,7 +693,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Hệ thống hạng SABO Arena', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+            'Hệ thống hạng SABO Arena',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 2.h),
           ListView.separated(
@@ -691,19 +717,19 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                   color: isCurrentRank
                       ? Colors.blue.withValues(alpha: 0.1)
                       : isPassed
-                      ? Colors.green.withValues(alpha: 0.05)
-                      : isNext
-                      ? Colors.orange.withValues(alpha: 0.05)
-                      : Colors.grey.withValues(alpha: 0.02),
+                          ? Colors.green.withValues(alpha: 0.05)
+                          : isNext
+                              ? Colors.orange.withValues(alpha: 0.05)
+                              : Colors.grey.withValues(alpha: 0.02),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isCurrentRank
                         ? Colors.blue
                         : isPassed
-                        ? Colors.green
-                        : isNext
-                        ? Colors.orange
-                        : Colors.grey.withValues(alpha: 0.3),
+                            ? Colors.green
+                            : isNext
+                                ? Colors.orange
+                                : Colors.grey.withValues(alpha: 0.3),
                     width: isCurrentRank ? 2 : 1,
                   ),
                 ),
@@ -713,17 +739,17 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                       isCurrentRank
                           ? Icons.star
                           : isPassed
-                          ? Icons.check_circle
-                          : isNext
-                          ? Icons.radio_button_unchecked
-                          : Icons.lock_outline,
+                              ? Icons.check_circle
+                              : isNext
+                                  ? Icons.radio_button_unchecked
+                                  : Icons.lock_outline,
                       color: isCurrentRank
                           ? Colors.blue
                           : isPassed
-                          ? Colors.green
-                          : isNext
-                          ? Colors.orange
-                          : Colors.grey,
+                              ? Colors.green
+                              : isNext
+                                  ? Colors.orange
+                                  : Colors.grey,
                       size: 5.w,
                     ),
                     SizedBox(width: 3.w),
@@ -734,7 +760,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                           Row(
                             children: [
                               Text(
-                                'Hạng $rank', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                'Hạng $rank',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                   color: isCurrentRank
@@ -754,7 +782,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
-                                    'Hiện tại', overflow: TextOverflow.ellipsis, style: TextStyle(
+                                    'Hiện tại',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 10.sp,
                                       fontWeight: FontWeight.bold,
@@ -764,7 +794,8 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                             ],
                           ),
                           Text(
-                            rankSkill, style: TextStyle(
+                            rankSkill,
+                            style: TextStyle(
                               fontSize: 12.sp,
                               color: Colors.grey[600],
                             ),
@@ -773,7 +804,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                       ),
                     ),
                     Text(
-                      '$rankElo ELO', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      '$rankElo ELO',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
                         color: isCurrentRank ? Colors.blue : Colors.black54,
@@ -811,7 +844,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
               Icon(Icons.info_outline, color: Colors.blue, size: 6.w),
               SizedBox(width: 3.w),
               Text(
-                'Quy định hạng SABO Arena', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Quy định hạng SABO Arena',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue,
@@ -914,7 +949,9 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
                 SizedBox(width: 3.w),
                 Expanded(
                   child: Text(
-                    'Hạng của bạn được tính dựa trên ELO hiện tại. Hãy tham gia nhiều trận đấu và giải đấu để nâng cao ELO và lên hạng!', overflow: TextOverflow.ellipsis, style: TextStyle(
+                    'Hạng của bạn được tính dựa trên ELO hiện tại. Hãy tham gia nhiều trận đấu và giải đấu để nâng cao ELO và lên hạng!',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       fontSize: 12.sp,
                       color: Colors.blue[700],
                       fontStyle: FontStyle.italic,
@@ -950,7 +987,8 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
               Icon(icon, color: color, size: 5.w),
               SizedBox(width: 2.w),
               Text(
-                title, style: TextStyle(
+                title,
+                style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
                   color: color,
@@ -959,20 +997,19 @@ class _RankStatisticsScreenState extends State<RankStatisticsScreen> {
             ],
           ),
           SizedBox(height: 1.h),
-          ...rules
-              .map(
-                (rule) => Padding(
-                  padding: EdgeInsets.only(bottom: 0.5.h),
-                  child: Text(
-                    rule, style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey[700],
-                      height: 1.3,
-                    ),
-                  ),
+          ...rules.map(
+            (rule) => Padding(
+              padding: EdgeInsets.only(bottom: 0.5.h),
+              child: Text(
+                rule,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: Colors.grey[700],
+                  height: 1.3,
                 ),
-              )
-              ,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -110,7 +110,8 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
             progressColors: ProgressBarColors(
               playedColor: widget.accentColor ?? AppColors.primary,
               handleColor: widget.accentColor ?? AppColors.primary,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
               bufferedColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             ),
             topActions: [
@@ -136,8 +137,10 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
                 colors: ProgressBarColors(
                   playedColor: widget.accentColor ?? AppColors.primary,
                   handleColor: widget.accentColor ?? AppColors.primary,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  bufferedColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                  bufferedColor:
+                      Theme.of(context).colorScheme.surfaceContainerHigh,
                 ),
               ),
               const SizedBox(width: 10),
@@ -271,7 +274,10 @@ class VideoThumbnailWidget extends StatelessWidget {
 
               // Play button overlay
               Container(
-                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.4),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surface
+                    .withValues(alpha: 0.4),
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -280,7 +286,10 @@ class VideoThumbnailWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.3),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .shadow
+                              .withValues(alpha: 0.3),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
@@ -351,10 +360,14 @@ class VideoPlayerDialog extends StatelessWidget {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surface
+                      .withValues(alpha: 0.7),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurface, size: 24),
+                child: Icon(Icons.close,
+                    color: Theme.of(context).colorScheme.onSurface, size: 24),
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),

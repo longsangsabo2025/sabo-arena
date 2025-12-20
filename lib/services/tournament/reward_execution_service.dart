@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Service for EXECUTING rewards (mirroring from tournament_results)
 /// This is the EXECUTION LAYER that reads from SOURCE OF TRUTH (tournament_results)
 /// and mirrors data to other tables (spa_transactions, elo_history, users)
-/// 
+///
 /// CRITICAL: This service is IDEMPOTENT - can be run multiple times safely
 /// It checks for existing records before creating new ones
 class RewardExecutionService {
@@ -17,7 +17,6 @@ class RewardExecutionService {
     required String tournamentId,
   }) async {
     try {
-
       // Read from tournament_results (SOURCE OF TRUTH)
       final results = await _supabase
           .from('tournament_results')
@@ -29,7 +28,6 @@ class RewardExecutionService {
         return false;
       }
 
-
       // int successCount = 0; // Unused
       int errorCount = 0;
 
@@ -40,10 +38,10 @@ class RewardExecutionService {
           final position = result['position'] as int;
           final spaReward = result['spa_reward'] as int? ?? 0;
           final eloChange = result['elo_change'] as int? ?? 0;
-          final prizeMoney = (result['prize_money_vnd'] as num?)?.toDouble() ?? 0.0;
+          final prizeMoney =
+              (result['prize_money_vnd'] as num?)?.toDouble() ?? 0.0;
           final matchesWon = result['matches_won'] as int? ?? 0;
           final matchesLost = result['matches_lost'] as int? ?? 0;
-
 
           // Execute SPA reward
           await _executeSpaReward(
@@ -132,6 +130,7 @@ class RewardExecutionService {
       rethrow;
     }
   }
+
   /// Execute ELO change (mirror to elo_history)
   /// IDEMPOTENT: Checks for existing history record before creating
   Future<void> _executeEloChange({
@@ -183,7 +182,6 @@ class RewardExecutionService {
         'reason': 'Tournament completion (position $position)',
         'created_at': DateTime.now().toIso8601String(),
       });
-
     } catch (e) {
       rethrow;
     }
@@ -241,20 +239,25 @@ class RewardExecutionService {
           .eq('id', userId)
           .single();
 
-      // If updated within last minute AND both records exist, likely already processed
-      final updatedAt = DateTime.parse(currentStats['updated_at'] ?? DateTime.now().toIso8601String());
-      final now = DateTime.now();
-      final timeDiff = now.difference(updatedAt).inSeconds;
+      // Heuristic: If user was updated significantly AFTER the ELO history creation,
+      // it means _updateUserStats likely already ran.
+      final eloCreatedAt = DateTime.parse(existingElo['created_at'] as String);
+      final userUpdatedAt = DateTime.parse(
+          currentStats['updated_at'] ?? DateTime.now().toIso8601String());
 
-      if (timeDiff < 60) {
+      // If user update is more than 5 seconds after ELO history, assume stats already done
+      if (userUpdatedAt.difference(eloCreatedAt).inSeconds > 5) {
         return;
       }
 
       // Calculate new values (ADDITIVE operations)
-      // NOTE: spa_points already updated in _executeSpaReward, don't add again
+      // NOTE: spa_points already updated in _executeSpaReward
+      // NOTE: elo_rating already updated in _executeEloChange
       final updates = <String, dynamic>{
-        'elo_rating': (currentStats['elo_rating'] ?? 1500) + eloChange,
-        'total_prize_pool': ((currentStats['total_prize_pool'] ?? 0) as num).toDouble() + prizeMoney,
+        // 'elo_rating': (currentStats['elo_rating'] ?? 1500) + eloChange, // REMOVED: Already done in _executeEloChange
+        'total_prize_pool':
+            ((currentStats['total_prize_pool'] ?? 0) as num).toDouble() +
+                prizeMoney,
         'total_wins': (currentStats['total_wins'] ?? 0) + matchesWon,
         'total_losses': (currentStats['total_losses'] ?? 0) + matchesLost,
         'total_tournaments': (currentStats['total_tournaments'] ?? 0) + 1,
@@ -266,15 +269,14 @@ class RewardExecutionService {
         updates['tournament_wins'] = (currentStats['tournament_wins'] ?? 0) + 1;
       }
       if (position <= 3) {
-        updates['tournament_podiums'] = (currentStats['tournament_podiums'] ?? 0) + 1;
+        updates['tournament_podiums'] =
+            (currentStats['tournament_podiums'] ?? 0) + 1;
       }
 
       // Update user
       await _supabase.from('users').update(updates).eq('id', userId);
-
     } catch (e) {
       rethrow;
     }
   }
 }
-

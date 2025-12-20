@@ -8,6 +8,7 @@ import '../../../core/utils/rank_migration_helper.dart';
 import '../../../services/share_service.dart';
 import '../../../services/referral_service.dart';
 import '../../../models/user_profile.dart';
+import '../../../widgets/common/app_button.dart';
 // ELON_MODE_AUTO_FIX
 
 class QRCodeWidget extends StatefulWidget {
@@ -38,8 +39,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
     try {
       // Get real user data - Ưu tiên display_name vì full_name có thể là "User" (default Apple Sign In)
       final userId = widget.userData["id"] as String? ?? "temp-id";
-      final displayName =
-          widget.userData["display_name"] as String? ??
+      final displayName = widget.userData["display_name"] as String? ??
           widget.userData["displayName"] as String? ??
           widget.userData["full_name"] as String? ??
           widget.userData["fullName"] as String? ??
@@ -58,8 +58,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
         totalWins: 0,
         totalLosses: 0,
         totalTournaments: 0,
-        eloRating:
-            widget.userData["elo_rating"] as int? ??
+        eloRating: widget.userData["elo_rating"] as int? ??
             widget.userData["eloRating"] as int? ??
             1000,
         spaPoints: 0,
@@ -171,8 +170,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
                       ),
                       child: ClipOval(
                         child: CustomImageWidget(
-                          imageUrl:
-                              widget.userData["avatar_url"] as String? ??
+                          imageUrl: widget.userData["avatar_url"] as String? ??
                               widget.userData["avatarUrl"] as String? ??
                               widget.userData["avatar"] as String?,
                           width: 15.w,
@@ -194,10 +192,9 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
                                 "Người dùng",
                             style: AppTheme.lightTheme.textTheme.titleMedium
                                 ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      AppTheme.lightTheme.colorScheme.onSurface,
-                                ),
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.lightTheme.colorScheme.onSurface,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -205,11 +202,9 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
                             'Rank ${RankMigrationHelper.getNewDisplayName(widget.userData["rank"] as String?)} • ELO ${widget.userData["elo_rating"] ?? widget.userData["eloRating"] ?? 1450}',
                             style: AppTheme.lightTheme.textTheme.bodySmall
                                 ?.copyWith(
-                                  color: AppTheme
-                                      .lightTheme
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                ),
+                              color: AppTheme
+                                  .lightTheme.colorScheme.onSurfaceVariant,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -244,21 +239,21 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
                               ),
                             )
                           : _qrData != null
-                          ? QrImageView(
-                              data: _qrData!,
-                              version: QrVersions.auto,
-                              size: 40.w,
-                              backgroundColor: Colors.white,
-                              eyeStyle: const QrEyeStyle(
-                                eyeShape: QrEyeShape.square,
-                                color: Colors.black,
-                              ),
-                              dataModuleStyle: const QrDataModuleStyle(
-                                dataModuleShape: QrDataModuleShape.square,
-                                color: Colors.black,
-                              ),
-                            )
-                          : _buildQRPattern(),
+                              ? QrImageView(
+                                  data: _qrData!,
+                                  version: QrVersions.auto,
+                                  size: 40.w,
+                                  backgroundColor: Colors.white,
+                                  eyeStyle: const QrEyeStyle(
+                                    eyeShape: QrEyeShape.square,
+                                    color: Colors.black,
+                                  ),
+                                  dataModuleStyle: const QrDataModuleStyle(
+                                    dataModuleShape: QrDataModuleShape.square,
+                                    color: Colors.black,
+                                  ),
+                                )
+                              : _buildQRPattern(),
                     ),
                   ),
                 ),
@@ -300,38 +295,26 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
             child: Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: AppButton(
+                    label: 'Chia sẻ',
+                    type: AppButtonType.outline,
+                    size: AppButtonSize.medium,
+                    icon: Icons.share,
+                    iconTrailing: false,
+                    fullWidth: true,
                     onPressed: () => _shareQRCode(context),
-                    icon: CustomIconWidget(
-                      iconName: 'share',
-                      color: AppTheme.lightTheme.colorScheme.primary,
-                      size: 20,
-                    ),
-                    label: Text('Chia sẻ'),
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 2.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
                   ),
                 ),
                 SizedBox(width: 3.w),
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: AppButton(
+                    label: 'Lưu ảnh',
+                    type: AppButtonType.primary,
+                    size: AppButtonSize.medium,
+                    icon: Icons.download,
+                    iconTrailing: false,
+                    fullWidth: true,
                     onPressed: () => _saveQRCode(context),
-                    icon: CustomIconWidget(
-                      iconName: 'download',
-                      color: AppTheme.lightTheme.colorScheme.onPrimary,
-                      size: 20,
-                    ),
-                    label: Text('Lưu ảnh'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 2.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
                   ),
                 ),
               ],
@@ -373,11 +356,11 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
                       SizedBox(width: 2.w),
                       Text(
                         'Người mới đăng ký qua QR sẽ nhận 50 SPA, bạn nhận 100 SPA',
-                        style: AppTheme.lightTheme.textTheme.bodySmall
-                            ?.copyWith(
-                              color: AppTheme.lightTheme.colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        style:
+                            AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+                          color: AppTheme.lightTheme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
@@ -466,8 +449,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
         final col = index % 21;
 
         // Corner squares
-        final isCornerSquare =
-            (row < 7 && col < 7) ||
+        final isCornerSquare = (row < 7 && col < 7) ||
             (row < 7 && col > 13) ||
             (row > 13 && col < 7);
 
@@ -493,8 +475,7 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
       try {
         // Tạo nội dung chia sẻ với thông tin mã ref
         final userId = widget.userData["id"] as String?;
-        final fullName =
-            widget.userData["full_name"] as String? ??
+        final fullName = widget.userData["full_name"] as String? ??
             widget.userData["fullName"] as String? ??
             "Người dùng";
 
@@ -562,4 +543,3 @@ class _QRCodeWidgetState extends State<QRCodeWidget> {
     );
   }
 }
-

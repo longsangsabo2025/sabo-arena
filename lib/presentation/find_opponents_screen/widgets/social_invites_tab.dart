@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../widgets/common/app_button.dart';
 import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../services/challenge_list_service.dart';
@@ -8,7 +9,7 @@ import '../../../widgets/loading_state_widget.dart';
 import '../../../widgets/empty_state_widget.dart';
 import '../../../widgets/error_state_widget.dart';
 import '../../../core/design_system/design_system.dart';
-import './challenge_card_widget_redesign.dart'; // Use redesigned card
+// Use redesigned card
 import './challenge_detail_modal.dart';
 import './create_social_challenge_modal.dart';
 import './schedule_match_modal.dart';
@@ -36,7 +37,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
   List<Map<String, dynamic>> _opponents = [];
   bool _isLoading = true;
   String? _errorMessage;
-  
+
   // Sub-tab controller
   late TabController _subTabController;
 
@@ -70,7 +71,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
       // Load ALL social challenges where user is involved (challenger or challenged)
       final supabase = Supabase.instance.client;
       final currentUserId = supabase.auth.currentUser?.id;
-      
+
       if (currentUserId == null) {
         throw Exception('Vui lòng đăng nhập');
       }
@@ -103,7 +104,8 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
               )
             ''')
             .eq('challenge_type', 'giao_luu')
-            .eq('challenged_id', currentUserId) // ✅ CHỈ lấy invites MÀ USER LÀ NGƯỜI NHẬN (không phải người gửi)
+            .eq('challenged_id',
+                currentUserId) // ✅ CHỈ lấy invites MÀ USER LÀ NGƯỜI NHẬN (không phải người gửi)
             .order('created_at', ascending: false)
             .then((response) => response as List<dynamic>)
             .then((list) => list.cast<Map<String, dynamic>>()),
@@ -168,39 +170,46 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
     // Complete: completed (đã hoàn thành)
     final readyInvites = _invites.where((invite) {
       final status = invite['status'] as String?;
-      
+
       // Basic status check
-      final isStatusReady = status == 'pending' || status == 'accepted' || status == 'in_progress';
+      final isStatusReady = status == 'pending' ||
+          status == 'accepted' ||
+          status == 'in_progress';
       if (!isStatusReady) return false;
 
       // ✅ Filter out past matches (older than 24h)
       if (status != 'in_progress') {
-        final scheduledTimeStr = invite['scheduled_time'] as String? ?? 
-                                (invite['match_conditions'] is Map ? invite['match_conditions']['scheduled_time'] : null) as String?;
-        
+        final scheduledTimeStr = invite['scheduled_time'] as String? ??
+            (invite['match_conditions'] is Map
+                ? invite['match_conditions']['scheduled_time']
+                : null) as String?;
+
         if (scheduledTimeStr != null) {
           final scheduledTime = DateTime.tryParse(scheduledTimeStr);
           if (scheduledTime != null) {
             // If scheduled time is older than 24 hours, hide it
-            if (scheduledTime.isBefore(DateTime.now().subtract(const Duration(hours: 24)))) {
+            if (scheduledTime
+                .isBefore(DateTime.now().subtract(const Duration(hours: 24)))) {
               return false;
             }
           }
         }
-        
+
         // Also check created_at for pending invites that are too old (e.g. > 30 days)
         // to prevent cluttering with stale invites
         if (status == 'pending') {
-           final createdAtStr = invite['created_at'] as String?;
-           if (createdAtStr != null) {
-             final createdAt = DateTime.tryParse(createdAtStr);
-             if (createdAt != null && createdAt.isBefore(DateTime.now().subtract(const Duration(days: 30)))) {
-               return false;
-             }
-           }
+          final createdAtStr = invite['created_at'] as String?;
+          if (createdAtStr != null) {
+            final createdAt = DateTime.tryParse(createdAtStr);
+            if (createdAt != null &&
+                createdAt.isBefore(
+                    DateTime.now().subtract(const Duration(days: 30)))) {
+              return false;
+            }
+          }
         }
       }
-      
+
       return true;
     }).toList();
 
@@ -244,7 +253,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
               indicatorColor: Theme.of(context).primaryColor,
             ),
           ),
-          
+
           // Sub-tabs content
           Expanded(
             child: TabBarView(
@@ -252,7 +261,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
               children: [
                 // Ready tab
                 _buildInvitesList(readyInvites, 'Ready'),
-                
+
                 // Complete tab
                 _buildInvitesList(completedInvites, 'Complete'),
               ],
@@ -297,7 +306,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
       return Center(
         child: EmptyStateWidget(
           icon: tabName == 'Ready' ? Icons.schedule : Icons.check_circle,
-          message: tabName == 'Ready' 
+          message: tabName == 'Ready'
               ? 'Không có giao lưu đang chờ'
               : 'Chưa có giao lưu hoàn thành',
           subtitle: tabName == 'Ready'
@@ -316,7 +325,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
         itemCount: invites.length,
         itemBuilder: (context, index) {
           final invite = invites[index];
-          
+
           // Convert to match data for MatchCardWidget
           final matchData = ChallengeToMatchConverter.convert(
             invite,
@@ -337,33 +346,33 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
     final status = challenge['status'] as String? ?? 'pending';
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
     final challengedId = challenge['challenged_id'] as String?;
-    
+
     // Only show buttons for pending challenges where I am the challenged user
     if (status == 'pending' && currentUserId == challengedId) {
       return Row(
         children: [
           Expanded(
-            child: ElevatedButton(
+            child: AppButton(
+              label: 'Nhận giao lưu',
+              type: AppButtonType.primary,
+              size: AppButtonSize.medium,
+              customColor: const Color(0xFF7B1FA2), // Purple for social
+              customTextColor: Colors.white,
+              fullWidth: true,
               onPressed: () => _acceptChallenge(challenge),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7B1FA2), // Purple for social
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text(
-                'Nhận giao lưu',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: OutlinedButton(
+            child: AppButton(
+              label: 'Hẹn lịch',
+              type: AppButtonType.outline,
+              size: AppButtonSize.medium,
+              customColor: const Color(0xFF7B1FA2), // Purple for social
+              fullWidth: true,
               onPressed: () {
-                final challenger = challenge['challenger'] as Map<String, dynamic>?;
+                final challenger =
+                    challenge['challenger'] as Map<String, dynamic>?;
                 if (challenger != null) {
                   showModalBottomSheet(
                     context: context,
@@ -376,18 +385,6 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
                   );
                 }
               },
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF7B1FA2),
-                side: const BorderSide(color: Color(0xFF7B1FA2)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text(
-                'Hẹn lịch',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
             ),
           ),
         ],
@@ -406,7 +403,7 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
       );
 
       await _challengeService.acceptChallenge(challenge['id']);
-      
+
       if (mounted) {
         Navigator.pop(context); // Hide loading
         ScaffoldMessenger.of(context).showSnackBar(
@@ -458,4 +455,3 @@ class _SocialInvitesTabState extends State<SocialInvitesTab>
     );
   }
 }
-

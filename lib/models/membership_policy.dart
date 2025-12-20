@@ -2,29 +2,29 @@
 class MembershipPolicy {
   final String id;
   final String clubId;
-  
+
   // Registration Settings
   final bool requiresApproval;
   final bool allowGuestAccess;
   final bool requiresDeposit;
   final double depositAmount;
-  
+
   // Limits
   final int maxMembersLimit;
   final int minAge;
   final int? maxAge;
-  
+
   // Renewal
   final bool enableAutoRenewal;
   final int renewalReminderDays;
-  
+
   // Requirements
   final List<String> requiredDocuments;
-  
+
   // Terms
   final String? termsAndConditions;
   final String? privacyPolicy;
-  
+
   // Timestamps
   final DateTime createdAt;
   final DateTime updatedAt;

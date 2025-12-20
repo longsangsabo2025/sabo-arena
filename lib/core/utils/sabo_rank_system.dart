@@ -3,79 +3,89 @@ import 'package:flutter/material.dart';
 /// Official SABO Arena Rank System
 /// Based on ELO rating with skill descriptions
 class SaboRankSystem {
-  /// SABO rank mapping - UPDATED FROM DATABASE rank_system table
+  /// SABO rank mapping - MIGRATED 2025: Removed K+ and I+, shifted ELO ranges
   static const Map<String, Map<String, dynamic>> rankEloMapping = {
     'K': {
       'elo': 1000,
-      'name': 'Người mới',
-      'skill': '2-4 bi khi hình dễ; mới tập',
-      'color': Color(0xFF8BC34A), // From database: #8BC34A
-    },
-    'K+': {
-      'elo': 1100,
-      'name': 'Học việc',
-      'skill': 'Sát ngưỡng lên Thợ 3',
-      'color': Color(0xFF4CAF50), // From database: #4CAF50
+      'name': 'K',
+      'skill': '1-2 Bi',
+      'stability': 'Không ổn định, chỉ biết các kỹ thuật như cule, trỏ',
+      'color': Color(0xFF8BC34A),
     },
     'I': {
-      'elo': 1200,
-      'name': 'Thợ 3',
-      'skill': '3-5 bi; chưa điều được chấm',
-      'color': Color(0xFF2196F3), // From database: #2196F3
-    },
-    'I+': {
-      'elo': 1300,
-      'name': 'Thợ 2',
-      'skill': 'Sát ngưỡng lên Thợ 1',
-      'color': Color(0xFF1976D2), // From database: #1976D2
+      'elo': 1100,
+      'name': 'I',
+      'skill': '1-3 Bi',
+      'stability':
+          'Không ổn định, chỉ biết đơn và biết các kỹ thuật như cule, trỏ',
+      'color': Color(0xFF2196F3),
     },
     'H': {
-      'elo': 1400,
-      'name': 'Thợ 1',
-      'skill': '5-8 bi; có thể "rứa" 1 chấm hình dễ',
-      'color': Color(0xFF9C27B0), // From database: #9C27B0
+      'elo': 1200,
+      'name': 'H',
+      'skill': '3-5 Bi',
+      'stability': 'Chưa ổn định, không có khả năng đi chấm, biết 1 ít ắp phẻ',
+      'color': Color(0xFF9C27B0),
     },
     'H+': {
-      'elo': 1500,
-      'name': 'Thợ chính',
-      'skill': 'Chuẩn bị lên Thợ giỏi',
-      'color': Color(0xFF673AB7), // From database: #673AB7
+      'elo': 1300,
+      'name': 'H+',
+      'skill': '3-5 Bi',
+      'stability':
+          'Ổn định, không có khả năng đi chấm, Don 1-2 hình trên 1 race 7',
+      'color': Color(0xFF673AB7),
     },
     'G': {
-      'elo': 1600,
-      'name': 'Thợ giỏi',
-      'skill': 'Clear 1 chấm + 3-7 bi kế; bắt đầu điều bi 3 băng',
-      'color': Color(0xFFFF9800), // From database: #FF9800
+      'elo': 1400,
+      'name': 'G',
+      'skill': '5-6 Bi',
+      'stability':
+          'Chưa ổn định, đi được 1 chấm / race chấm 7, Don 3 hình trên 1 race 7',
+      'color': Color(0xFFFF9800),
     },
     'G+': {
-      'elo': 1700,
-      'name': 'Thợ cả',
-      'skill': 'Trình phong trào "ngon"; sát ngưỡng lên Chuyên gia',
-      'color': Color(0xFFFF5722), // From database: #FF5722
+      'elo': 1500,
+      'name': 'G+',
+      'skill': '5-6 Bi',
+      'stability':
+          'Ổn định, đi được 1 chấm / race chấm 7, Don 4 hình trên 1 race 7',
+      'color': Color(0xFFFF5722),
     },
     'F': {
-      'elo': 1800,
-      'name': 'Chuyên gia',
-      'skill': '60-80% clear 1 chấm, đôi khi phá 2 chấm',
-      'color': Color(0xFFF44336), // From database: #F44336
+      'elo': 1600,
+      'name': 'F',
+      'skill': '6-8 Bi',
+      'stability':
+          'Rất ổn định, đi được 2 chấm / race chấm 7, Đi hình, đơn bàn khá tốt',
+      'color': Color(0xFFF44336),
+    },
+    'F+': {
+      'elo': 1700,
+      'name': 'F+',
+      'skill': '2 Chấm',
+      'stability': 'Cực kỳ ổn định, khả năng đi 2 chấm thông',
+      'color': Color(0xFFE91E63),
     },
     'E': {
-      'elo': 1900,
-      'name': 'Cao thủ',
-      'skill': 'Kỹ thuật ổn định, điều bi chính xác',
-      'color': Color(0xFFD32F2F), // From database: #D32F2F
+      'elo': 1800,
+      'name': 'E',
+      'skill': '3 Chấm',
+      'stability': 'Chuyên gia, khả năng đi 3 chấm thông',
+      'color': Color(0xFFD32F2F),
     },
     'D': {
-      'elo': 2000,
-      'name': 'Huyền Thoại',
-      'skill': '90-100% clear 1 chấm, 70% phá 2 chấm',
-      'color': Color(0xFF795548), // From database: #795548
+      'elo': 1900,
+      'name': 'D',
+      'skill': '4 Chấm',
+      'stability': 'Huyền thoại, khả năng đi 4 chấm thông',
+      'color': Color(0xFF795548),
     },
     'C': {
-      'elo': 2100,
-      'name': 'Vô địch',
-      'skill': 'Điều bi phức tạp, safety chủ động; đỉnh cao kỹ thuật',
-      'color': Color(0xFFFFD700), // From database: #FFD700
+      'elo': 2000,
+      'name': 'C',
+      'skill': '5 Chấm',
+      'stability': 'Vô địch, khả năng đi 5 chấm thông',
+      'color': Color(0xFFFFD700),
     },
   };
 
@@ -114,6 +124,11 @@ class SaboRankSystem {
   /// Lấy mô tả skill level
   static String getRankSkillDescription(String rank) {
     return rankEloMapping[rank]?['skill'] as String? ?? 'Mới bắt đầu';
+  }
+
+  /// Lấy mô tả độ ổn định
+  static String getRankStabilityDescription(String rank) {
+    return rankEloMapping[rank]?['stability'] as String? ?? '';
   }
 
   /// Lấy ELO minimum cho rank
@@ -179,8 +194,8 @@ class SaboRankSystem {
   /// Format ELO display với thousand separator
   static String formatElo(int elo) {
     return elo.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 }

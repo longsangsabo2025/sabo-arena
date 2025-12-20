@@ -9,12 +9,13 @@ import '../constants/ranking_constants.dart';
 /// và đảm bảo compatibility giữa các phiên bản
 class RankMigrationHelper {
   /// Mapping từ tên rank cũ sang mã rank (ELO-based system)
+  /// MIGRATED 2025: Removed K+ and I+ - map old names to new ranks
   /// Điều này đảm bảo backwards compatibility
   static const Map<String, String> oldNameToRankCode = {
     'Tập Sự': 'K',
-    'Tập Sự+': 'K+',
+    'Tập Sự+': 'I', // OLD K+ → NEW I (migration)
     'Sơ Cấp': 'I',
-    'Sơ Cấp+': 'I+',
+    'Sơ Cấp+': 'H', // OLD I+ → NEW H (migration)
     'Trung Cấp': 'H',
     'Trung Cấp+': 'H+',
     'Khá': 'G',
@@ -29,11 +30,10 @@ class RankMigrationHelper {
   };
 
   /// Mapping từ tên rank mới sang mã rank
+  /// MIGRATED 2025: Removed K+ and I+ (10 ranks only)
   static const Map<String, String> newNameToRankCode = {
     'Người mới': 'K',
-    'Học việc': 'K+',
     'Thợ 3': 'I',
-    'Thợ 2': 'I+',
     'Thợ 1': 'H',
     'Thợ chính': 'H+',
     'Thợ giỏi': 'G',
@@ -140,13 +140,10 @@ class RankMigrationHelper {
 
   /// Debug method: In ra mapping comparison
   static void printRankMappingComparison() {
-
     for (final _ in RankingConstants.RANK_ORDER) {
       // Unused variables removed
       // String newName = SaboRankSystem.getRankDisplayName(code);
       // String? oldName = oldNameToRankCode.entries...
-
     }
   }
 }
-

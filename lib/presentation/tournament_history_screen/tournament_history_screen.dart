@@ -29,7 +29,8 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
   List<Map<String, dynamic>> _filteredTournaments = [];
   bool _isLoading = true;
   String? _error;
-  String _selectedSort = 'date_desc'; // date_desc, date_asc, revenue_desc, participants_desc
+  String _selectedSort =
+      'date_desc'; // date_desc, date_asc, revenue_desc, participants_desc
 
   @override
   void initState() {
@@ -58,7 +59,6 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
     });
 
     try {
-      
       final response = await _supabase
           .from('tournaments')
           .select('''
@@ -76,7 +76,6 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
           .eq('club_id', widget.clubId)
           .order('created_at', ascending: false);
 
-      
       setState(() {
         _allTournaments = List<Map<String, dynamic>>.from(response);
         _filteredTournaments = _allTournaments;
@@ -101,19 +100,16 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
         filtered = List.from(_allTournaments);
         break;
       case 1: // Đã kết thúc
-        filtered = _allTournaments
-            .where((t) => t['status'] == 'completed')
-            .toList();
+        filtered =
+            _allTournaments.where((t) => t['status'] == 'completed').toList();
         break;
       case 2: // Đang diễn ra
-        filtered = _allTournaments
-            .where((t) => t['status'] == 'ongoing')
-            .toList();
+        filtered =
+            _allTournaments.where((t) => t['status'] == 'ongoing').toList();
         break;
       case 3: // Sắp diễn ra
-        filtered = _allTournaments
-            .where((t) => t['status'] == 'upcoming')
-            .toList();
+        filtered =
+            _allTournaments.where((t) => t['status'] == 'upcoming').toList();
         break;
     }
 
@@ -480,7 +476,8 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
                     decoration: BoxDecoration(
                       color: statusColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                      border:
+                          Border.all(color: statusColor.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -551,7 +548,8 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: Colors.grey[700]),
+                    Icon(Icons.calendar_today,
+                        size: 16, color: Colors.grey[700]),
                     const SizedBox(width: 8),
                     Text(
                       '$startDate - $endDate',
@@ -599,4 +597,3 @@ class _TournamentHistoryScreenState extends State<TournamentHistoryScreen>
     );
   }
 }
-

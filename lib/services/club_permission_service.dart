@@ -21,6 +21,8 @@ class ClubPermissionService {
             users:user_id (
               id,
               full_name,
+              display_name,
+              username,
               email,
               avatar_url,
               rank,
@@ -38,10 +40,27 @@ class ClubPermissionService {
           id: json['id'] as String,
           clubId: json['club_id'] as String,
           userId: json['user_id'] as String,
-          userName: user?['display_name'] as String? ?? 
-                   user?['full_name'] as String? ?? 
-                   (user?['email'] as String?)?.split('@')[0] ?? 
-                   'Thành viên',
+          userName: () {
+            String? displayName = user?['display_name'] as String?;
+            String? fullName = user?['full_name'] as String?;
+            String? username = user?['username'] as String?;
+            String? email = user?['email'] as String?;
+
+            // ELON FIX: Smart name resolution
+            String finalName = displayName ?? fullName ?? '';
+            final lowerName = finalName.trim().toLowerCase();
+
+            if ((lowerName.isEmpty ||
+                    lowerName == 'user' ||
+                    lowerName == 'unknown') &&
+                username != null &&
+                username.isNotEmpty) {
+              return username;
+            }
+
+            if (finalName.isNotEmpty) return finalName;
+            return email?.split('@')[0] ?? 'Thành viên';
+          }(),
           userAvatar: user?['avatar_url'] as String?,
           userRank: user?['rank'] as String?,
           eloRating: user?['elo_rating'] as int?,
@@ -51,13 +70,15 @@ class ClubPermissionService {
         );
       }).toList();
     } catch (e) {
-      ProductionLogger.info('Error getting club members: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error getting club members: $e',
+          tag: 'club_permission_service');
       rethrow;
     }
   }
 
   /// Get user's permissions in a specific club
-  Future<ClubPermission?> getUserPermissions(String userId, String clubId) async {
+  Future<ClubPermission?> getUserPermissions(
+      String userId, String clubId) async {
     try {
       final response = await _supabase
           .from('club_permissions')
@@ -76,7 +97,8 @@ class ClubPermissionService {
             .maybeSingle();
 
         if (member != null) {
-          final role = ClubRole.fromString(member['role'] as String? ?? 'member');
+          final role =
+              ClubRole.fromString(member['role'] as String? ?? 'member');
           return ClubPermission.defaultForRole(
             clubId: clubId,
             userId: userId,
@@ -88,7 +110,8 @@ class ClubPermissionService {
 
       return ClubPermission.fromJson(response);
     } catch (e) {
-      ProductionLogger.info('Error getting user permissions: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error getting user permissions: $e',
+          tag: 'club_permission_service');
       rethrow;
     }
   }
@@ -103,37 +126,54 @@ class ClubPermissionService {
     try {
       // DEBUG: Log current auth user
       final currentUser = _supabase.auth.currentUser;
-      ProductionLogger.info('🔑 [DEBUG] Current authenticated user: ${currentUser?.id}', tag: 'club_permission_service');
-      ProductionLogger.info('🔑 [DEBUG] User email: ${currentUser?.email}', tag: 'club_permission_service');
-      ProductionLogger.info('🎯 [DEBUG] Attempting to update:', tag: 'club_permission_service');
-      ProductionLogger.info('   Club ID: $clubId', tag: 'club_permission_service');
-      ProductionLogger.info('   Target User ID: $userId', tag: 'club_permission_service');
-      ProductionLogger.info('   New Role: ${newRole.value}', tag: 'club_permission_service');
-      ProductionLogger.info('   Granted By: $grantedBy', tag: 'club_permission_service');
-      
+      ProductionLogger.info(
+          '🔑 [DEBUG] Current authenticated user: ${currentUser?.id}',
+          tag: 'club_permission_service');
+      ProductionLogger.info('🔑 [DEBUG] User email: ${currentUser?.email}',
+          tag: 'club_permission_service');
+      ProductionLogger.info('🎯 [DEBUG] Attempting to update:',
+          tag: 'club_permission_service');
+      ProductionLogger.info('   Club ID: $clubId',
+          tag: 'club_permission_service');
+      ProductionLogger.info('   Target User ID: $userId',
+          tag: 'club_permission_service');
+      ProductionLogger.info('   New Role: ${newRole.value}',
+          tag: 'club_permission_service');
+      ProductionLogger.info('   Granted By: $grantedBy',
+          tag: 'club_permission_service');
+
       // Update role in club_members
-      ProductionLogger.info('📝 [DEBUG] Executing UPDATE query...', tag: 'club_permission_service');
+      ProductionLogger.info('📝 [DEBUG] Executing UPDATE query...',
+          tag: 'club_permission_service');
       final updateResponse = await _supabase
           .from('club_members')
           .update({'role': newRole.value})
           .eq('club_id', clubId)
           .eq('user_id', userId)
-          .select();  // Add .select() to get response data
-      
-      ProductionLogger.info('✅ [DEBUG] UPDATE response: $updateResponse', tag: 'club_permission_service');
-      
+          .select(); // Add .select() to get response data
+
+      ProductionLogger.info('✅ [DEBUG] UPDATE response: $updateResponse',
+          tag: 'club_permission_service');
+
       // Check if update actually happened
       if (updateResponse.isEmpty) {
-        ProductionLogger.info('⚠️  [DEBUG] WARNING: Update returned empty response!', tag: 'club_permission_service');
-        ProductionLogger.info('   This usually means RLS policy blocked the update.', tag: 'club_permission_service');
-        throw Exception('Failed to update role - RLS policy may have blocked the operation');
+        ProductionLogger.info(
+            '⚠️  [DEBUG] WARNING: Update returned empty response!',
+            tag: 'club_permission_service');
+        ProductionLogger.info(
+            '   This usually means RLS policy blocked the update.',
+            tag: 'club_permission_service');
+        throw Exception(
+            'Failed to update role - RLS policy may have blocked the operation');
       }
-      
-      ProductionLogger.info('✅ [DEBUG] Role updated successfully in club_members', tag: 'club_permission_service');
+
+      ProductionLogger.info(
+          '✅ [DEBUG] Role updated successfully in club_members',
+          tag: 'club_permission_service');
 
       // Update or insert permissions
       final existingPermission = await getUserPermissions(userId, clubId);
-      
+
       final permissionData = ClubPermission.defaultForRole(
         clubId: clubId,
         userId: userId,
@@ -154,7 +194,8 @@ class ClubPermissionService {
         await _supabase.from('club_permissions').insert(permissionData);
       }
     } catch (e) {
-      ProductionLogger.info('Error updating member role: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error updating member role: $e',
+          tag: 'club_permission_service');
       rethrow;
     }
   }
@@ -168,7 +209,7 @@ class ClubPermissionService {
   }) async {
     try {
       final existingPermission = await getUserPermissions(userId, clubId);
-      
+
       if (existingPermission == null) {
         throw Exception('User is not a member of this club');
       }
@@ -191,7 +232,8 @@ class ClubPermissionService {
           .eq('club_id', clubId)
           .eq('user_id', userId);
     } catch (e) {
-      ProductionLogger.info('Error granting custom permissions: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error granting custom permissions: $e',
+          tag: 'club_permission_service');
       rethrow;
     }
   }
@@ -204,7 +246,7 @@ class ClubPermissionService {
   }) async {
     try {
       final existingPermission = await getUserPermissions(userId, clubId);
-      
+
       if (existingPermission == null) {
         throw Exception('User has no permissions to revoke');
       }
@@ -231,7 +273,8 @@ class ClubPermissionService {
           .eq('club_id', clubId)
           .eq('user_id', userId);
     } catch (e) {
-      ProductionLogger.info('Error revoking permissions: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error revoking permissions: $e',
+          tag: 'club_permission_service');
       rethrow;
     }
   }
@@ -249,7 +292,8 @@ class ClubPermissionService {
           .eq('club_id', clubId)
           .eq('user_id', userId);
     } catch (e) {
-      ProductionLogger.info('Error removing member: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error removing member: $e',
+          tag: 'club_permission_service');
       rethrow;
     }
   }
@@ -283,7 +327,8 @@ class ClubPermissionService {
           return false;
       }
     } catch (e) {
-      ProductionLogger.info('Error checking permission: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error checking permission: $e',
+          tag: 'club_permission_service');
       return false;
     }
   }
@@ -297,7 +342,8 @@ class ClubPermissionService {
       final allMembers = await getClubMembers(clubId);
       return allMembers.where((member) => member.role == role).toList();
     } catch (e) {
-      ProductionLogger.info('Error getting members by role: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error getting members by role: $e',
+          tag: 'club_permission_service');
       rethrow;
     }
   }
@@ -314,7 +360,8 @@ class ClubPermissionService {
 
       return member?['role'] == 'owner';
     } catch (e) {
-      ProductionLogger.info('Error checking club owner: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error checking club owner: $e',
+          tag: 'club_permission_service');
       return false;
     }
   }
@@ -326,10 +373,12 @@ class ClubPermissionService {
       if (permission == null) return false;
 
       // Owners and admins can manage tournaments
-      return permission.role == ClubRole.owner || 
-             permission.role == ClubRole.admin;
+      return permission.role == ClubRole.owner ||
+          permission.role == ClubRole.admin;
     } catch (e) {
-      ProductionLogger.info('Error checking tournament management permission: $e', tag: 'club_permission_service');
+      ProductionLogger.info(
+          'Error checking tournament management permission: $e',
+          tag: 'club_permission_service');
       return false;
     }
   }
@@ -338,11 +387,13 @@ class ClubPermissionService {
   Future<void> clearCache({String? clubId, String? userId}) async {
     // This is a placeholder for future caching implementation
     // Currently no caching is implemented, so this is a no-op
-    ProductionLogger.info('Cache cleared for clubId: $clubId, userId: $userId', tag: 'club_permission_service');
+    ProductionLogger.info('Cache cleared for clubId: $clubId, userId: $userId',
+        tag: 'club_permission_service');
   }
 
   /// Debug membership information
-  Future<Map<String, dynamic>> debugMembership(String clubId, String userId) async {
+  Future<Map<String, dynamic>> debugMembership(
+      String clubId, String userId) async {
     try {
       final member = await _supabase
           .from('club_members')
@@ -360,7 +411,8 @@ class ClubPermissionService {
         'role': member?['role'],
       };
     } catch (e) {
-      ProductionLogger.info('Error debugging membership: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error debugging membership: $e',
+          tag: 'club_permission_service');
       return {'error': e.toString()};
     }
   }
@@ -382,7 +434,8 @@ class ClubPermissionService {
 
       return ClubRole.fromString(member['role'] as String? ?? 'member');
     } catch (e) {
-      ProductionLogger.info('Error refreshing user role: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error refreshing user role: $e',
+          tag: 'club_permission_service');
       return null;
     }
   }
@@ -411,13 +464,14 @@ class ClubPermissionService {
         case 'manage_permissions':
           return permission.canManagePermissions;
         case 'manage_tournaments':
-          return permission.role == ClubRole.owner || 
-                 permission.role == ClubRole.admin;
+          return permission.role == ClubRole.owner ||
+              permission.role == ClubRole.admin;
         default:
           return false;
       }
     } catch (e) {
-      ProductionLogger.info('Error checking permission: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error checking permission: $e',
+          tag: 'club_permission_service');
       return false;
     }
   }
@@ -434,7 +488,8 @@ class ClubPermissionService {
 
       return response.isNotEmpty;
     } catch (e) {
-      ProductionLogger.info('Error checking club management access: $e', tag: 'club_permission_service');
+      ProductionLogger.info('Error checking club management access: $e',
+          tag: 'club_permission_service');
       return false;
     }
   }

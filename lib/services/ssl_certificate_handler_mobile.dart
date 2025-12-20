@@ -36,7 +36,9 @@ class SSLCertificateHandlerPlatform {
 
     httpClient.badCertificateCallback = (cert, host, port) {
       if (kDebugMode) {
-        ProductionLogger.info('⚠️ DEBUG: Accepting certificate for $host (DEBUG ONLY!)', tag: 'ssl_certificate_handler_mobile');
+        ProductionLogger.info(
+            '⚠️ DEBUG: Accepting certificate for $host (DEBUG ONLY!)',
+            tag: 'ssl_certificate_handler_mobile');
       }
       return true; // Accept all in debug mode only
     };
@@ -52,25 +54,28 @@ class SSLCertificateHandlerPlatform {
     try {
       final client = createSecureClient();
       final uri = Uri.parse('$url/rest/v1/');
-      
+
       final response = await client.get(uri).timeout(
-        const Duration(seconds: 10),
-      );
+            const Duration(seconds: 10),
+          );
 
       client.close();
 
       final isConnected = response.statusCode < 500;
-      
+
       if (kDebugMode) {
-        ProductionLogger.info(isConnected
-            ? '✅ Connection verified (status: ${response.statusCode})'
-            : '❌ Connection failed (status: ${response.statusCode})', tag: 'ssl_certificate_handler_mobile');
+        ProductionLogger.info(
+            isConnected
+                ? '✅ Connection verified (status: ${response.statusCode})'
+                : '❌ Connection failed (status: ${response.statusCode})',
+            tag: 'ssl_certificate_handler_mobile');
       }
 
       return isConnected;
     } catch (e) {
       if (kDebugMode) {
-        ProductionLogger.info('❌ Connection verification failed: $e', tag: 'ssl_certificate_handler_mobile');
+        ProductionLogger.info('❌ Connection verification failed: $e',
+            tag: 'ssl_certificate_handler_mobile');
       }
       return false;
     }

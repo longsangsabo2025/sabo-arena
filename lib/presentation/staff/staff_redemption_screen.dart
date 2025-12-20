@@ -19,7 +19,7 @@ class StaffRedemptionScreen extends StatefulWidget {
 class _StaffRedemptionScreenState extends State<StaffRedemptionScreen> {
   final _codeController = TextEditingController();
   final _spaService = ClubSpaService();
-  
+
   bool _isLoading = false;
   Map<String, dynamic>? _redemptionData;
   String? _errorMessage;
@@ -91,7 +91,8 @@ class _StaffRedemptionScreenState extends State<StaffRedemptionScreen> {
                 children: [
                   Text('🎁 ${_redemptionData!['spa_rewards']['reward_name']}'),
                   Text('💰 Giá trị: ${_redemptionData!['spa_spent']} SPA'),
-                  Text('👤 Khách hàng: ${_redemptionData!['users']['username'] ?? 'N/A'}'),
+                  Text(
+                      '👤 Khách hàng: ${_redemptionData!['users']['username'] ?? 'N/A'}'),
                 ],
               ),
             ),
@@ -343,14 +344,22 @@ class _StaffRedemptionScreenState extends State<StaffRedemptionScreen> {
                       ],
                     ),
                     SizedBox(height: 16.sp),
-                    
-                    _buildInfoRow('🎁 Phần thưởng:', _redemptionData!['spa_rewards']['reward_name'] ?? 'N/A'),
-                    _buildInfoRow('💰 Giá trị SPA:', '${_redemptionData!['spa_spent']} SPA'),
-                    _buildInfoRow('👤 Khách hàng:', _redemptionData!['users']['username'] ?? 'N/A'),
-                    _buildInfoRow('📅 Ngày đổi:', _formatDate(_redemptionData!['redeemed_at'])),
-                    _buildInfoRow('📋 Trạng thái:', _getStatusText(_redemptionData!['status'])),
-                    
-                    if (_redemptionData!['spa_rewards']['description'] != null) ...[
+
+                    _buildInfoRow(
+                        '🎁 Phần thưởng:',
+                        _redemptionData!['spa_rewards']['reward_name'] ??
+                            'N/A'),
+                    _buildInfoRow('💰 Giá trị SPA:',
+                        '${_redemptionData!['spa_spent']} SPA'),
+                    _buildInfoRow('👤 Khách hàng:',
+                        _redemptionData!['users']['username'] ?? 'N/A'),
+                    _buildInfoRow('📅 Ngày đổi:',
+                        _formatDate(_redemptionData!['redeemed_at'])),
+                    _buildInfoRow('📋 Trạng thái:',
+                        _getStatusText(_redemptionData!['status'])),
+
+                    if (_redemptionData!['spa_rewards']['description'] !=
+                        null) ...[
                       SizedBox(height: 12.sp),
                       Text(
                         'Mô tả:',
@@ -370,7 +379,7 @@ class _StaffRedemptionScreenState extends State<StaffRedemptionScreen> {
                     ],
 
                     SizedBox(height: 20.sp),
-                    
+
                     // Action Button
                     if (_redemptionData!['status'] == 'pending')
                       SizedBox(

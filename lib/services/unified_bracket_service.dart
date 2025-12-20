@@ -9,10 +9,10 @@ import 'package:sabo_arena/services/bracket/formats/sabo_de32_format.dart';
 import 'package:sabo_arena/services/bracket/formats/sabo_de64_format.dart';
 
 /// 🎯 UNIFIED BRACKET SERVICE
-/// 
+///
 /// Single entry point for ALL bracket operations.
 /// Consolidates 12+ bracket services into one clean interface.
-/// 
+///
 /// Supported formats:
 /// - single_elimination (2-64 players)
 /// - double_elimination (4-32 players)
@@ -83,7 +83,8 @@ class UnifiedBracketService {
             .select('bracket_format')
             .eq('id', tournamentId)
             .single();
-        format = tournament['bracket_format'] as String? ?? 'single_elimination';
+        format =
+            tournament['bracket_format'] as String? ?? 'single_elimination';
       }
 
       // 3. Delegate based on format
@@ -118,8 +119,7 @@ class UnifiedBracketService {
     required List<String> participantIds,
   }) async {
     ProductionLogger.info(
-      '$_tag: Creating bracket - format: $format, players: ${participantIds.length}'
-    );
+        '$_tag: Creating bracket - format: $format, players: ${participantIds.length}');
 
     try {
       switch (format.toLowerCase()) {
@@ -173,7 +173,8 @@ class UnifiedBracketService {
           );
 
         default:
-          ProductionLogger.warning('$_tag: Unknown format $format, using single elimination');
+          ProductionLogger.warning(
+              '$_tag: Unknown format $format, using single elimination');
           return await singleElimination.createBracket(
             tournamentId: tournamentId,
             participantIds: participantIds,
@@ -195,7 +196,7 @@ class UnifiedBracketService {
     required List<String> participantIds,
   }) async {
     final matches = <Map<String, dynamic>>[];
-    
+
     // Simple round robin generation
     int matchCount = 0;
     for (int i = 0; i < participantIds.length; i++) {
@@ -287,15 +288,15 @@ class UnifiedBracketService {
 
   /// Get supported formats
   static List<String> get supportedFormats => [
-    'single_elimination',
-    'double_elimination',
-    'sabo_de16',
-    'sabo_de24',
-    'sabo_de32',
-    'sabo_de64',
-    'round_robin',
-    'swiss',
-  ];
+        'single_elimination',
+        'double_elimination',
+        'sabo_de16',
+        'sabo_de24',
+        'sabo_de32',
+        'sabo_de64',
+        'round_robin',
+        'swiss',
+      ];
 
   /// Validate format and participant count
   static bool isValidConfiguration(String format, int participantCount) {
@@ -404,4 +405,3 @@ class UnifiedBracketService {
     return sortedStandings;
   }
 }
-

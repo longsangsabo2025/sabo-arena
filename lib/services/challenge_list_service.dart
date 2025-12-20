@@ -15,7 +15,6 @@ class ChallengeListService {
   /// Get all OPEN competitive challenges (Thách đấu công khai)
   Future<List<Map<String, dynamic>>> getOpenCompetitiveChallenges() async {
     try {
-
       final currentUser = _supabase.auth.currentUser;
 
       // Get challenges where:
@@ -56,21 +55,19 @@ class ChallengeListService {
       // Filter: KHÔNG hiển thị challenge của chính mình
       final openChallenges = currentUser != null
           ? openChallengesRaw
-                .where(
-                  (challenge) => challenge['challenger_id'] != currentUser.id,
-                )
-                .toList()
+              .where(
+                (challenge) => challenge['challenger_id'] != currentUser.id,
+              )
+              .toList()
           : List<Map<String, dynamic>>.from(openChallengesRaw);
 
-      if (openChallenges.isNotEmpty) {
-      }
+      if (openChallenges.isNotEmpty) {}
 
       allChallenges.addAll(List<Map<String, dynamic>>.from(openChallenges));
 
       // 2. Get challenges SENT TO current user
       // ✅ NEW: Check match_conditions.target_user_id since challenged_id is null until accepted
       if (currentUser != null) {
-        
         // Get all pending challenges and filter by target_user_id in match_conditions
         final allPendingChallenges = await _supabase
             .from('challenges')
@@ -106,15 +103,13 @@ class ChallengeListService {
           return false;
         }).toList();
 
-
         // Add challenges not already in list (avoid duplicates)
         for (var challenge in sentToMe) {
           if (!allChallenges.any((c) => c['id'] == challenge['id'])) {
             allChallenges.add(Map<String, dynamic>.from(challenge));
           }
         }
-      } else {
-      }
+      } else {}
 
       // Sort by created_at descending
       allChallenges.sort((a, b) {
@@ -123,14 +118,11 @@ class ChallengeListService {
         return bDate.compareTo(aDate);
       });
 
-
       if (allChallenges.isEmpty) {
       } else {
-        for (
-          int i = 0;
-          i < (allChallenges.length > 3 ? 3 : allChallenges.length);
-          i++
-        ) {
+        for (int i = 0;
+            i < (allChallenges.length > 3 ? 3 : allChallenges.length);
+            i++) {
           // Variable c removed - was only used in debug log
         }
       }
@@ -144,7 +136,6 @@ class ChallengeListService {
   /// Get all OPEN social invites (Giao lưu công khai)
   Future<List<Map<String, dynamic>>> getOpenSocialInvites() async {
     try {
-
       final currentUser = _supabase.auth.currentUser;
 
       // Get challenges where:
@@ -185,8 +176,8 @@ class ChallengeListService {
       // Filter: KHÔNG hiển thị invite của chính mình
       final openInvites = currentUser != null
           ? openInvitesRaw
-                .where((invite) => invite['challenger_id'] != currentUser.id)
-                .toList()
+              .where((invite) => invite['challenger_id'] != currentUser.id)
+              .toList()
           : List<Map<String, dynamic>>.from(openInvitesRaw);
 
       allInvites.addAll(List<Map<String, dynamic>>.from(openInvites));
@@ -258,7 +249,6 @@ class ChallengeListService {
   /// Hiển thị TẤT CẢ các trận đã có đủ 2 người để cộng đồng theo dõi
   Future<List<Map<String, dynamic>>> getAcceptedMatches() async {
     try {
-
       // Get ALL challenges where:
       // - status IN ('accepted', 'in_progress', 'completed') - Lấy tất cả trận đã bắt đầu
       // - challenged_id IS NOT NULL (đảm bảo có người chấp nhận)
@@ -294,24 +284,28 @@ class ChallengeListService {
               total_losses
             )
           ''')
-          .inFilter('status', ['accepted', 'in_progress', 'completed']) // Include all matched statuses
+          .inFilter('status', [
+            'accepted',
+            'in_progress',
+            'completed'
+          ]) // Include all matched statuses
           .not('challenged_id', 'is', null)
           .order('created_at', ascending: false)
           .limit(50); // Giới hạn 50 trận gần nhất để tránh quá tải
 
-
       // WORKAROUND: Fetch matches separately since schema cache hasn't recognized FK yet
       final challengeIds = response.map((c) => c['id'] as String).toList();
-      
+
       Map<String, dynamic> matchesMap = {};
-      
+
       if (challengeIds.isNotEmpty) {
         try {
           final matchesResponse = await _supabase
               .from('matches')
-              .select('id, challenge_id, status, is_live, video_urls, player1_score, player2_score, winner_id, scheduled_time')
+              .select(
+                  'id, challenge_id, status, is_live, video_urls, player1_score, player2_score, winner_id, scheduled_time')
               .inFilter('challenge_id', challengeIds);
-          
+
           // Build map of challenge_id -> match
           for (var match in matchesResponse) {
             final challengeId = match['challenge_id'];
@@ -320,7 +314,8 @@ class ChallengeListService {
             }
           }
         } catch (e) {
-          ProductionLogger.warning('Failed to fetch matches for challenges', error: e, tag: 'ChallengeListService');
+          ProductionLogger.warning('Failed to fetch matches for challenges',
+              error: e, tag: 'ChallengeListService');
         }
       }
 
@@ -347,12 +342,9 @@ class ChallengeListService {
         throw Exception('User not authenticated');
       }
 
-
       // First check if challenge exists and get its current state
-      final existingChallenges = await _supabase
-          .from('challenges')
-          .select()
-          .eq('id', challengeId);
+      final existingChallenges =
+          await _supabase.from('challenges').select().eq('id', challengeId);
 
       if (existingChallenges.isEmpty) {
         throw Exception('Thách đấu không tồn tại hoặc đã bị xóa');
@@ -370,62 +362,53 @@ class ChallengeListService {
       // 1. Match has 2 users (challenger + challenged)
       // 2. Status is 'accepted' -> immediately visible in Community tab
       // DO NOT use .select() after update - it causes 406 error when RLS prevents reading
-      await _supabase
-          .from('challenges')
-          .update({
-            'challenged_id': currentUser.id, // Set the second player
-            'status': 'accepted', // Mark as accepted
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', challengeId);
-
+      await _supabase.from('challenges').update({
+        'challenged_id': currentUser.id, // Set the second player
+        'status': 'accepted', // Mark as accepted
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', challengeId);
 
       // Send notification to challenger that their challenge was accepted
       try {
-        final challenge = await _supabase
-            .from('challenges')
-            .select('''
+        final challenge = await _supabase.from('challenges').select('''
               id,
               challenger_id,
               challenge_type,
               challenger:users!fk_challenges_challenger_id(display_name),
               challenged:users!fk_challenges_challenged_id(display_name)
-            ''')
-            .eq('id', challengeId)
-            .single();
+            ''').eq('id', challengeId).single();
 
-        final challengedName = challenge['challenged']?['display_name'] ?? 'Người chơi';
-        
+        final challengedName =
+            challenge['challenged']?['display_name'] ?? 'Người chơi';
+
         await NotificationService.instance.sendNotification(
           userId: challenge['challenger_id'],
           title: 'Thách đấu được chấp nhận! ⚔️',
-          message: '$challengedName đã chấp nhận thách đấu của bạn. Hãy chuẩn bị cho trận đấu!',
+          message:
+              '$challengedName đã chấp nhận thách đấu của bạn. Hãy chuẩn bị cho trận đấu!',
           type: 'challenge_accepted',
           data: {'challenge_id': challengeId},
         );
-
       } catch (notifError) {
-        ProductionLogger.warning('Failed to send acceptance notification', error: notifError, tag: 'ChallengeListService');
+        ProductionLogger.warning('Failed to send acceptance notification',
+            error: notifError, tag: 'ChallengeListService');
         // Don't throw - acceptance was successful even if notification fails
       }
 
       // Try to verify by reading the challenge again (optional - may fail due to RLS)
       try {
-        final updatedChallenges = await _supabase
-            .from('challenges')
-            .select()
-            .eq('id', challengeId);
+        final updatedChallenges =
+            await _supabase.from('challenges').select().eq('id', challengeId);
 
         if (updatedChallenges.isNotEmpty) {
           final updated = updatedChallenges.first;
 
           if (updated['status'] != 'accepted' ||
-              updated['challenged_id'] != currentUser.id) {
-          }
-        } else {
-        }
+              updated['challenged_id'] != currentUser.id) {}
+        } else {}
       } catch (verifyError) {
-        ProductionLogger.warning('Failed to verify challenge update', error: verifyError, tag: 'ChallengeListService');
+        ProductionLogger.warning('Failed to verify challenge update',
+            error: verifyError, tag: 'ChallengeListService');
         // Don't throw - update was successful, just can't verify
       }
     } catch (e) {
@@ -441,31 +424,23 @@ class ChallengeListService {
         throw Exception('User not authenticated');
       }
 
-
-      await _supabase
-          .from('challenges')
-          .update({
-            'status': 'declined',
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', challengeId);
-
+      await _supabase.from('challenges').update({
+        'status': 'declined',
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', challengeId);
 
       // Send notification to challenger that their challenge was declined
       try {
-        final challenge = await _supabase
-            .from('challenges')
-            .select('''
+        final challenge = await _supabase.from('challenges').select('''
               id,
               challenger_id,
               challenger:users!fk_challenges_challenger_id(display_name),
               challenged:users!fk_challenges_challenged_id(display_name)
-            ''')
-            .eq('id', challengeId)
-            .single();
+            ''').eq('id', challengeId).single();
 
-        final challengedName = challenge['challenged']?['display_name'] ?? 'Người chơi';
-        
+        final challengedName =
+            challenge['challenged']?['display_name'] ?? 'Người chơi';
+
         await NotificationService.instance.sendNotification(
           userId: challenge['challenger_id'],
           title: 'Thách đấu bị từ chối 😔',
@@ -473,9 +448,9 @@ class ChallengeListService {
           type: 'challenge_declined',
           data: {'challenge_id': challengeId},
         );
-
       } catch (notifError) {
-        ProductionLogger.warning('Failed to send decline notification', error: notifError, tag: 'ChallengeListService');
+        ProductionLogger.warning('Failed to send decline notification',
+            error: notifError, tag: 'ChallengeListService');
         // Don't throw - decline was successful even if notification fails
       }
     } catch (e) {
@@ -486,9 +461,7 @@ class ChallengeListService {
   /// Get challenge details by ID
   Future<Map<String, dynamic>?> getChallengeDetails(String challengeId) async {
     try {
-      final response = await _supabase
-          .from('challenges')
-          .select('''
+      final response = await _supabase.from('challenges').select('''
             *,
             challenger:users!fk_challenges_challenger_id(
               id,
@@ -512,9 +485,7 @@ class ChallengeListService {
               rank,
               elo_rating
             )
-          ''')
-          .eq('id', challengeId)
-          .single();
+          ''').eq('id', challengeId).single();
 
       return response;
     } catch (e) {
@@ -550,9 +521,7 @@ class ChallengeListService {
       final user = _supabase.auth.currentUser;
       if (user == null) return null;
 
-      final userProfile = await _supabase
-          .from('users')
-          .select('''
+      final userProfile = await _supabase.from('users').select('''
             id,
             display_name,
             avatar_url,
@@ -562,9 +531,7 @@ class ChallengeListService {
             total_losses,
             spa_points,
             is_verified
-          ''')
-          .eq('id', user.id)
-          .single();
+          ''').eq('id', user.id).single();
 
       return userProfile;
     } catch (e) {
@@ -585,7 +552,6 @@ class ChallengeListService {
           .eq('id', currentUser.id)
           .single();
 
-      final currentRank = currentUserData['rank'] as String?;
       final currentElo = currentUserData['elo_rating'] as int? ?? 1000;
 
       // Get all verified, active users except current user
@@ -612,7 +578,7 @@ class ChallengeListService {
       final List<Map<String, dynamic>> eligible = [];
 
       for (final opponent in opponents) {
-        final opponentRank = opponent['rank'] as String?;
+        // final opponentRank = opponent['rank'] as String?;
         final opponentElo = opponent['elo_rating'] as int? ?? 1000;
 
         // Skip if no rank
@@ -637,7 +603,6 @@ class ChallengeListService {
   /// Get all community visible matches (Open challenges + Accepted matches) for Community tab
   Future<List<Map<String, dynamic>>> getCommunityMatches() async {
     try {
-
       final response = await _supabase
           .from('challenges')
           .select('''
@@ -674,18 +639,18 @@ class ChallengeListService {
           .order('created_at', ascending: false)
           .limit(100); // Show more matches for community visibility
 
-
       // Fetch matches data separately (workaround for schema cache)
       final challengeIds = response.map((c) => c['id'] as String).toList();
       Map<String, dynamic> matchesMap = {};
-      
+
       if (challengeIds.isNotEmpty) {
         try {
           final matchesResponse = await _supabase
               .from('matches')
-              .select('id, challenge_id, status, is_live, video_urls, player1_score, player2_score, winner_id, scheduled_time')
+              .select(
+                  'id, challenge_id, status, is_live, video_urls, player1_score, player2_score, winner_id, scheduled_time')
               .inFilter('challenge_id', challengeIds);
-          
+
           for (var match in matchesResponse) {
             final challengeId = match['challenge_id'];
             if (challengeId != null) {
@@ -693,7 +658,10 @@ class ChallengeListService {
             }
           }
         } catch (e) {
-          ProductionLogger.warning('Failed to fetch matches for challenges (workaround)', error: e, tag: 'ChallengeListService');
+          ProductionLogger.warning(
+              'Failed to fetch matches for challenges (workaround)',
+              error: e,
+              tag: 'ChallengeListService');
         }
       }
 
@@ -712,4 +680,3 @@ class ChallengeListService {
     }
   }
 }
-

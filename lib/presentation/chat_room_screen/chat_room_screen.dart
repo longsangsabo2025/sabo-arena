@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabo_arena/widgets/user/user_widgets.dart';
 import '../../services/chat_service.dart';
+import '../../widgets/common/app_button.dart';
 import '../member_communication_screen/member_communication_screen.dart';
 // ELON_MODE_AUTO_FIX
 
@@ -220,7 +221,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                title: const Text('Xóa',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.red)),
                 onTap: () {
                   Navigator.pop(context);
                   _confirmDeleteMessage(message);
@@ -268,7 +271,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             onPressed: () => Navigator.pop(context),
             child: const Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Cập nhật',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             onPressed: () async {
               final navigator = Navigator.of(context);
               try {
@@ -281,10 +287,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 _showSuccessSnackBar('Đã cập nhật tin nhắn');
                 _loadMessages(); // Reload to show edited message
               } catch (e) {
-                if (mounted) _showErrorSnackBar('Không thể cập nhật tin nhắn: $e');
+                if (mounted)
+                  _showErrorSnackBar('Không thể cập nhật tin nhắn: $e');
               }
             },
-            child: const Text('Cập nhật'),
           ),
         ],
       ),
@@ -302,7 +308,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             onPressed: () => Navigator.pop(context),
             child: const Text('Hủy'),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Xóa',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
+            customColor: Colors.red,
+            customTextColor: Colors.white,
             onPressed: () async {
               final navigator = Navigator.of(context);
               try {
@@ -315,8 +326,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 if (mounted) _showErrorSnackBar('Không thể xóa tin nhắn: $e');
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Xóa'),
           ),
         ],
       ),
@@ -359,10 +368,13 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.room.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            widget.room.name,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           Text(
-            '${widget.room.memberCount} thành viên', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '${widget.room.memberCount} thành viên',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               fontSize: 12,
               color: Theme.of(
                 context,
@@ -407,19 +419,23 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Chưa có tin nhắn', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+              'Chưa có tin nhắn',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Hãy bắt đầu cuộc trò chuyện!', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
+              'Hãy bắt đầu cuộc trò chuyện!',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
             ),
           ],
         ),
@@ -442,9 +458,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
         final messageIndex = _isLoadingMore ? index - 1 : index;
         final message = _messages[messageIndex];
-        final previousMessage = messageIndex > 0
-            ? _messages[messageIndex - 1]
-            : null;
+        final previousMessage =
+            messageIndex > 0 ? _messages[messageIndex - 1] : null;
 
         return _buildMessageItem(message, previousMessage);
       },
@@ -461,13 +476,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     final messageTime = DateTime.parse(message['created_at']);
 
     // Check if we should show date separator
-    final showDateSeparator =
-        previousMessage == null ||
+    final showDateSeparator = previousMessage == null ||
         !_isSameDay(DateTime.parse(previousMessage['created_at']), messageTime);
 
     // Check if we should show user avatar/name
-    final showUserInfo =
-        previousMessage == null ||
+    final showUserInfo = previousMessage == null ||
         previousMessage['sender_id'] != message['sender_id'] ||
         _isMoreThanMinutesApart(
           DateTime.parse(previousMessage['created_at']),
@@ -535,10 +548,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             child: Text(
               _formatDate(date),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
             ),
           ),
           Expanded(
@@ -565,9 +578,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       child: UserDisplayNameText(
         userData: user,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: _getUserColor(user?['id']),
-        ),
+              fontWeight: FontWeight.w500,
+              color: _getUserColor(user?['id']),
+            ),
         maxLines: 1,
       ),
     );
@@ -592,7 +605,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         children: [
           if (replyMessage != null) _buildReplyPreviewInMessage(replyMessage),
           Text(
-            message['message'], overflow: TextOverflow.ellipsis, style: TextStyle(
+            message['message'],
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: isOwnMessage
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onSurface,
@@ -647,23 +662,23 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           Text(
             _formatTime(time),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
-              fontSize: 11,
-            ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 11,
+                ),
           ),
           if (isEdited) ...[
             const SizedBox(width: 4),
             Text(
               '(đã sửa)',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.5),
-                fontSize: 10,
-                fontStyle: FontStyle.italic,
-              ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
           ],
         ],
@@ -700,9 +715,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       child: UserDisplayNameText(
                         userData: _replyToMessage!['users'],
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                         maxLines: 1,
                       ),
                     ),
@@ -975,33 +990,34 @@ class _SearchDialogState extends State<_SearchDialog> {
               child: _isSearching
                   ? const Center(child: CircularProgressIndicator())
                   : _searchResults.isEmpty
-                  ? const Center(child: Text('Không có kết quả'))
-                  : ListView.builder(
-                      itemCount: _searchResults.length,
-                      itemBuilder: (context, index) {
-                        final message = _searchResults[index];
-                        final user = message['users'];
-                        return ListTile(
-                          leading: UserAvatarWidget(
-                            avatarUrl: user?['avatar_url'],
-                            size: 40,
-                          ),
-                          title: UserDisplayNameText(
-                            userData: user,
-                            maxLines: 1,
-                          ),
-                          subtitle: Text(
-                            message['message'],
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: Text(
-                            _formatTime(DateTime.parse(message['created_at'])),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        );
-                      },
-                    ),
+                      ? const Center(child: Text('Không có kết quả'))
+                      : ListView.builder(
+                          itemCount: _searchResults.length,
+                          itemBuilder: (context, index) {
+                            final message = _searchResults[index];
+                            final user = message['users'];
+                            return ListTile(
+                              leading: UserAvatarWidget(
+                                avatarUrl: user?['avatar_url'],
+                                size: 40,
+                              ),
+                              title: UserDisplayNameText(
+                                userData: user,
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                message['message'],
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: Text(
+                                _formatTime(
+                                    DateTime.parse(message['created_at'])),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            );
+                          },
+                        ),
             ),
           ],
         ),
@@ -1019,4 +1035,3 @@ class _SearchDialogState extends State<_SearchDialog> {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }
-

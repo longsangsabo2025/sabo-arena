@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 // ELON_MODE_AUTO_FIX
 import 'package:sabo_arena/widgets/common/universal_image_widget.dart';
+import '../../widgets/common/app_button.dart';
 
 class RankRegistrationScreen extends StatefulWidget {
   final String clubId;
@@ -151,7 +152,9 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '• ', overflow: TextOverflow.ellipsis, style: TextStyle(
+            '• ',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: Colors.green[700],
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -159,7 +162,8 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
           ),
           Expanded(
             child: Text(
-              text, style: TextStyle(color: Colors.green[700], fontSize: 13),
+              text,
+              style: TextStyle(color: Colors.green[700], fontSize: 13),
             ),
           ),
         ],
@@ -173,7 +177,9 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
     if (_verificationMethod == 'evidence') {
       widgets.addAll([
         Text(
-          'Hình ảnh bằng chứng', overflow: TextOverflow.ellipsis, style: Theme.of(
+          'Hình ảnh bằng chứng',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
@@ -191,7 +197,9 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
               SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Tải lên kết quả thi đấu, bảng xếp hạng, hoặc chứng chỉ từ các giải đấu trong 3-6 tháng gần đây', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  'Tải lên kết quả thi đấu, bảng xếp hạng, hoặc chứng chỉ từ các giải đấu trong 3-6 tháng gần đây',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: Colors.amber[800],
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -223,7 +231,9 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
               if (_evidenceImages.isNotEmpty) ...[
                 SizedBox(height: 16),
                 Text(
-                  '${_evidenceImages.length} hình ảnh đã chọn', overflow: TextOverflow.ellipsis, style: TextStyle(
+                  '${_evidenceImages.length} hình ảnh đã chọn',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
                     color: Colors.green[700],
                     fontWeight: FontWeight.w500,
                   ),
@@ -317,7 +327,9 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Test hạng tại club', overflow: TextOverflow.ellipsis, style: TextStyle(
+                      'Test hạng tại club',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.green[800],
@@ -328,7 +340,9 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
               ),
               SizedBox(height: 12),
               Text(
-                'Khi chọn phương thức này:', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Khi chọn phương thức này:',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.green[800],
                 ),
@@ -392,8 +406,7 @@ class _RankRegistrationScreenState extends State<RankRegistrationScreen> {
       if (!mounted) return;
 
       // Combine all info into notes
-      final notes =
-          '''
+      final notes = '''
 Rank mong muốn: $_selectedRank
 Lý do xin hạng: ${_reasonController.text}
 Phương thức xác nhận: ${_verificationMethod == 'evidence' ? 'Upload hình ảnh chứng minh' : 'Test hạng trực tiếp tại club'}
@@ -402,18 +415,18 @@ Thành tích: ${_achievementsController.text}
 Ghi chú: ${_commentsController.text}
 ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ảnh đã tải lên' : ''}
 '''
-              .trim();
+          .trim();
 
       final result = await _userService.requestRankRegistration(
         clubId: widget.clubId,
         notes: notes,
         evidenceUrls: imageUrls,
+        requestedRank: _selectedRank,
       );
 
       if (!mounted) return;
 
       setState(() => _isLoading = false);
-
 
       if (result['success'] == true) {
         // Reload data to update UI state
@@ -432,8 +445,7 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      
-      
+
       // Show detailed error dialog instead of just SnackBar
       showDialog(
         context: context,
@@ -493,7 +505,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
               ),
               SizedBox(height: 24),
               Text(
-                'Yêu cầu đã được gửi!', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Yêu cầu đã được gửi!',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey[800],
@@ -502,7 +516,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
               ),
               SizedBox(height: 12),
               Text(
-                'Yêu cầu đăng ký rank của bạn đã được gửi thành công. Admin câu lạc bộ sẽ xem xét và phản hồi trong thời gian sớm nhất.', overflow: TextOverflow.ellipsis, style: TextStyle(
+                'Yêu cầu đăng ký rank của bạn đã được gửi thành công. Admin câu lạc bộ sẽ xem xét và phản hồi trong thời gian sớm nhất.',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
                   height: 1.4,
@@ -527,7 +543,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Bạn có thể kiểm tra trạng thái yêu cầu bất cứ lúc nào bằng cách quay lại trang này.', overflow: TextOverflow.ellipsis, style: TextStyle(
+                        'Bạn có thể kiểm tra trạng thái yêu cầu bất cứ lúc nào bằng cách quay lại trang này.',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue.shade700,
                         ),
@@ -545,7 +563,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                 // Stay on current screen to show the updated status
               },
               child: Text(
-                'Xem trạng thái', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
+                'Xem trạng thái',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -586,7 +606,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
               ),
               SizedBox(height: 16),
               Text(
-                'Lịch sử yêu cầu đăng ký rank', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                'Lịch sử yêu cầu đăng ký rank',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
               Expanded(
@@ -602,7 +624,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                             ),
                             SizedBox(height: 16),
                             Text(
-                              'Chưa có yêu cầu nào', overflow: TextOverflow.ellipsis, style: TextStyle(
+                              'Chưa có yêu cầu nào',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 16,
                               ),
@@ -679,7 +703,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
               children: [
                 Expanded(
                   child: Text(
-                    club != null ? club['name'] : 'Câu lạc bộ không xác định', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                    club != null ? club['name'] : 'Câu lạc bộ không xác định',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                 ),
                 Container(
@@ -697,7 +723,8 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                       Icon(statusIcon, size: 14, color: statusColor),
                       SizedBox(width: 4),
                       Text(
-                        statusText, style: TextStyle(
+                        statusText,
+                        style: TextStyle(
                           color: statusColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -710,7 +737,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
             ),
             SizedBox(height: 8),
             Text(
-              'Thời gian: $formattedTime', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              'Thời gian: $formattedTime',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
           ],
         ),
@@ -731,8 +760,8 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _hasRankRequest
-          ? _buildExistingRequestView()
-          : _buildRegistrationForm(), // Dùng chung form cho cả đăng ký và thay đổi
+              ? _buildExistingRequestView()
+              : _buildRegistrationForm(), // Dùng chung form cho cả đăng ký và thay đổi
     );
   }
 
@@ -769,18 +798,21 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                   ),
                   SizedBox(height: 24),
                   Text(
-                    'Yêu cầu đang chờ xử lý', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
-                    ),
+                    'Yêu cầu đang chờ xử lý',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[800],
+                        ),
                   ),
                   SizedBox(height: 12),
                   Text(
                     'Yêu cầu đăng ký rank của bạn đã được gửi thành công và đang chờ admin câu lạc bộ xét duyệt.',
-                    textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                      height: 1.5,
-                    ),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
                   ),
                   SizedBox(height: 24),
 
@@ -805,7 +837,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Thông tin yêu cầu', overflow: TextOverflow.ellipsis, style: TextStyle(
+                              'Thông tin yêu cầu',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: Colors.grey[800],
                               ),
@@ -832,36 +866,38 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
             children: [
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
+                child: AppButton(
+                  label: 'Kiểm tra lại',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.medium,
+                  icon: Icons.refresh,
+                  iconTrailing: false,
+                  fullWidth: true,
                   onPressed: () => _loadData(),
-                  icon: Icon(Icons.refresh),
-                  label: Text('Kiểm tra lại'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                  ),
                 ),
               ),
               SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
-                child: OutlinedButton.icon(
+                child: AppButton(
+                  label: 'Xem lịch sử yêu cầu',
+                  type: AppButtonType.outline,
+                  size: AppButtonSize.medium,
+                  icon: Icons.history,
+                  iconTrailing: false,
+                  fullWidth: true,
                   onPressed: _showRequestHistory,
-                  icon: Icon(Icons.history),
-                  label: Text('Xem lịch sử yêu cầu'),
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                  ),
                 ),
               ),
               SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
-                child: OutlinedButton(
+                child: AppButton(
+                  label: 'Đóng',
+                  type: AppButtonType.outline,
+                  size: AppButtonSize.medium,
+                  fullWidth: true,
                   onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  child: Text('Đóng'),
                 ),
               ),
             ],
@@ -880,12 +916,14 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
           SizedBox(
             width: 100,
             child: Text(
-              label, style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              label,
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
           ),
           Expanded(
             child: Text(
-              value, style: TextStyle(
+              value,
+              style: TextStyle(
                 color: Colors.grey[800],
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -941,11 +979,19 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _club?.name ?? 'Club', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium
+                          _club?.name ?? 'Club',
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         Text(
-                          'Đăng ký rank tại club này', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall
+                          'Đăng ký rank tại club này',
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
                               ?.copyWith(color: Colors.grey[600]),
                         ),
                       ],
@@ -959,8 +1005,11 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
 
             // Rank selection
             Text(
-              _currentRank != null ? 'Hạng mong muốn thay đổi' : 'Chọn rank mong muốn',
-              overflow: TextOverflow.ellipsis, style: Theme.of(
+              _currentRank != null
+                  ? 'Hạng mong muốn thay đổi'
+                  : 'Chọn rank mong muốn',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
@@ -983,7 +1032,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                     },
                     child: RadioListTile<String>(
                       title: Text(
-                        'Rank $rank', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600),
+                        'Rank $rank',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1017,8 +1068,11 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
 
             // Reason for requesting this rank
             Text(
-              _currentRank != null ? 'Lý do thay đổi hạng' : 'Lý do xin hạng này',
-              overflow: TextOverflow.ellipsis, style: Theme.of(
+              _currentRank != null
+                  ? 'Lý do thay đổi hạng'
+                  : 'Lý do xin hạng này',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
@@ -1047,7 +1101,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
 
             // Verification method selection
             Text(
-              'Cách thức xác nhận hạng', overflow: TextOverflow.ellipsis, style: Theme.of(
+              'Cách thức xác nhận hạng',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
@@ -1068,10 +1124,14 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                     },
                     child: RadioListTile<String>(
                       title: Text(
-                        'Upload hình ảnh chứng minh', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                        'Upload hình ảnh chứng minh',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text(
-                        'Tải lên kết quả giải đấu, chứng chỉ, hoặc ảnh chụp thành tích gần đây', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        'Tải lên kết quả giải đấu, chứng chỉ, hoặc ảnh chụp thành tích gần đây',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       value: 'evidence',
                     ),
@@ -1084,10 +1144,14 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                     },
                     child: RadioListTile<String>(
                       title: Text(
-                        'Test hạng trực tiếp tại club', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w500),
+                        'Test hạng trực tiếp tại club',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text(
-                        'Hẹn lịch để test hạng trực tiếp với HLV/Admin tại club', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        'Hẹn lịch để test hạng trực tiếp với HLV/Admin tại club',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       value: 'test_at_club',
                     ),
@@ -1105,7 +1169,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
 
             // Experience
             Text(
-              'Kinh nghiệm chơi billiards', overflow: TextOverflow.ellipsis, style: Theme.of(
+              'Kinh nghiệm chơi billiards',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
@@ -1156,7 +1222,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
 
             // Comments
             Text(
-              'Ghi chú thêm', overflow: TextOverflow.ellipsis, style: Theme.of(
+              'Ghi chú thêm',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
@@ -1176,34 +1244,22 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
 
             SizedBox(height: 32),
 
-            // Submit button
+            // Submit button - iOS style
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: AppButton(
+                label: _hasRankRequest
+                    ? 'Đã gửi yêu cầu'
+                    : (_currentRank != null
+                        ? 'Gửi yêu cầu thay đổi hạng'
+                        : 'Gửi yêu cầu đăng ký'),
+                type: AppButtonType.primary,
+                size: AppButtonSize.large,
+                isLoading: _isLoading,
+                fullWidth: true,
                 onPressed: (_isLoading || _hasRankRequest)
                     ? null
                     : _submitRankRequest, // Luôn dùng cùng 1 function
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  backgroundColor: _hasRankRequest ? Colors.grey : null,
-                ),
-                child: _isLoading
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        _hasRankRequest
-                            ? 'Đã gửi yêu cầu'
-                            : (_currentRank != null ? 'Gửi yêu cầu thay đổi hạng' : 'Gửi yêu cầu đăng ký'), overflow: TextOverflow.ellipsis, style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
               ),
             ),
 
@@ -1224,7 +1280,9 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Yêu cầu đăng ký rank sẽ được admin của club xem xét và phê duyệt. Bạn sẽ nhận được thông báo khi có kết quả.', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.blue[800], fontSize: 12),
+                      'Yêu cầu đăng ký rank sẽ được admin của club xem xét và phê duyệt. Bạn sẽ nhận được thông báo khi có kết quả.',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.blue[800], fontSize: 12),
                     ),
                   ),
                 ],
@@ -1235,6 +1293,4 @@ ${imageUrls.isNotEmpty ? '\nHình ảnh bằng chứng: ${imageUrls.length} ản
       ),
     );
   }
-
 }
-

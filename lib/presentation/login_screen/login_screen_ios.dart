@@ -11,6 +11,7 @@ import '../../services/social_auth_service.dart';
 import '../../services/auth_navigation_controller.dart';
 import '../../utils/error_message_helper.dart';
 import '../../helpers/welcome_voucher_helper.dart';
+import '../../widgets/common/app_button.dart';
 import 'package:sabo_arena/utils/production_logger.dart'; // ELON_MODE_AUTO_FIX
 
 class LoginScreenIOS extends StatefulWidget {
@@ -48,7 +49,9 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _preselectedRole = args?['preselectedRole'];
     if (kDebugMode && _preselectedRole != null) {
-      ProductionLogger.info('🎯 Login: Received role from onboarding: $_preselectedRole', tag: 'login_screen_ios');
+      ProductionLogger.info(
+          '🎯 Login: Received role from onboarding: $_preselectedRole',
+          tag: 'login_screen_ios');
     }
   }
 
@@ -81,7 +84,9 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
         });
       }
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('Error loading saved credentials: $e', tag: 'login_screen_ios');
+      if (kDebugMode)
+        ProductionLogger.info('Error loading saved credentials: $e',
+            tag: 'login_screen_ios');
     }
   }
 
@@ -107,7 +112,9 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
         await prefs.remove('is_email_mode');
       }
     } catch (e) {
-      if (kDebugMode) ProductionLogger.info('Error saving credentials: $e', tag: 'login_screen_ios');
+      if (kDebugMode)
+        ProductionLogger.info('Error saving credentials: $e',
+            tag: 'login_screen_ios');
     }
   }
 
@@ -129,7 +136,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
         // Phone login - TEMPORARILY DISABLED FOR MAINTENANCE
         if (mounted) {
           setState(() => _isLoading = false);
-          
+
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -176,7 +183,12 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                   onPressed: () => Navigator.of(context).pop(),
                   child: const Text('Đóng'),
                 ),
-                ElevatedButton(
+                AppButton(
+                  label: 'Đăng nhập bằng Email',
+                  type: AppButtonType.primary,
+                  size: AppButtonSize.medium,
+                  customColor: const Color(0xFF1E8A6F), // Brand teal green
+                  customTextColor: Colors.white,
                   onPressed: () {
                     Navigator.of(context).pop();
                     // Switch to Email tab
@@ -184,17 +196,13 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                       _isEmailTab = true;
                     });
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF007AFF),
-                  ),
-                  child: const Text('Đăng nhập bằng Email'),
                 ),
               ],
             ),
           );
         }
         return;
-        
+
         /* COMMENTED OUT - ORIGINAL PHONE LOGIN CODE
         // Sử dụng số điện thoại đầy đủ từ IntlPhoneField
         if (kDebugMode) {
@@ -282,8 +290,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
       if (response?.user != null && mounted) {
         // Update user metadata in our database
         await AuthService.instance.upsertUserRecord(
-          fullName:
-              response!.user!.userMetadata?['full_name'] ??
+          fullName: response!.user!.userMetadata?['full_name'] ??
               response.user!.userMetadata?['name'] ??
               'User',
           role: 'player',
@@ -313,8 +320,8 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
             content: Text(e.message),
             backgroundColor:
                 e.code == 'WEB_NOT_CONFIGURED' || e.code == 'WEB_NOT_SUPPORTED'
-                ? Colors.orange
-                : Colors.red,
+                    ? Colors.orange
+                    : Colors.red,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -431,7 +438,8 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                               boxShadow: _isEmailTab
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.15),
+                                        color: Colors.black
+                                            .withValues(alpha: 0.15),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -445,7 +453,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                   color: _isEmailTab
-                                      ? const Color(0xFF007AFF)
+                                      ? const Color(0xFF1E8A6F)
                                       : const Color(0xFF8E8E93),
                                 ),
                               ),
@@ -467,7 +475,8 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                               boxShadow: !_isEmailTab
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.15),
+                                        color: Colors.black
+                                            .withValues(alpha: 0.15),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -481,7 +490,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
                                   color: !_isEmailTab
-                                      ? const Color(0xFF007AFF)
+                                      ? const Color(0xFF1E8A6F)
                                       : const Color(0xFF8E8E93),
                                 ),
                               ),
@@ -659,16 +668,17 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
 
                                 // Add the 0 after country code if not present
                                 if (!normalized.startsWith('840')) {
-                                  normalized =
-                                      '840${normalized.substring(
-                                        2,
-                                      )}'; // 84961167717 -> 840961167717
+                                  normalized = '840${normalized.substring(
+                                    2,
+                                  )}'; // 84961167717 -> 840961167717
                                 }
                               }
 
                               // _fullPhoneNumber = normalized;
                               if (kDebugMode)
-                                ProductionLogger.info('📱 Normalized phone: $normalized', tag: 'login_screen_ios');
+                                ProductionLogger.info(
+                                    '📱 Normalized phone: $normalized',
+                                    tag: 'login_screen_ios');
                             },
                             validator: (phone) {
                               if (phone == null || phone.number.isEmpty) {
@@ -753,7 +763,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                               onChanged: (value) {
                                 setState(() => _rememberMe = value ?? false);
                               },
-                              activeColor: const Color(0xFF007AFF),
+                              activeColor: const Color(0xFF1E8A6F),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
                               ),
@@ -785,7 +795,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                               'Quên mật khẩu?',
                               style: TextStyle(
                                 fontSize: 15,
-                                color: Color(0xFF007AFF),
+                                color: Color(0xFF1E8A6F),
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -795,40 +805,17 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
 
                       const SizedBox(height: 24),
 
-                      // Login Button - iOS Style
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _handleLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF007AFF),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            disabledBackgroundColor: const Color(0xFF8E8E93),
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : const Text(
-                                  'Đăng nhập',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
+                      // Login Button - iOS Style với brand color
+                      AppButton(
+                        label: 'Đăng nhập',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.large,
+                        customColor:
+                            const Color(0xFF1E8A6F), // Brand teal green
+                        customTextColor: Colors.white,
+                        isLoading: _isLoading,
+                        fullWidth: true,
+                        onPressed: _isLoading ? null : _handleLogin,
                       ),
 
                       const SizedBox(height: 16),
@@ -931,7 +918,7 @@ class _LoginScreenIOSState extends State<LoginScreenIOS> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF007AFF),
+                                color: Color(0xFF1E8A6F),
                               ),
                             ),
                           ),

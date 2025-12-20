@@ -161,4 +161,3 @@ extension ChallengeValidationExtension on ChallengeService {
     return _rulesService.getRaceToForBet(betAmount);
   }
 }
-

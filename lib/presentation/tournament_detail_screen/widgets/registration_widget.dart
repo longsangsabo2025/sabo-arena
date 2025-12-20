@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../models/tournament.dart';
+import '../../../widgets/common/app_button.dart';
 
 class RegistrationWidget extends StatefulWidget {
   final Tournament tournament;
   final bool isRegistered;
   final VoidCallback? onRegisterTap;
-  final Function(String paymentMethod)? onRegisterWithPayment; // NEW: direct payment callback
+  final Function(String paymentMethod)?
+      onRegisterWithPayment; // NEW: direct payment callback
   final VoidCallback? onWithdrawTap;
 
   const RegistrationWidget({
@@ -27,9 +29,9 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
   Widget build(BuildContext context) {
     final registrationDeadline = widget.tournament.registrationDeadline;
     final isDeadlinePassed = DateTime.now().isAfter(registrationDeadline);
-    final canRegister =
-        !isDeadlinePassed &&
-        widget.tournament.currentParticipants < widget.tournament.maxParticipants;
+    final canRegister = !isDeadlinePassed &&
+        widget.tournament.currentParticipants <
+            widget.tournament.maxParticipants;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -136,8 +138,8 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
                 Expanded(
                   child: _buildCompactInfo(
                     Icons.payment,
-                    widget.tournament.entryFee == 0 
-                        ? 'Miễn phí' 
+                    widget.tournament.entryFee == 0
+                        ? 'Miễn phí'
                         : '${NumberFormat("#,###").format(widget.tournament.entryFee)} VND',
                   ),
                 ),
@@ -145,7 +147,7 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
                 Expanded(
                   child: _buildCompactInfo(
                     Icons.military_tech,
-                    widget.tournament.skillLevelRequired ?? 'Tất cả trình độ',
+                    _getSkillLevelDisplay(),
                   ),
                 ),
               ],
@@ -216,96 +218,72 @@ class _RegistrationWidgetState extends State<RegistrationWidget> {
     bool isDeadlinePassed,
   ) {
     if (isDeadlinePassed) {
-      return ElevatedButton(
+      return AppButton(
+        label: 'Hết hạn đăng ký',
+        type: AppButtonType.primary,
+        size: AppButtonSize.medium,
+        customColor: const Color(0xFFE4E6EB),
+        customTextColor: const Color(0xFF65676B),
+        fullWidth: true,
         onPressed: null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFE4E6EB),
-          disabledBackgroundColor: const Color(0xFFE4E6EB),
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: const Text(
-          'Hết hạn đăng ký',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF65676B),
-          ),
-        ),
       );
     }
 
     if (widget.isRegistered) {
-      return OutlinedButton(
+      return AppButton(
+        label: 'Đã đăng ký - Rút lui',
+        type: AppButtonType.outline,
+        size: AppButtonSize.medium,
+        icon: Icons.check_circle,
+        iconTrailing: false,
+        customColor: const Color(0xFFE41E3F),
+        customTextColor: const Color(0xFFE41E3F),
+        fullWidth: true,
         onPressed: widget.onWithdrawTap,
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Color(0xFFE41E3F), width: 1.5),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.check_circle, color: Color(0xFFE41E3F), size: 20),
-            SizedBox(width: 8),
-            Text(
-              'Đã đăng ký - Rút lui',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFFE41E3F),
-              ),
-            ),
-          ],
-        ),
       );
     }
 
     if (!canRegister) {
-      return ElevatedButton(
+      return AppButton(
+        label: 'Đã đầy',
+        type: AppButtonType.primary,
+        size: AppButtonSize.medium,
+        customColor: const Color(0xFFE4E6EB),
+        customTextColor: const Color(0xFF65676B),
+        fullWidth: true,
         onPressed: null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFE4E6EB),
-          disabledBackgroundColor: const Color(0xFFE4E6EB),
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: const Text(
-          'Đã đầy',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF65676B),
-          ),
-        ),
       );
     }
 
-    return ElevatedButton(
+    return AppButton(
+      label: 'Đăng ký tham gia',
+      type: AppButtonType.primary,
+      size: AppButtonSize.medium,
+      icon: Icons.person_add,
+      iconTrailing: false,
+      customColor: const Color(0xFF1E8A6F), // Brand teal green
+      customTextColor: Colors.white,
+      fullWidth: true,
       onPressed: widget.onRegisterTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF0866FF),
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.how_to_reg, color: Colors.white, size: 20),
-          SizedBox(width: 8),
-          Text(
-            'Đăng ký ngay',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-
+  /// Get formatted skill level display from tournament rank restrictions
+  String _getSkillLevelDisplay() {
+    if (widget.tournament.minRank != null &&
+        widget.tournament.maxRank != null) {
+      if (widget.tournament.minRank == widget.tournament.maxRank) {
+        return 'Hạng ${widget.tournament.minRank}';
+      }
+      return 'Hạng ${widget.tournament.minRank} - ${widget.tournament.maxRank}';
+    }
+    if (widget.tournament.minRank != null) {
+      return 'Hạng ${widget.tournament.minRank} trở lên';
+    }
+    if (widget.tournament.maxRank != null) {
+      return 'Hạng ${widget.tournament.maxRank} trở xuống';
+    }
+    // Fallback to skillLevelRequired or default
+    return widget.tournament.skillLevelRequired ?? 'Tất cả trình độ';
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../models/payment_method.dart';
 import '../../../services/payment_method_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../widgets/common/app_button.dart';
 import 'bank_transfer_qr_dialog.dart';
 
 class PaymentOptionsDialog extends StatefulWidget {
@@ -43,9 +44,8 @@ class _PaymentOptionsDialogState extends State<PaymentOptionsDialog> {
       );
 
       // Filter: only active AND developed methods
-      final available = methods
-          .where((m) => m.isActive && m.type.isDeveloped)
-          .toList();
+      final available =
+          methods.where((m) => m.isActive && m.type.isDeveloped).toList();
 
       setState(() {
         _availableMethods = available;
@@ -226,56 +226,28 @@ class _PaymentOptionsDialogState extends State<PaymentOptionsDialog> {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: OutlinedButton(
+                      child: AppButton(
+                        label: 'Hủy',
+                        type: AppButtonType.outline,
+                        size: AppButtonSize.medium,
+                        fullWidth: true,
                         onPressed: () => Navigator.of(context).pop(),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(color: Colors.grey.shade300),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'Hủy',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       flex: 3,
-                      child: ElevatedButton(
+                      child: AppButton(
+                        label: 'Xác nhận thanh toán',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.medium,
+                        customColor: _getButtonColor(),
+                        customTextColor: Colors.white,
+                        isLoading: _isLoading,
+                        fullWidth: true,
                         onPressed: _selectedMethod != null && !_isLoading
                             ? () => _handlePayment()
                             : null,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          backgroundColor: _getButtonColor(),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          disabledBackgroundColor: Colors.grey.shade300,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Thanh toán',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(Icons.arrow_forward, size: 18),
-                          ],
-                        ),
                       ),
                     ),
                   ],
@@ -304,10 +276,11 @@ class _PaymentOptionsDialogState extends State<PaymentOptionsDialog> {
       final authService = AuthService.instance;
       final currentUser = authService.currentUser;
       final userId = currentUser?.id ?? 'USERUSER';
-      
+
       // Super short transfer content: 8 chars only (4 tournament + 4 user)
-      final transferContent = '${widget.tournamentId.substring(0, 4).toUpperCase()}${userId.substring(0, 4).toUpperCase()}';
-      
+      final transferContent =
+          '${widget.tournamentId.substring(0, 4).toUpperCase()}${userId.substring(0, 4).toUpperCase()}';
+
       final confirmed = await showDialog<bool>(
         context: context,
         barrierDismissible: false,
@@ -334,9 +307,8 @@ class _PaymentOptionsDialogState extends State<PaymentOptionsDialog> {
   Widget _buildDynamicPaymentOption(PaymentMethod method) {
     final isSelected = _selectedMethod?.id == method.id;
     final momoColor = Color(0xFFAE2070);
-    final primaryColor = method.type == PaymentMethodType.momo
-        ? momoColor
-        : Colors.green;
+    final primaryColor =
+        method.type == PaymentMethodType.momo ? momoColor : Colors.green;
 
     // Get subtitle based on method type
     String subtitle;
@@ -367,7 +339,8 @@ class _PaymentOptionsDialogState extends State<PaymentOptionsDialog> {
         duration: Duration(milliseconds: 200),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? primaryColor.withValues(alpha: 0.08) : Colors.white,
+          color:
+              isSelected ? primaryColor.withValues(alpha: 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? primaryColor : Colors.grey.shade300,

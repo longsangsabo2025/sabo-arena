@@ -3,6 +3,7 @@ import '../../core/app_export.dart';
 import '../../routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_navigation_controller.dart';
+import '../../widgets/common/app_button.dart';
 // ELON_MODE_AUTO_FIX
 
 class RegistrationResultScreen extends StatefulWidget {
@@ -70,8 +71,8 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
     // Slide animation for content
     _slideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
-        );
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+    );
 
     // Start animations
     _controller.forward();
@@ -178,55 +179,31 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                 // Action Buttons
                 Row(
                   children: [
-                    // "Để sau" button
+                    // "Để sau" button - iOS style
                     Expanded(
-                      child: OutlinedButton(
+                      child: AppButton(
+                        label: 'Để sau',
+                        type: AppButtonType.outline,
+                        size: AppButtonSize.medium,
+                        fullWidth: true,
                         onPressed: () => Navigator.pop(context, false),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          side: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: const Text(
-                          'Để sau', overflow: TextOverflow.ellipsis, style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF6B7280),
-                          ),
-                        ),
                       ),
                     ),
                     
                     const SizedBox(width: 12),
                     
-                    // "Đăng ký ngay" button
+                    // "Đăng ký ngay" button - iOS style
                     Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF3B82F6).withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
+                      child: AppButton(
+                        label: 'Đăng ký ngay',
+                        type: AppButtonType.primary,
+                        size: AppButtonSize.medium,
+                        customColor: const Color(0xFF3B82F6), // iOS blue
+                        customTextColor: Colors.white,
+                        fullWidth: true,
+                        onPressed: () => Navigator.pop(context, true),
+                      ),
+                    ),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -366,11 +343,10 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color:
-                                              (widget.isSuccess
-                                                      ? const Color(0xFF38ef7d)
-                                                      : const Color(0xFFf45c43))
-                                                  .withValues(alpha: 0.4),
+                                          color: (widget.isSuccess
+                                                  ? const Color(0xFF38ef7d)
+                                                  : const Color(0xFFf45c43))
+                                              .withValues(alpha: 0.4),
                                           blurRadius: 20,
                                           offset: const Offset(0, 10),
                                         ),
@@ -433,14 +409,17 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                             const SizedBox(height: 20),
 
                             // � Email Verification Message - Compact
-                            if (widget.isSuccess && widget.needsEmailVerification && widget.email != null) ...[
+                            if (widget.isSuccess &&
+                                widget.needsEmailVerification &&
+                                widget.email != null) ...[
                               Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFF0F7FF),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: const Color(0xFF667eea).withValues(alpha: 0.3),
+                                    color: const Color(0xFF667eea)
+                                        .withValues(alpha: 0.3),
                                     width: 1.5,
                                   ),
                                 ),
@@ -452,7 +431,8 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                                           padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
                                             color: const Color(0xFF667eea),
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                           ),
                                           child: const Icon(
                                             Icons.email_outlined,
@@ -463,7 +443,8 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               const Text(
                                                 'Xác nhận email',
@@ -500,7 +481,8 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                                     ),
                                     const SizedBox(height: 12),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 8),
                                       decoration: BoxDecoration(
                                         color: const Color(0xFFFFF9E6),
                                         borderRadius: BorderRadius.circular(8),
@@ -533,45 +515,18 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                                     ),
                                     const SizedBox(height: 16),
                                     // Resend button - compact
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: OutlinedButton.icon(
-                                        onPressed: _isResending ? null : _handleResendEmail,
-                                        style: OutlinedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
-                                          side: const BorderSide(
-                                            color: Color(0xFF667eea),
-                                            width: 1.5,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                        icon: _isResending
-                                            ? const SizedBox(
-                                                width: 16,
-                                                height: 16,
-                                                child: CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                                    Color(0xFF667eea),
-                                                  ),
-                                                ),
-                                              )
-                                            : const Icon(
-                                                Icons.refresh_rounded,
-                                                color: Color(0xFF667eea),
-                                                size: 18,
-                                              ),
-                                        label: const Text(
-                                          'Gửi lại email',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xFF667eea),
-                                          ),
-                                        ),
-                                      ),
+                                    AppButton(
+                                      label: 'Gửi lại email',
+                                      type: AppButtonType.outline,
+                                      size: AppButtonSize.medium,
+                                      icon: Icons.refresh_rounded,
+                                      iconTrailing: false,
+                                      customTextColor: const Color(0xFF667eea),
+                                      isLoading: _isResending,
+                                      fullWidth: true,
+                                      onPressed: _isResending
+                                          ? null
+                                          : _handleResendEmail,
                                     ),
                                   ],
                                 ),
@@ -591,7 +546,8 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                             ] else ...[
                               // Error message
                               Text(
-                                widget.errorMessage ?? 'Có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại.',
+                                widget.errorMessage ??
+                                    'Có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại.',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w400,
@@ -634,11 +590,10 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  (widget.isSuccess
-                                          ? const Color(0xFF667eea)
-                                          : const Color(0xFF38ef7d))
-                                      .withValues(alpha: 0.4),
+                              color: (widget.isSuccess
+                                      ? const Color(0xFF667eea)
+                                      : const Color(0xFF38ef7d))
+                                  .withValues(alpha: 0.4),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -659,8 +614,8 @@ class _RegistrationResultScreenState extends State<RegistrationResultScreen>
                               Text(
                                 widget.isSuccess
                                     ? (widget.needsEmailVerification
-                                          ? 'Tôi đã hiểu'
-                                          : 'Bắt đầu sử dụng')
+                                        ? 'Tôi đã hiểu'
+                                        : 'Bắt đầu sử dụng')
                                     : 'Thử lại',
                                 style: const TextStyle(
                                   fontSize: 17,

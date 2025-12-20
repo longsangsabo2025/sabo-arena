@@ -4,9 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/app_export.dart';
 import '../../services/club_service.dart';
-import '../../models/club.dart';
+import '../../services/tournament_service.dart';
+import '../../models/tournament.dart';
 import '../../core/utils/sabo_rank_system.dart';
 import '../../core/constants/ranking_constants.dart';
+import '../../widgets/common/app_button.dart';
 
 import './widgets/club_header_widget.dart';
 import './widgets/club_info_section_widget.dart';
@@ -39,56 +41,15 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
   String? _clubId;
   bool _isDataLoaded = false;
 
-  final List<String> _clubPhotos = [
-    "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000",
-    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?fm=jpg&q=60&w=3000",
-  ];
+  // Club photos from posts with images
+  List<String> _clubPhotos = [];
+  bool _isLoadingPhotos = false;
 
   List<Map<String, dynamic>> _clubMembers = [];
-  
-  final List<Map<String, dynamic>> _clubTournaments = [
-    {
-      "id": 1,
-      "name": "Giải Billiards Mùa Xuân 2024",
-      "format": "8-Ball Pool",
-      "status": "upcoming",
-      "startDate": "2024-03-15T09:00:00Z",
-      "endDate": "2024-03-17T18:00:00Z",
-      "participants": 24,
-      "maxParticipants": 32,
-      "prizePool": "10.000.000 VNĐ",
-      "entryFee": "200.000 VNĐ",
-      "description":
-          "Giải đấu 8-Ball Pool dành cho các thành viên câu lạc bộ và khách mời.",
-    },
-    {
-      "id": 2,
-      "name": "Giải Carom Hàng Tháng",
-      "format": "3-Cushion Carom",
-      "status": "ongoing",
-      "startDate": "2024-02-20T19:00:00Z",
-      "endDate": "2024-02-25T22:00:00Z",
-      "participants": 16,
-      "maxParticipants": 16,
-      "prizePool": "5.000.000 VNĐ",
-      "entryFee": "150.000 VNĐ",
-      "description": "Giải đấu Carom 3 băng hàng tháng cho các thành viên.",
-    },
-    {
-      "id": 3,
-      "name": "Giải Vô Địch Câu Lạc Bộ 2023",
-      "format": "9-Ball Pool",
-      "status": "completed",
-      "startDate": "2023-12-10T08:00:00Z",
-      "endDate": "2023-12-15T20:00:00Z",
-      "participants": 48,
-      "maxParticipants": 48,
-      "prizePool": "20.000.000 VNĐ",
-      "entryFee": "300.000 VNĐ",
-      "description": "Giải đấu lớn nhất trong năm của câu lạc bộ.",
-      "winner": "Nguyễn Văn An",
-    },
-  ];
+
+  // Club tournaments from TournamentService
+  List<Tournament> _clubTournaments = [];
+  bool _isLoadingTournaments = false;
 
   @override
   void didChangeDependencies() {
@@ -103,11 +64,11 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
         } else if (args is Map && args.containsKey('id')) {
           _clubId = args['id'].toString();
         }
-        
+
         if (_clubId != null) {
           _loadClubData(_clubId!);
         } else {
-           setState(() {
+          setState(() {
             _isLoadingClub = false;
           });
         }
@@ -143,23 +104,38 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
             "memberCount": members.length,
             "isMember": isMember,
             "isOwner": isOwner,
-            "coverImage": club.coverImageUrl ?? "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000",
-            "logo": club.logoUrl ?? "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?fm=jpg&q=60&w=3000",
+            "coverImage": club.coverImageUrl ??
+                "https://images.unsplash.com/photo-1578662996442-48f60103fc96?fm=jpg&q=60&w=3000",
+            "logo": club.logoUrl ??
+                "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?fm=jpg&q=60&w=3000",
             "description": club.description ?? "",
             "phone": club.phone ?? "",
             "email": club.email ?? "",
             "rating": club.rating,
             "reviewCount": club.totalReviews,
           };
-          
-          _clubMembers = members.map((m) => {
-            "id": m.id,
-            "name": m.displayName ?? "Unknown",
-            "avatar": m.avatarUrl ?? "",
-            "role": "Member",
-          }).toList();
+
+          _clubMembers = members
+              .map((m) => {
+                    "id": m.id,
+                    "display_name": m.displayName,
+                    "full_name": m.fullName,
+                    "username": m.username, // Add username for fallback
+                    "avatar_url": m.avatarUrl ?? "",
+                    "role": "Member",
+                    "rank": m.rank,
+                    "elo_rating": m.eloRating,
+                    "is_verified": m.isVerified,
+                  })
+              .toList();
         });
       }
+
+      // Load club photos and tournaments in parallel
+      await Future.wait([
+        _loadClubPhotos(clubId),
+        _loadClubTournaments(clubId),
+      ]);
     } catch (e) {
       debugPrint("Error loading club data: $e");
       if (mounted) {
@@ -171,6 +147,74 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
       if (mounted) {
         setState(() {
           _isLoadingClub = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadClubPhotos(String clubId) async {
+    setState(() {
+      _isLoadingPhotos = true;
+    });
+
+    try {
+      // Fetch posts from this club that have images
+      final response = await Supabase.instance.client
+          .from('posts')
+          .select('image_urls')
+          .eq('club_id', clubId)
+          .not('image_urls', 'is', null)
+          .order('created_at', ascending: false)
+          .limit(20);
+
+      final List<String> photos = [];
+      for (final post in response) {
+        final imageUrls = post['image_urls'] as List?;
+        if (imageUrls != null && imageUrls.isNotEmpty) {
+          // Add all images from this post
+          photos.addAll(imageUrls.cast<String>());
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _clubPhotos = photos;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading club photos: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingPhotos = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadClubTournaments(String clubId) async {
+    setState(() {
+      _isLoadingTournaments = true;
+    });
+
+    try {
+      final tournaments = await TournamentService.instance.getClubTournaments(
+        clubId,
+        page: 1,
+        pageSize: 10,
+      );
+
+      if (mounted) {
+        setState(() {
+          _clubTournaments = tournaments;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading club tournaments: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingTournaments = false;
         });
       }
     }
@@ -294,7 +338,21 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
 
                 // Tournaments Section
                 ClubTournamentsWidget(
-                  tournaments: _clubTournaments,
+                  tournaments: _clubTournaments
+                      .map((t) => {
+                            "id": t.id,
+                            "name": t.title,
+                            "format": t.tournamentType,
+                            "status": t.status,
+                            "startDate": t.startDate.toIso8601String(),
+                            "endDate": t.endDate?.toIso8601String(),
+                            "participants": t.currentParticipants,
+                            "maxParticipants": t.maxParticipants,
+                            "prizePool": t.prizePool.toString(),
+                            "entryFee": t.entryFee.toString(),
+                            "description": t.description,
+                          })
+                      .toList(),
                   isOwner: _clubData["isOwner"] as bool,
                   onViewAll: _handleViewAllTournaments,
                   onCreateTournament: _handleCreateTournament,
@@ -409,14 +467,18 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Đánh giá', overflow: TextOverflow.ellipsis, style: theme.textTheme.titleMedium?.copyWith(
+                'Đánh giá',
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               TextButton(
                 onPressed: _handleViewAllReviews,
                 child: Text(
-                  'Xem tất cả', overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium?.copyWith(
+                  'Xem tất cả',
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.w500,
                   ),
@@ -441,16 +503,17 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
                   Row(
                     children: List.generate(5, (index) {
                       return CustomIconWidget(
-                        iconName: index < rating.floor()
-                            ? 'star'
-                            : 'star_border',
+                        iconName:
+                            index < rating.floor() ? 'star' : 'star_border',
                         color: Colors.amber,
                         size: 4.w,
                       );
                     }),
                   ),
                   Text(
-                    '$reviewCount đánh giá', overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(
+                    '$reviewCount đánh giá',
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -459,18 +522,14 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
             ],
           ),
           SizedBox(height: 2.h),
-          ElevatedButton.icon(
+          AppButton(
+            label: 'Viết đánh giá',
+            type: AppButtonType.primary,
+            size: AppButtonSize.large,
+            icon: Icons.rate_review,
+            iconTrailing: false,
+            fullWidth: true,
             onPressed: _handleWriteReview,
-            icon: CustomIconWidget(
-              iconName: 'rate_review',
-              color: colorScheme.onPrimary,
-              size: 4.w,
-            ),
-            label: const Text('Viết đánh giá'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              minimumSize: Size(double.infinity, 6.h),
-            ),
           ),
         ],
       ),
@@ -592,8 +651,10 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
   }
 
   void _handleTournamentTap(Map<String, dynamic> tournament) {
-    ProductionLogger.info('🎯 Tournament tapped: ${tournament["id"]} - ${tournament["name"]}', tag: 'club_profile_screen');
-    
+    ProductionLogger.info(
+        '🎯 Tournament tapped: ${tournament["id"]} - ${tournament["name"]}',
+        tag: 'club_profile_screen');
+
     // Navigate to tournament detail screen with tournament data
     Navigator.pushNamed(
       context,
@@ -669,17 +730,21 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Trạng thái Rank', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.titleMedium
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.lightTheme.colorScheme.onSurface,
-                          ),
+                      'Trạng thái Rank',
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          AppTheme.lightTheme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.lightTheme.colorScheme.onSurface,
+                      ),
                     ),
                     SizedBox(height: 0.5.h),
                     Text(
                       hasRank
                           ? 'Bạn đã có rank chính thức'
-                          : 'Bạn chưa đăng ký rank chính thức', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                          : 'Bạn chưa đăng ký rank chính thức',
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
                         color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -737,20 +802,25 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Rank hiện tại: $rank', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                  'Rank hiện tại: $rank',
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.lightTheme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: rankColor,
                   ),
                 ),
                 SizedBox(height: 1.h),
                 Text(
-                  'ELO: $elo', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                  'ELO: $elo',
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
                     color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
                   ),
                 ),
                 SizedBox(height: 0.5.h),
                 Text(
-                  skillDescription, style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+                  skillDescription,
+                  style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
                     color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
                     fontStyle: FontStyle.italic,
                   ),
@@ -783,7 +853,9 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
                   SizedBox(width: 2.w),
                   Expanded(
                     child: Text(
-                      'Để tham gia các trận đấu ranked tại club này, bạn cần đăng ký rank chính thức.', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                      'Để tham gia các trận đấu ranked tại club này, bạn cần đăng ký rank chính thức.',
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
                         color: Colors.orange.shade700,
                       ),
                     ),
@@ -792,7 +864,9 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
               ),
               SizedBox(height: 2.h),
               Text(
-                'Lợi ích khi có rank:', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.titleSmall?.copyWith(
+                'Lợi ích khi có rank:',
+                overflow: TextOverflow.ellipsis,
+                style: AppTheme.lightTheme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.orange.shade800,
                 ),
@@ -807,7 +881,8 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
                 (benefit) => Padding(
                   padding: EdgeInsets.only(bottom: 0.5.h),
                   child: Text(
-                    benefit, style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+                    benefit,
+                    style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
                       color: Colors.orange.shade700,
                     ),
                   ),
@@ -819,32 +894,19 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
 
         SizedBox(height: 2.h),
 
-        // Registration button
+        // Registration button - iOS style
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
+          child: AppButton(
+            label: 'Đăng ký Rank ngay',
+            type: AppButtonType.primary,
+            size: AppButtonSize.large,
+            icon: Icons.how_to_reg,
+            iconTrailing: false,
+            customColor: Colors.orange,
+            customTextColor: Colors.white,
+            fullWidth: true,
             onPressed: _showRankRegistrationDialog,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: 2.h),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.how_to_reg, size: 5.w),
-                SizedBox(width: 2.w),
-                Text(
-                  'Đăng ký Rank ngay', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ],
@@ -856,7 +918,9 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: Text(
-          'Đăng ký Rank Chính thức', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.headlineSmall?.copyWith(
+          'Đăng ký Rank Chính thức',
+          overflow: TextOverflow.ellipsis,
+          style: AppTheme.lightTheme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -865,7 +929,9 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Việc đăng ký rank sẽ giúp bạn:', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+              'Việc đăng ký rank sẽ giúp bạn:',
+              overflow: TextOverflow.ellipsis,
+              style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -890,7 +956,9 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
             ),
             SizedBox(height: 2.h),
             Text(
-              'Bạn có muốn đăng ký rank ngay bây giờ không?', overflow: TextOverflow.ellipsis, style: AppTheme.lightTheme.textTheme.bodyMedium,
+              'Bạn có muốn đăng ký rank ngay bây giờ không?',
+              overflow: TextOverflow.ellipsis,
+              style: AppTheme.lightTheme.textTheme.bodyMedium,
             ),
           ],
         ),
@@ -898,19 +966,19 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              'Để sau', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey.shade600),
+              'Để sau',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey.shade600),
             ),
           ),
-          ElevatedButton(
+          AppButton(
+            label: 'Đăng ký ngay',
+            type: AppButtonType.primary,
+            size: AppButtonSize.medium,
             onPressed: () {
               Navigator.of(context).pop();
               _navigateToRankRegistration();
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.lightTheme.colorScheme.primary,
-              foregroundColor: Colors.white,
-            ),
-            child: Text('Đăng ký ngay'),
           ),
         ],
       ),
@@ -926,7 +994,8 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
           SizedBox(width: 2.w),
           Expanded(
             child: Text(
-              text, style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+              text,
+              style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
                 color: Colors.blue.shade700,
               ),
             ),
@@ -995,4 +1064,3 @@ class _ClubProfileScreenState extends State<ClubProfileScreen>
     }
   }
 }
-

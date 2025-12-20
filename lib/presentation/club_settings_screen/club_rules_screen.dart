@@ -94,16 +94,20 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Quy định câu lạc bộ', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.textPrimaryLight,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Quy định câu lạc bộ',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppTheme.textPrimaryLight,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Quản lý các quy định và điều khoản của CLB', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondaryLight,
-                  ),
+                  'Quản lý các quy định và điều khoản của CLB',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondaryLight,
+                      ),
                 ),
               ],
             ),
@@ -118,10 +122,12 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Danh sách quy định', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Danh sách quy định',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 16),
         if (rules.isEmpty)
@@ -167,7 +173,9 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
           Icon(Icons.rule, color: AppTheme.textSecondaryLight, size: 64),
           const SizedBox(height: 16),
           Text(
-            'Chưa có quy định nào', overflow: TextOverflow.ellipsis, style: TextStyle(
+            'Chưa có quy định nào',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: AppTheme.textSecondaryLight,
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -175,7 +183,9 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Nhấn nút + để thêm quy định mới', overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
+            'Nhấn nút + để thêm quy định mới',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
           ),
         ],
       ),
@@ -212,7 +222,9 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
           ),
         ),
         title: Text(
-          rule['title'], overflow: TextOverflow.ellipsis, style: TextStyle(
+          rule['title'],
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             color: AppTheme.textPrimaryLight,
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -255,7 +267,9 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
                     children: [
                       const Icon(Icons.delete, color: Colors.red),
                       const SizedBox(width: 12),
-                      Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                      Text('Xóa',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.red)),
                     ],
                   ),
                 ),
@@ -279,7 +293,9 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              rule['content'], overflow: TextOverflow.ellipsis, style: TextStyle(
+              rule['content'],
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: AppTheme.textPrimaryLight,
                 fontSize: 14,
                 height: 1.5,
@@ -319,14 +335,18 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quy định mẫu', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimaryLight,
-            fontWeight: FontWeight.w600,
-          ),
+          'Quy định mẫu',
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppTheme.textPrimaryLight,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Chọn các quy định mẫu để thêm nhanh', overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
+          'Chọn các quy định mẫu để thêm nhanh',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: AppTheme.textSecondaryLight, fontSize: 14),
         ),
         const SizedBox(height: 16),
         Container(
@@ -376,14 +396,18 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
                     ),
                   ),
                   title: Text(
-                    preset['title'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                    preset['title'],
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: AppTheme.textPrimaryLight,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
                   ),
                   subtitle: Text(
-                    preset['content'], overflow: TextOverflow.ellipsis, style: TextStyle(
+                    preset['content'],
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: AppTheme.textSecondaryLight,
                       fontSize: 14,
                     ),
@@ -435,7 +459,9 @@ class _ClubRulesScreenState extends State<ClubRulesScreen> {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Xóa', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white)),
+            child: const Text('Xóa',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

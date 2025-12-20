@@ -11,6 +11,7 @@
 /// with proper weights, line heights, and letter spacing
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 /// Typography system for SABO ARENA
@@ -25,7 +26,7 @@ class AppTypography {
   // ============================================================================
 
   /// Primary font family - Inter (clean, modern, highly readable)
-  static const String fontFamily = 'Inter';
+  static String get fontFamily => GoogleFonts.inter().fontFamily!;
 
   /// Fallback fonts for different platforms
   static const List<String> fontFallbacks = [
@@ -56,7 +57,7 @@ class AppTypography {
 
   /// Display Large - 48px, Bold
   /// Usage: Hero sections, splash screens
-  static const TextStyle displayLarge = TextStyle(
+  static final TextStyle displayLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 48,
     fontWeight: bold,
@@ -67,7 +68,7 @@ class AppTypography {
 
   /// Display Medium - 40px, Bold
   /// Usage: Large page titles
-  static const TextStyle displayMedium = TextStyle(
+  static final TextStyle displayMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 40,
     fontWeight: bold,
@@ -78,7 +79,7 @@ class AppTypography {
 
   /// Display Small - 32px, Bold
   /// Usage: Section headers, modal titles
-  static const TextStyle displaySmall = TextStyle(
+  static final TextStyle displaySmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 32,
     fontWeight: bold,
@@ -93,7 +94,7 @@ class AppTypography {
 
   /// Heading Large - 28px, Bold
   /// Usage: Page titles, card headers
-  static const TextStyle headingLarge = TextStyle(
+  static final TextStyle headingLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 28,
     fontWeight: bold,
@@ -104,7 +105,7 @@ class AppTypography {
 
   /// Heading Medium - 24px, SemiBold
   /// Usage: Section titles, dialog titles
-  static const TextStyle headingMedium = TextStyle(
+  static final TextStyle headingMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 24,
     fontWeight: semiBold,
@@ -115,7 +116,7 @@ class AppTypography {
 
   /// Heading Small - 20px, SemiBold
   /// Usage: Card titles, list section headers
-  static const TextStyle headingSmall = TextStyle(
+  static final TextStyle headingSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: semiBold,
@@ -126,7 +127,7 @@ class AppTypography {
 
   /// Heading XSmall - 18px, SemiBold
   /// Usage: Small section headers, emphasized text
-  static const TextStyle headingXSmall = TextStyle(
+  static final TextStyle headingXSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 18,
     fontWeight: semiBold,
@@ -141,7 +142,7 @@ class AppTypography {
 
   /// Body Large - 17px, Regular
   /// Usage: Large body text, important content
-  static const TextStyle bodyLarge = TextStyle(
+  static final TextStyle bodyLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 17,
     fontWeight: regular,
@@ -152,7 +153,7 @@ class AppTypography {
 
   /// Body Large Medium - 17px, Medium
   /// Usage: Emphasized body text
-  static const TextStyle bodyLargeMedium = TextStyle(
+  static final TextStyle bodyLargeMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 17,
     fontWeight: medium,
@@ -163,7 +164,7 @@ class AppTypography {
 
   /// Body Medium - 15px, Regular (DEFAULT)
   /// Usage: Standard body text, paragraphs, descriptions
-  static const TextStyle bodyMedium = TextStyle(
+  static final TextStyle bodyMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 15,
     fontWeight: regular,
@@ -174,7 +175,7 @@ class AppTypography {
 
   /// Body Medium Medium - 15px, Medium
   /// Usage: Emphasized paragraphs, usernames
-  static const TextStyle bodyMediumMedium = TextStyle(
+  static final TextStyle bodyMediumMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 15,
     fontWeight: medium,
@@ -185,7 +186,7 @@ class AppTypography {
 
   /// Body Small - 13px, Regular
   /// Usage: Secondary text, descriptions
-  static const TextStyle bodySmall = TextStyle(
+  static final TextStyle bodySmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
     fontWeight: regular,
@@ -196,7 +197,7 @@ class AppTypography {
 
   /// Body Small Medium - 13px, Medium
   /// Usage: Emphasized small text
-  static const TextStyle bodySmallMedium = TextStyle(
+  static final TextStyle bodySmallMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
     fontWeight: medium,
@@ -211,7 +212,7 @@ class AppTypography {
 
   /// Label Large - 16px, SemiBold
   /// Usage: Large buttons, tabs
-  static const TextStyle labelLarge = TextStyle(
+  static final TextStyle labelLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: semiBold,
@@ -222,7 +223,7 @@ class AppTypography {
 
   /// Label Medium - 14px, SemiBold (DEFAULT for buttons)
   /// Usage: Standard buttons, chips
-  static const TextStyle labelMedium = TextStyle(
+  static final TextStyle labelMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: semiBold,
@@ -233,7 +234,7 @@ class AppTypography {
 
   /// Label Small - 12px, SemiBold
   /// Usage: Small buttons, badges
-  static const TextStyle labelSmall = TextStyle(
+  static final TextStyle labelSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     fontWeight: semiBold,
@@ -244,7 +245,7 @@ class AppTypography {
 
   /// Label XSmall - 11px, SemiBold
   /// Usage: Tiny badges, indicators
-  static const TextStyle labelXSmall = TextStyle(
+  static final TextStyle labelXSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
     fontWeight: semiBold,
@@ -259,7 +260,7 @@ class AppTypography {
 
   /// Caption Large - 13px, Regular
   /// Usage: Large captions, metadata
-  static const TextStyle captionLarge = TextStyle(
+  static final TextStyle captionLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
     fontWeight: regular,
@@ -270,7 +271,7 @@ class AppTypography {
 
   /// Caption Medium - 12px, Regular (DEFAULT for metadata)
   /// Usage: Timestamps, post metadata, hints
-  static const TextStyle captionMedium = TextStyle(
+  static final TextStyle captionMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     fontWeight: regular,
@@ -281,7 +282,7 @@ class AppTypography {
 
   /// Caption Small - 11px, Regular
   /// Usage: Fine print, legal text
-  static const TextStyle captionSmall = TextStyle(
+  static final TextStyle captionSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
     fontWeight: regular,
@@ -292,7 +293,7 @@ class AppTypography {
 
   /// Caption XSmall - 10px, Regular
   /// Usage: Extra small metadata
-  static const TextStyle captionXSmall = TextStyle(
+  static final TextStyle captionXSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 10,
     fontWeight: regular,
@@ -306,7 +307,7 @@ class AppTypography {
   // ============================================================================
 
   /// Link style - inherits from body but with primary color and underline
-  static const TextStyle link = TextStyle(
+  static final TextStyle link = TextStyle(
     fontFamily: fontFamily,
     fontSize: 15,
     fontWeight: medium,
@@ -317,7 +318,7 @@ class AppTypography {
   );
 
   /// Link small style
-  static const TextStyle linkSmall = TextStyle(
+  static final TextStyle linkSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
     fontWeight: medium,
@@ -339,7 +340,7 @@ class AppTypography {
   );
 
   /// Overline style - all caps, small, spaced out
-  static const TextStyle overline = TextStyle(
+  static final TextStyle overline = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
     fontWeight: semiBold,
