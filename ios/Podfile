@@ -31,11 +31,13 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  # CRITICAL: Force Facebook SDK v17.0.2 BEFORE flutter_install_all_ios_pods
+  # flutter_facebook_auth 7.1.2 is ONLY compatible with FB SDK v17.x
+  # SDK v18+ has breaking API changes (LoginConfiguration, Profile.current, etc.)
+  pod 'FBSDKCoreKit', '17.0.2', :modular_headers => true
+  pod 'FBSDKLoginKit', '17.0.2', :modular_headers => true
   
-  # Force compatible Facebook SDK version for flutter_facebook_auth
-  pod 'FBSDKCoreKit', '~> 17.0.0'
-  pod 'FBSDKLoginKit', '~> 17.0.0'
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
   target 'RunnerTests' do
     inherit! :search_paths
@@ -49,6 +51,11 @@ post_install do |installer|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
       config.build_settings['ENABLE_BITCODE'] = 'NO'
+      
+      # Force Facebook SDK v17.0.2 for all configurations
+      if target.name == 'FBSDKCoreKit' || target.name == 'FBSDKLoginKit'
+        config.build_settings['SWIFT_VERSION'] = '5.0'
+      end
     end
   end
 end

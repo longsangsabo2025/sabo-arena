@@ -113,8 +113,16 @@ workflows:
           
       - name: Install CocoaPods
         script: |
+          echo "🧹 Cleaning CocoaPods cache to force Facebook SDK v17..."
+          pod cache clean --all || true
+          rm -rf ~/Library/Caches/CocoaPods
+          
+          echo "📦 Installing pods with forced Facebook SDK v17.0.2..."
           cd ios
           pod install --repo-update
+          
+          echo "✅ Verifying installed Facebook SDK version..."
+          pod list | grep FBSDK || echo "Warning: Facebook SDK not found in pod list"
           
       - name: Configure iOS signing
         script: |
